@@ -19,9 +19,9 @@ run_command = os.path.join(root_dir, "fortls.py --incrmental_sync --use_signatur
 test_dir = os.path.join(root_dir, "test", "test_source")
 
 
-def run_request(request):
+def run_request(request, fortls_args=""):
     pid = subprocess.Popen(
-        run_command,
+        run_command + fortls_args,
         shell=True,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
@@ -32,9 +32,20 @@ def run_request(request):
     results = read_rpc_messages(tmp_file)
     parsed_results = []
     for result in results:
-        if "method" in result:
-            continue
-        parsed_results.append(result["result"])
+        try:
+            parsed_results.append(result["result"])
+        except KeyError:
+            try:
+                parsed_results.append(result["method"])
+            except:
+                raise RuntimeError(
+                    "Only 'result' and 'method' keys have been implemented for testing."
+                    " Please add the new key."
+                )
+        except:
+            raise RuntimeError(
+                "Unexpected error encountered trying to extract server results"
+            )
     errcode = pid.poll()
     return errcode, parsed_results
 
@@ -83,7 +94,7 @@ def test_open():
     string += write_rpc_notification(
         "textDocument/didOpen", {"textDocument": {"uri": file_path}}
     )
-    errcode, results = run_request(string)
+    errcode, results = run_request(string, fortls_args=" --disable_diagnostics")
     #
     assert errcode == 0
     assert len(results) == 1
@@ -146,7 +157,7 @@ def test_change():
     string += write_rpc_request(
         3, "textDocument/documentSymbol", {"textDocument": {"uri": file_path}}
     )
-    errcode, results = run_request(string)
+    errcode, results = run_request(string, fortls_args=" --disable_diagnostics")
     #
     assert errcode == 0
     assert len(results) == 3
