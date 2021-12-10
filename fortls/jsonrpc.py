@@ -1,5 +1,6 @@
 import json
 import logging
+
 try:
     import Queue
 except ImportError:
@@ -7,6 +8,7 @@ except ImportError:
 import threading
 from collections import deque
 import os
+
 try:
     from urllib.parse import unquote, quote
 except ImportError:
@@ -30,7 +32,7 @@ def path_from_uri(uri):
 def path_to_uri(path):
     # Convert path to file uri (add html like head part)
     if os.name == "nt":
-        return "file:///" + quote(path.replace('\\', '/'))
+        return "file:///" + quote(path.replace("\\", "/"))
     else:
         return "file://" + quote(path)
 
@@ -86,7 +88,8 @@ class JSONRPC2Connection:
                 return int(value)
             except ValueError:
                 raise JSONRPC2ProtocolError(
-                    "Invalid Content-Length header: {0}".format(value))
+                    "Invalid Content-Length header: {0}".format(value)
+                )
 
     def _receive(self):
         line = self.conn.readline()
@@ -128,7 +131,8 @@ class JSONRPC2Connection:
         response = (
             "Content-Length: {0}\r\n"
             "Content-Type: application/vscode-jsonrpc; charset=utf8\r\n\r\n"
-            "{1}".format(content_length, body))
+            "{1}".format(content_length, body)
+        )
         self.conn.write(response)
         log.debug("SEND %s", body)
 
@@ -236,7 +240,8 @@ def write_rpc_request(rid, method, params):
     return (
         "Content-Length: {0}\r\n"
         "Content-Type: application/vscode-jsonrpc; charset=utf8\r\n\r\n"
-        "{1}".format(content_length, body))
+        "{1}".format(content_length, body)
+    )
 
 
 def write_rpc_notification(method, params):
@@ -250,7 +255,8 @@ def write_rpc_notification(method, params):
     return (
         "Content-Length: {0}\r\n"
         "Content-Type: application/vscode-jsonrpc; charset=utf8\r\n\r\n"
-        "{1}".format(content_length, body))
+        "{1}".format(content_length, body)
+    )
 
 
 def read_rpc_messages(content):
@@ -264,7 +270,8 @@ def read_rpc_messages(content):
                 return int(value)
             except ValueError:
                 raise JSONRPC2ProtocolError(
-                    "Invalid Content-Length header: {0}".format(value))
+                    "Invalid Content-Length header: {0}".format(value)
+                )
 
     def receive_next():
         line = content.readline()
@@ -278,9 +285,10 @@ def read_rpc_messages(content):
         body = content.read(length)
         # log.debug("RECV %s", body)
         return json.loads(body)
+
     #
     result_list = []
-    while(True):
+    while True:
         try:
             result = receive_next()
         except EOFError:

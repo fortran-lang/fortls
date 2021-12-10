@@ -1,7 +1,16 @@
 import os
 import json
-from fortls.objects import fortran_ast, fortran_module, fortran_subroutine, \
-    fortran_function, fortran_type, fortran_var, fortran_obj, map_keywords
+from fortls.objects import (
+    fortran_ast,
+    fortran_module,
+    fortran_subroutine,
+    fortran_function,
+    fortran_type,
+    fortran_var,
+    fortran_obj,
+    map_keywords,
+)
+
 none_ast = fortran_ast()
 lowercase_intrinsics = False
 
@@ -16,7 +25,7 @@ class fortran_intrinsic_obj(fortran_obj):
         self.name = name
         self.type = type
         self.doc_str = doc_str
-        self.args = args.replace(' ', '')
+        self.args = args.replace(" ", "")
         self.parent = parent
         self.file_ast = none_ast
         if lowercase_intrinsics:
@@ -28,13 +37,13 @@ class fortran_intrinsic_obj(fortran_obj):
 
     def get_desc(self):
         if self.type == 2:
-            return 'SUBROUTINE'
+            return "SUBROUTINE"
         elif self.type == 14:
-            return 'KEYWORD'
+            return "KEYWORD"
         elif self.type == 15:
-            return 'STATEMENT'
+            return "STATEMENT"
         else:
-            return 'INTRINSIC'
+            return "INTRINSIC"
 
     def get_snippet(self, name_replace=None, drop_arg=-1):
         if self.args == "":
@@ -48,9 +57,11 @@ class fortran_intrinsic_obj(fortran_obj):
             for i, arg in enumerate(arg_list):
                 opt_split = arg.split("=")
                 if len(opt_split) > 1:
-                    place_holders.append("{1}=${{{0}:{2}}}".format(i+1, opt_split[0], opt_split[1]))
+                    place_holders.append(
+                        "{1}=${{{0}:{2}}}".format(i + 1, opt_split[0], opt_split[1])
+                    )
                 else:
-                    place_holders.append("${{{0}:{1}}}".format(i+1, arg))
+                    place_holders.append("${{{0}:{1}}}".format(i + 1, arg))
             arg_str = "({0})".format(", ".join(arg_list))
             arg_snip = "({0})".format(", ".join(place_holders))
         name = self.name
@@ -113,10 +124,17 @@ def load_intrinsics():
         elif json_obj["type"] == 1:
             return fortran_subroutine(none_ast, 0, name, args=args)
         elif json_obj["type"] == 2:
-            return fortran_function(none_ast, 0, name,
-                                    args=args, return_type=[json_obj["return"], keywords, keyword_info])
+            return fortran_function(
+                none_ast,
+                0,
+                name,
+                args=args,
+                return_type=[json_obj["return"], keywords, keyword_info],
+            )
         elif json_obj["type"] == 3:
-            return fortran_var(none_ast, 0, name, json_obj["desc"], keywords, keyword_info)
+            return fortran_var(
+                none_ast, 0, name, json_obj["desc"], keywords, keyword_info
+            )
         elif json_obj["type"] == 4:
             return fortran_type(none_ast, 0, name, keywords)
         else:
@@ -127,46 +145,46 @@ def load_intrinsics():
             child_obj = create_object(child, enc_obj=fort_obj)
             fort_obj.add_child(child_obj)
             add_children(child, child_obj)
+
     # Fortran statments taken from Intel Fortran documentation
     # (https://software.intel.com/en-us/fortran-compiler-18.0-developer-guide)
-    json_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "statements.json")
-    statements = {
-        'var_def': [],
-        'int_stmnts': []
-    }
-    with open(json_file, 'r') as fid:
+    json_file = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "statements.json"
+    )
+    statements = {"var_def": [], "int_stmnts": []}
+    with open(json_file, "r") as fid:
         intrin_file = json.load(fid)
         for key in statements:
             for name, json_obj in sorted(intrin_file[key].items()):
                 statements[key].append(create_int_object(name, json_obj, 15))
     # Fortran keywords taken from Intel Fortran documentation
     # (https://software.intel.com/en-us/fortran-compiler-18.0-developer-guide)
-    json_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "keywords.json")
-    keywords = {
-        'var_def': [],
-        'arg': [],
-        'type_mem': [],
-        'vis': [],
-        'param': []
-    }
-    with open(json_file, 'r') as fid:
+    json_file = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "keywords.json"
+    )
+    keywords = {"var_def": [], "arg": [], "type_mem": [], "vis": [], "param": []}
+    with open(json_file, "r") as fid:
         intrin_file = json.load(fid)
         for key in keywords:
             for name, json_obj in sorted(intrin_file[key].items()):
                 keywords[key].append(create_int_object(name, json_obj, 14))
     # Definitions taken from gfortran documentation
     # (https://gcc.gnu.org/onlinedocs/gfortran/Intrinsic-Procedures.html#Intrinsic-Procedures)
-    json_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "intrinsic_funs.json")
+    json_file = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "intrinsic_funs.json"
+    )
     int_funs = []
-    with open(json_file, 'r') as fid:
+    with open(json_file, "r") as fid:
         intrin_file = json.load(fid)
         for name, json_obj in sorted(intrin_file.items()):
-            int_funs.append(create_int_object(name, json_obj, json_obj['type']))
+            int_funs.append(create_int_object(name, json_obj, json_obj["type"]))
     # Definitions taken from gfortran documentation
     # (https://gcc.gnu.org/onlinedocs/gfortran/Intrinsic-Modules.html#Intrinsic-Modules)
-    json_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "intrinsic_mods.json")
+    json_file = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "intrinsic_mods.json"
+    )
     int_mods = []
-    with open(json_file, 'r') as fid:
+    with open(json_file, "r") as fid:
         intrin_file = json.load(fid)
         for key, json_obj in intrin_file.items():
             fort_obj = create_object(json_obj)
@@ -177,11 +195,11 @@ def load_intrinsics():
 
 def get_intrinsic_keywords(statements, keywords, context=-1):
     if context == 0:
-        return statements['int_stmnts'] + statements['var_def'] + keywords['vis']
+        return statements["int_stmnts"] + statements["var_def"] + keywords["vis"]
     elif context == 1:
-        return keywords['var_def'] + keywords['vis'] + keywords['param']
+        return keywords["var_def"] + keywords["vis"] + keywords["param"]
     elif context == 2:
-        return keywords['var_def'] + keywords['arg'] + keywords['param']
+        return keywords["var_def"] + keywords["arg"] + keywords["param"]
     elif context == 3:
-        return keywords['var_def'] + keywords['type_mem'] + keywords['vis']
-    return keywords['var_def'] + keywords['param']
+        return keywords["var_def"] + keywords["type_mem"] + keywords["vis"]
+    return keywords["var_def"] + keywords["param"]

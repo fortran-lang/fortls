@@ -3,6 +3,7 @@
 [![image](https://travis-ci.org/hansec/fortran-language-server.svg?branch=master)](https://travis-ci.org/hansec/fortran-language-server)
 [![image](https://ci.appveyor.com/api/projects/status/github/hansec/fortran-language-server?branch=master&svg=true)](https://ci.appveyor.com/project/hansec/fortran-language-server)
 [![image](https://img.shields.io/github/license/hansec/fortran-language-server.svg)](https://github.com/hansec/fortran-language-server/blob/master/LICENSE)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 A Fortran implementation of the [Language Server
 Protocol](https://github.com/Microsoft/language-server-protocol) using
