@@ -36,10 +36,11 @@ def run_request(request, fortls_args=""):
             parsed_results.append(result["result"])
         except KeyError:
             try:
-                parsed_results.append(result["method"])
+                # Present in `method`s
+                parsed_results.append(result["params"])
             except:
                 raise RuntimeError(
-                    "Only 'result' and 'method' keys have been implemented for testing."
+                    "Only 'result' and 'params' keys have been implemented for testing."
                     " Please add the new key."
                 )
         except:
