@@ -1,3 +1,12 @@
+# CHANGELONG
+
+## 1.12.1
+
+### Fixes
+
+* Fixes diagnostic error with interfaces as function arguments
+  ([#200](https://github.com/hansec/fortran-language-server/issues/200))
+
 ## 1.12.0
 
 ### Improvements

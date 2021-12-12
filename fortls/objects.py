@@ -940,6 +940,14 @@ class fortran_subroutine(fortran_scope):
                 if arg == child.name.lower():
                     ind = i
                     break
+                # If an argument is part of an interface block go through the
+                # block's children i.e. functions and subroutines to see if one matches
+                elif child.name.lower().startswith("#gen_int"):
+                    for sub_child in child.children:
+                        if arg == sub_child.name:
+                            self.arg_objs[i] = sub_child
+                            break
+
             if ind < 0:
                 if child.keywords.count(KEYWORD_ID_DICT["intent"]) > 0:
                     self.missing_args.append(child)
