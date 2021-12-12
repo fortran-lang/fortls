@@ -222,6 +222,7 @@ def test_workspace_symbols():
             ["test_gen_type", 5, 1],
             ["test_generic", 2, 0],
             ["test_inherit", 2, 0],
+            ["test_int", 2, 0],
             ["test_mod", 2, 0],
             ["test_program", 2, 0],
             ["test_rename_sub", 6, 9],
@@ -596,6 +597,39 @@ def test_docs():
     check_return(results[10], ((3, " !! Doc 9"), (4, " !! Doc 10")))
 
 
+def test_diagnostic_interfaces():
+    """
+    Tests the diagnostics for subroutines and functions with interfaces
+    as arguments
+    """
+    string = write_rpc_request(1, "initialize", {"rootPath": test_dir})
+    file_path = os.path.join(test_dir, "test_diagnostic_int.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
+    # Example of a diagnostics message
+    # string += write_rpc_notification(
+    #     "textDocument/publishDiagnostics",
+    #     {
+    #         "uri": file_path,
+    #         "diagnostics": [
+    #             {
+    #                 "range": {
+    #                     "start": {"line": 0, "character": 0},
+    #                     "end": {"line": 0, "character": 0},
+    #                 },
+    #                 "message": "",
+    #                 "severity": 0,
+    #             }
+    #         ],
+    #     },
+    # )
+    errcode, results = run_request(string)
+    assert errcode == 0
+    # check that the diagnostics list is empty
+    assert not results[1]['diagnostics']
+
+
 if __name__ == "__main__":
     test_init()
     test_open()
@@ -608,3 +642,4 @@ if __name__ == "__main__":
     test_refs()
     test_hover()
     test_docs()
+    test_diagnostic_interfaces()
