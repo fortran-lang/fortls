@@ -1,7 +1,9 @@
-# Fortran Language Server
+# Fortran Language Server - dev version
 
-[![image](https://travis-ci.org/hansec/fortran-language-server.svg?branch=master)](https://travis-ci.org/hansec/fortran-language-server)
-[![image](https://ci.appveyor.com/api/projects/status/github/hansec/fortran-language-server?branch=master&svg=true)](https://ci.appveyor.com/project/hansec/fortran-language-server)
+> This is the developer's version for @hansec's original `fortran-language-server`.
+> It contains bug fixes and new features that are yet to be merged into the main repository.
+
+[![Tests](https://github.com/gnikit/fortran-language-server/actions/workflows/main.yml/badge.svg)](https://github.com/gnikit/fortran-language-server/actions/workflows/main.yml)
 [![image](https://img.shields.io/github/license/hansec/fortran-language-server.svg)](https://github.com/hansec/fortran-language-server/blob/master/LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
