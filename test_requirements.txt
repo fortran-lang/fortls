@@ -1,3 +1,2 @@
-pycodestyle
-pyflakes
+black
 pytest
