@@ -3,6 +3,7 @@
 > This is the developer's version for @hansec's original `fortran-language-server`.
 > It contains bug fixes and new features that are yet to be merged into the main repository.
 
+[![PyPI Latest Release](https://img.shields.io/pypi/v/fortls.svg)](https://pypi.org/project/fortls/)
 [![Tests](https://github.com/gnikit/fortran-language-server/actions/workflows/main.yml/badge.svg)](https://github.com/gnikit/fortran-language-server/actions/workflows/main.yml)
 [![image](https://img.shields.io/github/license/hansec/fortran-language-server.svg)](https://github.com/hansec/fortran-language-server/blob/master/LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
