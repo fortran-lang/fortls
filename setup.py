@@ -1,23 +1,43 @@
 #!/usr/bin/env python
 from setuptools import find_packages, setup
+from fortls import __version__
+import pathlib
 
-README = open("README.rst", "r").read()
+# The directory containing this file
+HERE = pathlib.Path(__file__).resolve().parent
+
+# The text of the README file is used as a description
+README = (HERE / "README.md").read_text()
+
+NAME = "fortls"
 
 setup(
-    name="fortran-language-server",
-    # Versions should comply with PEP440.  For a discussion on single-sourcing
-    # the version across setup.py and the project code, see
-    # https://packaging.python.org/en/latest/single_source_version.html
-    version="1.12.0",
-    description="FORTRAN Language Server for the Language Server Protocol",
-    long_description=README,
-    # The project's main homepage.
-    url="https://github.com/hansec/fortran-language-server",
-    download_url=(
-        "https://github.com/hansec/fortran-language-server/archive/v1.12.0.tar.gz"
-    ),
+    name=NAME,
+    version=__version__,
+    url="https://github.com/gnikit/fortran-language-server",
     author="Chris Hansen",
     author_email="hansec@uw.edu",
+    description="FORTRAN Language Server - dev version",
+    long_description=README,
+    long_description_content_type="text/markdown",
+    license="MIT",
+    classifiers=[
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: MIT License",
+        "Natural Language :: English",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Fortran",
+        "Operating System :: Microsoft :: Windows",
+        "Operating System :: POSIX",
+        "Operating System :: Unix",
+        "Operating System :: MacOS",
+    ],
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
     packages=find_packages(exclude=["contrib", "docs", "test"]),
