@@ -1,7 +1,12 @@
 #!/usr/bin/env python
-from setuptools import find_packages, setup
-from fortls import __version__
+
+"""Builds the Fortran Language Server - dev
+"""
 import pathlib
+
+from setuptools import find_packages, setup
+
+from fortls import __version__
 
 # The directory containing this file
 HERE = pathlib.Path(__file__).resolve().parent
@@ -15,8 +20,8 @@ setup(
     name=NAME,
     version=__version__,
     url="https://github.com/gnikit/fortran-language-server",
-    author="Chris Hansen",
-    author_email="hansec@uw.edu",
+    author="Giannis Nikiteas",
+    author_email="giannis.nikiteas@gmail.com",
     description="FORTRAN Language Server - dev version",
     long_description=README,
     long_description_content_type="text/markdown",
