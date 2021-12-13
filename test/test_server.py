@@ -627,7 +627,7 @@ def test_diagnostic_interfaces():
     errcode, results = run_request(string)
     assert errcode == 0
     # check that the diagnostics list is empty
-    assert not results[1]['diagnostics']
+    assert not results[1]["diagnostics"]
 
 
 if __name__ == "__main__":
