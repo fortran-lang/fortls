@@ -1326,8 +1326,9 @@ class LangServer:
                         reparse_req = reparse_req or reparse_flag
                 except:
                     self.post_message(
-                        'Change request failed for file "{0}": Could not apply change'
-                        .format(path)
+                        'Change request failed for file "{0}": Could not apply change'.format(
+                            path
+                        )
                     )
                     log.error(
                         'Change request failed for file "%s": Could not apply change',
