@@ -1,13 +1,14 @@
-import os
 import json
+import os
+
 from fortls.objects import (
     fortran_ast,
-    fortran_module,
-    fortran_subroutine,
     fortran_function,
+    fortran_module,
+    fortran_obj,
+    fortran_subroutine,
     fortran_type,
     fortran_var,
-    fortran_obj,
     map_keywords,
 )
 

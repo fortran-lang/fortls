@@ -1,18 +1,19 @@
+import os
 import subprocess
 import sys
-import os
 
 try:
-    import StringIO.StringIO as StringIO
-except:
+    from StringIO import StringIO
+except ImportError:
     from io import StringIO
 root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, root_dir)
+
 from fortls.jsonrpc import (
-    write_rpc_request,
-    write_rpc_notification,
-    read_rpc_messages,
     path_to_uri,
+    read_rpc_messages,
+    write_rpc_notification,
+    write_rpc_request,
 )
 
 run_command = os.path.join(root_dir, "fortls.py --incrmental_sync --use_signature_help")

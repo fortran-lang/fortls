@@ -1,7 +1,8 @@
 import copy
-import re
 import os
+import re
 from collections import namedtuple
+
 from fortls.jsonrpc import path_to_uri
 
 # Global variables

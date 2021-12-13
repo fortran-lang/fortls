@@ -1,38 +1,39 @@
 import logging
 import os
-import traceback
 import re
+import traceback
 
-# Local modules
-from fortls.jsonrpc import path_to_uri, path_from_uri
-from fortls.parse_fortran import (
-    fortran_file,
-    fortran_ast,
-    process_file,
-    get_paren_level,
-    expand_name,
-    get_line_context,
-)
-from fortls.objects import (
-    find_in_scope,
-    find_in_workspace,
-    get_use_tree,
-    get_var_stack,
-    climb_type_tree,
-    set_keyword_ordering,
-    MODULE_TYPE_ID,
-    SUBROUTINE_TYPE_ID,
-    FUNCTION_TYPE_ID,
-    CLASS_TYPE_ID,
-    INTERFACE_TYPE_ID,
-    SELECT_TYPE_ID,
-    VAR_TYPE_ID,
-    METH_TYPE_ID,
-)
 from fortls.intrinsics import (
     get_intrinsic_keywords,
     load_intrinsics,
     set_lowercase_intrinsics,
+)
+
+# Local modules
+from fortls.jsonrpc import path_from_uri, path_to_uri
+from fortls.objects import (
+    CLASS_TYPE_ID,
+    FUNCTION_TYPE_ID,
+    INTERFACE_TYPE_ID,
+    METH_TYPE_ID,
+    MODULE_TYPE_ID,
+    SELECT_TYPE_ID,
+    SUBROUTINE_TYPE_ID,
+    VAR_TYPE_ID,
+    climb_type_tree,
+    find_in_scope,
+    find_in_workspace,
+    get_use_tree,
+    get_var_stack,
+    set_keyword_ordering,
+)
+from fortls.parse_fortran import (
+    expand_name,
+    fortran_ast,
+    fortran_file,
+    get_line_context,
+    get_paren_level,
+    process_file,
 )
 
 log = logging.getLogger(__name__)
@@ -1326,9 +1327,8 @@ class LangServer:
                         reparse_req = reparse_req or reparse_flag
                 except:
                     self.post_message(
-                        'Change request failed for file "{0}": Could not apply change'.format(
-                            path
-                        )
+                        'Change request failed for file "{0}": Could not apply change'
+                        .format(path)
                     )
                     log.error(
                         'Change request failed for file "%s": Could not apply change',

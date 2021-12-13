@@ -5,12 +5,13 @@ try:
     import Queue
 except ImportError:
     import queue as Queue
+
+import os
 import threading
 from collections import deque
-import os
 
 try:
-    from urllib.parse import unquote, quote
+    from urllib.parse import quote, unquote
 except ImportError:
     from urllib2 import quote
     from urlparse import unquote
