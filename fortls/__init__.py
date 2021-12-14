@@ -9,7 +9,7 @@ from multiprocessing import freeze_support
 
 from ._version import __version__
 from .jsonrpc import JSONRPC2Connection, ReadWriter, path_from_uri
-from .langserver import LangServer
+from .langserver import LangServer, resolve_globs, only_dirs
 from .parse_fortran import fortran_file, process_file
 
 
@@ -710,17 +710,16 @@ def debug_server_parser(args):
                     config_dict = json.load(fhandle)
                     pp_suffixes = config_dict.get("pp_suffixes", None)
                     pp_defs = config_dict.get("pp_defs", {})
-                    include_dirs = config_dict.get("include_dirs", [])
+                    include_dirs = []
+                    for path in config_dict.get("include_dirs", []):
+                        include_dirs.extend(
+                            only_dirs(resolve_globs(path, args.debug_rootpath))
+                        )
+
                     if isinstance(pp_defs, list):
                         pp_defs = {key: "" for key in pp_defs}
             except:
                 print("Error while parsing '.fortls' settings file")
-            # Make relative include paths absolute
-            for (i, include_dir) in enumerate(include_dirs):
-                if not os.path.isabs(include_dir):
-                    include_dirs[i] = os.path.abspath(
-                        os.path.join(args.debug_rootpath, include_dir)
-                    )
     #
     print("\nTesting parser")
     print('  File = "{0}"'.format(args.debug_filepath))

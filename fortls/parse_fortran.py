@@ -1191,7 +1191,6 @@ def preprocess_file(
             return out_line
 
         def replace_vars(line):
-            WORD_REGEX = re.compile(r"[a-z_][a-z0-9_]*", re.I)
             i0 = 0
             out_line = ""
             for match in WORD_REGEX.finditer(line):

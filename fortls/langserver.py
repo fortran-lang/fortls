@@ -1,7 +1,14 @@
+# TODO: make FORTRAN_EXT_REGEX be able to update from user input extensions
+# TODO: enable jsonc C-style comments
+
+from __future__ import annotations
+
+import json
 import logging
 import os
 import re
 import traceback
+from pathlib import Path
 
 from fortls.intrinsics import (
     get_intrinsic_keywords,
@@ -38,7 +45,7 @@ from fortls.parse_fortran import (
 
 log = logging.getLogger(__name__)
 # Global regexes
-FORTRAN_EXT_REGEX = re.compile(r"^\.F(77|90|95|03|08|OR|PP)?$", re.I)
+FORTRAN_EXT_REGEX = re.compile(r"\.F(77|90|95|03|08|OR|PP)?$", re.I)
 INT_STMNT_REGEX = re.compile(r"^[ ]*[a-z]*$", re.I)
 TYPE_DEF_REGEX = re.compile(r"[ ]*(TYPE|CLASS)[ ]*\([a-z0-9_ ]*$", re.I)
 SCOPE_DEF_REGEX = re.compile(r"[ ]*(MODULE|PROGRAM|SUBROUTINE|FUNCTION)[ ]+", re.I)
@@ -66,7 +73,7 @@ def init_file(filepath, pp_defs, pp_suffixes, include_dirs):
 
 
 def get_line_prefix(pre_lines, curr_line, iChar):
-    """Get code line prefix from current line and preceeding continuation lines"""
+    """Get code line prefix from current line and preceding continuation lines"""
     if (curr_line is None) or (iChar > len(curr_line)) or (curr_line.startswith("#")):
         return None
     prepend_string = "".join(pre_lines)
@@ -87,6 +94,56 @@ def get_line_prefix(pre_lines, curr_line, iChar):
     return line_prefix
 
 
+def resolve_globs(glob_path: str, root_path: str = None) -> list[str]:
+    """Resolve glob patterns
+
+    Parameters
+    ----------
+    glob_path : str
+        Path containing the glob pattern follows
+        `fnmatch` glob pattern, can include relative paths, etc.
+        see fnmatch: https://docs.python.org/3/library/fnmatch.html#module-fnmatch
+
+    root_path : str, optional
+        root path to start glob search. If left empty the root_path will be
+        extracted from the glob_path, by default None
+
+    Returns
+    -------
+    list[str]
+        Expanded glob patterns with absolute paths.
+        Absolute paths are used to resolve any potential ambiguity
+    """
+    # Path.glob returns a generator, we then cast the Path obj to a str
+    # alternatively use p.as_posix()
+    if root_path:
+        return [str(p) for p in Path(root_path).resolve().glob(glob_path)]
+    # Attempt to extract the root and glob pattern from the glob_path
+    # This is substantially less robust that then above
+    else:
+        p = Path(glob_path).expanduser()
+        parts = p.parts[p.is_absolute() :]
+        return [str(i) for i in Path(p.root).resolve().glob(str(Path(*parts)))]
+
+
+def only_dirs(paths: list[str], err_msg: list = []) -> list[str]:
+    dirs: list[str] = []
+    for p in paths:
+        if os.path.isdir(p):
+            dirs.append(p)
+        elif os.path.isfile(p):
+            continue
+        else:
+            msg: str = (
+                f"Directory '{p}' specified in '.fortls' settings file does not exist"
+            )
+            if err_msg:
+                err_msg.append([2, msg])
+            else:
+                print(f"WARNING: {msg}")
+    return dirs
+
+
 class LangServer:
     def __init__(self, conn, debug_log=False, settings={}):
         self.conn = conn
@@ -97,8 +154,8 @@ class LangServer:
         self.workspace = {}
         self.obj_tree = {}
         self.link_version = 0
-        self.source_dirs = []
-        self.excl_paths = []
+        self.source_dirs = set()
+        self.excl_paths = set()
         self.excl_suffixes = []
         self.post_messages = []
         self.pp_suffixes = None
@@ -220,50 +277,46 @@ class LangServer:
         self.root_path = path_from_uri(
             params.get("rootUri") or params.get("rootPath") or ""
         )
-        self.source_dirs.append(self.root_path)
+        self.source_dirs.add(self.root_path)
         # Check for config file
         config_path = os.path.join(self.root_path, ".fortls")
         config_exists = os.path.isfile(config_path)
         if config_exists:
             try:
-                import json
+                with open(config_path, "r") as jsonfile:
+                    # Allow for jsonc C-style commnets
+                    # jsondata = "".join(
+                    #     line for line in jsonfile if not line.startswith("//")
+                    # )
+                    # config_dict = json.loads(jsondata)
+                    config_dict = json.load(jsonfile)
 
-                with open(config_path, "r") as fhandle:
-                    config_dict = json.load(fhandle)
-                    for excl_path in config_dict.get("excl_paths", []):
-                        self.excl_paths.append(os.path.join(self.root_path, excl_path))
-                    source_dirs = config_dict.get("source_dirs", [])
-                    ext_source_dirs = config_dict.get("ext_source_dirs", [])
-                    # Legacy definition
-                    if len(source_dirs) == 0:
-                        source_dirs = config_dict.get("mod_dirs", [])
-                    for source_dir in source_dirs:
-                        dir_path = os.path.join(self.root_path, source_dir)
-                        if os.path.isdir(dir_path):
-                            self.source_dirs.append(dir_path)
-                        else:
-                            self.post_messages.append(
-                                [
-                                    2,
-                                    r'Source directory "{0}" specified in '
-                                    r'".fortls" settings file does not exist'.format(
-                                        dir_path
-                                    ),
-                                ]
+                    # Exclude paths (directories & files)
+                    # with glob resolution
+                    for path in config_dict.get("excl_paths", []):
+                        self.excl_paths.update(set(resolve_globs(path, self.root_path)))
+
+                    # Source directory paths (directories)
+                    # with glob resolution
+                    # XXX: Drop support for ext_source_dirs since they end up in
+                    # source_dirs anyway
+                    source_dirs = config_dict.get("source_dirs", []) + config_dict.get(
+                        "ext_source_dirs", []
+                    )
+                    for path in source_dirs:
+                        self.source_dirs.update(
+                            set(
+                                only_dirs(
+                                    resolve_globs(path, self.root_path),
+                                    self.post_messages,
+                                )
                             )
-                    for ext_source_dir in ext_source_dirs:
-                        if os.path.isdir(ext_source_dir):
-                            self.source_dirs.append(ext_source_dir)
-                        else:
-                            self.post_messages.append(
-                                [
-                                    2,
-                                    r'External source directory "{0}" specified in '
-                                    r'".fortls" settings file does not exist'.format(
-                                        ext_source_dir
-                                    ),
-                                ]
-                            )
+                        )
+                    # Keep all directories present in source_dirs but not excl_paths
+                    self.source_dirs = {
+                        i for i in self.source_dirs if i not in self.excl_paths
+                    }
+
                     self.excl_suffixes = config_dict.get("excl_suffixes", [])
                     self.lowercase_intrinsics = config_dict.get(
                         "lowercase_intrinsics", self.lowercase_intrinsics
@@ -274,7 +327,12 @@ class LangServer:
                     )
                     self.pp_suffixes = config_dict.get("pp_suffixes", None)
                     self.pp_defs = config_dict.get("pp_defs", {})
-                    self.include_dirs = config_dict.get("include_dirs", [])
+                    for path in config_dict.get("include_dirs", []):
+                        self.include_dirs.extend(
+                            only_dirs(
+                                resolve_globs(path, self.root_path), self.post_messages
+                            )
+                        )
                     self.max_line_length = config_dict.get(
                         "max_line_length", self.max_line_length
                     )
@@ -285,14 +343,9 @@ class LangServer:
                         self.pp_defs = {key: "" for key in self.pp_defs}
             except:
                 self.post_messages.append(
-                    [1, 'Error while parsing ".fortls" settings file']
+                    [1, "Error while parsing '.fortls' settings file"]
                 )
-            # Make relative include paths absolute
-            for (i, include_dir) in enumerate(self.include_dirs):
-                if not os.path.isabs(include_dir):
-                    self.include_dirs[i] = os.path.abspath(
-                        os.path.join(self.root_path, include_dir)
-                    )
+
         # Setup logging
         if self.debug_log and (self.root_path != ""):
             logging.basicConfig(
@@ -316,22 +369,15 @@ class LangServer:
             self.obj_tree[module.FQSN] = [module, None]
         # Set object settings
         set_keyword_ordering(self.sort_keywords)
-        # Recursively add sub-directories
+        # Recursively add sub-directories that only match Fortran extensions
         if len(self.source_dirs) == 1:
-            self.source_dirs = []
-            for dirName, subdirList, fileList in os.walk(self.root_path):
-                if self.excl_paths.count(dirName) > 0:
-                    while len(subdirList) > 0:
-                        del subdirList[0]
+            self.source_dirs = set()
+            for root, dirs, files in os.walk(self.root_path):
+                # Match not found
+                if not list(filter(FORTRAN_EXT_REGEX.search, files)):
                     continue
-                contains_source = False
-                for filename in fileList:
-                    _, ext = os.path.splitext(os.path.basename(filename))
-                    if FORTRAN_EXT_REGEX.match(ext):
-                        contains_source = True
-                        break
-                if contains_source:
-                    self.source_dirs.append(dirName)
+                if root not in self.source_dirs and root not in self.excl_paths:
+                    self.source_dirs.add(str(Path(root).resolve()))
         # Initialize workspace
         self.workspace_init()
         #
@@ -799,6 +845,7 @@ class LangServer:
         pre_lines, curr_line, _ = def_file.get_code_line(
             def_line, forward=False, strip_comment=True
         )
+        # Returns none for string literals, when the query is in the middle
         line_prefix = get_line_prefix(pre_lines, curr_line, def_char)
         if line_prefix is None:
             return None
@@ -1024,7 +1071,7 @@ class LangServer:
         def_obj = self.get_definition(file_obj, def_line, def_char)
         if def_obj is None:
             return None
-        # Determine global accesibility and type membership
+        # Determine global accessibility and type membership
         restrict_file = None
         type_mem = False
         if def_obj.FQSN.count(":") > 2:
@@ -1309,10 +1356,8 @@ class LangServer:
         path = path_from_uri(uri)
         file_obj = self.workspace.get(path)
         if file_obj is None:
-            self.post_message(
-                'Change request failed for unknown file "{0}"'.format(path)
-            )
-            log.error('Change request failed for unknown file "%s"', path)
+            self.post_message(f"Change request failed for unknown file '{path}'")
+            log.error("Change request failed for unknown file '%s'", path)
             return
         else:
             # Update file contents with changes
@@ -1327,11 +1372,11 @@ class LangServer:
                         reparse_req = reparse_req or reparse_flag
                 except:
                     self.post_message(
-                        'Change request failed for file "{0}": Could not apply change'
-                        .format(path)
+                        f"Change request failed for file '{path}': Could not apply"
+                        " change"
                     )
                     log.error(
-                        'Change request failed for file "%s": Could not apply change',
+                        "Change request failed for file '%s': Could not apply change",
                         path,
                         exc_info=True,
                     )
@@ -1340,9 +1385,7 @@ class LangServer:
         if reparse_req:
             _, err_str = self.update_workspace_file(path, update_links=True)
             if err_str is not None:
-                self.post_message(
-                    'Change request failed for file "{0}": {1}'.format(path, err_str)
-                )
+                self.post_message(f"Change request failed for file '{path}': {err_str}")
                 return
             # Update include statements linking to this file
             for _, tmp_file in self.workspace.items():
@@ -1378,9 +1421,7 @@ class LangServer:
             filepath, read_file=True, allow_empty=did_open
         )
         if err_str is not None:
-            self.post_message(
-                'Save request failed for file "{0}": {1}'.format(filepath, err_str)
-            )
+            self.post_message(f"Save request failed for file '{filepath}': {err_str}")
             return
         if did_change:
             # Update include statements linking to this file
@@ -1446,20 +1487,22 @@ class LangServer:
     def workspace_init(self):
         # Get filenames
         file_list = []
-        for source_dir in self.source_dirs:
-            for filename in os.listdir(source_dir):
-                _, ext = os.path.splitext(os.path.basename(filename))
-                if FORTRAN_EXT_REGEX.match(ext):
-                    filepath = os.path.normpath(os.path.join(source_dir, filename))
-                    if self.excl_paths.count(filepath) > 0:
-                        continue
-                    inc_file = True
-                    for excl_suffix in self.excl_suffixes:
-                        if filepath.endswith(excl_suffix):
-                            inc_file = False
-                            break
-                    if inc_file:
-                        file_list.append(filepath)
+        for src_dir in self.source_dirs:
+            for f in os.listdir(src_dir):
+                p = os.path.join(src_dir, f)
+                # Process only files
+                if not os.path.isfile(p):
+                    continue
+                # File extension must match supported extensions
+                if not FORTRAN_EXT_REGEX.search(f):
+                    continue
+                # File cannot be in excluded paths/files
+                if p in self.excl_paths:
+                    continue
+                # File cannot have an excluded extension
+                if any(f.endswith(ext) for ext in set(self.excl_suffixes)):
+                    continue
+                file_list.append(p)
         # Process files
         from multiprocessing import Pool
 
@@ -1476,12 +1519,7 @@ class LangServer:
             result_obj = result.get()
             if result_obj[0] is None:
                 self.post_messages.append(
-                    [
-                        1,
-                        'Initialization failed for file "{0}": {1}'.format(
-                            path, result_obj[1]
-                        ),
-                    ]
+                    [1, f"Initialization failed for file '{path}': {result_obj[1]}"]
                 )
                 continue
             self.workspace[path] = result_obj[0]
