@@ -140,7 +140,7 @@ def only_dirs(paths: list[str], err_msg: list = []) -> list[str]:
             if err_msg:
                 err_msg.append([2, msg])
             else:
-                print(f"WARNING: {msg}")
+                log.warning(msg)
     return dirs
 
 
@@ -205,6 +205,7 @@ class LangServer:
             except EOFError:
                 break
             except Exception as e:
+                self.post_messages.append([1, f"Unexpected error: {e}"])
                 log.error("Unexpected error: %s", e, exc_info=True)
                 break
             else:
@@ -341,10 +342,16 @@ class LangServer:
                     )
                     if isinstance(self.pp_defs, list):
                         self.pp_defs = {key: "" for key in self.pp_defs}
-            except:
-                self.post_messages.append(
-                    [1, "Error while parsing '.fortls' settings file"]
-                )
+
+            except FileNotFoundError:
+                msg = "Error settings file '.fortls' not found"
+                self.post_messages.append([1, msg])
+                log.error(msg)
+
+            except ValueError:
+                msg = "Error while parsing '.fortls' settings file"
+                self.post_messages.append([1, msg])
+                log.error(msg)
 
         # Setup logging
         if self.debug_log and (self.root_path != ""):
