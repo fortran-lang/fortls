@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 def path_from_uri(uri):
     # Convert file uri to path (strip html like head part)
     if not uri.startswith("file://"):
-        return uri
+        return os.path.abspath(uri)
     if os.name == "nt":
         _, path = uri.split("file:///", 1)
     else:
