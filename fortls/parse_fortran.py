@@ -693,7 +693,7 @@ def read_submod_def(line):
             else:
                 trailing_line = ""
         #
-        name_match = WORD_REGEX.match(trailing_line)
+        name_match = WORD_REGEX.search(trailing_line)
         if name_match is not None:
             name = name_match.group(0).lower()
         return "smod", SMOD_info(name, parent_name)

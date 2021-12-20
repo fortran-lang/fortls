@@ -1,5 +1,12 @@
 # CHANGELONG
 
+## 1.14.2
+
+### Fixes
+
+* Fixes error while parsing submodule parent name with spaces
+  ([#207](https://github.com/hansec/fortran-language-server/issues/207))
+
 ## 1.14.1
 
 ### Fixes
