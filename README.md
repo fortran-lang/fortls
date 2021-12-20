@@ -10,7 +10,7 @@
 
 A Fortran implementation of the [Language Server
 Protocol](https://github.com/Microsoft/language-server-protocol) using
-Python (2.7+ or 3.0+).
+Python (3.6+).
 
 Editor extensions using this language server to provide autocomplete and
 other IDE-like functionality are available for
@@ -56,16 +56,9 @@ and [Emacs](https://github.com/emacs-lsp/lsp-mode).
 
 ## Installation
 
-`pip install fortran-language-server`
-
-If you get the following error:
-
-> `'install_requires' must be a string or list of strings containing valid project/version requirement specifiers`
-
-try updating setuptools:
-
-    pip install -U setuptools
-    pip install fortran-language-server
+```sh
+pip install fortls
+```
 
 ## Language server settings
 
@@ -157,36 +150,47 @@ Project specific settings can be specified by placing a JSON file named
 - `max_comment_line_length` Maximum comment line length (default:
   none)
 
-### Setup source file search paths
+## Additional settings
+
+### Default file extensions
 
 By default all files with the suffix `F,F77,F90,F95,F03,F08,FOR,FPP`
 (case-insensitive) in the `root_dir` directory, specified during
 initialization, and all its sub-directories are parsed and included in
 the project.
 
+### Excluding folders and file extensions
+
 Directories and files can be excluded from the project by specifying
-their paths (relative to `root_dir`) in the `excl_paths` variable in the
-`.fortls` file. Excluded directories also exclude all sub-directories.
+their paths in the `excl_paths` variable in the`.fortls` file.
+Paths can be absolute or relative to `root_dir`.
+
+Excluded directories **will not** exclude all sub-directories.
 Source files with a common suffix may also be excluded using the
 `excl_suffixes` variable.
 
+> NOTE: All directory inputs fields (`excl_paths`, `source_dirs`, `include_dirs`) support
+> [Python glob patterns](https://docs.python.org/3/library/glob.html) e.g. `/**`, `*`, etc.
+
+### Including source directories
+
+By default all source directories under `root_dir` are recursively included.
 Source file directories can also be specified manually by specifying
-their paths (relative to `root_dir`) in the `source_dirs` variable in
-the `.fortls` file. When `source_dirs` is specified directories are not
-added recursively, so any nested sub directories must be explicitly
-listed. However, `root_dir` does not need to be specified manually as it
-is always included.
+their paths in the `source_dirs` variable in `.fortls`.
+Paths can be absolute or relative to `root_dir`.
+the `.fortls` file.
 
-External source files (ex. libraries) can also be included in language
-server results by specifying their paths in the `ext_source_dirs`
-variable in the `.fortls` file. These files will be parsed during
-initialization, but will not be updated with any changes made until the
-language server is restarted. As with `source_dirs`, specified
-directories are not added recursively, so any nested sub directories
-must be explicitly listed.
+When defining `source_dirs` in `.fortls` the default behaviour (i.e. including
+all files in all subdirectories under `root_dir`) is overriden. To include them
+back again one can do
 
-**Note:** The previous naming convention for source file directories
-(`mod_dirs`) is still supported but has been deprecated.
+```json
+{
+  "source_dirs": ["/**", "all", "other", "dirs"]
+}
+```
+
+> NOTE: `root_dir` does not need to be specified manually as it is always included.
 
 ### Preprocessing
 
@@ -205,7 +209,7 @@ File suffixes for preprocessing can be controlled with the variable
 used _only_ those files with the specified suffixes will be
 preprocessed. If an empty array is specified then _no_ preprocessing
 will be performed on any files. By default, or if the variable is
-ommited or `null`, only files with upper case suffixes are preprocessed.
+omitted or `null`, only files with upper case suffixes are preprocessed.
 
 Preprocessor definitions can be set for each project, to improve support
 for Fortran files using conditional compilation, using the `pp_defs`
@@ -226,17 +230,18 @@ File search is performed starting with the containing directory followed
 by the specified `include_dirs` specified paths, in order (left to
 right).
 
-    {
-      "source_dirs": ["subdir1", "subdir2"],
-      "excl_paths": ["subdir3", "subdir1/file_to_skip.F90"],
-      "excl_suffixes": ["_skip.f90"],
-      "pp_suffixes": [".f03", ".F90"],
-      "pp_defs": {"HAVE_PACKAGE": ""},
-      "include_dirs": ["rel_include/dir_path", "/abs/include/dir/path"],
-      "ext_source_dirs": ["/path/to/fortran/library"],
-      "lowercase_intrinsics": false,
-      "debug_log": false
-    }
+```json
+{
+  "source_dirs": ["subdir1/**", "subdir2"],
+  "excl_paths": ["subdir3/**", "subdir1/file_to_skip.F90"],
+  "excl_suffixes": ["_skip.f90"],
+  "pp_suffixes": [".f03", ".F90"],
+  "pp_defs": { "HAVE_PACKAGE": "" },
+  "include_dirs": ["rel_include/dir_path", "/abs/include/dir/path"],
+  "lowercase_intrinsics": false,
+  "debug_log": false
+}
+```
 
 ## Bug reports
 

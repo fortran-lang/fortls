@@ -169,7 +169,7 @@ VIS_info = namedtuple("VIS_info", ["type", "obj_names"])
 
 def expand_name(line, char_poss):
     """Get full word containing given cursor position"""
-    # The order here is important. 
+    # The order here is important.
     # WORD will capture substrings in logical and strings
     regexs = [LOGICAL_REGEX, SQ_STRING_REGEX, DQ_STRING_REGEX, WORD_REGEX, NUMBER_REGEX]
     for r in regexs:

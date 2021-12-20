@@ -1,11 +1,17 @@
 # CHANGELONG
 
-### 1.13.0
+## 1.14.0
 
 ### Fixes
 
 * Fixes (partially) Fortran literal variable hover
   ([#188](https://github.com/hansec/fortran-language-server/issues/188))
+
+## 1.13.0
+
+### Improvements
+
+* Adds Python glob support for `excl_paths`, `source_dirs`, `include_dirs`
 
 ## 1.12.1
 
