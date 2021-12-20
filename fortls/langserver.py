@@ -30,11 +30,16 @@ from fortls.objects import (
     climb_type_tree,
     find_in_scope,
     find_in_workspace,
+    fortran_var,
     get_use_tree,
     get_var_stack,
     set_keyword_ordering,
 )
 from fortls.parse_fortran import (
+    DQ_STRING_REGEX,
+    LOGICAL_REGEX,
+    NUMBER_REGEX,
+    SQ_STRING_REGEX,
     expand_name,
     fortran_ast,
     fortran_file,
@@ -847,7 +852,7 @@ class LangServer:
             )
         return item_list
 
-    def get_definition(self, def_file, def_line, def_char):
+    def get_definition(self, def_file, def_line, def_char, hover_req=False):
         # Get full line (and possible continuations) from file
         pre_lines, curr_line, _ = def_file.get_code_line(
             def_line, forward=False, strip_comment=True
@@ -901,6 +906,32 @@ class LangServer:
             for obj in self.intrinsic_funs:
                 if obj.name.lower() == key:
                     return obj
+
+            # If we have a Fortran literal constant e.g. 100, .false., etc.
+            # Return a dummy object with the correct type & position in the doc
+            if (
+                hover_req
+                and curr_scope
+                and (
+                    NUMBER_REGEX.match(def_name)
+                    or LOGICAL_REGEX.match(def_name)
+                    or SQ_STRING_REGEX.match(def_name)
+                    or DQ_STRING_REGEX.match(def_name)
+                )
+            ):
+                # The description name chosen is non-ambiguous and cannot naturally
+                # occur in Fortran (with/out C preproc) code
+                # It is invalid syntax to define a type starting with numerics
+                # it cannot also be a comment that requires !, c, d
+                # and ^= (xor_eq) operator is invalid in Fortran C++ preproc
+                var_obj = fortran_var(
+                    curr_scope.file_ast,
+                    def_line + 1,
+                    def_name,
+                    "0^=__LITERAL_INTERNAL_DUMMY_VAR_",
+                    curr_scope.keywords,
+                )
+                return var_obj
         else:
             return var_obj
         return None
@@ -1141,6 +1172,26 @@ class LangServer:
             else:
                 return string
 
+        def create_signature_hover():
+            sig_request = request.copy()
+            sig_result = self.serve_signature(sig_request)
+            try:
+                arg_id = sig_result.get("activeParameter")
+                if arg_id is not None:
+                    arg_info = sig_result["signatures"][0]["parameters"][arg_id]
+                    arg_doc = arg_info["documentation"]
+                    doc_split = arg_doc.find("\n !!")
+                    if doc_split < 0:
+                        arg_string = f"{arg_doc} :: {arg_info['label']}"
+                    else:
+                        arg_string = (
+                            f"{arg_doc[:doc_split]} :: "
+                            f"{arg_info['label']}{arg_doc[doc_split:]}"
+                        )
+                    return create_hover(arg_string, True)
+            except:
+                pass
+
         # Get parameters from request
         params = request["params"]
         uri = params["textDocument"]["uri"]
@@ -1151,7 +1202,7 @@ class LangServer:
         if file_obj is None:
             return None
         # Find object
-        var_obj = self.get_definition(file_obj, def_line, def_char)
+        var_obj = self.get_definition(file_obj, def_line, def_char, hover_req=True)
         if var_obj is None:
             return None
         # Construct hover information
@@ -1165,30 +1216,17 @@ class LangServer:
                 hover_str, highlight = member.get_hover(long=True)
                 if hover_str is not None:
                     hover_array.append(create_hover(hover_str, highlight))
-            return {"contents": hover_array}
-        elif self.variable_hover and (var_type == 6):
-            hover_str, highlight = var_obj.get_hover()
-            hover_array.append(create_hover(hover_str, highlight))
+        elif self.variable_hover and (var_type == VAR_TYPE_ID):
+            # Unless we have a Fortran literal include the desc in the hover msg
+            # See get_definition for an explanaiton about this default name
+            if var_obj.desc != "0^=__LITERAL_INTERNAL_DUMMY_VAR_":
+                hover_str, highlight = var_obj.get_hover()
+                hover_array.append(create_hover(hover_str, highlight))
+            # Include the signature if one is present e.g. if in an argument list
             if self.hover_signature:
-                sig_request = request.copy()
-                sig_result = self.serve_signature(sig_request)
-                try:
-                    arg_id = sig_result.get("activeParameter")
-                    if arg_id is not None:
-                        arg_info = sig_result["signatures"][0]["parameters"][arg_id]
-                        arg_doc = arg_info["documentation"]
-                        doc_split = arg_doc.find("\n !!")
-                        if doc_split < 0:
-                            arg_string = "{0} :: {1}".format(arg_doc, arg_info["label"])
-                        else:
-                            arg_string = "{0} :: {1}{2}".format(
-                                arg_doc[:doc_split],
-                                arg_info["label"],
-                                arg_doc[doc_split:],
-                            )
-                        hover_array.append(create_hover(arg_string, True))
-                except:
-                    pass
+                hover_str = create_signature_hover()
+                if hover_str is not None:
+                    hover_array.append(hover_str)
         #
         if len(hover_array) > 0:
             return {"contents": hover_array}

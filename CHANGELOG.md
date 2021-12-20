@@ -1,5 +1,12 @@
 # CHANGELONG
 
+### 1.13.0
+
+### Fixes
+
+* Fixes (partially) Fortran literal variable hover
+  ([#188](https://github.com/hansec/fortran-language-server/issues/188))
+
 ## 1.12.1
 
 ### Fixes

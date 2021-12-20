@@ -112,6 +112,11 @@ TATTR_LIST_REGEX = re.compile(
 )
 VIS_REGEX = re.compile(r"[ ]*(PUBLIC|PRIVATE)[ :]", re.I)
 WORD_REGEX = re.compile(r"[a-z_][a-z0-9_]*", re.I)
+NUMBER_REGEX = re.compile(
+    r"[\+\-]?(\b\d+\.?\d*|\.\d+)(_\w+|d[\+\-]?\d+|e[\+\-]?\d+(_\w+)?)?(?![a-z_])",
+    re.I,
+)
+LOGICAL_REGEX = re.compile(r".true.|.false.", re.I)
 SUB_PAREN_MATCH = re.compile(r"\([a-z0-9_, ]*\)", re.I)
 KIND_SPEC_MATCH = re.compile(r"\([a-z0-9_, =*]*\)", re.I)
 SQ_STRING_REGEX = re.compile(r"\'[^\']*\'", re.I)
@@ -164,9 +169,13 @@ VIS_info = namedtuple("VIS_info", ["type", "obj_names"])
 
 def expand_name(line, char_poss):
     """Get full word containing given cursor position"""
-    for word_match in WORD_REGEX.finditer(line):
-        if word_match.start(0) <= char_poss and word_match.end(0) >= char_poss:
-            return word_match.group(0)
+    # The order here is important. 
+    # WORD will capture substrings in logical and strings
+    regexs = [LOGICAL_REGEX, SQ_STRING_REGEX, DQ_STRING_REGEX, WORD_REGEX, NUMBER_REGEX]
+    for r in regexs:
+        for num_match in r.finditer(line):
+            if num_match.start(0) <= char_poss and num_match.end(0) >= char_poss:
+                return num_match.group(0)
     return ""
 
 
