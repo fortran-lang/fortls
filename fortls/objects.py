@@ -308,7 +308,7 @@ def get_var_stack(line):
       "CALL self%method(this%foo" -> ["this", "foo"]
     """
     if len(line) == 0:
-        return None
+        return [""]
     final_var, sections = get_paren_level(line)
     if final_var == "":
         return [""]

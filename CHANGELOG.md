@@ -1,5 +1,11 @@
 # CHANGELONG
 
+## 1.14.1
+
+### Fixes
+
+* Fixes language server features not triggering for variables in column 0
+
 ## 1.14.0
 
 ### Fixes
