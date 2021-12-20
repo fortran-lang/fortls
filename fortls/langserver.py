@@ -304,11 +304,7 @@ class LangServer:
 
                     # Source directory paths (directories)
                     # with glob resolution
-                    # XXX: Drop support for ext_source_dirs since they end up in
-                    # source_dirs anyway
-                    source_dirs = config_dict.get("source_dirs", []) + config_dict.get(
-                        "ext_source_dirs", []
-                    )
+                    source_dirs = config_dict.get("source_dirs", [])
                     for path in source_dirs:
                         self.source_dirs.update(
                             set(
