@@ -599,18 +599,23 @@ def test_docs():
     check_return(results[10], ((3, " !! Doc 9"), (4, " !! Doc 10")))
 
 
-def test_diagnostic_interfaces():
+def test_diagnostics():
     """
-    Tests the diagnostics for subroutines and functions with interfaces
-    as arguments
+    Tests some aspects of diagnostics
     """
     string = write_rpc_request(1, "initialize", {"rootPath": test_dir})
+    # Test subroutines and functions with interfaces as arguments
     file_path = os.path.join(test_dir, "test_diagnostic_int.f90")
     string += write_rpc_notification(
         "textDocument/didOpen", {"textDocument": {"uri": file_path}}
     )
     # Test that  use, non_intrinsic does not raise a diagnostic error
     file_path = os.path.join(test_dir, "test_nonintrinsic.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
+    # Test that submodules with spacings in their parent's names are parsed
+    file_path = os.path.join(test_dir, "test_submodule.f90")
     string += write_rpc_notification(
         "textDocument/didOpen", {"textDocument": {"uri": file_path}}
     )
@@ -649,4 +654,4 @@ if __name__ == "__main__":
     test_refs()
     test_hover()
     test_docs()
-    test_diagnostic_interfaces()
+    test_diagnostics()
