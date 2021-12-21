@@ -1,26 +1,32 @@
-# Fortran Language Server - dev version
-
-> This is the developer's version for @hansec's original `fortran-language-server`.
-> It contains bug fixes and new features that are yet to be merged into the main repository.
+# fortls - the Fortran Language Server
 
 [![PyPI Latest Release](https://img.shields.io/pypi/v/fortls.svg)](https://pypi.org/project/fortls/)
 [![Tests](https://github.com/gnikit/fortran-language-server/actions/workflows/main.yml/badge.svg)](https://github.com/gnikit/fortran-language-server/actions/workflows/main.yml)
-[![image](https://img.shields.io/github/license/hansec/fortran-language-server.svg)](https://github.com/hansec/fortran-language-server/blob/master/LICENSE)
+[![image](https://img.shields.io/github/license/gnikit/fortran-language-server.svg)](https://github.com/gnikit/fortran-language-server/blob/master/LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-A Fortran implementation of the [Language Server
-Protocol](https://github.com/Microsoft/language-server-protocol) using
-Python (3.6+).
+`fortls`: A Fortran implementation of the [Language Server Protocol](https://github.com/Microsoft/language-server-protocol)
+(LSP) using Python (3.6+).
 
-Editor extensions using this language server to provide autocomplete and
+Editor extensions that can integrate with `fortls` to provide autocomplete and
 other IDE-like functionality are available for
-[Atom](https://atom.io/packages/ide-fortran), [Visual Studio
-Code](https://marketplace.visualstudio.com/items?itemName=hansec.fortran-ls),
+[Visual Studio Code](https://github.com/krvajal/vscode-fortran-support)
+[Atom](https://atom.io/packages/ide-fortran),
 [Visual Studio](https://github.com/michaelkonecny/vs-fortran-ls-client),
 [(Neo)vim](https://github.com/hansec/fortran-language-server/wiki/Using-forts-with-vim),
 and [Emacs](https://github.com/emacs-lsp/lsp-mode).
 
-## Language Server Features
+## fortls vs fortran-language-server
+
+This project is based on @hansec's original Language Server implementation but the two projects have since diverged.
+`fortls` (this project) is now developed independently of the upstream `hansec/fortran-language-server` project and contains numerous bug fixes and new features
+the original `fortran-language-server` does not.
+
+The name of executable for this project has been chosen to remain `fortls`
+to allow for integration with pre-existing plugins and workflows but it is
+potentially subject to change.
+
+## Features
 
 - Document symbols (`textDocument/documentSymbol`)
 - Auto-complete (`textDocument/completion`)
@@ -60,7 +66,7 @@ and [Emacs](https://github.com/emacs-lsp/lsp-mode).
 pip install fortls
 ```
 
-## Language server settings
+## fortls settings
 
 The following global settings can be used when launching the language
 server.
@@ -101,16 +107,12 @@ server.
 
 The following settings can be used to perform [standalone debug
 tests](https://github.com/hansec/fortran-language-server/wiki) on the
-language server.
+fortls
 
-- `--debug_filepath=DEBUG_FILEPATH` File path for language server
-  tests
-- `--debug_rootpath=DEBUG_ROOTPATH` Root path for language server
-  tests
-- `--debug_line=DEBUG_LINE` Line position for language server tests
-  (1-indexed)
-- `--debug_char=DEBUG_CHAR` Character position for language server
-  tests (1-indexed)
+- `--debug_filepath=DEBUG_FILEPATH` File path for fortls tests
+- `--debug_rootpath=DEBUG_ROOTPATH` Root path for fortls tests
+- `--debug_line=DEBUG_LINE` Line position for fortls (1-indexed)
+- `--debug_char=DEBUG_CHAR` Character position for fortls tests (1-indexed)
 - `--debug_full_result` Print full result object instead of condensed
   version
 - `--debug_parser` Test source code parser on specified file
@@ -195,7 +197,7 @@ back again one can do
 ### Preprocessing
 
 **Note:** Preprocessor support is not "complete", see below. For
-preprocessed files the language server will only analyze code within
+preprocessed files the `fortls` will only analyze code within
 preprocessor conditional regions if the conditional test can be
 evaluated by the server or if the region is the _default_ path (ie. a
 bare `#else` region).
@@ -243,49 +245,55 @@ right).
 }
 ```
 
+<!-- ## Editor examples (Atom)
+
+Document symbols (`textDocument/documentSymbol`):
+
+![image](https://raw.githubusercontent.com/gnikit/fortran-language-server/master/images/fortls_outline.png)
+
+Auto-complete (`textDocument/completion`):
+
+![image](https://raw.githubusercontent.com/gnikit/fortran-language-server/master/images/fortls_autocomplete.gif)
+
+Signature help (`textDocument/signatureHelp`):
+
+![image](https://raw.githubusercontent.com/gnikit/fortran-language-server/master/images/fortls_sigHelp.gif)
+
+Goto definition (`textDocument/definition`):
+
+![image](https://raw.githubusercontent.com/gnikit/fortran-language-server/master/images/fortls_gotodef.gif)
+
+Hover (`textDocument/hover`):
+
+![image](https://raw.githubusercontent.com/gnikit/fortran-language-server/master/images/fortls_hover.gif)
+
+Find references (`textDocument/references`):
+
+![image](https://raw.githubusercontent.com/gnikit/fortran-language-server/master/images/fortls_refs.png)
+
+Diagnostics:
+
+![image](https://raw.githubusercontent.com/gnikit/fortran-language-server/master/images/fortls_diag.png) -->
+
+## Acknowledgements
+
+This project would not have been possible without the original work of [@hansec](https://github.com/hansec/)
+and the original [`fortran-language-server`](https://github.com/hansec/fortran-language-server)
+
+## Support
+
+If you want to support this project you can do it through
+
+[![Alt](https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-150px.png)](https://paypal.me/inikit)
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/gnikit)
+
+Support the original project go [here](https://paypal.me/hansec)
+
 ## Bug reports
 
-When [filing
-bugs](https://github.com/hansec/fortran-language-server/issues/new)
+When [filing bugs](https://github.com/gnikit/fortran-language-server/issues/new)
 please provide example code to reproduce the observed issue.
 
 ## License
 
-This project is made available under the [MIT
-License](https://github.com/hansec/fortran-language-server/blob/master/LICENSE).
-
-## Support
-
-If you _really_ like [this
-package](https://github.com/hansec/fortran-language-server) you can [buy
-me a coffee](https://paypal.me/hansec) to say thanks.
-
-## Editor examples (Atom)
-
-Document symbols (`textDocument/documentSymbol`):
-
-![image](https://raw.githubusercontent.com/hansec/fortran-language-server/master/images/fortls_outline.png)
-
-Auto-complete (`textDocument/completion`):
-
-![image](https://raw.githubusercontent.com/hansec/fortran-language-server/master/images/fortls_autocomplete.gif)
-
-Signature help (`textDocument/signatureHelp`):
-
-![image](https://raw.githubusercontent.com/hansec/fortran-language-server/master/images/fortls_sigHelp.gif)
-
-Goto definition (`textDocument/definition`):
-
-![image](https://raw.githubusercontent.com/hansec/fortran-language-server/master/images/fortls_gotodef.gif)
-
-Hover (`textDocument/hover`):
-
-![image](https://raw.githubusercontent.com/hansec/fortran-language-server/master/images/fortls_hover.gif)
-
-Find references (`textDocument/references`):
-
-![image](https://raw.githubusercontent.com/hansec/fortran-language-server/master/images/fortls_refs.png)
-
-Diagnostics:
-
-![image](https://raw.githubusercontent.com/hansec/fortran-language-server/master/images/fortls_diag.png)
+This project is made available under the [MIT License](https://github.com/gnikit/fortran-language-server/blob/master/LICENSE).
