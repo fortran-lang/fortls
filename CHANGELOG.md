@@ -1,5 +1,12 @@
 # CHANGELONG
 
+## 1.14.3
+
+### Fixes
+
+* Fixes parsing of `non_intrinsic` modules
+  ([#206](https://github.com/hansec/fortran-language-server/issues/206))
+
 ## 1.14.2
 
 ### Fixes

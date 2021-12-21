@@ -37,7 +37,8 @@ if not PY3K:
     import io
 # Fortran statement matching rules
 USE_REGEX = re.compile(
-    r"[ ]*USE([, ]+INTRINSIC)?[ :]+([a-z0-9_]*)([, ]+ONLY[ :]+)?", re.I
+    r"[ ]*USE([, ]+(?:INTRINSIC|NON_INTRINSIC))?[ :]+(\w*)([, ]+ONLY[ :]+)?",
+    re.I,
 )
 IMPORT_REGEX = re.compile(r"[ ]*IMPORT[ :]+([a-z_])", re.I)
 INCLUDE_REGEX = re.compile(r"[ ]*INCLUDE[ :]*[\'\"]([^\'\"]*)", re.I)

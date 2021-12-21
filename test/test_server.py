@@ -225,6 +225,7 @@ def test_workspace_symbols():
             ["test_inherit", 2, 0],
             ["test_int", 2, 0],
             ["test_mod", 2, 0],
+            ["test_nonint_mod", 2, 0],
             ["test_program", 2, 0],
             ["test_rename_sub", 6, 9],
             ["test_select", 2, 0],
@@ -605,6 +606,11 @@ def test_diagnostic_interfaces():
     """
     string = write_rpc_request(1, "initialize", {"rootPath": test_dir})
     file_path = os.path.join(test_dir, "test_diagnostic_int.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
+    # Test that  use, non_intrinsic does not raise a diagnostic error
+    file_path = os.path.join(test_dir, "test_nonintrinsic.f90")
     string += write_rpc_notification(
         "textDocument/didOpen", {"textDocument": {"uri": file_path}}
     )
