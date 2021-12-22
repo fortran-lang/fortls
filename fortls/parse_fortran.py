@@ -1425,7 +1425,7 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
     select_counter = 0
     block_id_stack = []
     semi_split = []
-    doc_string = None
+    doc_string: str = None
     if file_obj.fixed:
         COMMENT_LINE_MATCH = FIXED_COMMENT_LINE_MATCH
         DOC_COMMENT_MATCH = FIXED_DOC_MATCH
@@ -1448,15 +1448,15 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
             continue  # Skip empty lines
         # Skip comment lines
         match = COMMENT_LINE_MATCH.match(line)
-        if match is not None:
+        if match:
             # Check for documentation
             doc_match = DOC_COMMENT_MATCH.match(line)
-            if doc_match is not None:
+            if doc_match:
                 doc_lines = [line[doc_match.end(0) :].strip()]
                 if doc_match.group(1) == ">":
                     doc_forward = True
                 else:
-                    if (doc_string is not None) and (doc_string != ""):
+                    if doc_string:
                         doc_lines = [doc_string] + doc_lines
                         doc_string = None
                     doc_forward = False
@@ -1482,7 +1482,7 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                     )
             continue
         # Handle trailing doc strings
-        if (doc_string is not None) and (doc_string != ""):
+        if doc_string:
             file_ast.add_doc("!! " + doc_string)
             log.debug(f"{doc_string} !!! Doc string({line_number})")
             doc_string = None
@@ -1539,7 +1539,7 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
         if file_ast.END_SCOPE_REGEX is not None:
             match = END_WORD_REGEX.match(line_no_comment)
             # Handle end statement
-            if match is not None:
+            if match:
                 end_scope_word = None
                 if match.group(1) is None:
                     end_scope_word = ""
@@ -1580,11 +1580,11 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                     continue
         # Skip if known generic code line
         match = NON_DEF_REGEX.match(line_no_comment)
-        if match is not None:
+        if match:
             continue
         # Mark implicit statement
         match = IMPLICIT_REGEX.match(line_no_comment)
-        if match is not None:
+        if match:
             err_message = None
             if file_ast.current_scope is None:
                 err_message = "IMPLICIT statement without enclosing scope"
@@ -1593,7 +1593,7 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                     file_ast.current_scope.set_implicit(False, line_number)
                 else:
                     file_ast.current_scope.set_implicit(True, line_number)
-            if err_message is not None:
+            if err_message:
                 file_ast.parse_errors.append(
                     {
                         "line": line_number,
@@ -1607,7 +1607,7 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
             continue
         # Mark contains statement
         match = CONTAINS_REGEX.match(line_no_comment)
-        if match is not None:
+        if match:
             err_message = None
             try:
                 if file_ast.current_scope is None:
@@ -1616,7 +1616,7 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                     file_ast.current_scope.mark_contains(line_number)
             except ValueError:
                 err_message = "Multiple CONTAINS statements in scope"
-            if err_message is not None:
+            if err_message:
                 file_ast.parse_errors.append(
                     {
                         "line": line_number,
@@ -1629,9 +1629,9 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
             parser_debug_msg("CONTAINS", line, line_number)
             continue
         # Look for trailing doc string
-        if line_post_comment is not None:
+        if line_post_comment:
             doc_match = FREE_DOC_MATCH.match(line_post_comment)
-            if doc_match is not None:
+            if doc_match:
                 doc_string = line_post_comment[doc_match.end(0) :].strip()
         # Loop through tests
         obj_read = None
