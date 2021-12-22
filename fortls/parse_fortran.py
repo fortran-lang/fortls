@@ -726,27 +726,33 @@ def read_int_def(line):
 
 def read_use_stmt(line):
     """Attempt to read USE statement"""
-    import_match = IMPORT_REGEX.match(line)
-    if import_match is not None:
-        trailing_line = line[import_match.end(0) - 1 :].lower()
-        import_list = [import_obj.strip() for import_obj in trailing_line.split(",")]
-        return "import", import_list
     use_match = USE_REGEX.match(line)
     if use_match is None:
         return None
-    else:
-        trailing_line = line[use_match.end(0) :].lower()
-        use_mod = use_match.group(2)
-        only_list = []
-        rename_map = {}
-        if use_match.group(3) is not None:
-            for only_stmt in trailing_line.split(","):
-                only_split = only_stmt.split("=>")
-                only_name = only_split[0].strip()
-                only_list.append(only_name)
-                if len(only_split) == 2:
-                    rename_map[only_name] = only_split[1].strip()
-        return "use", USE_info(use_mod, only_list, rename_map)
+
+    trailing_line = line[use_match.end(0) :].lower()
+    use_mod = use_match.group(2)
+    only_list = []
+    rename_map = {}
+    if use_match.group(3):
+        for only_stmt in trailing_line.split(","):
+            only_split = only_stmt.split("=>")
+            only_name = only_split[0].strip()
+            only_list.append(only_name)
+            if len(only_split) == 2:
+                rename_map[only_name] = only_split[1].strip()
+    return "use", USE_info(use_mod, only_list, rename_map)
+
+
+def read_imp_stmt(line):
+    """Attempt to read IMPORT statement"""
+    import_match = IMPORT_REGEX.match(line)
+    if import_match is None:
+        return None
+
+    trailing_line = line[import_match.end(0) - 1 :].lower()
+    import_list = [import_obj.strip() for import_obj in trailing_line.split(",")]
+    return "import", import_list
 
 
 def read_inc_stmt(line):
@@ -783,6 +789,7 @@ def_tests = [
     read_type_def,
     read_enum_def,
     read_use_stmt,
+    read_imp_stmt,
     read_int_def,
     read_generic_def,
     read_mod_def,

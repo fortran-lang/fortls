@@ -315,6 +315,8 @@ def test_comp():
     string += comp_request(file_path, 14, 5)
     file_path = os.path.join(test_dir, "subdir", "test_vis.f90")
     string += comp_request(file_path, 8, 10)
+    file_path = os.path.join(test_dir, "test_import.f90")
+    string += comp_request(file_path, 15, 20)
     errcode, results = run_request(string)
     assert errcode == 0
     #
@@ -364,6 +366,9 @@ def test_comp():
         [1, "renamed_var2", "REAL(8)"],
         # subdir/test_vis.f90
         [3, "some_type", "TYPE"],
+        # test_import.f90
+        # TODO: this should be 1, mytype2 should not appear in autocomplete
+        [2, "mytype", "TYPE"],
     )
     assert len(exp_results) + 1 == len(results)
     for i in range(len(exp_results)):

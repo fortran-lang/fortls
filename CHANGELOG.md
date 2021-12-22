@@ -1,5 +1,12 @@
 # CHANGELONG
 
+## 1.14.4
+
+### Fixes
+
+* Fixes import host association includes (autocomplete work not complete)
+  ([#187](https://github.com/hansec/fortran-language-server/issues/187))
+
 ## 1.14.3
 
 ### Fixes
