@@ -8,6 +8,7 @@ import logging
 import os
 import re
 import traceback
+from multiprocessing import Pool
 from pathlib import Path
 
 from fortls.intrinsics import (
@@ -284,108 +285,11 @@ class LangServer:
             params.get("rootUri") or params.get("rootPath") or ""
         )
         self.source_dirs.add(self.root_path)
-        # Check for config file
-        config_path = os.path.join(self.root_path, ".fortls")
-        config_exists = os.path.isfile(config_path)
-        if config_exists:
-            try:
-                with open(config_path, "r") as jsonfile:
-                    # Allow for jsonc C-style commnets
-                    # jsondata = "".join(
-                    #     line for line in jsonfile if not line.startswith("//")
-                    # )
-                    # config_dict = json.loads(jsondata)
-                    config_dict = json.load(jsonfile)
+        self.__config_logger(request)
+        self.__load_config_file()
+        self.__load_intrinsics()
+        self.__add_source_dirs()
 
-                    # Exclude paths (directories & files)
-                    # with glob resolution
-                    for path in config_dict.get("excl_paths", []):
-                        self.excl_paths.update(set(resolve_globs(path, self.root_path)))
-
-                    # Source directory paths (directories)
-                    # with glob resolution
-                    source_dirs = config_dict.get("source_dirs", [])
-                    for path in source_dirs:
-                        self.source_dirs.update(
-                            set(
-                                only_dirs(
-                                    resolve_globs(path, self.root_path),
-                                    self.post_messages,
-                                )
-                            )
-                        )
-                    # Keep all directories present in source_dirs but not excl_paths
-                    self.source_dirs = {
-                        i for i in self.source_dirs if i not in self.excl_paths
-                    }
-
-                    self.excl_suffixes = config_dict.get("excl_suffixes", [])
-                    self.lowercase_intrinsics = config_dict.get(
-                        "lowercase_intrinsics", self.lowercase_intrinsics
-                    )
-                    self.debug_log = config_dict.get("debug_log", self.debug_log)
-                    self.disable_diagnostics = config_dict.get(
-                        "disable_diagnostics", self.disable_diagnostics
-                    )
-                    self.pp_suffixes = config_dict.get("pp_suffixes", None)
-                    self.pp_defs = config_dict.get("pp_defs", {})
-                    for path in config_dict.get("include_dirs", []):
-                        self.include_dirs.extend(
-                            only_dirs(
-                                resolve_globs(path, self.root_path), self.post_messages
-                            )
-                        )
-                    self.max_line_length = config_dict.get(
-                        "max_line_length", self.max_line_length
-                    )
-                    self.max_comment_line_length = config_dict.get(
-                        "max_comment_line_length", self.max_comment_line_length
-                    )
-                    if isinstance(self.pp_defs, list):
-                        self.pp_defs = {key: "" for key in self.pp_defs}
-
-            except FileNotFoundError:
-                msg = "Error settings file '.fortls' not found"
-                self.post_messages.append([1, msg])
-                log.error(msg)
-
-            except ValueError:
-                msg = "Error while parsing '.fortls' settings file"
-                self.post_messages.append([1, msg])
-                log.error(msg)
-
-        # Setup logging
-        if self.debug_log and (self.root_path != ""):
-            logging.basicConfig(
-                filename=os.path.join(self.root_path, "fortls_debug.log"),
-                level=logging.DEBUG,
-                filemode="w",
-            )
-            log.debug("REQUEST %s %s", request.get("id"), request.get("method"))
-            self.post_messages.append([3, "FORTLS debugging enabled"])
-        # Load intrinsics
-        set_keyword_ordering(True)  # Always sort intrinsics
-        if self.lowercase_intrinsics:
-            set_lowercase_intrinsics()
-        (
-            self.statements,
-            self.keywords,
-            self.intrinsic_funs,
-            self.intrinsic_mods,
-        ) = load_intrinsics()
-        for module in self.intrinsic_mods:
-            self.obj_tree[module.FQSN] = [module, None]
-        # Set object settings
-        set_keyword_ordering(self.sort_keywords)
-        # Recursively add sub-directories that only match Fortran extensions
-        if len(self.source_dirs) == 1:
-            self.source_dirs = set()
-            for root, dirs, files in os.walk(self.root_path):
-                # Match not found
-                if not list(filter(FORTRAN_EXT_REGEX.search, files)):
-                    continue
-                if root not in self.source_dirs and root not in self.excl_paths:
-                    self.source_dirs.add(str(Path(root).resolve()))
         # Initialize workspace
         self.workspace_init()
         #
@@ -412,9 +316,6 @@ class LangServer:
         if self.notify_init:
             self.post_messages.append([3, "FORTLS initialization complete"])
         return {"capabilities": server_capabilities}
-        #     "workspaceSymbolProvider": True,
-        #     "streaming": False,
-        # }
 
     def serve_workspace_symbol(self, request):
         def map_types(type):
@@ -460,7 +361,7 @@ class LangServer:
         def map_types(type, in_class=False):
             if type == 1:
                 return 2
-            elif (type == 2) or (type == 3):
+            elif type in (2, 3):
                 if in_class:
                     return 6
                 else:
@@ -1526,27 +1427,9 @@ class LangServer:
         return True, None
 
     def workspace_init(self):
-        # Get filenames
-        file_list = []
-        for src_dir in self.source_dirs:
-            for f in os.listdir(src_dir):
-                p = os.path.join(src_dir, f)
-                # Process only files
-                if not os.path.isfile(p):
-                    continue
-                # File extension must match supported extensions
-                if not FORTRAN_EXT_REGEX.search(f):
-                    continue
-                # File cannot be in excluded paths/files
-                if p in self.excl_paths:
-                    continue
-                # File cannot have an excluded extension
-                if any(f.endswith(ext) for ext in set(self.excl_suffixes)):
-                    continue
-                file_list.append(p)
-        # Process files
-        from multiprocessing import Pool
 
+        file_list = self.__get_source_files()
+        # Process files
         pool = Pool(processes=self.nthreads)
         results = {}
         for filepath in file_list:
@@ -1587,6 +1470,165 @@ class LangServer:
         raise JSONRPC2Error(
             code=-32601, message="method {} not found".format(request["method"])
         )
+
+    def __load_config_file(self) -> None:
+        """Loads the configuration file for the Language Server"""
+
+        # Check for config file
+        config_fname = ".fortls"
+        config_path = os.path.join(self.root_path, config_fname)
+        if not os.path.isfile(config_path):
+            return None
+
+        try:
+            with open(config_path, "r") as jsonfile:
+                # Allow for jsonc C-style commnets
+                # jsondata = "".join(
+                #     line for line in jsonfile if not line.startswith("//")
+                # )
+                # config_dict = json.loads(jsondata)
+                config_dict = json.load(jsonfile)
+
+                # Exclude paths (directories & files)
+                # with glob resolution
+                for path in config_dict.get("excl_paths", []):
+                    self.excl_paths.update(set(resolve_globs(path, self.root_path)))
+
+                # Source directory paths (directories)
+                # with glob resolution
+                source_dirs = config_dict.get("source_dirs", [])
+                for path in source_dirs:
+                    self.source_dirs.update(
+                        set(
+                            only_dirs(
+                                resolve_globs(path, self.root_path),
+                                self.post_messages,
+                            )
+                        )
+                    )
+                # Keep all directories present in source_dirs but not excl_paths
+                self.source_dirs = {
+                    i for i in self.source_dirs if i not in self.excl_paths
+                }
+
+                self.excl_suffixes = config_dict.get("excl_suffixes", [])
+                self.lowercase_intrinsics = config_dict.get(
+                    "lowercase_intrinsics", self.lowercase_intrinsics
+                )
+                self.debug_log = config_dict.get("debug_log", self.debug_log)
+                self.disable_diagnostics = config_dict.get(
+                    "disable_diagnostics", self.disable_diagnostics
+                )
+                self.pp_suffixes = config_dict.get("pp_suffixes", None)
+                self.pp_defs = config_dict.get("pp_defs", {})
+                for path in config_dict.get("include_dirs", []):
+                    self.include_dirs.extend(
+                        only_dirs(
+                            resolve_globs(path, self.root_path), self.post_messages
+                        )
+                    )
+                self.max_line_length = config_dict.get(
+                    "max_line_length", self.max_line_length
+                )
+                self.max_comment_line_length = config_dict.get(
+                    "max_comment_line_length", self.max_comment_line_length
+                )
+                if isinstance(self.pp_defs, list):
+                    self.pp_defs = {key: "" for key in self.pp_defs}
+
+        except FileNotFoundError:
+            msg = f"Error settings file '{config_fname}' not found"
+            self.post_messages.append([1, msg])
+            log.error(msg)
+
+        except ValueError:
+            msg = f"Error while parsing '{config_fname}' settings file"
+            self.post_messages.append([1, msg])
+            log.error(msg)
+
+    def __add_source_dirs(self) -> None:
+        """Will recursively add all subdirectories that contain Fortran
+        source files only if the option `source_dirs` has not been specified
+        in the configuration file or no configuration file is present
+        """
+        # Recursively add sub-directories that only match Fortran extensions
+        if len(self.source_dirs) != 1:
+            return None
+        if self.root_path not in self.source_dirs:
+            return None
+        self.source_dirs = set()
+        for root, dirs, files in os.walk(self.root_path):
+            # Match not found
+            if not list(filter(FORTRAN_EXT_REGEX.search, files)):
+                continue
+            if root not in self.source_dirs and root not in self.excl_paths:
+                self.source_dirs.add(str(Path(root).resolve()))
+
+    def __get_source_files(self) -> list[str]:
+        """Get all the source files present in `self.source_dirs`,
+        exclude any files found in `self.excl_paths`^ and ignore
+        any files ending with `self_excl_suffixes`.
+
+        ^: the only case where this has not allready happened is when
+           `source_dirs` is not specified or a configuration file is not present
+
+        Returns
+        -------
+        list[str]
+            List of source Fortran source files
+        """
+        # Get filenames
+        file_list = []
+        excl_suffixes = set(self.excl_suffixes)
+        for src_dir in self.source_dirs:
+            for f in os.listdir(src_dir):
+                p = os.path.join(src_dir, f)
+                # Process only files
+                if not os.path.isfile(p):
+                    continue
+                # File extension must match supported extensions
+                if not FORTRAN_EXT_REGEX.search(f):
+                    continue
+                # File cannot be in excluded paths/files
+                if p in self.excl_paths:
+                    continue
+                # File cannot have an excluded extension
+                if any(f.endswith(ext) for ext in excl_suffixes):
+                    continue
+                file_list.append(p)
+        return file_list
+
+    def __config_logger(self, request) -> None:
+        """Configures the logger to save Language Server requests/responses to a file
+        the logger will by default output to the main (stderr, stdout) channels.
+        """
+
+        if not self.debug_log:
+            return None
+        if not self.root_path:
+            return None
+
+        fname = "fortls_debug.log"
+        fname = os.path.join(self.root_path, fname)
+        logging.basicConfig(filename=fname, level=logging.DEBUG, filemode="w")
+        log.debug("REQUEST %s %s", request.get("id"), request.get("method"))
+        self.post_messages.append([3, "FORTLS debugging enabled"])
+
+    def __load_intrinsics(self) -> None:
+        # Load intrinsics
+        set_keyword_ordering(True)  # Always sort intrinsics
+        if self.lowercase_intrinsics:
+            set_lowercase_intrinsics()
+        (
+            self.statements,
+            self.keywords,
+            self.intrinsic_funs,
+            self.intrinsic_mods,
+        ) = load_intrinsics()
+        for module in self.intrinsic_mods:
+            self.obj_tree[module.FQSN] = [module, None]
+        # Set object settings
+        set_keyword_ordering(self.sort_keywords)
 
 
 class JSONRPC2Error(Exception):
