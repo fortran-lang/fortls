@@ -1676,12 +1676,10 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                         if name_raw[iparen - 1] == "*":
                             iparen -= 1
                             if desc_string.find("(") < 0:
-                                desc_string += "*({0})".format(
-                                    get_paren_substring(name_raw)
-                                )
+                                desc_string += f"*({get_paren_substring(name_raw)})"
                         else:
                             key_tmp.append(
-                                "dimension({0})".format(get_paren_substring(name_raw))
+                                f"dimension({get_paren_substring(name_raw)})"
                             )
                         name_raw = name_raw[:iparen]
                     name_stripped = name_raw.strip()
@@ -1769,14 +1767,14 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                 name = obj_info
                 if name is None:
                     block_counter += 1
-                    name = "#BLOCK{0}".format(block_counter)
+                    name = f"#BLOCK{block_counter}"
                 new_block = fortran_block(file_ast, line_number, name)
                 file_ast.add_scope(new_block, END_BLOCK_REGEX, req_container=True)
                 parser_debug_msg("BLOCK", line, line_number)
 
             elif obj_type == "do":
                 do_counter += 1
-                name = "#DO{0}".format(do_counter)
+                name = f"#DO{do_counter}"
                 if obj_info != "":
                     block_id_stack.append(obj_info)
                 new_do = fortran_do(file_ast, line_number, name)
@@ -1787,14 +1785,14 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                 # Add block if WHERE is not single line
                 if not obj_info:
                     do_counter += 1
-                    name = "#WHERE{0}".format(do_counter)
+                    name = f"#WHERE{do_counter}"
                     new_do = fortran_where(file_ast, line_number, name)
                     file_ast.add_scope(new_do, END_WHERE_REGEX, req_container=True)
                 parser_debug_msg("WHERE", line, line_number)
 
             elif obj_type == "assoc":
                 block_counter += 1
-                name = "#ASSOC{0}".format(block_counter)
+                name = f"#ASSOC{block_counter}"
                 new_assoc = fortran_associate(file_ast, line_number, name)
                 file_ast.add_scope(new_assoc, END_ASSOCIATE_REGEX, req_container=True)
                 for bound_var in obj_info:
@@ -1811,20 +1809,20 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
 
             elif obj_type == "if":
                 if_counter += 1
-                name = "#IF{0}".format(if_counter)
+                name = f"#IF{if_counter}"
                 new_if = fortran_if(file_ast, line_number, name)
                 file_ast.add_scope(new_if, END_IF_REGEX, req_container=True)
                 parser_debug_msg("IF", line, line_number)
 
             elif obj_type == "select":
                 select_counter += 1
-                name = "#SELECT{0}".format(select_counter)
+                name = f"#SELECT{select_counter}"
                 new_select = fortran_select(file_ast, line_number, name, obj_info)
                 file_ast.add_scope(new_select, END_SELECT_REGEX, req_container=True)
                 new_var = new_select.create_binding_variable(
                     file_ast,
                     line_number,
-                    "{0}({1})".format(obj_info.desc, obj_info.binding),
+                    f"{obj_info.desc}({obj_info.binding})",
                     obj_info.type,
                 )
                 if new_var is not None:
@@ -1841,7 +1839,7 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
 
             elif obj_type == "enum":
                 block_counter += 1
-                name = "#ENUM{0}".format(block_counter)
+                name = f"#ENUM{block_counter}"
                 new_enum = fortran_enum(file_ast, line_number, name)
                 file_ast.add_scope(new_enum, END_ENUMD_REGEX, req_container=True)
                 parser_debug_msg("ENUM", line, line_number)
@@ -1850,7 +1848,7 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                 name = obj_info.name
                 if name is None:
                     int_counter += 1
-                    name = "#GEN_INT{0}".format(int_counter)
+                    name = f"#GEN_INT{int_counter}"
                 new_int = fortran_int(
                     file_ast, line_number, name, abstract=obj_info.abstract
                 )
