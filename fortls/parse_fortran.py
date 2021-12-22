@@ -1,35 +1,38 @@
 from __future__ import print_function
-import sys
+
+import hashlib
 import os
 import re
-import hashlib
+import sys
+import logging
 from collections import namedtuple
+
 from fortls.objects import (
-    get_paren_substring,
-    map_keywords,
-    get_paren_level,
-    fortran_ast,
-    fortran_scope,
-    fortran_module,
-    fortran_program,
-    fortran_submodule,
-    fortran_subroutine,
-    fortran_function,
-    fortran_block,
-    fortran_select,
-    fortran_type,
-    fortran_enum,
-    fortran_int,
-    fortran_var,
-    fortran_meth,
-    fortran_associate,
-    fortran_do,
-    fortran_where,
-    fortran_if,
+    DO_TYPE_ID,
     INTERFACE_TYPE_ID,
     SELECT_TYPE_ID,
     SUBMODULE_TYPE_ID,
-    DO_TYPE_ID,
+    fortran_associate,
+    fortran_ast,
+    fortran_block,
+    fortran_do,
+    fortran_enum,
+    fortran_function,
+    fortran_if,
+    fortran_int,
+    fortran_meth,
+    fortran_module,
+    fortran_program,
+    fortran_scope,
+    fortran_select,
+    fortran_submodule,
+    fortran_subroutine,
+    fortran_type,
+    fortran_var,
+    fortran_where,
+    get_paren_level,
+    get_paren_substring,
+    map_keywords,
 )
 
 PY3K = sys.version_info >= (3, 0)
@@ -166,6 +169,9 @@ GEN_info = namedtuple("GEN_info", ["bound_name", "pro_links", "vis_flag"])
 SMOD_info = namedtuple("SMOD_info", ["name", "parent"])
 INT_info = namedtuple("INT_info", ["name", "abstract"])
 VIS_info = namedtuple("VIS_info", ["type", "obj_names"])
+
+
+log = logging.getLogger(__name__)
 
 
 def expand_name(line, char_poss):
@@ -1272,16 +1278,10 @@ def preprocess_file(
             if if_start:
                 if is_path:
                     pp_stack.append([-1, -1])
-                    if debug:
-                        print(
-                            "{1} !!! Conditional TRUE({0})".format(i + 1, line.strip())
-                        )
+                    log.debug(f"{line.strip()} !!! Conditional TRUE({i+1})")
                 else:
                     pp_stack.append([i + 1, -1])
-                    if debug:
-                        print(
-                            "{1} !!! Conditional FALSE({0})".format(i + 1, line.strip())
-                        )
+                    log.debug(f"{line.strip()} !!! Conditional FALSE({i+1})")
                 continue
             if len(pp_stack) == 0:
                 continue
@@ -1310,18 +1310,13 @@ def preprocess_file(
                     continue
                 if pp_stack[-1][1] < 0:
                     pp_stack[-1][1] = i + 1
-                    if debug:
-                        print(
-                            "{1} !!! Conditional FALSE/END({0})".format(
-                                i + 1, line.strip()
-                            )
-                        )
+                    log.debug(f"{line.strip()} !!! Conditional FALSE/END({i+1})")
                 pp_skips.append(pp_stack.pop())
             if debug:
                 if inc_start:
-                    print("{1} !!! Conditional TRUE({0})".format(i + 1, line.strip()))
+                    log.debug(f"{line.strip()} !!! Conditional TRUE({i+1})")
                 elif exc_start:
-                    print("{1} !!! Conditional FALSE({0})".format(i + 1, line.strip()))
+                    log.debug(f"{line.strip()} !!! Conditional FALSE({i+1})")
             continue
         # Handle variable/macro definitions files
         match = PP_DEF_REGEX.match(line)
@@ -1342,14 +1337,12 @@ def preprocess_file(
                     defs_tmp[def_name] = "True"
             elif (match.group(1) == "undef") and (def_name in defs_tmp):
                 defs_tmp.pop(def_name, None)
-            if debug:
-                print("{1} !!! Define statement({0})".format(i + 1, line.strip()))
+            log.debug(f"{line.strip()} !!! Define statement({i+1})")
             continue
         # Handle include files
         match = PP_INCLUDE_REGEX.match(line)
         if (match is not None) and ((len(pp_stack) == 0) or (pp_stack[-1][0] < 0)):
-            if debug:
-                print("{1} !!! Include statement({0})".format(i + 1, line.strip()))
+            log.debug(f"{line.strip()} !!! Include statement({i+1})")
             include_filename = match.group(1).replace('"', "")
             include_path = None
             for include_dir in include_dirs:
@@ -1362,10 +1355,7 @@ def preprocess_file(
                     include_file = fortran_file(include_path)
                     err_string = include_file.load_from_disk()
                     if err_string is None:
-                        if debug:
-                            print(
-                                '\n!!! Parsing include file "{0}"'.format(include_path)
-                            )
+                        log.debug(f'\n!!! Parsing include file "{include_path}"')
                         _, _, _, defs_tmp = preprocess_file(
                             include_file.contents_split,
                             file_path=include_path,
@@ -1373,25 +1363,17 @@ def preprocess_file(
                             include_dirs=include_dirs,
                             debug=debug,
                         )
-                        if debug:
-                            print("!!! Completed parsing include file\n")
+                        log.debug("!!! Completed parsing include file\n")
+
                     else:
-                        if debug:
-                            print(
-                                "!!! Failed to parse include file: {0}".format(
-                                    err_string
-                                )
-                            )
+                        log.debug(f"!!! Failed to parse include file: {err_string}")
+
                 except:
-                    if debug:
-                        print("!!! Failed to parse include file: exception")
+                    log.debug("!!! Failed to parse include file: exception")
+
             else:
-                if debug:
-                    print(
-                        "{1} !!! Could not locate include file ({0})".format(
-                            i + 1, line.strip()
-                        )
-                    )
+                log.debug(f"{line.strip()} !!! Could not locate include file ({i+1})")
+
         #
         for def_tmp, value in defs_tmp.items():
             def_regex = def_regexes.get(def_tmp)
@@ -1400,12 +1382,7 @@ def preprocess_file(
                 def_regexes[def_tmp] = def_regex
             line_new, nsubs = def_regex.subn(value, line)
             if nsubs > 0:
-                if debug:
-                    print(
-                        '{1} !!! Macro sub({0}) "{2}" -> "{3}"'.format(
-                            i + 1, line.strip(), def_tmp, value
-                        )
-                    )
+                log.debug(f"{line.strip()} !!! Macro sub({i+1}) '{def_tmp}' -> {value}")
                 line = line_new
         output_file.append(line)
     return output_file, pp_skips, pp_defines, defs_tmp
@@ -1413,21 +1390,28 @@ def preprocess_file(
 
 def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_dirs=[]):
     """Build file AST by parsing file"""
+
+    def parser_debug_msg(msg: str, line: str, ln: int):
+        log.debug(f"{line.strip()} !!! {msg} statement({ln})")
+
+    # Configure the parser logger
+    if debug:
+        logging.basicConfig(
+            level=logging.DEBUG, stream=sys.stdout, format="%(message)s"
+        )
+
     file_ast = fortran_ast(file_obj)
     if file_obj.preproc:
-        if debug:
-            print("=== PreProc Pass ===\n")
+        log.debug("=== PreProc Pass ===\n")
         pp_skips, pp_defines = file_obj.preprocess(
             pp_defs=pp_defs, include_dirs=include_dirs, debug=debug
         )
         for pp_reg in pp_skips:
             file_ast.start_ppif(pp_reg[0])
             file_ast.end_ppif(pp_reg[1])
-        if debug:
-            print("\n=== Parsing Pass ===\n")
+        log.debug("\n=== Parsing Pass ===\n")
     else:
-        if debug:
-            print("=== No PreProc ===\n")
+        log.debug("=== No PreProc ===\n")
         pp_skips = []
         pp_defines = []
     #
@@ -1440,7 +1424,6 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
     if_counter = 0
     select_counter = 0
     block_id_stack = []
-    line_ind = 0
     semi_split = []
     doc_string = None
     if file_obj.fixed:
@@ -1489,9 +1472,7 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                     next_line_ind -= 1
                 if debug:
                     for (i, doc_line) in enumerate(doc_lines):
-                        print(
-                            "{1} !!! Doc string({0})".format(line_number + i, doc_line)
-                        )
+                        log.debug(f"{doc_line} !!! Doc string({line_number+i})")
                 line_sum = 0
                 for doc_line in doc_lines:
                     line_sum += len(doc_line)
@@ -1503,8 +1484,7 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
         # Handle trailing doc strings
         if (doc_string is not None) and (doc_string != ""):
             file_ast.add_doc("!! " + doc_string)
-            if debug:
-                print("{1} !!! Doc string({0})".format(line_number, doc_string))
+            log.debug(f"{doc_string} !!! Doc string({line_number})")
             doc_string = None
         # Handle preprocessing regions
         do_skip = False
@@ -1581,12 +1561,10 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                     ):
                         file_ast.end_scope(line_number)
                     file_ast.end_scope(line_number)
-                    if debug:
-                        print(
-                            '{1} !!! END "{2}" scope({0})'.format(
-                                line_number, line.strip(), end_scope_word
-                            )
-                        )
+                    log.debug(
+                        f'{line.strip()} !!! END "{end_scope_word}"'
+                        f" scope({line_number})"
+                    )
                     continue
             # Look for old-style end of DO loops with line labels
             if (file_ast.current_scope.get_type() == DO_TYPE_ID) and (
@@ -1597,12 +1575,7 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                     file_ast.end_scope(line_number)
                     block_id_stack.pop()
                     did_close = True
-                    if debug:
-                        print(
-                            '{1} !!! END "DO" scope({0})'.format(
-                                line_number, line.strip()
-                            )
-                        )
+                    log.debug(f'{line.strip()} !!! END "DO" scope({line_number})')
                 if did_close:
                     continue
         # Skip if known generic code line
@@ -1630,10 +1603,7 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                         "sev": 1,
                     }
                 )
-            if debug:
-                print(
-                    "{1} !!! IMPLICIT statement({0})".format(line_number, line.strip())
-                )
+            parser_debug_msg("IMPLICIT", line, line_number)
             continue
         # Mark contains statement
         match = CONTAINS_REGEX.match(line_no_comment)
@@ -1656,10 +1626,7 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                         "sev": 1,
                     }
                 )
-            if debug:
-                print(
-                    "{1} !!! CONTAINS statement({0})".format(line_number, line.strip())
-                )
+            parser_debug_msg("CONTAINS", line, line_number)
             continue
         # Look for trailing doc string
         if line_post_comment is not None:
@@ -1686,12 +1653,7 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                     if file_ast.current_scope.get_type() == INTERFACE_TYPE_ID:
                         for var_name in obj_info.var_names:
                             file_ast.add_int_member(var_name)
-                        if debug:
-                            print(
-                                "{1} !!! INTERFACE-PRO statement({0})".format(
-                                    line_number, line.strip()
-                                )
-                            )
+                        parser_debug_msg("INTERFACE-PRO", line, line_number)
                         continue
                     procedure_def = True
                     link_name = get_paren_substring(desc_string)
@@ -1745,41 +1707,25 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                             link_obj=link_name,
                         )
                     file_ast.add_variable(new_var)
-                if debug:
-                    print(
-                        "{1} !!! VARIABLE statement({0})".format(
-                            line_number, line.strip()
-                        )
-                    )
+                parser_debug_msg("VARIABLE", line, line_number)
+
             elif obj_type == "mod":
                 new_mod = fortran_module(file_ast, line_number, obj_info)
                 file_ast.add_scope(new_mod, END_MOD_REGEX)
-                if debug:
-                    print(
-                        "{1} !!! MODULE statement({0})".format(
-                            line_number, line.strip()
-                        )
-                    )
+                parser_debug_msg("MODULE", line, line_number)
+
             elif obj_type == "smod":
                 new_smod = fortran_submodule(
                     file_ast, line_number, obj_info.name, ancestor_name=obj_info.parent
                 )
                 file_ast.add_scope(new_smod, END_SMOD_REGEX)
-                if debug:
-                    print(
-                        "{1} !!! SUBMODULE statement({0})".format(
-                            line_number, line.strip()
-                        )
-                    )
+                parser_debug_msg("SUBMODULE", line, line_number)
+
             elif obj_type == "prog":
                 new_prog = fortran_program(file_ast, line_number, obj_info)
                 file_ast.add_scope(new_prog, END_PROG_REGEX)
-                if debug:
-                    print(
-                        "{1} !!! PROGRAM statement({0})".format(
-                            line_number, line.strip()
-                        )
-                    )
+                parser_debug_msg("PROGRAM", line, line_number)
+
             elif obj_type == "sub":
                 keywords, _ = map_keywords(obj_info.keywords)
                 new_sub = fortran_subroutine(
@@ -1791,12 +1737,8 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                     keywords=keywords,
                 )
                 file_ast.add_scope(new_sub, END_SUB_REGEX)
-                if debug:
-                    print(
-                        "{1} !!! SUBROUTINE statement({0})".format(
-                            line_number, line.strip()
-                        )
-                    )
+                parser_debug_msg("SUBROUTINE", line, line_number)
+
             elif obj_type == "fun":
                 keywords, _ = map_keywords(obj_info.keywords)
                 new_fun = fortran_function(
@@ -1821,12 +1763,8 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                         keyword_info,
                     )
                     file_ast.add_variable(new_obj)
-                if debug:
-                    print(
-                        "{1} !!! FUNCTION statement({0})".format(
-                            line_number, line.strip()
-                        )
-                    )
+                parser_debug_msg("FUNCTION", line, line_number)
+
             elif obj_type == "block":
                 name = obj_info
                 if name is None:
@@ -1834,10 +1772,8 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                     name = "#BLOCK{0}".format(block_counter)
                 new_block = fortran_block(file_ast, line_number, name)
                 file_ast.add_scope(new_block, END_BLOCK_REGEX, req_container=True)
-                if debug:
-                    print(
-                        "{1} !!! BLOCK statement({0})".format(line_number, line.strip())
-                    )
+                parser_debug_msg("BLOCK", line, line_number)
+
             elif obj_type == "do":
                 do_counter += 1
                 name = "#DO{0}".format(do_counter)
@@ -1845,8 +1781,8 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                     block_id_stack.append(obj_info)
                 new_do = fortran_do(file_ast, line_number, name)
                 file_ast.add_scope(new_do, END_DO_REGEX, req_container=True)
-                if debug:
-                    print("{1} !!! DO statement({0})".format(line_number, line.strip()))
+                parser_debug_msg("DO", line, line_number)
+
             elif obj_type == "where":
                 # Add block if WHERE is not single line
                 if not obj_info:
@@ -1854,10 +1790,8 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                     name = "#WHERE{0}".format(do_counter)
                     new_do = fortran_where(file_ast, line_number, name)
                     file_ast.add_scope(new_do, END_WHERE_REGEX, req_container=True)
-                if debug:
-                    print(
-                        "{1} !!! WHERE statement({0})".format(line_number, line.strip())
-                    )
+                parser_debug_msg("WHERE", line, line_number)
+
             elif obj_type == "assoc":
                 block_counter += 1
                 name = "#ASSOC{0}".format(block_counter)
@@ -1873,19 +1807,15 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                                 file_ast, line_number, binding_name, link_name
                             )
                         )
-                if debug:
-                    print(
-                        "{1} !!! ASSOCIATE statement({0})".format(
-                            line_number, line.strip()
-                        )
-                    )
+                parser_debug_msg("ASSOCIATE", line, line_number)
+
             elif obj_type == "if":
                 if_counter += 1
                 name = "#IF{0}".format(if_counter)
                 new_if = fortran_if(file_ast, line_number, name)
                 file_ast.add_scope(new_if, END_IF_REGEX, req_container=True)
-                if debug:
-                    print("{1} !!! IF statement({0})".format(line_number, line.strip()))
+                parser_debug_msg("IF", line, line_number)
+
             elif obj_type == "select":
                 select_counter += 1
                 name = "#SELECT{0}".format(select_counter)
@@ -1899,31 +1829,23 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                 )
                 if new_var is not None:
                     file_ast.add_variable(new_var)
-                if debug:
-                    print(
-                        "{1} !!! SELECT statement({0})".format(
-                            line_number, line.strip()
-                        )
-                    )
+                parser_debug_msg("SELECT", line, line_number)
+
             elif obj_type == "typ":
                 keywords, _ = map_keywords(obj_info.keywords)
                 new_type = fortran_type(file_ast, line_number, obj_info.name, keywords)
                 if obj_info.parent is not None:
                     new_type.set_inherit(obj_info.parent)
                 file_ast.add_scope(new_type, END_TYPED_REGEX, req_container=True)
-                if debug:
-                    print(
-                        "{1} !!! TYPE statement({0})".format(line_number, line.strip())
-                    )
+                parser_debug_msg("TYPE", line, line_number)
+
             elif obj_type == "enum":
                 block_counter += 1
                 name = "#ENUM{0}".format(block_counter)
                 new_enum = fortran_enum(file_ast, line_number, name)
                 file_ast.add_scope(new_enum, END_ENUMD_REGEX, req_container=True)
-                if debug:
-                    print(
-                        "{1} !!! ENUM statement({0})".format(line_number, line.strip())
-                    )
+                parser_debug_msg("ENUM", line, line_number)
+
             elif obj_type == "int":
                 name = obj_info.name
                 if name is None:
@@ -1933,12 +1855,8 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                     file_ast, line_number, name, abstract=obj_info.abstract
                 )
                 file_ast.add_scope(new_int, END_INT_REGEX, req_container=True)
-                if debug:
-                    print(
-                        "{1} !!! INTERFACE statement({0})".format(
-                            line_number, line.strip()
-                        )
-                    )
+                parser_debug_msg("INTERFACE", line, line_number)
+
             elif obj_type == "gen":
                 new_int = fortran_int(
                     file_ast, line_number, obj_info.bound_name, abstract=False
@@ -1948,32 +1866,20 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                 for pro_link in obj_info.pro_links:
                     file_ast.add_int_member(pro_link)
                 file_ast.end_scope(line_number)
-                if debug:
-                    print(
-                        "{1} !!! GENERIC statement({0})".format(
-                            line_number, line.strip()
-                        )
-                    )
+                parser_debug_msg("GENERIC", line, line_number)
+
             elif obj_type == "int_pro":
                 if file_ast.current_scope is not None:
                     if file_ast.current_scope.get_type() == INTERFACE_TYPE_ID:
                         for name in obj_info:
                             file_ast.add_int_member(name)
-                        if debug:
-                            print(
-                                "{1} !!! INTERFACE-PRO statement({0})".format(
-                                    line_number, line.strip()
-                                )
-                            )
+                        parser_debug_msg("INTERFACE-PRO", line, line_number)
+
                     elif file_ast.current_scope.get_type() == SUBMODULE_TYPE_ID:
                         new_impl = fortran_scope(file_ast, line_number, obj_info[0])
                         file_ast.add_scope(new_impl, END_PRO_REGEX)
-                        if debug:
-                            print(
-                                "{1} !!! PROCEDURE-IMPL statement({0})".format(
-                                    line_number, line.strip()
-                                )
-                            )
+                        parser_debug_msg("INTERFACE_IMPL", line, line_number)
+
             elif obj_type == "use":
                 file_ast.add_use(
                     obj_info.mod_name,
@@ -1981,26 +1887,16 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                     obj_info.only_list,
                     obj_info.rename_map,
                 )
-                if debug:
-                    print(
-                        "{1} !!! USE statement({0})".format(line_number, line.strip())
-                    )
+                parser_debug_msg("USE", line, line_number)
+
             elif obj_type == "import":
                 file_ast.add_use("#IMPORT", line_number, obj_info)
-                if debug:
-                    print(
-                        "{1} !!! IMPORT statement({0})".format(
-                            line_number, line.strip()
-                        )
-                    )
+                parser_debug_msg("IMPORT", line, line_number)
+
             elif obj_type == "inc":
                 file_ast.add_include(obj_info, line_number)
-                if debug:
-                    print(
-                        "{1} !!! INCLUDE statement({0})".format(
-                            line_number, line.strip()
-                        )
-                    )
+                parser_debug_msg("INCLUDE", line, line_number)
+
             elif obj_type == "vis":
                 if file_ast.current_scope is None:
                     file_ast.parse_errors.append(
@@ -2022,24 +1918,20 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                         else:
                             for word in obj_info.obj_names:
                                 file_ast.add_public(word)
-                if debug:
-                    print(
-                        "{1} !!! Visiblity statement({0})".format(
-                            line_number, line.strip()
-                        )
-                    )
+                parser_debug_msg("Visibility", line, line_number)
+
     file_ast.close_file(line_number)
     if debug:
         if len(file_ast.end_errors) > 0:
-            print("\n=== Scope Errors ===\n")
+            log.debug("\n=== Scope Errors ===\n")
             for error in file_ast.end_errors:
                 if error[0] >= 0:
-                    message = "Unexpected end of scope at line {0}".format(error[0])
+                    message = f"Unexpected end of scope at line {error[0]}"
                 else:
                     message = "Unexpected end statement: No open scopes"
-                print("{0}: {1}".format(error[1], message))
+                log.debug(f"{error[1]}: {message}")
         if len(file_ast.parse_errors) > 0:
-            print("\n=== Parsing Errors ===\n")
+            log.debug("\n=== Parsing Errors ===\n")
             for error in file_ast.parse_errors:
-                print("{0}: {1}".format(error["line"], error["mess"]))
+                log.debug(f"{error['line']}: {error['mess']}")
     return file_ast
