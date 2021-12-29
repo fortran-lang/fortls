@@ -59,7 +59,7 @@ def main():
 
 
 def parse_args():
-    """Parses the command line aguments to the Language Server
+    """Parses the command line arguments to the Language Server
 
     Returns
     -------
@@ -67,9 +67,12 @@ def parse_args():
         command line arguments
     """
     parser = argparse.ArgumentParser()
-    parser.description = "FORTRAN Language Server ({0})".format(__version__)
+    parser.description = "fortls ({0})".format(__version__)
     parser.add_argument(
         "--version", action="store_true", help="Print server version number and exit"
+    )
+    parser.add_argument(
+        "--config", type=str, default=".fortls", help="Configuration options file"
     )
     parser.add_argument(
         "--nthreads",
@@ -272,6 +275,7 @@ def set_settings(args):
         settings for the Language Server
     """
     settings = {
+        "config": args.config,
         "nthreads": args.nthreads,
         "notify_init": args.notify_init,
         "symbol_include_mem": (not args.symbol_skip_mem),
@@ -288,6 +292,7 @@ def set_settings(args):
         "max_line_length": args.max_line_length,
         "max_comment_line_length": args.max_comment_line_length,
         "disable_diagnostics": args.disable_diagnostics,
+
     }
     if args.hover_language is not None:
         settings["hover_language"] = args.hover_language
@@ -702,7 +707,7 @@ def debug_server_parser(args):
     pp_defs = {}
     include_dirs = []
     if args.debug_rootpath:
-        config_path = os.path.join(args.debug_rootpath, ".fortls")
+        config_path = os.path.join(args.debug_rootpath, args.config)
         config_exists = os.path.isfile(config_path)
         if config_exists:
             try:
@@ -719,7 +724,7 @@ def debug_server_parser(args):
                     if isinstance(pp_defs, list):
                         pp_defs = {key: "" for key in pp_defs}
             except:
-                print("Error while parsing '.fortls' settings file")
+                print(f"Error while parsing '{args.config}' settings file")
     #
     print("\nTesting parser")
     print('  File = "{0}"'.format(args.debug_filepath))

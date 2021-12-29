@@ -22,7 +22,7 @@ setup(
     url="https://github.com/gnikit/fortran-language-server",
     author="Giannis Nikiteas",
     author_email="giannis.nikiteas@gmail.com",
-    description="FORTRAN Language Server - dev version",
+    description="fortls - Fortran Language Server",
     long_description=README,
     long_description_content_type="text/markdown",
     license="MIT",
@@ -47,10 +47,7 @@ setup(
     # simple. Or you can use find_packages().
     packages=find_packages(exclude=["contrib", "docs", "test"]),
     package_data={"fortls": ["*.json"]},
-    # List run-time dependencies here.  These will be installed by pip when
-    # your project is installed. For an analysis of "install_requires" vs pip's
-    # requirements files see:
-    # https://packaging.python.org/en/latest/requirements.html
+    # https://packaging.python.org/en/latest/discussions/install-requires-vs-requirements/
     install_requires=[
         'future; python_version < "3"',
         'argparse; python_version < "2.7" or python_version in "3.0, 3.1"',

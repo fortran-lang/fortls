@@ -141,7 +141,7 @@ def only_dirs(paths: list[str], err_msg: list = []) -> list[str]:
             continue
         else:
             msg: str = (
-                f"Directory '{p}' specified in '.fortls' settings file does not exist"
+                f"Directory '{p}' specified in Configuration settings file does not exist"
             )
             if err_msg:
                 err_msg.append([2, msg])
@@ -177,6 +177,7 @@ class LangServer:
             self.intrinsic_mods,
         ) = load_intrinsics()
         # Get launch settings
+        self.config = settings.get("config", ".fortls")
         self.nthreads = settings.get("nthreads", 4)
         self.notify_init = settings.get("notify_init", False)
         self.symbol_include_mem = settings.get("symbol_include_mem", True)
@@ -1475,8 +1476,7 @@ class LangServer:
         """Loads the configuration file for the Language Server"""
 
         # Check for config file
-        config_fname = ".fortls"
-        config_path = os.path.join(self.root_path, config_fname)
+        config_path = os.path.join(self.root_path, self.config)
         if not os.path.isfile(config_path):
             return None
 
@@ -1489,62 +1489,80 @@ class LangServer:
                 # config_dict = json.loads(jsondata)
                 config_dict = json.load(jsonfile)
 
-                # Exclude paths (directories & files)
-                # with glob resolution
-                for path in config_dict.get("excl_paths", []):
-                    self.excl_paths.update(set(resolve_globs(path, self.root_path)))
+                # Include and Exclude directories
+                self.__load_config_file_dirs(config_dict)
 
-                # Source directory paths (directories)
-                # with glob resolution
-                source_dirs = config_dict.get("source_dirs", [])
-                for path in source_dirs:
-                    self.source_dirs.update(
-                        set(
-                            only_dirs(
-                                resolve_globs(path, self.root_path),
-                                self.post_messages,
-                            )
-                        )
-                    )
-                # Keep all directories present in source_dirs but not excl_paths
-                self.source_dirs = {
-                    i for i in self.source_dirs if i not in self.excl_paths
-                }
+                # General options
+                self.__load_config_file_general(config_dict)
 
-                self.excl_suffixes = config_dict.get("excl_suffixes", [])
-                self.lowercase_intrinsics = config_dict.get(
-                    "lowercase_intrinsics", self.lowercase_intrinsics
-                )
+                # Preprocessor options
+                self.__load_config_file_preproc(config_dict)
+
+                # Debug options
                 self.debug_log = config_dict.get("debug_log", self.debug_log)
-                self.disable_diagnostics = config_dict.get(
-                    "disable_diagnostics", self.disable_diagnostics
-                )
-                self.pp_suffixes = config_dict.get("pp_suffixes", None)
-                self.pp_defs = config_dict.get("pp_defs", {})
-                for path in config_dict.get("include_dirs", []):
-                    self.include_dirs.extend(
-                        only_dirs(
-                            resolve_globs(path, self.root_path), self.post_messages
-                        )
-                    )
-                self.max_line_length = config_dict.get(
-                    "max_line_length", self.max_line_length
-                )
-                self.max_comment_line_length = config_dict.get(
-                    "max_comment_line_length", self.max_comment_line_length
-                )
-                if isinstance(self.pp_defs, list):
-                    self.pp_defs = {key: "" for key in self.pp_defs}
 
         except FileNotFoundError:
-            msg = f"Error settings file '{config_fname}' not found"
+            msg = f"Error settings file '{self.config}' not found"
             self.post_messages.append([1, msg])
             log.error(msg)
 
         except ValueError:
-            msg = f"Error while parsing '{config_fname}' settings file"
+            msg = f"Error while parsing '{self.config}' settings file"
             self.post_messages.append([1, msg])
             log.error(msg)
+
+    def __load_config_file_dirs(self, config_dict) -> None:
+        # Exclude paths (directories & files)
+        # with glob resolution
+        for path in config_dict.get("excl_paths", []):
+            self.excl_paths.update(set(resolve_globs(path, self.root_path)))
+
+        # Source directory paths (directories)
+        # with glob resolution
+        source_dirs = config_dict.get("source_dirs", [])
+        for path in source_dirs:
+            self.source_dirs.update(
+                set(
+                    only_dirs(
+                        resolve_globs(path, self.root_path),
+                        self.post_messages,
+                    )
+                )
+            )
+        # Keep all directories present in source_dirs but not excl_paths
+        self.source_dirs = {i for i in self.source_dirs if i not in self.excl_paths}
+
+    def __load_config_file_general(self, config_dict) -> None:
+        self.excl_suffixes = config_dict.get("excl_suffixes", [])
+        self.lowercase_intrinsics = config_dict.get(
+            "lowercase_intrinsics", self.lowercase_intrinsics
+        )
+        self.use_signature_help = config_dict.get(
+            "use_signature_help", self.use_signature_help
+        )
+        self.variable_hover = config_dict.get("variable_hover", self.variable_hover)
+        self.hover_signature = config_dict.get("hover_signature", self.hover_signature)
+        self.enable_code_actions = config_dict.get(
+            "enable_code_actions", self.enable_code_actions
+        )
+        self.disable_diagnostics = config_dict.get(
+            "disable_diagnostics", self.disable_diagnostics
+        )
+        self.max_line_length = config_dict.get("max_line_length", self.max_line_length)
+        self.max_comment_line_length = config_dict.get(
+            "max_comment_line_length", self.max_comment_line_length
+        )
+
+    def __load_config_file_preproc(self, config_dict) -> None:
+        self.pp_suffixes = config_dict.get("pp_suffixes", None)
+        self.pp_defs = config_dict.get("pp_defs", {})
+        if isinstance(self.pp_defs, list):
+            self.pp_defs = {key: "" for key in self.pp_defs}
+
+        for path in config_dict.get("include_dirs", []):
+            self.include_dirs.extend(
+                only_dirs(resolve_globs(path, self.root_path), self.post_messages)
+            )
 
     def __add_source_dirs(self) -> None:
         """Will recursively add all subdirectories that contain Fortran

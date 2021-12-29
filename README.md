@@ -5,12 +5,12 @@
 [![image](https://img.shields.io/github/license/gnikit/fortran-language-server.svg)](https://github.com/gnikit/fortran-language-server/blob/master/LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-`fortls`: A Fortran implementation of the [Language Server Protocol](https://github.com/Microsoft/language-server-protocol)
-(LSP) using Python (3.6+).
+`fortls` is an implementation of the [Language Server Protocol](https://github.com/Microsoft/language-server-protocol)
+(LSP) for Fortran using Python (3.6+).
 
 Editor extensions that can integrate with `fortls` to provide autocomplete and
 other IDE-like functionality are available for
-[Visual Studio Code](https://github.com/krvajal/vscode-fortran-support)
+[Visual Studio Code](https://github.com/krvajal/vscode-fortran-support),
 [Atom](https://atom.io/packages/ide-fortran),
 [Visual Studio](https://github.com/michaelkonecny/vs-fortran-ls-client),
 [(Neo)vim](https://github.com/hansec/fortran-language-server/wiki/Using-forts-with-vim),
@@ -71,6 +71,7 @@ pip install fortls
 The following global settings can be used when launching the language
 server.
 
+- `--config` Configuration options file (default: `.fortls`)
 - `--nthreads` Number of threads to use during workspace
   initialization (default: 4)
 - `--notify_init` Send notification message when workspace
@@ -139,8 +140,11 @@ fortls
 
 ## Configuration
 
-Project specific settings can be specified by placing a JSON file named
-`.fortls` (example below) in the `root_dir` directory.
+Project specific settings can be specified by creating a **options** JSON file.
+You can specify the location and name of the file with the `--config` option.
+By default the options file is assumed to be `root_dir` with the name `.fortls`.
+
+All command line options are also available through the **options** file as well.
 
 - `lowercase_intrinsics` Use lowercase for intrinsics and keywords in
   autocomplete requests (default: false)
@@ -164,7 +168,7 @@ the project.
 ### Excluding folders and file extensions
 
 Directories and files can be excluded from the project by specifying
-their paths in the `excl_paths` variable in the`.fortls` file.
+their paths in the `excl_paths` variable in the options file.
 Paths can be absolute or relative to `root_dir`.
 
 Excluded directories **will not** exclude all sub-directories.
@@ -178,11 +182,10 @@ Source files with a common suffix may also be excluded using the
 
 By default all source directories under `root_dir` are recursively included.
 Source file directories can also be specified manually by specifying
-their paths in the `source_dirs` variable in `.fortls`.
+their paths in the `source_dirs` variable in the configuration options file.
 Paths can be absolute or relative to `root_dir`.
-the `.fortls` file.
 
-When defining `source_dirs` in `.fortls` the default behaviour (i.e. including
+When defining `source_dirs` in the configuration options filethe default behaviour (i.e. including
 all files in all subdirectories under `root_dir`) is overriden. To include them
 back again one can do
 
@@ -207,7 +210,7 @@ preprocessing (ie. tracking definitions). Fortran objects defined in
 these files will not be processed.
 
 File suffixes for preprocessing can be controlled with the variable
-`pp_suffixes` in a workspace's `.fortls` file. When this variable is
+`pp_suffixes` in a workspace's configuration options file. When this variable is
 used _only_ those files with the specified suffixes will be
 preprocessed. If an empty array is specified then _no_ preprocessing
 will be performed on any files. By default, or if the variable is
@@ -215,17 +218,17 @@ omitted or `null`, only files with upper case suffixes are preprocessed.
 
 Preprocessor definitions can be set for each project, to improve support
 for Fortran files using conditional compilation, using the `pp_defs`
-variable in the `.fortls` file. Preprocessing is performed _only_ for
+variable in the configuration options file. Preprocessing is performed _only_ for
 files where the file extension is all caps (ie. ".F90", ".F", etc.).
 Currently, support for preprocessing is limited to variables declared in
-the project's `.fortls` file or in the source file of interest as
+the project's configuration options file or in the source file of interest as
 `#include` files and inheritance through `USE` statements are yet not
 supported. Variable substitution is also performed within files, but is
 currently limited to non-recursive cases. For example, `#define PP_VAR1 PP_VAR2` will cause `PP_VAR1` to be replaced with the text `PP_VAR2`
 throughout the file, not that value of `PP_VAR2`.
 
 Include directories can be specified using the variable `include_dirs`
-in a workspace's `.fortls` file. These directories are _only_ used to
+in a workspace's configuration options file. These directories are _only_ used to
 search for preprocessor `#include`'d files. The directory containing the
 file where an `#include` statement is encountered is always searched.
 File search is performed starting with the containing directory followed
