@@ -292,7 +292,6 @@ def set_settings(args):
         "max_line_length": args.max_line_length,
         "max_comment_line_length": args.max_comment_line_length,
         "disable_diagnostics": args.disable_diagnostics,
-
     }
     if args.hover_language is not None:
         settings["hover_language"] = args.hover_language

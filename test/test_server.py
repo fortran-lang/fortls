@@ -9,14 +9,16 @@ except ImportError:
 root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, root_dir)
 
-from fortls.jsonrpc import (
+from fortls.jsonrpc import (  # noqa: E402
     path_to_uri,
     read_rpc_messages,
     write_rpc_notification,
     write_rpc_request,
 )
 
-run_command = os.path.join(root_dir, "fortls.py --incrmental_sync --use_signature_help")
+run_command = os.path.join(
+    root_dir, "fortls.py --incremental_sync --use_signature_help"
+)
 test_dir = os.path.join(root_dir, "test", "test_source")
 
 

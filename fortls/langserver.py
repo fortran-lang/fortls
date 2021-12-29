@@ -141,7 +141,8 @@ def only_dirs(paths: list[str], err_msg: list = []) -> list[str]:
             continue
         else:
             msg: str = (
-                f"Directory '{p}' specified in Configuration settings file does not exist"
+                f"Directory '{p}' specified in Configuration settings file does not"
+                " exist"
             )
             if err_msg:
                 err_msg.append([2, msg])
