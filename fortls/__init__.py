@@ -26,6 +26,7 @@ def main():
     if args.version:
         print("{0}".format(__version__))
         sys.exit(0)
+
     debug_server = (
         args.debug_diagnostics
         or args.debug_symbols
@@ -35,14 +36,14 @@ def main():
         or args.debug_hover
         or args.debug_implementation
         or args.debug_references
-        or (args.debug_rename is not None)
+        or args.debug_rename
         or args.debug_actions
-        or (args.debug_rootpath is not None)
-        or (args.debug_workspace_symbols is not None)
+        or args.debug_rootpath
+        or args.debug_workspace_symbols
     )
-    #
+
     settings = set_settings(args)
-    #
+
     if args.debug_parser:
         debug_server_parser(args)
 
@@ -58,18 +59,26 @@ def main():
         ).run()
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     """Parses the command line arguments to the Language Server
 
     Returns
     -------
-    Namespace
+    argparse.Namespace
         command line arguments
     """
-    parser = argparse.ArgumentParser()
-    parser.description = "fortls ({0})".format(__version__)
+
+    parser = argparse.ArgumentParser(
+        description=f"fortls {__version__}",
+        prog=__name__,
+        usage="%(prog)s [options] [debug options]",
+    )
+
     parser.add_argument(
-        "--version", action="store_true", help="Print server version number and exit"
+        "-v",
+        "--version",
+        action="store_true",
+        help="Print server version number and exit",
     )
     parser.add_argument(
         "--config", type=str, default=".fortls", help="Configuration options file"
@@ -92,7 +101,6 @@ def parse_args():
     )
     parser.add_argument(
         "--incremental_sync",
-        "--incrmental_sync",
         action="store_true",
         help="Use incremental document synchronization (beta)",
     )
@@ -178,87 +186,131 @@ def parse_args():
         action="store_true",
         help="Generate debug log in project root folder",
     )
-    group = parser.add_argument_group("DEBUG", "Options for debugging language server")
+    parser.add_argument(
+        "--debug_help", action="help", help="Display options for debugging fortls"
+    )
+
+    # By default debug arguments are hidden
+    parse_debug_args(parser)
+
+    return parser.parse_args()
+
+
+def parse_debug_args(parser: argparse.ArgumentParser) -> None:
+    """Parse the debug arguments if any are present.
+    if none are present the arguments are suppressed in the help menu
+
+    Parameters
+    ----------
+    parser : argparse.ArgumentParser
+        an argument parser
+
+    Returns
+    -------
+    None
+        Operates and updates the parser
+    """
+
+    # Only show debug options if an argument starting with --debug_ was input.
+    # if suppressed the option will be hidden from the help menu.
+    HIDE_DEBUG = True
+    if any("--debug_" in arg for arg in sys.argv):
+        HIDE_DEBUG = False
+
+    def hide_opt(help: str) -> str:
+        if not HIDE_DEBUG:
+            return help
+        else:
+            return argparse.SUPPRESS
+
+    group = parser.add_argument_group(
+        hide_opt("DEBUG"), hide_opt("Options for debugging language server")
+    )
     group.add_argument(
         "--debug_parser",
         action="store_true",
-        help="Test source code parser on specified file",
+        help=hide_opt("Test source code parser on specified file"),
     )
     group.add_argument(
         "--debug_diagnostics",
         action="store_true",
-        help="Test diagnostic notifications for specified file",
+        help=hide_opt("Test diagnostic notifications for specified file"),
     )
     group.add_argument(
         "--debug_symbols",
         action="store_true",
-        help="Test symbol request for specified file",
+        help=hide_opt("Test symbol request for specified file"),
     )
     group.add_argument(
-        "--debug_workspace_symbols", type=str, help="Test workspace/symbol request"
+        "--debug_workspace_symbols",
+        type=str,
+        help=hide_opt("Test workspace/symbol request"),
     )
     group.add_argument(
         "--debug_completion",
         action="store_true",
-        help="Test completion request for specified file and position",
+        help=hide_opt("Test completion request for specified file and position"),
     )
     group.add_argument(
         "--debug_signature",
         action="store_true",
-        help="Test signatureHelp request for specified file and position",
+        help=hide_opt("Test signatureHelp request for specified file and position"),
     )
     group.add_argument(
         "--debug_definition",
         action="store_true",
-        help="Test definition request for specified file and position",
+        help=hide_opt("Test definition request for specified file and position"),
     )
     group.add_argument(
         "--debug_hover",
         action="store_true",
-        help="Test hover request for specified file and position",
+        help=hide_opt("Test hover request for specified file and position"),
     )
     group.add_argument(
         "--debug_implementation",
         action="store_true",
-        help="Test implementation request for specified file and position",
+        help=hide_opt("Test implementation request for specified file and position"),
     )
     group.add_argument(
         "--debug_references",
         action="store_true",
-        help="Test references request for specified file and position",
+        help=hide_opt("Test references request for specified file and position"),
     )
     group.add_argument(
         "--debug_rename",
         type=str,
-        help="Test rename request for specified file and position",
+        help=hide_opt("Test rename request for specified file and position"),
     )
     group.add_argument(
         "--debug_actions",
         action="store_true",
-        help="Test codeAction request for specified file and position",
+        help=hide_opt("Test codeAction request for specified file and position"),
     )
     group.add_argument(
-        "--debug_filepath", type=str, help="File path for language server tests"
+        "--debug_filepath",
+        type=str,
+        help=hide_opt("File path for language server tests"),
     )
     group.add_argument(
-        "--debug_rootpath", type=str, help="Root path for language server tests"
+        "--debug_rootpath",
+        type=str,
+        help=hide_opt("Root path for language server tests"),
     )
     group.add_argument(
         "--debug_line",
         type=int,
-        help="Line position for language server tests (1-indexed)",
+        help=hide_opt("Line position for language server tests (1-indexed)"),
     )
     group.add_argument(
         "--debug_char",
         type=int,
-        help="Character position for language server tests (1-indexed)",
+        help=hide_opt("Character position for language server tests (1-indexed)"),
     )
     group.add_argument(
         "--debug_full_result",
         action="store_true",
-        help="Print full result object instead of condensed version",
+        help=hide_opt("Print full result object instead of condensed version"),
     )
-    return parser.parse_args()
 
 
 def set_settings(args):
