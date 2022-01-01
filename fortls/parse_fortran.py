@@ -1,12 +1,21 @@
 from __future__ import print_function
 
 import hashlib
+import logging
 import os
 import re
 import sys
-import logging
 from collections import namedtuple
 
+from fortls.constants import PY3K
+from fortls.helper_functions import (
+    detect_fixed_format,
+    find_paren_match,
+    find_word_in_line,
+    separate_def_list,
+    strip_line_label,
+    strip_strings,
+)
 from fortls.objects import (
     DO_TYPE_ID,
     INTERFACE_TYPE_ID,
@@ -34,128 +43,81 @@ from fortls.objects import (
     get_paren_substring,
     map_keywords,
 )
+from fortls.regex_patterns import (
+    ASSOCIATE_REGEX,
+    BLOCK_REGEX,
+    CALL_REGEX,
+    CONTAINS_REGEX,
+    DO_REGEX,
+    END_ASSOCIATE_REGEX,
+    END_BLOCK_REGEX,
+    END_DO_REGEX,
+    END_ENUMD_REGEX,
+    END_FUN_REGEX,
+    END_IF_REGEX,
+    END_INT_REGEX,
+    END_MOD_REGEX,
+    END_PRO_REGEX,
+    END_PROG_REGEX,
+    END_REGEX,
+    END_SELECT_REGEX,
+    END_SMOD_REGEX,
+    END_SUB_REGEX,
+    END_TYPED_REGEX,
+    END_WHERE_REGEX,
+    END_WORD_REGEX,
+    ENUM_DEF_REGEX,
+    EXTENDS_REGEX,
+    FIXED_COMMENT_LINE_MATCH,
+    FIXED_CONT_REGEX,
+    FIXED_DOC_MATCH,
+    FIXED_OPENMP_MATCH,
+    FREE_COMMENT_LINE_MATCH,
+    FREE_CONT_REGEX,
+    FREE_DOC_MATCH,
+    FREE_OPENMP_MATCH,
+    FUN_REGEX,
+    GEN_ASSIGN_REGEX,
+    GENERIC_PRO_REGEX,
+    IF_REGEX,
+    IMPLICIT_REGEX,
+    IMPORT_REGEX,
+    INCLUDE_REGEX,
+    INT_REGEX,
+    INT_STMNT_REGEX,
+    KEYWORD_LIST_REGEX,
+    KIND_SPEC_REGEX,
+    MOD_REGEX,
+    NAT_VAR_REGEX,
+    NON_DEF_REGEX,
+    PP_DEF_REGEX,
+    PP_INCLUDE_REGEX,
+    PP_REGEX,
+    PRO_LINK_REGEX,
+    PROCEDURE_STMNT_REGEX,
+    PROG_REGEX,
+    RESULT_REGEX,
+    SCOPE_DEF_REGEX,
+    SELECT_DEFAULT_REGEX,
+    SELECT_REGEX,
+    SELECT_TYPE_REGEX,
+    SUB_MOD_REGEX,
+    SUB_PAREN_MATCH,
+    SUB_REGEX,
+    SUBMOD_REGEX,
+    TATTR_LIST_REGEX,
+    THEN_REGEX,
+    TYPE_DEF_REGEX,
+    TYPE_STMNT_REGEX,
+    USE_REGEX,
+    VIS_REGEX,
+    WHERE_REGEX,
+    WORD_REGEX,
+)
 
-PY3K = sys.version_info >= (3, 0)
 if not PY3K:
     import io
-# Fortran statement matching rules
-USE_REGEX = re.compile(
-    r"[ ]*USE([, ]+(?:INTRINSIC|NON_INTRINSIC))?[ :]+(\w*)([, ]+ONLY[ :]+)?",
-    re.I,
-)
-IMPORT_REGEX = re.compile(r"[ ]*IMPORT[ :]+([a-z_])", re.I)
-INCLUDE_REGEX = re.compile(r"[ ]*INCLUDE[ :]*[\'\"]([^\'\"]*)", re.I)
-CONTAINS_REGEX = re.compile(r"[ ]*(CONTAINS)[ ]*$", re.I)
-IMPLICIT_REGEX = re.compile(r"[ ]*IMPLICIT[ ]+([a-z]*)", re.I)
-SUB_MOD_REGEX = re.compile(r"[ ]*(PURE|IMPURE|ELEMENTAL|RECURSIVE)+", re.I)
-SUB_REGEX = re.compile(r"[ ]*SUBROUTINE[ ]+([a-z0-9_]+)", re.I)
-END_SUB_REGEX = re.compile(r"SUBROUTINE", re.I)
-FUN_REGEX = re.compile(r"[ ]*FUNCTION[ ]+([a-z0-9_]+)", re.I)
-RESULT_REGEX = re.compile(r"RESULT[ ]*\(([a-z0-9_]*)\)", re.I)
-END_FUN_REGEX = re.compile(r"FUNCTION", re.I)
-MOD_REGEX = re.compile(r"[ ]*MODULE[ ]+([a-z0-9_]+)", re.I)
-END_MOD_REGEX = re.compile(r"MODULE", re.I)
-SUBMOD_REGEX = re.compile(r"[ ]*SUBMODULE[ ]*\(", re.I)
-END_SMOD_REGEX = re.compile(r"SUBMODULE", re.I)
-END_PRO_REGEX = re.compile(r"(MODULE)?[ ]*PROCEDURE", re.I)
-BLOCK_REGEX = re.compile(r"[ ]*([a-z_][a-z0-9_]*[ ]*:[ ]*)?BLOCK(?![a-z0-9_])", re.I)
-END_BLOCK_REGEX = re.compile(r"BLOCK", re.I)
-DO_REGEX = re.compile(r"[ ]*(?:[a-z_][a-z0-9_]*[ ]*:[ ]*)?DO([ ]+[0-9]*|$)", re.I)
-END_DO_REGEX = re.compile(r"DO", re.I)
-WHERE_REGEX = re.compile(r"[ ]*WHERE[ ]*\(", re.I)
-END_WHERE_REGEX = re.compile(r"WHERE", re.I)
-IF_REGEX = re.compile(r"[ ]*(?:[a-z_][a-z0-9_]*[ ]*:[ ]*)?IF[ ]*\(", re.I)
-THEN_REGEX = re.compile(r"\)[ ]*THEN$", re.I)
-END_IF_REGEX = re.compile(r"IF", re.I)
-ASSOCIATE_REGEX = re.compile(r"[ ]*ASSOCIATE[ ]*\(", re.I)
-END_ASSOCIATE_REGEX = re.compile(r"ASSOCIATE", re.I)
-END_FIXED_REGEX = re.compile(r"[ ]*([0-9]*)[ ]*CONTINUE", re.I)
-SELECT_REGEX = re.compile(
-    r"[ ]*(?:[a-z_][a-z0-9_]*[ ]*:[ ]*)?SELECT[ ]*" r"(CASE|TYPE)[ ]*\(([a-z0-9_=> ]*)",
-    re.I,
-)
-SELECT_TYPE_REGEX = re.compile(r"[ ]*(TYPE|CLASS)[ ]+IS[ ]*\(([a-z0-9_ ]*)", re.I)
-SELECT_DEFAULT_REGEX = re.compile(r"[ ]*CLASS[ ]+DEFAULT", re.I)
-END_SELECT_REGEX = re.compile(r"SELECT", re.I)
-PROG_REGEX = re.compile(r"[ ]*PROGRAM[ ]+([a-z0-9_]+)", re.I)
-END_PROG_REGEX = re.compile(r"PROGRAM", re.I)
-INT_REGEX = re.compile(r"[ ]*(ABSTRACT)?[ ]*INTERFACE[ ]*([a-z0-9_]*)", re.I)
-END_INT_REGEX = re.compile(r"INTERFACE", re.I)
-END_WORD_REGEX = re.compile(
-    r"[ ]*END[ ]*(DO|WHERE|IF|BLOCK|ASSOCIATE|SELECT"
-    r"|TYPE|ENUM|MODULE|SUBMODULE|PROGRAM|INTERFACE"
-    r"|SUBROUTINE|FUNCTION|PROCEDURE)?([ ]+|$)",
-    re.I,
-)
-TYPE_DEF_REGEX = re.compile(r"[ ]*(TYPE)[, :]+", re.I)
-EXTENDS_REGEX = re.compile(r"EXTENDS[ ]*\(([a-z0-9_]*)\)", re.I)
-GENERIC_PRO_REGEX = re.compile(
-    r"[ ]*(GENERIC)[, ]*(PRIVATE|PUBLIC)?[ ]*::[ ]*[a-z]", re.I
-)
-GEN_ASSIGN_REGEX = re.compile(r"(ASSIGNMENT|OPERATOR)\(", re.I)
-END_TYPED_REGEX = re.compile(r"TYPE", re.I)
-ENUM_DEF_REGEX = re.compile(r"[ ]*ENUM[, ]+", re.I)
-END_ENUMD_REGEX = re.compile(r"ENUM", re.I)
-NAT_VAR_REGEX = re.compile(
-    r"[ ]*(INTEGER|REAL|DOUBLE[ ]*PRECISION|COMPLEX"
-    r"|DOUBLE[ ]*COMPLEX|CHARACTER|LOGICAL|PROCEDURE"
-    r"|EXTERNAL|CLASS|TYPE)",
-    re.I,
-)
-KIND_SPEC_REGEX = re.compile(r"[ ]*([*]?\([ ]*[a-z0-9_*:]|\*[ ]*[0-9:]*)", re.I)
-KEYWORD_LIST_REGEX = re.compile(
-    r"[ ]*,[ ]*(PUBLIC|PRIVATE|ALLOCATABLE|"
-    r"POINTER|TARGET|DIMENSION\(|"
-    r"OPTIONAL|INTENT\([inout]*\)|DEFERRED|NOPASS|"
-    r"PASS\([a-z0-9_]*\)|SAVE|PARAMETER|"
-    r"CONTIGUOUS)",
-    re.I,
-)
-TATTR_LIST_REGEX = re.compile(
-    r"[ ]*,[ ]*(PUBLIC|PRIVATE|ABSTRACT|EXTENDS\([a-z0-9_]*\))", re.I
-)
-VIS_REGEX = re.compile(r"[ ]*(PUBLIC|PRIVATE)[ :]", re.I)
-WORD_REGEX = re.compile(r"[a-z_][a-z0-9_]*", re.I)
-NUMBER_REGEX = re.compile(
-    r"[\+\-]?(\b\d+\.?\d*|\.\d+)(_\w+|d[\+\-]?\d+|e[\+\-]?\d+(_\w+)?)?(?![a-z_])",
-    re.I,
-)
-LOGICAL_REGEX = re.compile(r".true.|.false.", re.I)
-SUB_PAREN_MATCH = re.compile(r"\([a-z0-9_, ]*\)", re.I)
-KIND_SPEC_MATCH = re.compile(r"\([a-z0-9_, =*]*\)", re.I)
-SQ_STRING_REGEX = re.compile(r"\'[^\']*\'", re.I)
-DQ_STRING_REGEX = re.compile(r"\"[^\"]*\"", re.I)
-LINE_LABEL_REGEX = re.compile(r"[ ]*([0-9]+)[ ]+", re.I)
-NON_DEF_REGEX = re.compile(r"[ ]*(CALL[ ]+[a-z_]|[a-z_][a-z0-9_%]*[ ]*=)", re.I)
-# Fixed format matching rules
-FIXED_COMMENT_LINE_MATCH = re.compile(r"(!|c|d|\*)", re.I)
-FIXED_CONT_REGEX = re.compile(r"(     [\S])")
-FIXED_DOC_MATCH = re.compile(r"(?:!|c|d|\*)(<|>|!)", re.I)
-FIXED_OPENMP_MATCH = re.compile(r"[!|c|\*]\$OMP", re.I)
-# Free format matching rules
-FREE_COMMENT_LINE_MATCH = re.compile(r"([ ]*!)")
-FREE_CONT_REGEX = re.compile(r"([ ]*&)")
-FREE_DOC_MATCH = re.compile(r"[ ]*!(<|>|!)")
-FREE_OPENMP_MATCH = re.compile(r"[ ]*!\$OMP", re.I)
-FREE_FORMAT_TEST = re.compile(r"[ ]{1,4}[a-z]", re.I)
-# Preprocessor mathching rules
-PP_REGEX = re.compile(r"#(if |ifdef|ifndef|else|elif|endif)")
-PP_DEF_REGEX = re.compile(r"#(define|undef)[ ]*([a-z0-9_]+)", re.I)
-PP_DEF_TEST_REGEX = re.compile(r"(![ ]*)?defined[ ]*\([ ]*([a-z0-9_]*)[ ]*\)$", re.I)
-PP_INCLUDE_REGEX = re.compile(r"#include[ ]*([\"a-z0-9_\.]*)", re.I)
-# Context matching rules
-CALL_REGEX = re.compile(r"[ ]*CALL[ ]+[a-z0-9_%]*$", re.I)
-INT_STMNT_REGEX = re.compile(r"^[ ]*[a-z]*$", re.I)
-TYPE_STMNT_REGEX = re.compile(r"[ ]*(TYPE|CLASS)[ ]*(IS)?[ ]*$", re.I)
-PROCEDURE_STMNT_REGEX = re.compile(r"[ ]*(PROCEDURE)[ ]*$", re.I)
-PRO_LINK_REGEX = re.compile(r"[ ]*(MODULE[ ]*PROCEDURE )", re.I)
-SCOPE_DEF_REGEX = re.compile(
-    r"[ ]*(MODULE|PROGRAM|SUBROUTINE|FUNCTION|INTERFACE)[ ]+", re.I
-)
-END_REGEX = re.compile(
-    r"[ ]*(END)( |MODULE|PROGRAM|SUBROUTINE|FUNCTION|PROCEDURE|TYPE|DO|IF|SELECT)?",
-    re.I,
-)
+
 # Helper types
 VAR_info = namedtuple("VAR_info", ["type_word", "keywords", "var_names"])
 SUB_info = namedtuple("SUB_info", ["name", "args", "mod_flag", "keywords"])
@@ -172,18 +134,6 @@ VIS_info = namedtuple("VIS_info", ["type", "obj_names"])
 
 
 log = logging.getLogger(__name__)
-
-
-def expand_name(line, char_poss):
-    """Get full word containing given cursor position"""
-    # The order here is important.
-    # WORD will capture substrings in logical and strings
-    regexs = [LOGICAL_REGEX, SQ_STRING_REGEX, DQ_STRING_REGEX, WORD_REGEX, NUMBER_REGEX]
-    for r in regexs:
-        for num_match in r.finditer(line):
-            if num_match.start(0) <= char_poss and num_match.end(0) >= char_poss:
-                return num_match.group(0)
-    return ""
 
 
 def get_line_context(line):
@@ -245,109 +195,6 @@ def get_line_context(line):
         return "skip", None
     else:
         return "default", None
-
-
-def detect_fixed_format(file_lines):
-    """Detect fixed/free format by looking for characters in label columns
-    and variable declarations before column 6. Treat intersection format
-    files as free format."""
-    for line in file_lines:
-        if FREE_FORMAT_TEST.match(line):
-            return False
-        tmp_match = NAT_VAR_REGEX.match(line)
-        if tmp_match and tmp_match.start(1) < 6:
-            return False
-        # Trailing ampersand indicates free or intersection format
-        if not FIXED_COMMENT_LINE_MATCH.match(line):
-            line_end = line.split("!")[0].strip()
-            if len(line_end) > 0 and line_end[-1] == "&":
-                return False
-    return True
-
-
-def strip_line_label(line):
-    """Strip leading numeric line label"""
-    match = LINE_LABEL_REGEX.match(line)
-    if match is None:
-        return line, None
-    else:
-        line_label = match.group(1)
-        out_str = line[: match.start(1)] + " " * len(line_label) + line[match.end(1) :]
-        return out_str, line_label
-
-
-def strip_strings(in_line, maintain_len=False):
-    """String string literals from code line"""
-
-    def repl_sq(m):
-        return "'{0}'".format(" " * (len(m.group()) - 2))
-
-    def repl_dq(m):
-        return '"{0}"'.format(" " * (len(m.group()) - 2))
-
-    if maintain_len:
-        out_line = SQ_STRING_REGEX.sub(repl_sq, in_line)
-        out_line = DQ_STRING_REGEX.sub(repl_dq, out_line)
-    else:
-        out_line = SQ_STRING_REGEX.sub("", in_line)
-        out_line = DQ_STRING_REGEX.sub("", out_line)
-    return out_line
-
-
-def separate_def_list(test_str):
-    """Separate definition lists, skipping parenthesis and bracket groups
-
-    Examples:
-      "var1, var2, var3" -> ["var1", "var2", "var3"]
-      "var, init_var(3) = [1,2,3], array(3,3)" -> ["var", "init_var", "array"]
-    """
-    stripped_str = strip_strings(test_str)
-    paren_count = 0
-    def_list = []
-    curr_str = ""
-    for char in stripped_str:
-        if (char == "(") or (char == "["):
-            paren_count += 1
-        elif (char == ")") or (char == "]"):
-            paren_count -= 1
-        elif (char == ",") and (paren_count == 0):
-            curr_str = curr_str.strip()
-            if curr_str != "":
-                def_list.append(curr_str)
-                curr_str = ""
-            elif (curr_str == "") and (len(def_list) == 0):
-                return None
-            continue
-        curr_str += char
-    curr_str = curr_str.strip()
-    if curr_str != "":
-        def_list.append(curr_str)
-    return def_list
-
-
-def find_word_in_line(line, word):
-    """Find Fortran word in line"""
-    i0 = -1
-    for poss_name in WORD_REGEX.finditer(line):
-        if poss_name.group() == word:
-            i0 = poss_name.start()
-            break
-    return i0, i0 + len(word)
-
-
-def find_paren_match(test_str):
-    """Find matching closing parenthesis by searching forward,
-    returns -1 if no match is found"""
-    paren_count = 1
-    ind = -1
-    for (i, char) in enumerate(test_str):
-        if char == "(":
-            paren_count += 1
-        elif char == ")":
-            paren_count -= 1
-        if paren_count == 0:
-            return i
-    return ind
 
 
 def parse_var_keywords(test_str):
