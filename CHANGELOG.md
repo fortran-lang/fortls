@@ -1,5 +1,18 @@
 # CHANGELONG
 
+## 1.15.1
+
+### Fixes
+
+- Fixes premature end of scope with variables named `end`
+  ([gnikit/fortls#9](https://github.com/gnikit/fortls/issues/9))
+
+## 1.15.0
+
+### Adds
+
+- Adds `--config` option which allows arbitrary named configuration files
+
 ## 1.14.4
 
 ### Fixes

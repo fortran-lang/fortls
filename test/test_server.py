@@ -580,23 +580,11 @@ def test_diagnostics():
     string += write_rpc_notification(
         "textDocument/didOpen", {"textDocument": {"uri": file_path}}
     )
-    # Example of a diagnostics message
-    # string += write_rpc_notification(
-    #     "textDocument/publishDiagnostics",
-    #     {
-    #         "uri": file_path,
-    #         "diagnostics": [
-    #             {
-    #                 "range": {
-    #                     "start": {"line": 0, "character": 0},
-    #                     "end": {"line": 0, "character": 0},
-    #                 },
-    #                 "message": "",
-    #                 "severity": 0,
-    #             }
-    #         ],
-    #     },
-    # )
+    # Tests that variables named end do not close the scope prematurely
+    file_path = os.path.join(test_dir, "diag", "test_scope_end_name_var.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
     errcode, results = run_request(string)
     assert errcode == 0
     # check that the diagnostics list is empty

@@ -45,7 +45,7 @@ END_INT_REGEX = re.compile(r"INTERFACE", re.I)
 END_WORD_REGEX = re.compile(
     r"[ ]*END[ ]*(DO|WHERE|IF|BLOCK|ASSOCIATE|SELECT"
     r"|TYPE|ENUM|MODULE|SUBMODULE|PROGRAM|INTERFACE"
-    r"|SUBROUTINE|FUNCTION|PROCEDURE)?([ ]+|$)",
+    r"|SUBROUTINE|FUNCTION|PROCEDURE)?([ ]+(?!\W)|$)",
     re.I,
 )
 TYPE_DEF_REGEX = re.compile(r"[ ]*(TYPE)[, :]+", re.I)
