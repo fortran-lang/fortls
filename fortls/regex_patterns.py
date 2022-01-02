@@ -102,6 +102,7 @@ FREE_DOC_MATCH = re.compile(r"[ ]*!(<|>|!)")
 FREE_OPENMP_MATCH = re.compile(r"[ ]*!\$OMP", re.I)
 FREE_FORMAT_TEST = re.compile(r"[ ]{1,4}[a-z]", re.I)
 # Preprocessor mathching rules
+DEFINED_REGEX = re.compile(r"defined[ ]*\([ ]*([a-z_][a-z0-9_]*)[ ]*\)", re.I)
 PP_REGEX = re.compile(r"#(if |ifdef|ifndef|else|elif|endif)")
 PP_DEF_REGEX = re.compile(r"#(define|undef)[ ]*([a-z0-9_]+)", re.I)
 PP_DEF_TEST_REGEX = re.compile(r"(![ ]*)?defined[ ]*\([ ]*([a-z0-9_]*)[ ]*\)$", re.I)

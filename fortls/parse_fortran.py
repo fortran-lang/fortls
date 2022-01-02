@@ -48,6 +48,7 @@ from fortls.regex_patterns import (
     BLOCK_REGEX,
     CALL_REGEX,
     CONTAINS_REGEX,
+    DEFINED_REGEX,
     DO_REGEX,
     END_ASSOCIATE_REGEX,
     END_BLOCK_REGEX,
@@ -1034,7 +1035,7 @@ def preprocess_file(
     # Look for and mark excluded preprocessor paths in file
     # Initial implementation only looks for "if" and "ifndef" statements.
     # For "if" statements all blocks are excluded except the "else" block if present
-    # For "ifndef" statements all blocks excluding the first block are exlucded
+    # For "ifndef" statements all blocks excluding the first block are excluded
     def eval_pp_if(text, defs={}):
         def replace_ops(expr):
             expr = expr.replace("&&", " and ")
@@ -1045,9 +1046,6 @@ def preprocess_file(
             return expr
 
         def replace_defined(line):
-            DEFINED_REGEX = re.compile(
-                r"defined[ ]*\([ ]*([a-z_][a-z0-9_]*)[ ]*\)", re.I
-            )
             i0 = 0
             out_line = ""
             for match in DEFINED_REGEX.finditer(line):
@@ -1106,7 +1104,7 @@ def preprocess_file(
             continue
         # Handle conditional statements
         match = PP_REGEX.match(line)
-        if match is not None:
+        if match:
             output_file.append(line)
             def_name = None
             if_start = False
@@ -1192,6 +1190,9 @@ def preprocess_file(
             log.debug(f"{line.strip()} !!! Include statement({i+1})")
             include_filename = match.group(1).replace('"', "")
             include_path = None
+            # Intentionally keep this as a list and not a set. There are cases
+            # where projects play tricks with the include order of their headers
+            # to get their codes to compile. Using a set would not permit that.
             for include_dir in include_dirs:
                 include_path_tmp = os.path.join(include_dir, include_filename)
                 if os.path.isfile(include_path_tmp):
@@ -1221,7 +1222,7 @@ def preprocess_file(
             else:
                 log.debug(f"{line.strip()} !!! Could not locate include file ({i+1})")
 
-        #
+        # Substitute (if any) read in preprocessor macros
         for def_tmp, value in defs_tmp.items():
             def_regex = def_regexes.get(def_tmp)
             if def_regex is None:
