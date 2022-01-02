@@ -12,6 +12,7 @@ from multiprocessing import Pool
 from pathlib import Path
 
 # Local modules
+from fortls.constants import FORTRAN_LITERAL
 from fortls.helper_functions import expand_name
 from fortls.intrinsics import (
     get_intrinsic_keywords,
@@ -809,29 +810,26 @@ class LangServer:
 
             # If we have a Fortran literal constant e.g. 100, .false., etc.
             # Return a dummy object with the correct type & position in the doc
-            if (
-                hover_req
-                and curr_scope
-                and (
-                    NUMBER_REGEX.match(def_name)
-                    or LOGICAL_REGEX.match(def_name)
-                    or SQ_STRING_REGEX.match(def_name)
-                    or DQ_STRING_REGEX.match(def_name)
-                )
-            ):
-                # The description name chosen is non-ambiguous and cannot naturally
-                # occur in Fortran (with/out C preproc) code
-                # It is invalid syntax to define a type starting with numerics
-                # it cannot also be a comment that requires !, c, d
-                # and ^= (xor_eq) operator is invalid in Fortran C++ preproc
-                var_obj = fortran_var(
-                    curr_scope.file_ast,
-                    def_line + 1,
-                    def_name,
-                    "0^=__LITERAL_INTERNAL_DUMMY_VAR_",
-                    curr_scope.keywords,
-                )
-                return var_obj
+            if hover_req and curr_scope:
+                var_type = None
+                if NUMBER_REGEX.match(def_name):
+                    if any(s in def_name for s in [".", "e", "d"]):
+                        var_type = f"{FORTRAN_LITERAL}REAL"
+                    else:
+                        var_type = f"{FORTRAN_LITERAL}INTEGER"
+                elif LOGICAL_REGEX.match(def_name):
+                    var_type = f"{FORTRAN_LITERAL}LOGICAL"
+                elif SQ_STRING_REGEX.match(def_name) or DQ_STRING_REGEX.match(def_name):
+                    var_type = f"{FORTRAN_LITERAL}STRING"
+                if var_type:
+                    return fortran_var(
+                        curr_scope.file_ast,
+                        def_line + 1,
+                        def_name,
+                        var_type,
+                        curr_scope.keywords,
+                    )
+
         else:
             return var_obj
         return None
@@ -1119,9 +1117,20 @@ class LangServer:
         elif self.variable_hover and (var_type == VAR_TYPE_ID):
             # Unless we have a Fortran literal include the desc in the hover msg
             # See get_definition for an explanaiton about this default name
-            if var_obj.desc != "0^=__LITERAL_INTERNAL_DUMMY_VAR_":
+            if not var_obj.desc.startswith(FORTRAN_LITERAL):
                 hover_str, highlight = var_obj.get_hover()
                 hover_array.append(create_hover(hover_str, highlight))
+            # Hover for Literal variables
+            elif var_obj.desc.endswith("REAL"):
+                hover_array.append(create_hover("REAL", True))
+            elif var_obj.desc.endswith("INTEGER"):
+                hover_array.append(create_hover("INTEGER", True))
+            elif var_obj.desc.endswith("LOGICAL"):
+                hover_array.append(create_hover("LOGICAL", True))
+            elif var_obj.desc.endswith("STRING"):
+                hover_str = f"CHARACTER(LEN={len(var_obj.name)})"
+                hover_array.append(create_hover(hover_str, True))
+
             # Include the signature if one is present e.g. if in an argument list
             if self.hover_signature:
                 hover_str = create_signature_hover()

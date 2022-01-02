@@ -1,5 +1,11 @@
 # CHANGELONG
 
+## 1.15.2
+
+### Fixes
+
+- Further improves the literal variable hover added in v1.14.0
+
 ## 1.15.1
 
 ### Fixes
