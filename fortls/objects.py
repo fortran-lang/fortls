@@ -1580,6 +1580,7 @@ class fortran_var(fortran_obj):
         self.parent = None
         self.link_obj = None
         self.type_obj = None
+        self.is_const = False
         if link_obj is not None:
             self.link_name = link_obj.lower()
         else:
@@ -1592,6 +1593,8 @@ class fortran_var(fortran_obj):
             self.vis = 1
         if self.keywords.count(KEYWORD_ID_DICT["private"]) > 0:
             self.vis = -1
+        if self.keywords.count(KEYWORD_ID_DICT["parameter"]) > 0:
+            self.is_const = True
 
     def update_fqsn(self, enc_scope=None):
         if enc_scope is not None:
@@ -1673,6 +1676,9 @@ class fortran_var(fortran_obj):
 
     def is_callable(self):
         return self.callable
+
+    def is_parameter(self):
+        return self.is_const
 
     def check_definition(self, obj_tree, known_types={}, interface=False):
         # Check for type definition in scope
