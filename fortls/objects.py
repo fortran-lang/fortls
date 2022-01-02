@@ -3,56 +3,33 @@ import os
 import re
 from collections import namedtuple
 
+from fortls.constants import (
+    ASSOC_TYPE_ID,
+    BASE_TYPE_ID,
+    BLOCK_TYPE_ID,
+    CLASS_TYPE_ID,
+    DO_TYPE_ID,
+    ENUM_TYPE_ID,
+    FUNCTION_TYPE_ID,
+    IF_TYPE_ID,
+    INTERFACE_TYPE_ID,
+    KEYWORD_ID_DICT,
+    KEYWORD_LIST,
+    METH_TYPE_ID,
+    MODULE_TYPE_ID,
+    SELECT_TYPE_ID,
+    SUBMODULE_TYPE_ID,
+    SUBROUTINE_TYPE_ID,
+    VAR_TYPE_ID,
+    WHERE_TYPE_ID,
+)
 from fortls.jsonrpc import path_to_uri
+from fortls.regex_patterns import CLASS_VAR_REGEX, DEF_KIND_REGEX, OBJBREAK_REGEX
 
 # Global variables
 sort_keywords = True
-# Regexes
-CLASS_VAR_REGEX = re.compile(r"(TYPE|CLASS)[ ]*\(", re.I)
-DEF_KIND_REGEX = re.compile(r"([a-z]*)[ ]*\((?:KIND|LEN)?[ =]*([a-z_][a-z0-9_]*)", re.I)
-OBJBREAK_REGEX = re.compile(r"[\/\-(.,+*<>=$: ]", re.I)
 # Helper types
 USE_info = namedtuple("USE_info", ["only_list", "rename_map"])
-# Keyword identifiers
-KEYWORD_LIST = [
-    "pointer",
-    "allocatable",
-    "optional",
-    "public",
-    "private",
-    "nopass",
-    "target",
-    "save",
-    "parameter",
-    "contiguous",
-    "deferred",
-    "dimension",
-    "intent",
-    "pass",
-    "pure",
-    "impure",
-    "elemental",
-    "recursive",
-    "abstract",
-]
-KEYWORD_ID_DICT = {keyword: ind for (ind, keyword) in enumerate(KEYWORD_LIST)}
-# Type identifiers
-BASE_TYPE_ID = -1
-MODULE_TYPE_ID = 1
-SUBROUTINE_TYPE_ID = 2
-FUNCTION_TYPE_ID = 3
-CLASS_TYPE_ID = 4
-INTERFACE_TYPE_ID = 5
-VAR_TYPE_ID = 6
-METH_TYPE_ID = 7
-SUBMODULE_TYPE_ID = 8
-BLOCK_TYPE_ID = 9
-SELECT_TYPE_ID = 10
-DO_TYPE_ID = 11
-WHERE_TYPE_ID = 12
-IF_TYPE_ID = 13
-ASSOC_TYPE_ID = 14
-ENUM_TYPE_ID = 15
 
 
 def set_keyword_ordering(sorted):

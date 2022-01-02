@@ -12,7 +12,17 @@ from multiprocessing import Pool
 from pathlib import Path
 
 # Local modules
-from fortls.constants import FORTRAN_LITERAL
+from fortls.constants import (
+    CLASS_TYPE_ID,
+    FORTRAN_LITERAL,
+    FUNCTION_TYPE_ID,
+    INTERFACE_TYPE_ID,
+    METH_TYPE_ID,
+    MODULE_TYPE_ID,
+    SELECT_TYPE_ID,
+    SUBROUTINE_TYPE_ID,
+    VAR_TYPE_ID,
+)
 from fortls.helper_functions import expand_name
 from fortls.intrinsics import (
     get_intrinsic_keywords,
@@ -21,14 +31,6 @@ from fortls.intrinsics import (
 )
 from fortls.jsonrpc import path_from_uri, path_to_uri
 from fortls.objects import (
-    CLASS_TYPE_ID,
-    FUNCTION_TYPE_ID,
-    INTERFACE_TYPE_ID,
-    METH_TYPE_ID,
-    MODULE_TYPE_ID,
-    SELECT_TYPE_ID,
-    SUBROUTINE_TYPE_ID,
-    VAR_TYPE_ID,
     climb_type_tree,
     find_in_scope,
     find_in_workspace,
@@ -42,6 +44,7 @@ from fortls.objects import (
 from fortls.parse_fortran import fortran_file, get_line_context, process_file
 from fortls.regex_patterns import (
     DQ_STRING_REGEX,
+    INT_STMNT_REGEX,
     LOGICAL_REGEX,
     NUMBER_REGEX,
     SQ_STRING_REGEX,
@@ -50,8 +53,6 @@ from fortls.regex_patterns import (
 log = logging.getLogger(__name__)
 # Global regexes
 FORTRAN_EXT_REGEX = re.compile(r"\.F(77|90|95|03|08|OR|PP)?$", re.I)
-# TODO: I think this can be replaced by fortls.regex_patterns
-INT_STMNT_REGEX = re.compile(r"^[ ]*[a-z]*$", re.I)
 # TODO: I think this can be replaced by fortls.regex_patterns type & class
 TYPE_DEF_REGEX = re.compile(r"[ ]*(TYPE|CLASS)[ ]*\([a-z0-9_ ]*$", re.I)
 # TODO: I think this can be replaced by fortls.regex_patterns

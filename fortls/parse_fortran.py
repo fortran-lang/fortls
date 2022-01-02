@@ -7,7 +7,13 @@ import re
 import sys
 from collections import namedtuple
 
-from fortls.constants import PY3K
+from fortls.constants import (
+    DO_TYPE_ID,
+    INTERFACE_TYPE_ID,
+    PY3K,
+    SELECT_TYPE_ID,
+    SUBMODULE_TYPE_ID,
+)
 from fortls.helper_functions import (
     detect_fixed_format,
     find_paren_match,
@@ -17,10 +23,6 @@ from fortls.helper_functions import (
     strip_strings,
 )
 from fortls.objects import (
-    DO_TYPE_ID,
-    INTERFACE_TYPE_ID,
-    SELECT_TYPE_ID,
-    SUBMODULE_TYPE_ID,
     fortran_associate,
     fortran_ast,
     fortran_block,

@@ -120,3 +120,7 @@ END_REGEX = re.compile(
     r"[ ]*(END)( |MODULE|PROGRAM|SUBROUTINE|FUNCTION|PROCEDURE|TYPE|DO|IF|SELECT)?",
     re.I,
 )
+# Object regex patterns
+CLASS_VAR_REGEX = re.compile(r"(TYPE|CLASS)[ ]*\(", re.I)
+DEF_KIND_REGEX = re.compile(r"([a-z]*)[ ]*\((?:KIND|LEN)?[ =]*([a-z_]\w*)", re.I)
+OBJBREAK_REGEX = re.compile(r"[\/\-(.,+*<>=$: ]", re.I)
