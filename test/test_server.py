@@ -483,6 +483,16 @@ def test_refs():
 
 
 def test_hover():
+    def hover_req(file_path: str, ln: int, col: int) -> str:
+        return write_rpc_request(
+            1,
+            "textDocument/hover",
+            {
+                "textDocument": {"uri": file_path},
+                "position": {"line": ln, "character": col},
+            },
+        )
+
     def check_return(result_array, checks):
         assert len(result_array) == len(checks)
         for (i, check) in enumerate(checks):
@@ -491,22 +501,32 @@ def test_hover():
     #
     string = write_rpc_request(1, "initialize", {"rootPath": test_dir})
     file_path = os.path.join(test_dir, "subdir", "test_abstract.f90")
-    string += write_rpc_request(
-        2,
-        "textDocument/hover",
-        {"textDocument": {"uri": file_path}, "position": {"line": 7, "character": 30}},
-    )
-    errcode, results = run_request(string)
+    string += hover_req(file_path, 7, 30)
+    file_path = os.path.join(test_dir, "hover", "parameters.f90")
+    string += hover_req(file_path, 2, 28)
+    string += hover_req(file_path, 3, 28)
+    string += hover_req(file_path, 4, 28)
+    string += hover_req(file_path, 4, 41)
+    string += hover_req(file_path, 6, 28)
+    string += hover_req(file_path, 7, 38)
+    string += hover_req(file_path, 7, 55)
+    errcode, results = run_request(string, fortls_args=" --variable_hover")
     assert errcode == 0
     #
-    check_return(
-        results[1:],
-        (
-            """SUBROUTINE test(a, b)
+    ref_results = (
+        """SUBROUTINE test(a, b)
  INTEGER(4), DIMENSION(3,6), INTENT(IN) :: a
  REAL(8), DIMENSION(4), INTENT(OUT) :: b""",
-        ),
+        "INTEGER, PARAMETER :: var = 1000",
+        "INTEGER",
+        "INTEGER, PARAMETER :: var2 = 23",
+        "INTEGER, PARAMETER :: var3 = var*var2",
+        "INTEGER, PARAMETER :: var4 = 123",
+        "DOUBLE PRECISION, PARAMETER :: somevar = 23.12",
+        "DOUBLE PRECISION, PARAMETER :: some = 1e-19",
     )
+    assert len(ref_results) == len(results) - 1
+    check_return(results[1:], ref_results)
 
 
 def test_docs():
