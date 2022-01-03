@@ -93,6 +93,7 @@ from fortls.regex_patterns import (
     MOD_REGEX,
     NAT_VAR_REGEX,
     NON_DEF_REGEX,
+    PARAMETER_VAL_REGEX,
     PP_DEF_REGEX,
     PP_INCLUDE_REGEX,
     PP_REGEX,
@@ -1554,6 +1555,14 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                             keyword_info=keyword_info,
                             link_obj=link_name,
                         )
+                        # If the object is fortran_var and a parameter include
+                        #  the value in hover
+                        if new_var.is_parameter():
+                            _, col = find_word_in_line(line, name_stripped)
+                            match = PARAMETER_VAL_REGEX.match(line[col:])
+                            if match:
+                                var = match.group(1).strip()
+                                new_var.set_parameter_val(var)
                     file_ast.add_variable(new_var)
                 parser_debug_msg("VARIABLE", line, line_number)
 

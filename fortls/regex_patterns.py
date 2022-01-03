@@ -72,6 +72,7 @@ KEYWORD_LIST_REGEX = re.compile(
     r"CONTIGUOUS)",
     re.I,
 )
+PARAMETER_VAL_REGEX = re.compile(r"[\w]*[\s\&]*=[\s\&]*([\w\.\*\-\+\\]*)", re.I)
 TATTR_LIST_REGEX = re.compile(
     r"[ ]*,[ ]*(PUBLIC|PRIVATE|ABSTRACT|EXTENDS\([a-z0-9_]*\))", re.I
 )

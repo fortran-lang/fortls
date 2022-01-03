@@ -1581,6 +1581,7 @@ class fortran_var(fortran_obj):
         self.link_obj = None
         self.type_obj = None
         self.is_const = False
+        self.param_val: str = None
         if link_obj is not None:
             self.link_name = link_obj.lower()
         else:
@@ -1664,6 +1665,9 @@ class fortran_var(fortran_obj):
         hover_str = ", ".join(
             [self.desc] + get_keywords(self.keywords, self.keyword_info)
         )
+        # Add parameter value in the output
+        if self.is_parameter() and self.param_val:
+            hover_str += f" :: {self.name} = {self.param_val}"
         if include_doc and (doc_str is not None):
             hover_str += "\n {0}".format("\n ".join(doc_str.splitlines()))
         return hover_str, True
@@ -1679,6 +1683,9 @@ class fortran_var(fortran_obj):
 
     def is_parameter(self):
         return self.is_const
+
+    def set_parameter_val(self, val: str):
+        self.param_val = val
 
     def check_definition(self, obj_tree, known_types={}, interface=False):
         # Check for type definition in scope
