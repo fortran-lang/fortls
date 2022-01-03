@@ -81,25 +81,44 @@ def init_file(filepath, pp_defs, pp_suffixes, include_dirs):
     return file_obj, None
 
 
-def get_line_prefix(pre_lines, curr_line, iChar):
-    """Get code line prefix from current line and preceding continuation lines"""
-    if (curr_line is None) or (iChar > len(curr_line)) or (curr_line.startswith("#")):
+def get_line_prefix(pre_lines: list, curr_line: str, col: int, qs: bool = True) -> str:
+    """Get code line prefix from current line and preceding continuation lines
+
+    Parameters
+    ----------
+    pre_lines : list
+        for multiline cases get all the previous, relevant lines
+    curr_line : str
+        the current line
+    col : int
+        column index of the current line
+    qs : bool, optional
+        strip quotes i.e. string literals from `curr_line` and `pre_lines`.
+        Need this disable when hovering over string literals, by default True
+
+    Returns
+    -------
+    str
+        part of the line including any relevant line continuations before `col`
+    """
+    if (curr_line is None) or (col > len(curr_line)) or (curr_line.startswith("#")):
         return None
     prepend_string = "".join(pre_lines)
     curr_line = prepend_string + curr_line
-    iChar += len(prepend_string)
-    line_prefix = curr_line[:iChar].lower()
+    col += len(prepend_string)
+    line_prefix = curr_line[:col].lower()
     # Ignore string literals
-    if (line_prefix.find("'") > -1) or (line_prefix.find('"') > -1):
-        sq_count = 0
-        dq_count = 0
-        for char in line_prefix:
-            if (char == "'") and (dq_count % 2 == 0):
-                sq_count += 1
-            elif (char == '"') and (sq_count % 2 == 0):
-                dq_count += 1
-        if (dq_count % 2 == 1) or (sq_count % 2 == 1):
-            return None
+    if qs:
+        if (line_prefix.find("'") > -1) or (line_prefix.find('"') > -1):
+            sq_count = 0
+            dq_count = 0
+            for char in line_prefix:
+                if (char == "'") and (dq_count % 2 == 0):
+                    sq_count += 1
+                elif (char == '"') and (sq_count % 2 == 0):
+                    dq_count += 1
+            if (dq_count % 2 == 1) or (sq_count % 2 == 1):
+                return None
     return line_prefix
 
 
