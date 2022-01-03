@@ -7,20 +7,25 @@ import re
 import sys
 from collections import namedtuple
 
-from fortls.constants import PY3K
+from fortls.constants import (
+    DO_TYPE_ID,
+    INTERFACE_TYPE_ID,
+    PY3K,
+    SELECT_TYPE_ID,
+    SUBMODULE_TYPE_ID,
+)
 from fortls.helper_functions import (
     detect_fixed_format,
     find_paren_match,
     find_word_in_line,
+    get_paren_level,
+    get_paren_substring,
+    map_keywords,
     separate_def_list,
     strip_line_label,
     strip_strings,
 )
 from fortls.objects import (
-    DO_TYPE_ID,
-    INTERFACE_TYPE_ID,
-    SELECT_TYPE_ID,
-    SUBMODULE_TYPE_ID,
     fortran_associate,
     fortran_ast,
     fortran_block,
@@ -39,15 +44,13 @@ from fortls.objects import (
     fortran_type,
     fortran_var,
     fortran_where,
-    get_paren_level,
-    get_paren_substring,
-    map_keywords,
 )
 from fortls.regex_patterns import (
     ASSOCIATE_REGEX,
     BLOCK_REGEX,
     CALL_REGEX,
     CONTAINS_REGEX,
+    DEFINED_REGEX,
     DO_REGEX,
     END_ASSOCIATE_REGEX,
     END_BLOCK_REGEX,
@@ -90,6 +93,7 @@ from fortls.regex_patterns import (
     MOD_REGEX,
     NAT_VAR_REGEX,
     NON_DEF_REGEX,
+    PARAMETER_VAL_REGEX,
     PP_DEF_REGEX,
     PP_INCLUDE_REGEX,
     PP_REGEX,
@@ -1034,7 +1038,7 @@ def preprocess_file(
     # Look for and mark excluded preprocessor paths in file
     # Initial implementation only looks for "if" and "ifndef" statements.
     # For "if" statements all blocks are excluded except the "else" block if present
-    # For "ifndef" statements all blocks excluding the first block are exlucded
+    # For "ifndef" statements all blocks excluding the first block are excluded
     def eval_pp_if(text, defs={}):
         def replace_ops(expr):
             expr = expr.replace("&&", " and ")
@@ -1045,9 +1049,6 @@ def preprocess_file(
             return expr
 
         def replace_defined(line):
-            DEFINED_REGEX = re.compile(
-                r"defined[ ]*\([ ]*([a-z_][a-z0-9_]*)[ ]*\)", re.I
-            )
             i0 = 0
             out_line = ""
             for match in DEFINED_REGEX.finditer(line):
@@ -1106,7 +1107,7 @@ def preprocess_file(
             continue
         # Handle conditional statements
         match = PP_REGEX.match(line)
-        if match is not None:
+        if match:
             output_file.append(line)
             def_name = None
             if_start = False
@@ -1192,6 +1193,9 @@ def preprocess_file(
             log.debug(f"{line.strip()} !!! Include statement({i+1})")
             include_filename = match.group(1).replace('"', "")
             include_path = None
+            # Intentionally keep this as a list and not a set. There are cases
+            # where projects play tricks with the include order of their headers
+            # to get their codes to compile. Using a set would not permit that.
             for include_dir in include_dirs:
                 include_path_tmp = os.path.join(include_dir, include_filename)
                 if os.path.isfile(include_path_tmp):
@@ -1221,7 +1225,7 @@ def preprocess_file(
             else:
                 log.debug(f"{line.strip()} !!! Could not locate include file ({i+1})")
 
-        #
+        # Substitute (if any) read in preprocessor macros
         for def_tmp, value in defs_tmp.items():
             def_regex = def_regexes.get(def_tmp)
             if def_regex is None:
@@ -1551,6 +1555,14 @@ def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_d
                             keyword_info=keyword_info,
                             link_obj=link_name,
                         )
+                        # If the object is fortran_var and a parameter include
+                        #  the value in hover
+                        if new_var.is_parameter():
+                            _, col = find_word_in_line(line, name_stripped)
+                            match = PARAMETER_VAL_REGEX.match(line[col:])
+                            if match:
+                                var = match.group(1).strip()
+                                new_var.set_parameter_val(var)
                     file_ast.add_variable(new_var)
                 parser_debug_msg("VARIABLE", line, line_number)
 

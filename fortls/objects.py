@@ -3,99 +3,31 @@ import os
 import re
 from collections import namedtuple
 
+from fortls.constants import (
+    ASSOC_TYPE_ID,
+    BASE_TYPE_ID,
+    BLOCK_TYPE_ID,
+    CLASS_TYPE_ID,
+    DO_TYPE_ID,
+    ENUM_TYPE_ID,
+    FUNCTION_TYPE_ID,
+    IF_TYPE_ID,
+    INTERFACE_TYPE_ID,
+    KEYWORD_ID_DICT,
+    METH_TYPE_ID,
+    MODULE_TYPE_ID,
+    SELECT_TYPE_ID,
+    SUBMODULE_TYPE_ID,
+    SUBROUTINE_TYPE_ID,
+    VAR_TYPE_ID,
+    WHERE_TYPE_ID,
+)
+from fortls.helper_functions import get_keywords, get_paren_substring, get_var_stack
 from fortls.jsonrpc import path_to_uri
+from fortls.regex_patterns import CLASS_VAR_REGEX, DEF_KIND_REGEX
 
-# Global variables
-sort_keywords = True
-# Regexes
-CLASS_VAR_REGEX = re.compile(r"(TYPE|CLASS)[ ]*\(", re.I)
-DEF_KIND_REGEX = re.compile(r"([a-z]*)[ ]*\((?:KIND|LEN)?[ =]*([a-z_][a-z0-9_]*)", re.I)
-OBJBREAK_REGEX = re.compile(r"[\/\-(.,+*<>=$: ]", re.I)
 # Helper types
 USE_info = namedtuple("USE_info", ["only_list", "rename_map"])
-# Keyword identifiers
-KEYWORD_LIST = [
-    "pointer",
-    "allocatable",
-    "optional",
-    "public",
-    "private",
-    "nopass",
-    "target",
-    "save",
-    "parameter",
-    "contiguous",
-    "deferred",
-    "dimension",
-    "intent",
-    "pass",
-    "pure",
-    "impure",
-    "elemental",
-    "recursive",
-    "abstract",
-]
-KEYWORD_ID_DICT = {keyword: ind for (ind, keyword) in enumerate(KEYWORD_LIST)}
-# Type identifiers
-BASE_TYPE_ID = -1
-MODULE_TYPE_ID = 1
-SUBROUTINE_TYPE_ID = 2
-FUNCTION_TYPE_ID = 3
-CLASS_TYPE_ID = 4
-INTERFACE_TYPE_ID = 5
-VAR_TYPE_ID = 6
-METH_TYPE_ID = 7
-SUBMODULE_TYPE_ID = 8
-BLOCK_TYPE_ID = 9
-SELECT_TYPE_ID = 10
-DO_TYPE_ID = 11
-WHERE_TYPE_ID = 12
-IF_TYPE_ID = 13
-ASSOC_TYPE_ID = 14
-ENUM_TYPE_ID = 15
-
-
-def set_keyword_ordering(sorted):
-    global sort_keywords
-    sort_keywords = sorted
-
-
-def map_keywords(keywords):
-    mapped_keywords = []
-    keyword_info = {}
-    for keyword in keywords:
-        keyword_prefix = keyword.split("(")[0].lower()
-        keyword_ind = KEYWORD_ID_DICT.get(keyword_prefix)
-        if keyword_ind is not None:
-            mapped_keywords.append(keyword_ind)
-            if keyword_prefix in ("intent", "dimension", "pass"):
-                keyword_substring = get_paren_substring(keyword)
-                if keyword_substring is not None:
-                    keyword_info[keyword_prefix] = keyword_substring
-    if sort_keywords:
-        mapped_keywords.sort()
-    return mapped_keywords, keyword_info
-
-
-def get_keywords(keywords, keyword_info={}):
-    keyword_strings = []
-    for keyword_id in keywords:
-        string_rep = KEYWORD_LIST[keyword_id]
-        addl_info = keyword_info.get(string_rep)
-        string_rep = string_rep.upper()
-        if addl_info is not None:
-            string_rep += "({0})".format(addl_info)
-        keyword_strings.append(string_rep)
-    return keyword_strings
-
-
-def get_paren_substring(test_str):
-    i1 = test_str.find("(")
-    i2 = test_str.rfind(")")
-    if i1 > -1 and i2 > i1:
-        return test_str[i1 + 1 : i2]
-    else:
-        return None
 
 
 def get_use_tree(scope, use_dict, obj_tree, only_list=[], rename_map={}, curr_path=[]):
@@ -253,79 +185,6 @@ def find_in_workspace(obj_tree, query, filter_public=False, exact_match=False):
                 filtered_symbols.append(symbol)
         matching_symbols = filtered_symbols
     return matching_symbols
-
-
-def get_paren_level(line):
-    """Get sub-string corresponding to a single parenthesis level,
-    via backward search up through the line.
-
-    Examples:
-      "CALL sub1(arg1,arg2" -> ("arg1,arg2", [[10, 19]])
-      "CALL sub1(arg1(i),arg2" -> ("arg1,arg2", [[10, 14], [17, 22]])
-    """
-    if line == "":
-        return "", [[0, 0]]
-    level = 0
-    in_string = False
-    string_char = ""
-    i1 = len(line)
-    sections = []
-    for i in range(len(line) - 1, -1, -1):
-        char = line[i]
-        if in_string:
-            if char == string_char:
-                in_string = False
-            continue
-        if (char == "(") or (char == "["):
-            level -= 1
-            if level == 0:
-                i1 = i
-            elif level < 0:
-                sections.append([i + 1, i1])
-                break
-        elif (char == ")") or (char == "]"):
-            level += 1
-            if level == 1:
-                sections.append([i + 1, i1])
-        elif (char == "'") or (char == '"'):
-            in_string = True
-            string_char = char
-    if level == 0:
-        sections.append([i, i1])
-    sections.reverse()
-    out_string = ""
-    for section in sections:
-        out_string += line[section[0] : section[1]]
-    return out_string, sections
-
-
-def get_var_stack(line):
-    """Get user-defined type field sequence terminating the given line
-
-    Examples:
-      "myvar%foo%bar" -> ["myvar", "foo", "bar"]
-      "myarray(i)%foo%bar" -> ["myarray", "foo", "bar"]
-      "CALL self%method(this%foo" -> ["this", "foo"]
-    """
-    if len(line) == 0:
-        return [""]
-    final_var, sections = get_paren_level(line)
-    if final_var == "":
-        return [""]
-    # Continuation of variable after paren requires '%' character
-    iLast = 0
-    for (i, section) in enumerate(sections):
-        if not line[section[0] : section[1]].startswith("%"):
-            iLast = i
-    final_var = ""
-    for section in sections[iLast:]:
-        final_var += line[section[0] : section[1]]
-    #
-    if final_var is not None:
-        final_op_split = OBJBREAK_REGEX.split(final_var)
-        return final_op_split[-1].split("%")
-    else:
-        return None
 
 
 def climb_type_tree(var_stack, curr_scope, obj_tree):
@@ -1603,6 +1462,8 @@ class fortran_var(fortran_obj):
         self.parent = None
         self.link_obj = None
         self.type_obj = None
+        self.is_const = False
+        self.param_val: str = None
         if link_obj is not None:
             self.link_name = link_obj.lower()
         else:
@@ -1615,6 +1476,8 @@ class fortran_var(fortran_obj):
             self.vis = 1
         if self.keywords.count(KEYWORD_ID_DICT["private"]) > 0:
             self.vis = -1
+        if self.keywords.count(KEYWORD_ID_DICT["parameter"]) > 0:
+            self.is_const = True
 
     def update_fqsn(self, enc_scope=None):
         if enc_scope is not None:
@@ -1684,6 +1547,9 @@ class fortran_var(fortran_obj):
         hover_str = ", ".join(
             [self.desc] + get_keywords(self.keywords, self.keyword_info)
         )
+        # Add parameter value in the output
+        if self.is_parameter() and self.param_val:
+            hover_str += f" :: {self.name} = {self.param_val}"
         if include_doc and (doc_str is not None):
             hover_str += "\n {0}".format("\n ".join(doc_str.splitlines()))
         return hover_str, True
@@ -1696,6 +1562,12 @@ class fortran_var(fortran_obj):
 
     def is_callable(self):
         return self.callable
+
+    def is_parameter(self):
+        return self.is_const
+
+    def set_parameter_val(self, val: str):
+        self.param_val = val
 
     def check_definition(self, obj_tree, known_types={}, interface=False):
         # Check for type definition in scope

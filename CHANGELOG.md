@@ -1,5 +1,19 @@
 # CHANGELONG
 
+## 1.16.0
+
+### Adds
+
+- Adds value for `PARAMETER` variables on hover
+  ([#116](https://github.com/hansec/fortran-language-server/issues/116))
+  ([gnikit/fortls#1](https://github.com/gnikit/fortls/issues/1))
+
+## 1.15.2
+
+### Fixes
+
+- Further improves the literal variable hover added in v1.14.0
+
 ## 1.15.1
 
 ### Fixes

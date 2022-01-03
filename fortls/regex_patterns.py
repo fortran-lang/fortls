@@ -72,6 +72,7 @@ KEYWORD_LIST_REGEX = re.compile(
     r"CONTIGUOUS)",
     re.I,
 )
+PARAMETER_VAL_REGEX = re.compile(r"[\w]*[\s\&]*=[\s\&]*([\w\.\*\-\+\\]*)", re.I)
 TATTR_LIST_REGEX = re.compile(
     r"[ ]*,[ ]*(PUBLIC|PRIVATE|ABSTRACT|EXTENDS\([a-z0-9_]*\))", re.I
 )
@@ -102,6 +103,7 @@ FREE_DOC_MATCH = re.compile(r"[ ]*!(<|>|!)")
 FREE_OPENMP_MATCH = re.compile(r"[ ]*!\$OMP", re.I)
 FREE_FORMAT_TEST = re.compile(r"[ ]{1,4}[a-z]", re.I)
 # Preprocessor mathching rules
+DEFINED_REGEX = re.compile(r"defined[ ]*\([ ]*([a-z_][a-z0-9_]*)[ ]*\)", re.I)
 PP_REGEX = re.compile(r"#(if |ifdef|ifndef|else|elif|endif)")
 PP_DEF_REGEX = re.compile(r"#(define|undef)[ ]*([a-z0-9_]+)", re.I)
 PP_DEF_TEST_REGEX = re.compile(r"(![ ]*)?defined[ ]*\([ ]*([a-z0-9_]*)[ ]*\)$", re.I)
@@ -119,3 +121,7 @@ END_REGEX = re.compile(
     r"[ ]*(END)( |MODULE|PROGRAM|SUBROUTINE|FUNCTION|PROCEDURE|TYPE|DO|IF|SELECT)?",
     re.I,
 )
+# Object regex patterns
+CLASS_VAR_REGEX = re.compile(r"(TYPE|CLASS)[ ]*\(", re.I)
+DEF_KIND_REGEX = re.compile(r"([a-z]*)[ ]*\((?:KIND|LEN)?[ =]*([a-z_]\w*)", re.I)
+OBJBREAK_REGEX = re.compile(r"[\/\-(.,+*<>=$: ]", re.I)

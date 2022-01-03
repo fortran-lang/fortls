@@ -1,6 +1,5 @@
 # TODO: make FORTRAN_EXT_REGEX be able to update from user input extensions
 # TODO: enable jsonc C-style comments
-
 from __future__ import annotations
 
 import json
@@ -12,15 +11,9 @@ from multiprocessing import Pool
 from pathlib import Path
 
 # Local modules
-from fortls.helper_functions import expand_name
-from fortls.intrinsics import (
-    get_intrinsic_keywords,
-    load_intrinsics,
-    set_lowercase_intrinsics,
-)
-from fortls.jsonrpc import path_from_uri, path_to_uri
-from fortls.objects import (
+from fortls.constants import (
     CLASS_TYPE_ID,
+    FORTRAN_LITERAL,
     FUNCTION_TYPE_ID,
     INTERFACE_TYPE_ID,
     METH_TYPE_ID,
@@ -28,19 +21,34 @@ from fortls.objects import (
     SELECT_TYPE_ID,
     SUBROUTINE_TYPE_ID,
     VAR_TYPE_ID,
+)
+from fortls.helper_functions import (
+    expand_name,
+    get_line_prefix,
+    get_paren_level,
+    get_var_stack,
+    only_dirs,
+    resolve_globs,
+    set_keyword_ordering,
+)
+from fortls.intrinsics import (
+    get_intrinsic_keywords,
+    load_intrinsics,
+    set_lowercase_intrinsics,
+)
+from fortls.jsonrpc import path_from_uri, path_to_uri
+from fortls.objects import (
     climb_type_tree,
     find_in_scope,
     find_in_workspace,
     fortran_ast,
     fortran_var,
-    get_paren_level,
     get_use_tree,
-    get_var_stack,
-    set_keyword_ordering,
 )
 from fortls.parse_fortran import fortran_file, get_line_context, process_file
 from fortls.regex_patterns import (
     DQ_STRING_REGEX,
+    INT_STMNT_REGEX,
     LOGICAL_REGEX,
     NUMBER_REGEX,
     SQ_STRING_REGEX,
@@ -49,8 +57,6 @@ from fortls.regex_patterns import (
 log = logging.getLogger(__name__)
 # Global regexes
 FORTRAN_EXT_REGEX = re.compile(r"\.F(77|90|95|03|08|OR|PP)?$", re.I)
-# TODO: I think this can be replaced by fortls.regex_patterns
-INT_STMNT_REGEX = re.compile(r"^[ ]*[a-z]*$", re.I)
 # TODO: I think this can be replaced by fortls.regex_patterns type & class
 TYPE_DEF_REGEX = re.compile(r"[ ]*(TYPE|CLASS)[ ]*\([a-z0-9_ ]*$", re.I)
 # TODO: I think this can be replaced by fortls.regex_patterns
@@ -77,79 +83,6 @@ def init_file(filepath, pp_defs, pp_suffixes, include_dirs):
         return None, "Error during parsing"
     file_obj.ast = file_ast
     return file_obj, None
-
-
-def get_line_prefix(pre_lines, curr_line, iChar):
-    """Get code line prefix from current line and preceding continuation lines"""
-    if (curr_line is None) or (iChar > len(curr_line)) or (curr_line.startswith("#")):
-        return None
-    prepend_string = "".join(pre_lines)
-    curr_line = prepend_string + curr_line
-    iChar += len(prepend_string)
-    line_prefix = curr_line[:iChar].lower()
-    # Ignore string literals
-    if (line_prefix.find("'") > -1) or (line_prefix.find('"') > -1):
-        sq_count = 0
-        dq_count = 0
-        for char in line_prefix:
-            if (char == "'") and (dq_count % 2 == 0):
-                sq_count += 1
-            elif (char == '"') and (sq_count % 2 == 0):
-                dq_count += 1
-        if (dq_count % 2 == 1) or (sq_count % 2 == 1):
-            return None
-    return line_prefix
-
-
-def resolve_globs(glob_path: str, root_path: str = None) -> list[str]:
-    """Resolve glob patterns
-
-    Parameters
-    ----------
-    glob_path : str
-        Path containing the glob pattern follows
-        `fnmatch` glob pattern, can include relative paths, etc.
-        see fnmatch: https://docs.python.org/3/library/fnmatch.html#module-fnmatch
-
-    root_path : str, optional
-        root path to start glob search. If left empty the root_path will be
-        extracted from the glob_path, by default None
-
-    Returns
-    -------
-    list[str]
-        Expanded glob patterns with absolute paths.
-        Absolute paths are used to resolve any potential ambiguity
-    """
-    # Path.glob returns a generator, we then cast the Path obj to a str
-    # alternatively use p.as_posix()
-    if root_path:
-        return [str(p) for p in Path(root_path).resolve().glob(glob_path)]
-    # Attempt to extract the root and glob pattern from the glob_path
-    # This is substantially less robust that then above
-    else:
-        p = Path(glob_path).expanduser()
-        parts = p.parts[p.is_absolute() :]
-        return [str(i) for i in Path(p.root).resolve().glob(str(Path(*parts)))]
-
-
-def only_dirs(paths: list[str], err_msg: list = []) -> list[str]:
-    dirs: list[str] = []
-    for p in paths:
-        if os.path.isdir(p):
-            dirs.append(p)
-        elif os.path.isfile(p):
-            continue
-        else:
-            msg: str = (
-                f"Directory '{p}' specified in Configuration settings file does not"
-                " exist"
-            )
-            if err_msg:
-                err_msg.append([2, msg])
-            else:
-                log.warning(msg)
-    return dirs
 
 
 class LangServer:
@@ -758,7 +691,7 @@ class LangServer:
             def_line, forward=False, strip_comment=True
         )
         # Returns none for string literals, when the query is in the middle
-        line_prefix = get_line_prefix(pre_lines, curr_line, def_char)
+        line_prefix = get_line_prefix(pre_lines, curr_line, def_char, qs=False)
         if line_prefix is None:
             return None
         is_member = False
@@ -809,29 +742,26 @@ class LangServer:
 
             # If we have a Fortran literal constant e.g. 100, .false., etc.
             # Return a dummy object with the correct type & position in the doc
-            if (
-                hover_req
-                and curr_scope
-                and (
-                    NUMBER_REGEX.match(def_name)
-                    or LOGICAL_REGEX.match(def_name)
-                    or SQ_STRING_REGEX.match(def_name)
-                    or DQ_STRING_REGEX.match(def_name)
-                )
-            ):
-                # The description name chosen is non-ambiguous and cannot naturally
-                # occur in Fortran (with/out C preproc) code
-                # It is invalid syntax to define a type starting with numerics
-                # it cannot also be a comment that requires !, c, d
-                # and ^= (xor_eq) operator is invalid in Fortran C++ preproc
-                var_obj = fortran_var(
-                    curr_scope.file_ast,
-                    def_line + 1,
-                    def_name,
-                    "0^=__LITERAL_INTERNAL_DUMMY_VAR_",
-                    curr_scope.keywords,
-                )
-                return var_obj
+            if hover_req and curr_scope:
+                var_type = None
+                if NUMBER_REGEX.match(def_name):
+                    if any(s in def_name for s in [".", "e", "d"]):
+                        var_type = f"{FORTRAN_LITERAL}REAL"
+                    else:
+                        var_type = f"{FORTRAN_LITERAL}INTEGER"
+                elif LOGICAL_REGEX.match(def_name):
+                    var_type = f"{FORTRAN_LITERAL}LOGICAL"
+                elif SQ_STRING_REGEX.match(def_name) or DQ_STRING_REGEX.match(def_name):
+                    var_type = f"{FORTRAN_LITERAL}STRING"
+                if var_type:
+                    return fortran_var(
+                        curr_scope.file_ast,
+                        def_line + 1,
+                        def_name,
+                        var_type,
+                        curr_scope.keywords,
+                    )
+
         else:
             return var_obj
         return None
@@ -1108,7 +1038,7 @@ class LangServer:
         # Construct hover information
         var_type = var_obj.get_type()
         hover_array = []
-        if (var_type == SUBROUTINE_TYPE_ID) or (var_type == FUNCTION_TYPE_ID):
+        if var_type in (SUBROUTINE_TYPE_ID, FUNCTION_TYPE_ID):
             hover_str, highlight = var_obj.get_hover(long=True)
             hover_array.append(create_hover(hover_str, highlight))
         elif var_type == INTERFACE_TYPE_ID:
@@ -1119,9 +1049,20 @@ class LangServer:
         elif self.variable_hover and (var_type == VAR_TYPE_ID):
             # Unless we have a Fortran literal include the desc in the hover msg
             # See get_definition for an explanaiton about this default name
-            if var_obj.desc != "0^=__LITERAL_INTERNAL_DUMMY_VAR_":
+            if not var_obj.desc.startswith(FORTRAN_LITERAL):
                 hover_str, highlight = var_obj.get_hover()
                 hover_array.append(create_hover(hover_str, highlight))
+            # Hover for Literal variables
+            elif var_obj.desc.endswith("REAL"):
+                hover_array.append(create_hover("REAL", True))
+            elif var_obj.desc.endswith("INTEGER"):
+                hover_array.append(create_hover("INTEGER", True))
+            elif var_obj.desc.endswith("LOGICAL"):
+                hover_array.append(create_hover("LOGICAL", True))
+            elif var_obj.desc.endswith("STRING"):
+                hover_str = f"CHARACTER(LEN={len(var_obj.name)})"
+                hover_array.append(create_hover(hover_str, True))
+
             # Include the signature if one is present e.g. if in an argument list
             if self.hover_signature:
                 hover_str = create_signature_hover()
