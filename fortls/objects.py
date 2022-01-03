@@ -14,7 +14,6 @@ from fortls.constants import (
     IF_TYPE_ID,
     INTERFACE_TYPE_ID,
     KEYWORD_ID_DICT,
-    KEYWORD_LIST,
     METH_TYPE_ID,
     MODULE_TYPE_ID,
     SELECT_TYPE_ID,
@@ -23,56 +22,12 @@ from fortls.constants import (
     VAR_TYPE_ID,
     WHERE_TYPE_ID,
 )
+from fortls.helper_functions import get_keywords, get_paren_substring, get_var_stack
 from fortls.jsonrpc import path_to_uri
-from fortls.regex_patterns import CLASS_VAR_REGEX, DEF_KIND_REGEX, OBJBREAK_REGEX
+from fortls.regex_patterns import CLASS_VAR_REGEX, DEF_KIND_REGEX
 
-# Global variables
-sort_keywords = True
 # Helper types
 USE_info = namedtuple("USE_info", ["only_list", "rename_map"])
-
-
-def set_keyword_ordering(sorted):
-    global sort_keywords
-    sort_keywords = sorted
-
-
-def map_keywords(keywords):
-    mapped_keywords = []
-    keyword_info = {}
-    for keyword in keywords:
-        keyword_prefix = keyword.split("(")[0].lower()
-        keyword_ind = KEYWORD_ID_DICT.get(keyword_prefix)
-        if keyword_ind is not None:
-            mapped_keywords.append(keyword_ind)
-            if keyword_prefix in ("intent", "dimension", "pass"):
-                keyword_substring = get_paren_substring(keyword)
-                if keyword_substring is not None:
-                    keyword_info[keyword_prefix] = keyword_substring
-    if sort_keywords:
-        mapped_keywords.sort()
-    return mapped_keywords, keyword_info
-
-
-def get_keywords(keywords, keyword_info={}):
-    keyword_strings = []
-    for keyword_id in keywords:
-        string_rep = KEYWORD_LIST[keyword_id]
-        addl_info = keyword_info.get(string_rep)
-        string_rep = string_rep.upper()
-        if addl_info is not None:
-            string_rep += "({0})".format(addl_info)
-        keyword_strings.append(string_rep)
-    return keyword_strings
-
-
-def get_paren_substring(test_str):
-    i1 = test_str.find("(")
-    i2 = test_str.rfind(")")
-    if i1 > -1 and i2 > i1:
-        return test_str[i1 + 1 : i2]
-    else:
-        return None
 
 
 def get_use_tree(scope, use_dict, obj_tree, only_list=[], rename_map={}, curr_path=[]):
@@ -230,79 +185,6 @@ def find_in_workspace(obj_tree, query, filter_public=False, exact_match=False):
                 filtered_symbols.append(symbol)
         matching_symbols = filtered_symbols
     return matching_symbols
-
-
-def get_paren_level(line):
-    """Get sub-string corresponding to a single parenthesis level,
-    via backward search up through the line.
-
-    Examples:
-      "CALL sub1(arg1,arg2" -> ("arg1,arg2", [[10, 19]])
-      "CALL sub1(arg1(i),arg2" -> ("arg1,arg2", [[10, 14], [17, 22]])
-    """
-    if line == "":
-        return "", [[0, 0]]
-    level = 0
-    in_string = False
-    string_char = ""
-    i1 = len(line)
-    sections = []
-    for i in range(len(line) - 1, -1, -1):
-        char = line[i]
-        if in_string:
-            if char == string_char:
-                in_string = False
-            continue
-        if (char == "(") or (char == "["):
-            level -= 1
-            if level == 0:
-                i1 = i
-            elif level < 0:
-                sections.append([i + 1, i1])
-                break
-        elif (char == ")") or (char == "]"):
-            level += 1
-            if level == 1:
-                sections.append([i + 1, i1])
-        elif (char == "'") or (char == '"'):
-            in_string = True
-            string_char = char
-    if level == 0:
-        sections.append([i, i1])
-    sections.reverse()
-    out_string = ""
-    for section in sections:
-        out_string += line[section[0] : section[1]]
-    return out_string, sections
-
-
-def get_var_stack(line):
-    """Get user-defined type field sequence terminating the given line
-
-    Examples:
-      "myvar%foo%bar" -> ["myvar", "foo", "bar"]
-      "myarray(i)%foo%bar" -> ["myarray", "foo", "bar"]
-      "CALL self%method(this%foo" -> ["this", "foo"]
-    """
-    if len(line) == 0:
-        return [""]
-    final_var, sections = get_paren_level(line)
-    if final_var == "":
-        return [""]
-    # Continuation of variable after paren requires '%' character
-    iLast = 0
-    for (i, section) in enumerate(sections):
-        if not line[section[0] : section[1]].startswith("%"):
-            iLast = i
-    final_var = ""
-    for section in sections[iLast:]:
-        final_var += line[section[0] : section[1]]
-    #
-    if final_var is not None:
-        final_op_split = OBJBREAK_REGEX.split(final_var)
-        return final_op_split[-1].split("%")
-    else:
-        return None
 
 
 def climb_type_tree(var_stack, curr_scope, obj_tree):

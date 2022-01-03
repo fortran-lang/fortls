@@ -18,6 +18,9 @@ from fortls.helper_functions import (
     detect_fixed_format,
     find_paren_match,
     find_word_in_line,
+    get_paren_level,
+    get_paren_substring,
+    map_keywords,
     separate_def_list,
     strip_line_label,
     strip_strings,
@@ -41,9 +44,6 @@ from fortls.objects import (
     fortran_type,
     fortran_var,
     fortran_where,
-    get_paren_level,
-    get_paren_substring,
-    map_keywords,
 )
 from fortls.regex_patterns import (
     ASSOCIATE_REGEX,

@@ -23,7 +23,15 @@ from fortls.constants import (
     SUBROUTINE_TYPE_ID,
     VAR_TYPE_ID,
 )
-from fortls.helper_functions import expand_name
+from fortls.helper_functions import (
+    expand_name,
+    get_line_prefix,
+    get_paren_level,
+    get_var_stack,
+    only_dirs,
+    resolve_globs,
+    set_keyword_ordering,
+)
 from fortls.intrinsics import (
     get_intrinsic_keywords,
     load_intrinsics,
@@ -36,10 +44,7 @@ from fortls.objects import (
     find_in_workspace,
     fortran_ast,
     fortran_var,
-    get_paren_level,
     get_use_tree,
-    get_var_stack,
-    set_keyword_ordering,
 )
 from fortls.parse_fortran import fortran_file, get_line_context, process_file
 from fortls.regex_patterns import (
@@ -79,98 +84,6 @@ def init_file(filepath, pp_defs, pp_suffixes, include_dirs):
         return None, "Error during parsing"
     file_obj.ast = file_ast
     return file_obj, None
-
-
-def get_line_prefix(pre_lines: list, curr_line: str, col: int, qs: bool = True) -> str:
-    """Get code line prefix from current line and preceding continuation lines
-
-    Parameters
-    ----------
-    pre_lines : list
-        for multiline cases get all the previous, relevant lines
-    curr_line : str
-        the current line
-    col : int
-        column index of the current line
-    qs : bool, optional
-        strip quotes i.e. string literals from `curr_line` and `pre_lines`.
-        Need this disable when hovering over string literals, by default True
-
-    Returns
-    -------
-    str
-        part of the line including any relevant line continuations before `col`
-    """
-    if (curr_line is None) or (col > len(curr_line)) or (curr_line.startswith("#")):
-        return None
-    prepend_string = "".join(pre_lines)
-    curr_line = prepend_string + curr_line
-    col += len(prepend_string)
-    line_prefix = curr_line[:col].lower()
-    # Ignore string literals
-    if qs:
-        if (line_prefix.find("'") > -1) or (line_prefix.find('"') > -1):
-            sq_count = 0
-            dq_count = 0
-            for char in line_prefix:
-                if (char == "'") and (dq_count % 2 == 0):
-                    sq_count += 1
-                elif (char == '"') and (sq_count % 2 == 0):
-                    dq_count += 1
-            if (dq_count % 2 == 1) or (sq_count % 2 == 1):
-                return None
-    return line_prefix
-
-
-def resolve_globs(glob_path: str, root_path: str = None) -> list[str]:
-    """Resolve glob patterns
-
-    Parameters
-    ----------
-    glob_path : str
-        Path containing the glob pattern follows
-        `fnmatch` glob pattern, can include relative paths, etc.
-        see fnmatch: https://docs.python.org/3/library/fnmatch.html#module-fnmatch
-
-    root_path : str, optional
-        root path to start glob search. If left empty the root_path will be
-        extracted from the glob_path, by default None
-
-    Returns
-    -------
-    list[str]
-        Expanded glob patterns with absolute paths.
-        Absolute paths are used to resolve any potential ambiguity
-    """
-    # Path.glob returns a generator, we then cast the Path obj to a str
-    # alternatively use p.as_posix()
-    if root_path:
-        return [str(p) for p in Path(root_path).resolve().glob(glob_path)]
-    # Attempt to extract the root and glob pattern from the glob_path
-    # This is substantially less robust that then above
-    else:
-        p = Path(glob_path).expanduser()
-        parts = p.parts[p.is_absolute() :]
-        return [str(i) for i in Path(p.root).resolve().glob(str(Path(*parts)))]
-
-
-def only_dirs(paths: list[str], err_msg: list = []) -> list[str]:
-    dirs: list[str] = []
-    for p in paths:
-        if os.path.isdir(p):
-            dirs.append(p)
-        elif os.path.isfile(p):
-            continue
-        else:
-            msg: str = (
-                f"Directory '{p}' specified in Configuration settings file does not"
-                " exist"
-            )
-            if err_msg:
-                err_msg.append([2, msg])
-            else:
-                log.warning(msg)
-    return dirs
 
 
 class LangServer:

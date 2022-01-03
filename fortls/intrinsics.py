@@ -1,6 +1,7 @@
 import json
 import os
 
+from fortls.helper_functions import map_keywords
 from fortls.objects import (
     fortran_ast,
     fortran_function,
@@ -9,7 +10,6 @@ from fortls.objects import (
     fortran_subroutine,
     fortran_type,
     fortran_var,
-    map_keywords,
 )
 
 none_ast = fortran_ast()

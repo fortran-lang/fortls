@@ -2,6 +2,9 @@ import sys
 
 PY3K = sys.version_info >= (3, 0)
 
+# Global variables
+sort_keywords = True
+
 # Keyword identifiers
 KEYWORD_LIST = [
     "pointer",
