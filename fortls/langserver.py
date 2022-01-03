@@ -1,6 +1,5 @@
 # TODO: make FORTRAN_EXT_REGEX be able to update from user input extensions
 # TODO: enable jsonc C-style comments
-
 from __future__ import annotations
 
 import json

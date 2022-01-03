@@ -8,8 +8,9 @@ import sys
 from multiprocessing import freeze_support
 
 from ._version import __version__
+from .helper_functions import resolve_globs, only_dirs
 from .jsonrpc import JSONRPC2Connection, ReadWriter, path_from_uri
-from .langserver import LangServer, resolve_globs, only_dirs
+from .langserver import LangServer
 from .parse_fortran import fortran_file, process_file
 
 
