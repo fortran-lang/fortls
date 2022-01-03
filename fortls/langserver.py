@@ -779,7 +779,7 @@ class LangServer:
             def_line, forward=False, strip_comment=True
         )
         # Returns none for string literals, when the query is in the middle
-        line_prefix = get_line_prefix(pre_lines, curr_line, def_char)
+        line_prefix = get_line_prefix(pre_lines, curr_line, def_char, qs=False)
         if line_prefix is None:
             return None
         is_member = False
