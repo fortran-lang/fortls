@@ -1,0 +1,15 @@
+{
+    "lowercase_intrinsics": true,
+    "use_signature_help": true,
+    "variable_hover": true,
+    "hover_signature": true,
+    "enable_code_actions": true,
+    "include_dirs": [
+        "include"
+    ],
+    "pp_suffixes": [
+        ".h",
+        ".F90"
+    ]
+    
+}

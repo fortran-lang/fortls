@@ -1,5 +1,12 @@
 # CHANGELONG
 
+## 2.0.0
+
+### Adds
+
+- Adds support for including preprocessor definitions from files same as `pp_defs`
+- Adds hover support for preprocessor variables
+
 ## 1.16.0
 
 ### Adds
