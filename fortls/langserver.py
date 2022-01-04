@@ -70,14 +70,11 @@ END_REGEX = re.compile(
 def init_file(filepath, pp_defs, pp_suffixes, include_dirs):
     #
     file_obj = fortran_file(filepath, pp_suffixes)
-    err_str = file_obj.load_from_disk()
-    if err_str is not None:
+    err_str, _ = file_obj.load_from_disk()
+    if err_str:
         return None, err_str
-    #
     try:
-        file_ast = process_file(
-            file_obj, True, pp_defs=pp_defs, include_dirs=include_dirs
-        )
+        file_ast = process_file(file_obj, pp_defs=pp_defs, include_dirs=include_dirs)
     except:
         log.error("Error while parsing file %s", filepath, exc_info=True)
         return None, "Error during parsing"
@@ -1281,6 +1278,7 @@ class LangServer:
             # tmp_file.ast.resolve_links(self.obj_tree, self.link_version)
         elif file_obj.preproc:
             file_obj.preprocess(pp_defs=self.pp_defs)
+            self.pp_defs = {**self.pp_defs, **file_obj.pp_defs}
 
     def serve_onOpen(self, request):
         self.serve_onSave(request, did_open=True)
@@ -1339,16 +1337,18 @@ class LangServer:
                             return False, None
                         else:
                             return False, "File does not exist"  # Error during load
-                hash_old = file_obj.hash
-                err_string = file_obj.load_from_disk()
-                if err_string is not None:
-                    log.error(err_string + ": %s", filepath)
+                err_string, file_changed = file_obj.load_from_disk()
+                if err_string:
+                    log.error(f"{err_string} : {filepath}")
                     return False, err_string  # Error during file read
-                if hash_old == file_obj.hash:
+                if not file_changed:
                     return False, None
             ast_new = process_file(
-                file_obj, True, pp_defs=self.pp_defs, include_dirs=self.include_dirs
+                file_obj, pp_defs=self.pp_defs, include_dirs=self.include_dirs
             )
+            # Add the included read in pp_defs from to the ones specified in the
+            # configuration file
+            self.pp_defs = {**self.pp_defs, **file_obj.pp_defs}
         except:
             log.error("Error while parsing file %s", filepath, exc_info=True)
             return False, "Error during parsing"  # Error during parsing

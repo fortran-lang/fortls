@@ -680,33 +680,44 @@ class fortran_file:
         copy_obj = fortran_file(self.path)
         copy_obj.preproc = self.preproc
         copy_obj.fixed = self.fixed
+        copy_obj.contents_pp = self.contents_pp
+        copy_obj.contents_split = self.contents_split
+        copy_obj.pp_defs = self.pp_defs
         copy_obj.set_contents(self.contents_split)
         return copy_obj
 
     def load_from_disk(self):
-        """Read file from disk"""
+        """Read file from disk or update file contents only if they have changed
+        A MD5 hash is used to determine that
+
+        Returns
+        -------
+        tuple[str|None, bool|None]
+            `str` : string containing IO error message else None
+            `bool`: boolean indicating if the file has changed
+        """
+        contents: str
         try:
             if PY3K:
-                with open(
-                    self.path, "r", encoding="utf-8", errors="replace"
-                ) as fhandle:
-                    contents = re.sub(r"\t", r" ", fhandle.read())
-                    self.hash = hashlib.md5(contents.encode("utf-8")).hexdigest()
-                    self.contents_split = contents.splitlines()
+                with open(self.path, "r", encoding="utf-8", errors="replace") as f:
+                    contents = re.sub(r"\t", r" ", f.read())
             else:
-                with io.open(
-                    self.path, "r", encoding="utf-8", errors="replace"
-                ) as fhandle:
-                    contents = re.sub(r"\t", r" ", fhandle.read())
-                    self.hash = hashlib.md5(contents.encode("utf-8")).hexdigest()
-                    self.contents_split = contents.splitlines()
+                with io.open(self.path, "r", encoding="utf-8", errors="replace") as f:
+                    contents = re.sub(r"\t", r" ", f.read())
+        except OSError:
+            return "Could not read/decode file", None
+        else:
+            # Check if files are the same
+            hash = hashlib.md5(contents.encode("utf-8")).hexdigest()
+            if hash == self.hash:
+                return None, False
+
+            self.hash = hash
+            self.contents_split = contents.splitlines()
             self.fixed = detect_fixed_format(self.contents_split)
             self.contents_pp = self.contents_split
             self.nLines = len(self.contents_split)
-        except:
-            return "Could not read/decode file"
-        else:
-            return None
+            return None, True
 
     def apply_change(self, change):
         """Apply a change to the file."""
@@ -971,7 +982,7 @@ class fortran_file:
         return line_number, i0, i1
 
     def preprocess(self, pp_defs={}, include_dirs=[], debug=False):
-        self.contents_pp, pp_skips, pp_defines, _ = preprocess_file(
+        self.contents_pp, pp_skips, pp_defines, self.pp_defs = preprocess_file(
             self.contents_split,
             self.path,
             pp_defs=pp_defs,
@@ -1204,7 +1215,7 @@ def preprocess_file(
             if include_path is not None:
                 try:
                     include_file = fortran_file(include_path)
-                    err_string = include_file.load_from_disk()
+                    err_string, _ = include_file.load_from_disk()
                     if err_string is None:
                         log.debug(f'\n!!! Parsing include file "{include_path}"')
                         _, _, _, defs_tmp = preprocess_file(
