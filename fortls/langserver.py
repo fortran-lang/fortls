@@ -682,7 +682,13 @@ class LangServer:
             )
         return item_list
 
-    def get_definition(self, def_file, def_line, def_char, hover_req=False):
+    def get_definition(
+        self,
+        def_file: fortran_file,
+        def_line: int,
+        def_char: int,
+        hover_req: bool = False,
+    ):
         # Get full line (and possible continuations) from file
         pre_lines, curr_line, _ = def_file.get_code_line(
             def_line, forward=False, strip_comment=True
@@ -698,9 +704,18 @@ class LangServer:
             def_name = expand_name(curr_line, def_char)
         except:
             return None
-        # print(var_stack, def_name)
         if def_name == "":
             return None
+        # Search in Preprocessor defined variables
+        if def_name in def_file.pp_defs:
+            var = fortran_var(
+                def_file.ast,
+                def_line + 1,
+                def_name,
+                f"#define {def_name} {def_file.pp_defs.get(def_name)}",
+                [],
+            )
+            return var
         curr_scope = def_file.ast.get_inner_scope(def_line + 1)
         # Traverse type tree if necessary
         if is_member:
@@ -992,7 +1007,7 @@ class LangServer:
             }
         return None
 
-    def serve_hover(self, request):
+    def serve_hover(self, request: dict):
         def create_hover(string, highlight):
             if highlight:
                 return {"language": self.hover_language, "value": string}
@@ -1020,12 +1035,12 @@ class LangServer:
                 pass
 
         # Get parameters from request
-        params = request["params"]
-        uri = params["textDocument"]["uri"]
-        def_line = params["position"]["line"]
-        def_char = params["position"]["character"]
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
+        def_line: int = params["position"]["line"]
+        def_char: int = params["position"]["character"]
         path = path_from_uri(uri)
-        file_obj = self.workspace.get(path)
+        file_obj: fortran_file = self.workspace.get(path)
         if file_obj is None:
             return None
         # Find object

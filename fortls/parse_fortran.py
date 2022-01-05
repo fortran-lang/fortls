@@ -1,4 +1,4 @@
-from __future__ import print_function
+from __future__ import print_function, annotations
 
 import hashlib
 import logging
@@ -140,8 +140,21 @@ VIS_info = namedtuple("VIS_info", ["type", "obj_names"])
 log = logging.getLogger(__name__)
 
 
-def get_line_context(line):
-    """Get context of ending position in line (for completion)"""
+def get_line_context(line: str) -> tuple[str, None]:
+    """Get context of ending position in line (for completion)
+
+    Parameters
+    ----------
+    line : str
+        file line
+
+    Returns
+    -------
+    tuple[str, None]
+        Possible string values:
+        `var_key`, `pro_line`, `var_only`, `mod_mems`, `mod_only`, `pro_link`,
+        `skip`, `import`, `vis`, `call`, `type_only`, `int_only`, `first`, `default`
+    """
     last_level, sections = get_paren_level(line)
     lev1_end = sections[-1][1]
     # Test if variable definition statement
@@ -201,7 +214,7 @@ def get_line_context(line):
         return "default", None
 
 
-def parse_var_keywords(test_str):
+def parse_var_keywords(test_str: str) -> tuple[list[str], str]:
     """Parse Fortran variable declaration keywords"""
     keyword_match = KEYWORD_LIST_REGEX.match(test_str)
     keywords = []
@@ -320,7 +333,7 @@ def read_fun_def(line, return_type=None, mod_flag=False):
     return "fun", FUN_info(name, args, return_type, return_var, mod_flag, keywords)
 
 
-def read_sub_def(line, mod_flag=False):
+def read_sub_def(line: str, mod_flag=False):
     """Attempt to read SUBROUTINE definition line"""
     keywords = []
     mod_match = SUB_MOD_REGEX.match(line)
@@ -658,14 +671,16 @@ def_tests = [
 
 
 class fortran_file:
-    def __init__(self, path=None, pp_suffixes=None):
-        self.path = path
-        self.contents_split = []
-        self.contents_pp = []
-        self.nLines = 0
-        self.fixed = False
-        self.ast = None
-        self.hash = None
+    def __init__(self, path: str = None, pp_suffixes: list = None):
+        self.path: str = path
+        self.contents_split: list = []
+        self.contents_pp: list = []
+        self.pp_defs: dict = {}
+        self.nLines: int = 0
+        self.fixed: bool = False
+        self.preproc: bool = False
+        self.ast: fortran_ast = None
+        self.hash: str = None
         if path is not None:
             _, file_ext = os.path.splitext(os.path.basename(path))
             if pp_suffixes is not None:
@@ -675,7 +690,7 @@ class fortran_file:
         else:
             self.preproc = False
 
-    def copy(self):
+    def copy(self) -> fortran_file:
         """Copy content to new file object (does not copy objects)"""
         copy_obj = fortran_file(self.path)
         copy_obj.preproc = self.preproc
@@ -686,7 +701,7 @@ class fortran_file:
         copy_obj.set_contents(self.contents_split)
         return copy_obj
 
-    def load_from_disk(self):
+    def load_from_disk(self) -> tuple[str | None, bool | None]:
         """Read file from disk or update file contents only if they have changed
         A MD5 hash is used to determine that
 
@@ -719,10 +734,10 @@ class fortran_file:
             self.nLines = len(self.contents_split)
             return None, True
 
-    def apply_change(self, change):
+    def apply_change(self, change: dict) -> bool:
         """Apply a change to the file."""
 
-        def check_change_reparse(line_number):
+        def check_change_reparse(line_number: int) -> bool:
             if (line_number < 0) or (line_number > self.nLines - 1):
                 return True
             pre_lines, curr_line, _ = self.get_code_line(line_number, forward=False)
@@ -819,7 +834,7 @@ class fortran_file:
         self.set_contents(new_contents)
         return True
 
-    def set_contents(self, contents_split, detect_format=True):
+    def set_contents(self, contents_split: list, detect_format: bool = True):
         """Set file contents"""
         self.contents_split = contents_split
         self.contents_pp = self.contents_split
@@ -827,7 +842,7 @@ class fortran_file:
         if detect_format:
             self.fixed = detect_fixed_format(self.contents_split)
 
-    def get_line(self, line_number, pp_content=False):
+    def get_line(self, line_number: int, pp_content: bool = False) -> str:
         """Get single line from file"""
         try:
             if pp_content:
@@ -839,12 +854,12 @@ class fortran_file:
 
     def get_code_line(
         self,
-        line_number,
-        forward=True,
-        backward=True,
-        pp_content=False,
-        strip_comment=False,
-    ):
+        line_number: int,
+        forward: bool = True,
+        backward: bool = True,
+        pp_content: bool = False,
+        strip_comment: bool = False,
+    ) -> tuple[list[str], str, list[str]]:
         """Get full code line from file including any adjacent continuations"""
         curr_line = self.get_line(line_number, pp_content)
         if curr_line is None:
@@ -944,7 +959,7 @@ class fortran_file:
         pre_lines.reverse()
         return pre_lines, curr_line, post_lines
 
-    def strip_comment(self, line):
+    def strip_comment(self, line: str) -> str:
         """Strip comment from line"""
         if self.fixed:
             if (FIXED_COMMENT_LINE_MATCH.match(line) is not None) and (
@@ -957,14 +972,19 @@ class fortran_file:
         return line
 
     def find_word_in_code_line(
-        self, line_number, find_word, forward=True, backward=False, pp_content=False
-    ):
+        self,
+        line_number: int,
+        word: str,
+        forward: bool = True,
+        backward: bool = False,
+        pp_content: bool = False,
+    ) -> tuple[int, int, int]:
         back_lines, curr_line, forward_lines = self.get_code_line(
             line_number, forward=forward, backward=backward, pp_content=pp_content
         )
         i0 = i1 = -1
         if curr_line is not None:
-            find_word_lower = find_word.lower()
+            find_word_lower = word.lower()
             i0, i1 = find_word_in_line(curr_line.lower(), find_word_lower)
         if backward and (i0 < 0):
             back_lines.reverse()
@@ -981,7 +1001,9 @@ class fortran_file:
                     return line_number, i0, i1
         return line_number, i0, i1
 
-    def preprocess(self, pp_defs={}, include_dirs=[], debug=False):
+    def preprocess(
+        self, pp_defs: dict = {}, include_dirs: list = [], debug: bool = False
+    ) -> tuple[list, list]:
         self.contents_pp, pp_skips, pp_defines, self.pp_defs = preprocess_file(
             self.contents_split,
             self.path,
@@ -1044,14 +1066,18 @@ class fortran_file:
 
 
 def preprocess_file(
-    contents_split, file_path=None, pp_defs={}, include_dirs=[], debug=False
+    contents_split: list,
+    file_path: str = None,
+    pp_defs: dict = {},
+    include_dirs: list = [],
+    debug: bool = False,
 ):
     # Look for and mark excluded preprocessor paths in file
     # Initial implementation only looks for "if" and "ifndef" statements.
     # For "if" statements all blocks are excluded except the "else" block if present
     # For "ifndef" statements all blocks excluding the first block are excluded
-    def eval_pp_if(text, defs={}):
-        def replace_ops(expr):
+    def eval_pp_if(text, defs: dict = {}):
+        def replace_ops(expr: str):
             expr = expr.replace("&&", " and ")
             expr = expr.replace("||", " or ")
             expr = expr.replace("!=", " <> ")
@@ -1059,7 +1085,7 @@ def preprocess_file(
             expr = expr.replace(" <> ", " != ")
             return expr
 
-        def replace_defined(line):
+        def replace_defined(line: str):
             i0 = 0
             out_line = ""
             for match in DEFINED_REGEX.finditer(line):
@@ -1072,7 +1098,7 @@ def preprocess_file(
                 out_line += line[i0:]
             return out_line
 
-        def replace_vars(line):
+        def replace_vars(line: str):
             i0 = 0
             out_line = ""
             for match in WORD_REGEX.finditer(line):
@@ -1250,7 +1276,12 @@ def preprocess_file(
     return output_file, pp_skips, pp_defines, defs_tmp
 
 
-def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_dirs=[]):
+def process_file(
+    file_obj: fortran_file,
+    debug: bool = False,
+    pp_defs: dict = {},
+    include_dirs: list = [],
+):
     """Build file AST by parsing file"""
 
     def parser_debug_msg(msg: str, line: str, ln: int):
