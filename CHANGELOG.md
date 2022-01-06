@@ -8,6 +8,11 @@
 - Adds hover support for preprocessor variables
 - Adds Go To Definition for `include` statements
 
+### Changes
+
+- Update constant parameters for `omp_lib` and `omp_lib_kinds` Interface v5.0
+- Format json files with `prettier`
+
 ## 1.16.0
 
 ### Adds

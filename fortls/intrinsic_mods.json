@@ -4,6 +4,331 @@
     "name": "omp_lib",
     "children": [
       {
+        "name": "openmp_version",
+        "type": 3,
+        "desc": "INTEGER"
+      },
+      {
+        "name": "omp_alloctrait",
+        "type": 3,
+        "desc": "TYPE"
+      },
+      {
+        "name": "omp_sched_static",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_sched_kind)"
+      },
+      {
+        "name": "omp_sched_dynamic",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_sched_kind)"
+      },
+      {
+        "name": "omp_sched_guided",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_sched_kind)"
+      },
+      {
+        "name": "omp_sched_auto",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_sched_kind)"
+      },
+      {
+        "name": "omp_proc_bind_false",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_proc_bind_kind)"
+      },
+      {
+        "name": "omp_proc_bind_true",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_proc_bind_kind)"
+      },
+      {
+        "name": "omp_proc_bind_master",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_proc_bind_kind)"
+      },
+      {
+        "name": "omp_proc_bind_close",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_proc_bind_kind)"
+      },
+      {
+        "name": "omp_proc_bind_spread",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_proc_bind_kind)"
+      },
+      {
+        "name": "omp_lock_hint_none",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_lock_hint_kind)"
+      },
+      {
+        "name": "omp_lock_hint_uncontended",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_lock_hint_kind)"
+      },
+      {
+        "name": "omp_lock_hint_contended",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_lock_hint_kind)"
+      },
+      {
+        "name": "omp_lock_hint_nonspeculative",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_lock_hint_kind)"
+      },
+      {
+        "name": "omp_lock_hint_speculative",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_lock_hint_kind)"
+      },
+      {
+        "name": "omp_sync_hint_none",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_lock_hint_kind)"
+      },
+      {
+        "name": "omp_sync_hint_uncontended",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_lock_hint_kind)"
+      },
+      {
+        "name": "omp_sync_hint_contended",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_lock_hint_kind)"
+      },
+      {
+        "name": "omp_sync_hint_nonspeculative",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_lock_hint_kind)"
+      },
+      {
+        "name": "omp_sync_hint_speculative",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_lock_hint_kind)"
+      },
+      {
+        "name": "omp_pause_soft",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_pause_resource_kind)"
+      },
+      {
+        "name": "omp_pause_hard",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_pause_resource_kind)"
+      },
+      {
+        "name": "omp_atk_sync_hint",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_key_kind)"
+      },
+      {
+        "name": "omp_atk_alignment",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_key_kind)"
+      },
+      {
+        "name": "omp_atk_access",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_key_kind)"
+      },
+      {
+        "name": "omp_atk_pool_size",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_key_kind)"
+      },
+      {
+        "name": "omp_atk_fallback",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_key_kind)"
+      },
+      {
+        "name": "omp_atk_fb_data",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_key_kind)"
+      },
+      {
+        "name": "omp_atk_pinned",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_key_kind)"
+      },
+      {
+        "name": "omp_atk_partition",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_key_kind)"
+      },
+      {
+        "name": "omp_atv_default",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_val_kind)"
+      },
+      {
+        "name": "omp_atv_false",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_val_kind)"
+      },
+      {
+        "name": "omp_atv_true",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_val_kind)"
+      },
+      {
+        "name": "omp_atv_contended",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_val_kind)"
+      },
+      {
+        "name": "omp_atv_uncontended",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_val_kind)"
+      },
+      {
+        "name": "omp_atv_serialized",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_val_kind)"
+      },
+      {
+        "name": "omp_atv_sequential",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_val_kind)"
+      },
+      {
+        "name": "omp_atv_private",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_val_kind)"
+      },
+      {
+        "name": "omp_atv_all",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_val_kind)"
+      },
+      {
+        "name": "omp_atv_thread",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_val_kind)"
+      },
+      {
+        "name": "omp_atv_pteam",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_val_kind)"
+      },
+      {
+        "name": "omp_atv_cgroup",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_val_kind)"
+      },
+      {
+        "name": "omp_atv_default_mem_fb",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_val_kind)"
+      },
+      {
+        "name": "omp_atv_null_fb",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_val_kind)"
+      },
+      {
+        "name": "omp_atv_abort_fb",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_val_kind)"
+      },
+      {
+        "name": "omp_atv_allocator_fb",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_val_kind)"
+      },
+      {
+        "name": "omp_atv_environment",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_val_kind)"
+      },
+      {
+        "name": "omp_atv_nearest",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_val_kind)"
+      },
+      {
+        "name": "omp_atv_blocked",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_alloctrait_val_kind)"
+      },
+      {
+        "name": "omp_null_allocator",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_allocator_handle_kind)"
+      },
+      {
+        "name": "omp_default_mem_alloc",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_allocator_handle_kind)"
+      },
+      {
+        "name": "omp_large_cap_mem_alloc",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_allocator_handle_kind)"
+      },
+      {
+        "name": "omp_const_mem_alloc",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_allocator_handle_kind)"
+      },
+      {
+        "name": "omp_high_bw_mem_alloc",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_allocator_handle_kind)"
+      },
+      {
+        "name": "omp_low_lat_mem_alloc",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_allocator_handle_kind)"
+      },
+      {
+        "name": "omp_cgroup_mem_alloc",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_allocator_handle_kind)"
+      },
+      {
+        "name": "omp_pteam_mem_alloc",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_allocator_handle_kind)"
+      },
+      {
+        "name": "omp_thread_mem_alloc",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_allocator_handle_kind)"
+      },
+      {
+        "name": "omp_default_mem_space",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_memspace_handle_kind)"
+      },
+      {
+        "name": "omp_large_cap_mem_space",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_memspace_handle_kind)"
+      },
+      {
+        "name": "omp_const_mem_space",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_memspace_handle_kind)"
+      },
+      {
+        "name": "omp_high_bw_mem_space",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_memspace_handle_kind)"
+      },
+      {
+        "name": "omp_low_lat_mem_space",
+        "type": 3,
+        "desc": "INTEGER(KIND=omp_memspace_handle_kind)"
+      },
+      {
+        "name": "omp_get_supported_active_levels",
+        "type": 2,
+        "return": "INTEGER"
+      },
+      {
         "name": "omp_get_num_threads",
         "type": 2,
         "return": "INTEGER"
@@ -39,6 +364,32 @@
         "return": "INTEGER"
       },
       {
+        "name": "omp_get_ancestor_thread_num",
+        "type": 2,
+        "return": "INTEGER",
+        "args": "level",
+        "children": [
+          {
+            "name": "level",
+            "type": 3,
+            "desc": "INTEGER"
+          }
+        ]
+      },
+      {
+        "name": "omp_get_team_size",
+        "type": 2,
+        "return": "INTEGER",
+        "args": "level",
+        "children": [
+          {
+            "name": "level",
+            "type": 3,
+            "desc": "INTEGER"
+          }
+        ]
+      },
+      {
         "name": "omp_get_active_level",
         "type": 2,
         "return": "INTEGER"
@@ -49,12 +400,125 @@
         "return": "INTEGER(KIND=omp_proc_bind_kind)"
       },
       {
+        "name": "omp_get_num_places",
+        "type": 2,
+        "return": "INTEGER(KIND=omp_proc_bind_kind)"
+      },
+      {
+        "name": "omp_get_place_num_procs",
+        "type": 2,
+        "return": "INTEGER",
+        "args": "place_num",
+        "children": [
+          {
+            "name": "place_num",
+            "type": 3,
+            "desc": "INTEGER"
+          }
+        ]
+      },
+      {
+        "name": "omp_get_place_proc_ids",
+        "type": 1,
+        "args": "place_num,ids",
+        "children": [
+          {
+            "name": "place_num",
+            "type": 3,
+            "desc": "INTEGER"
+          },
+          {
+            "name": "ids",
+            "type": 3,
+            "desc": "INTEGER",
+            "mods": ["DIMENSION(*)"]
+          }
+        ]
+      },
+      {
+        "name": "omp_get_partition_place_nums",
+        "type": 1,
+        "args": "place_nums",
+        "children": [
+          {
+            "name": "place_nums",
+            "type": 3,
+            "desc": "INTEGER",
+            "mods": ["DIMENSION(*)"]
+          }
+        ]
+      },
+      {
+        "name": "omp_set_affinity_format",
+        "type": 1,
+        "args": "format",
+        "children": [
+          {
+            "name": "format",
+            "type": 3,
+            "desc": "CHARACTER(LEN=*)",
+            "mods": ["INTENT(in)"]
+          }
+        ]
+      },
+      {
+        "name": "omp_get_affinity_format",
+        "type": 2,
+        "return": "INTEGER",
+        "args": "buffer",
+        "children": [
+          {
+            "name": "buffer",
+            "type": 3,
+            "desc": "CHARACTER(LEN=*)",
+            "mods": ["INTENT(out)"]
+          }
+        ]
+      },
+      {
+        "name": "omp_display_affinity",
+        "type": 1,
+        "args": "format",
+        "children": [
+          {
+            "name": "format",
+            "type": 3,
+            "desc": "CHARACTER(LEN=*)",
+            "mods": ["INTENT(in)"]
+          }
+        ]
+      },
+      {
+        "name": "omp_capture_affinity",
+        "type": 1,
+        "args": "buffer,format",
+        "children": [
+          {
+            "name": "buffer",
+            "type": 3,
+            "desc": "CHARACTER(LEN=*)",
+            "mods": ["INTENT(out)"]
+          },
+          {
+            "name": "format",
+            "type": 3,
+            "desc": "CHARACTER(LEN=*)",
+            "mods": ["INTENT(in)"]
+          }
+        ]
+      },
+      {
         "name": "omp_get_default_device",
         "type": 2,
         "return": "INTEGER"
       },
       {
         "name": "omp_get_num_devices",
+        "type": 2,
+        "return": "INTEGER"
+      },
+      {
+        "name": "omp_get_device_num",
         "type": 2,
         "return": "INTEGER"
       },
@@ -99,6 +563,47 @@
         "return": "LOGICAL"
       },
       {
+        "name": "omp_get_initial_device",
+        "type": 2,
+        "return": "INTEGER"
+      },
+      {
+        "name": "omp_get_max_task_priority",
+        "type": 2,
+        "return": "INTEGER"
+      },
+      {
+        "name": "omp_pause_resource",
+        "type": 2,
+        "return": "INTEGER",
+        "args": "kind,device_num",
+        "children": [
+          {
+            "name": "kind",
+            "type": 3,
+            "desc": "INTEGER(KIND=omp_pause_resource_kind)"
+          },
+          {
+            "name": "device_num",
+            "type": 3,
+            "desc": "INTEGER"
+          }
+        ]
+      },
+      {
+        "name": "omp_pause_resource_all",
+        "type": 2,
+        "return": "INTEGER",
+        "args": "kind",
+        "children": [
+          {
+            "name": "kind",
+            "type": 3,
+            "desc": "INTEGER(KIND=omp_pause_resource_kind)"
+          }
+        ]
+      },
+      {
         "name": "omp_get_wtime",
         "type": 2,
         "return": "DOUBLE PRECISION"
@@ -107,6 +612,93 @@
         "name": "omp_get_wtick",
         "type": 2,
         "return": "DOUBLE PRECISION"
+      },
+      {
+        "name": "omp_fulfill_event",
+        "type": 1,
+        "args": "event",
+        "children": [
+          {
+            "name": "event",
+            "type": 3,
+            "desc": "INTEGER(KIND=omp_event_handle_kind)"
+          }
+        ]
+      },
+      {
+        "name": "omp_init_allocator",
+        "type": 2,
+        "return": "INTEGER(KIND=omp_allocator_handle_kind)",
+        "args": "memspace,ntraits,traits",
+        "children": [
+          {
+            "name": "memspace",
+            "type": 3,
+            "desc": "INTEGER(KIND=omp_memspace_handle_kind)",
+            "mods": ["INTENT(in)"]
+          },
+          {
+            "name": "ntraits",
+            "type": 3,
+            "desc": "INTEGER",
+            "mods": ["INTENT(in)"]
+          },
+          {
+            "name": "traits",
+            "type": 3,
+            "desc": "TYPE(omp_alloctrait)",
+            "mods": ["DIMENSION(*)", "INTENT(in)"]
+          }
+        ]
+      },
+      {
+        "name": "omp_destroy_allocator",
+        "type": 1,
+        "args": "allocator",
+        "children": [
+          {
+            "name": "allocator",
+            "type": 3,
+            "desc": "INTEGER(KIND=omp_allocator_handle_kind)",
+            "mods": ["INTENT(in)"]
+          }
+        ]
+      },
+      {
+        "name": "omp_set_default_allocator",
+        "type": 1,
+        "args": "allocator",
+        "children": [
+          {
+            "name": "allocator",
+            "type": 3,
+            "desc": "INTEGER(KIND=omp_allocator_handle_kind)",
+            "mods": ["INTENT(in)"]
+          }
+        ]
+      },
+      {
+        "name": "omp_get_default_allocator",
+        "type": 2,
+        "return": "INTEGER(KIND=omp_allocator_handle_kind)"
+      },
+      {
+        "name": "omp_control_tool",
+        "type": 2,
+        "return": "INTEGER",
+        "args": "command,modifier",
+        "children": [
+          {
+            "name": "command",
+            "type": 3,
+            "desc": "INTEGER(KIND=omp_control_tool_kind)"
+          },
+          {
+            "name": "modifier",
+            "type": 3,
+            "desc": "INTEGER"
+          }
+        ]
       },
       {
         "name": "omp_test_lock",
@@ -173,7 +765,7 @@
       {
         "name": "omp_set_schedule",
         "type": 1,
-        "args": "kind,modifier",
+        "args": "kind,chunk_size",
         "children": [
           {
             "name": "kind",
@@ -181,7 +773,7 @@
             "desc": "INTEGER(KIND=omp_sched_kind)"
           },
           {
-            "name": "modifier",
+            "name": "chunk_size",
             "type": 3,
             "desc": "INTEGER"
           }
@@ -190,7 +782,7 @@
       {
         "name": "omp_get_schedule",
         "type": 1,
-        "args": "kind,modifier",
+        "args": "kind,chunk_size",
         "children": [
           {
             "name": "kind",
@@ -198,7 +790,7 @@
             "desc": "INTEGER(KIND=omp_sched_kind)"
           },
           {
-            "name": "modifier",
+            "name": "chunk_size",
             "type": 3,
             "desc": "INTEGER"
           }
@@ -249,6 +841,40 @@
             "name": "nvar",
             "type": 3,
             "desc": "INTEGER(KIND=omp_nest_lock_kind)"
+          }
+        ]
+      },
+      {
+        "name": "omp_init_lock_with_hint",
+        "type": 1,
+        "args": "svar,hint",
+        "children": [
+          {
+            "name": "svar",
+            "type": 3,
+            "desc": "INTEGER(KIND=omp_lock_kind)"
+          },
+          {
+            "name": "hint",
+            "type": 3,
+            "desc": "INTEGER(KIND=omp_sync_hint_kind)"
+          }
+        ]
+      },
+      {
+        "name": "omp_init_nest_lock_with_hint",
+        "type": 1,
+        "args": "nvar,hint",
+        "children": [
+          {
+            "name": "nvar",
+            "type": 3,
+            "desc": "INTEGER(KIND=omp_nest_lock_kind)"
+          },
+          {
+            "name": "hint",
+            "type": 3,
+            "desc": "INTEGER(KIND=omp_sync_hint_kind)"
           }
         ]
       },
@@ -331,12 +957,22 @@
     "name": "omp_lib_kinds",
     "children": [
       {
-        "name": "omp_sched_kind",
+        "name": "omp_allocator_handle_kind",
         "type": 3,
         "desc": "INTEGER"
       },
       {
-        "name": "omp_proc_bind_kind",
+        "name": "omp_alloctrait_key_kind",
+        "type": 3,
+        "desc": "INTEGER"
+      },
+      {
+        "name": "omp_alloctrait_val_kind",
+        "type": 3,
+        "desc": "INTEGER"
+      },
+      {
+        "name": "omp_depend_kind",
         "type": 3,
         "desc": "INTEGER"
       },
@@ -346,54 +982,39 @@
         "desc": "INTEGER"
       },
       {
+        "name": "omp_lock_hint_kind",
+        "type": 3,
+        "desc": "INTEGER"
+      },
+      {
         "name": "omp_nest_lock_kind",
         "type": 3,
         "desc": "INTEGER"
       },
       {
-        "name": "omp_sched_static",
+        "name": "omp_pause_resource_kind",
         "type": 3,
-        "desc": "INTEGER(KIND=omp_sched_kind)"
+        "desc": "INTEGER"
       },
       {
-        "name": "omp_sched_dynamic",
+        "name": "omp_memspace_handle_kind",
         "type": 3,
-        "desc": "INTEGER(KIND=omp_sched_kind)"
+        "desc": "INTEGER"
       },
       {
-        "name": "omp_sched_guided",
+        "name": "omp_proc_bind_kind",
         "type": 3,
-        "desc": "INTEGER(KIND=omp_sched_kind)"
+        "desc": "INTEGER"
       },
       {
-        "name": "omp_sched_auto",
+        "name": "omp_sched_kind",
         "type": 3,
-        "desc": "INTEGER(KIND=omp_sched_kind)"
+        "desc": "INTEGER"
       },
       {
-        "name": "omp_proc_bind_false",
+        "name": "omp_sync_hint_kind",
         "type": 3,
-        "desc": "INTEGER(KIND=omp_proc_bind_kind)"
-      },
-      {
-        "name": "omp_proc_bind_true",
-        "type": 3,
-        "desc": "INTEGER(KIND=omp_proc_bind_kind)"
-      },
-      {
-        "name": "omp_proc_bind_master",
-        "type": 3,
-        "desc": "INTEGER(KIND=omp_proc_bind_kind)"
-      },
-      {
-        "name": "omp_proc_bind_close",
-        "type": 3,
-        "desc": "INTEGER(KIND=omp_proc_bind_kind)"
-      },
-      {
-        "name": "omp_proc_bind_spread",
-        "type": 3,
-        "desc": "INTEGER(KIND=omp_proc_bind_kind)"
+        "desc": "INTEGER"
       }
     ]
   },
