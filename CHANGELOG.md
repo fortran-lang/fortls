@@ -6,6 +6,7 @@
 
 - Adds support for including preprocessor definitions from files same as `pp_defs`
 - Adds hover support for preprocessor variables
+- Adds Go To Definition for `include` statements
 
 ## 1.16.0
 

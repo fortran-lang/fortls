@@ -1,4 +1,5 @@
 import copy
+from dataclasses import dataclass
 import os
 import re
 from collections import namedtuple
@@ -28,6 +29,14 @@ from fortls.regex_patterns import CLASS_VAR_REGEX, DEF_KIND_REGEX
 
 # Helper types
 USE_info = namedtuple("USE_info", ["only_list", "rename_map"])
+
+
+@dataclass
+class INCLUDE_info:
+    line_number: str
+    path: str
+    file: None  # fortran_file
+    scope_objs: list
 
 
 def get_use_tree(scope, use_dict, obj_tree, only_list=[], rename_map={}, curr_path=[]):
@@ -98,7 +107,7 @@ def get_use_tree(scope, use_dict, obj_tree, only_list=[], rename_map={}, curr_pa
     return use_dict
 
 
-def find_in_scope(scope, var_name, obj_tree, interface=False, local_only=False):
+def find_in_scope(scope, var_name: str, obj_tree, interface=False, local_only=False):
     def check_scope(local_scope, var_name_lower, filter_public=False):
         for child in local_scope.get_children():
             if child.name.startswith("#GEN_INT"):
@@ -120,6 +129,14 @@ def find_in_scope(scope, var_name, obj_tree, interface=False, local_only=False):
     tmp_var = check_scope(scope, var_name_lower)
     if local_only or (tmp_var is not None):
         return tmp_var
+    # Check INCLUDE statements
+    if scope.file_ast.include_statements:
+        strip_str = var_name.replace('"', "")
+        strip_str = strip_str.replace("'", "")
+        for inc in scope.file_ast.include_statements:
+            if strip_str == inc.path:
+                return fortran_include(inc.file.ast, inc.line_number, inc.path)
+
     # Setup USE search
     use_dict = get_use_tree(scope, {}, obj_tree)
     # Look in found use modules
@@ -662,6 +679,11 @@ class fortran_module(fortran_scope):
         if self.parent is not None:
             return False
         return True
+
+
+class fortran_include(fortran_scope):
+    def get_dec(self):
+        return "INCLUDE"
 
 
 class fortran_program(fortran_module):
@@ -1770,7 +1792,7 @@ class fortran_ast:
         self.scope_stack = []
         self.end_stack = []
         self.pp_if = []
-        self.include_stmnts = []
+        self.include_statements = []
         self.end_errors = []
         self.parse_errors = []
         self.inherit_objs = []
@@ -1873,7 +1895,7 @@ class fortran_ast:
         self.current_scope.add_use(mod_word, line_number, only_list, rename_map)
 
     def add_include(self, path, line_number):
-        self.include_stmnts.append([line_number, path, []])
+        self.include_statements.append(INCLUDE_info(line_number, path, None, []))
 
     def add_doc(self, doc_string, forward=False):
         if doc_string == "":
@@ -1948,17 +1970,17 @@ class fortran_ast:
 
     def resolve_includes(self, workspace, path=None):
         file_dir = os.path.dirname(self.path)
-        for include_path in self.include_stmnts:
-            file_path = os.path.normpath(os.path.join(file_dir, include_path[1]))
-            if path is not None:
-                if not (path == file_path):
-                    continue
-            parent_scope = self.get_inner_scope(include_path[0])
-            added_entities = include_path[2]
+        for inc in self.include_statements:
+            file_path = os.path.normpath(os.path.join(file_dir, inc.path))
+            if path and not (path == file_path):
+                continue
+            parent_scope = self.get_inner_scope(inc.line_number)
+            added_entities = inc.scope_objs
             if file_path in workspace:
                 include_file = workspace[file_path]
                 include_ast = include_file.ast
-                if include_ast.none_scope is not None:
+                inc.file = include_file
+                if include_ast.none_scope:
                     if include_ast.inc_scope is None:
                         include_ast.inc_scope = include_ast.none_scope
                     # Remove old objects
@@ -1970,7 +1992,7 @@ class fortran_ast:
                         parent_scope.add_child(child)
                         child.update_fqsn(parent_scope.FQSN)
                     include_ast.none_scope = parent_scope
-                    include_path[2] = added_entities
+                    inc.scope_objs = added_entities
 
     def resolve_links(self, obj_tree, link_version):
         for inherit_obj in self.inherit_objs:
