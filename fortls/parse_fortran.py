@@ -234,7 +234,7 @@ def parse_var_keywords(test_str: str) -> tuple[list[str], str]:
     return keywords, test_str
 
 
-def read_var_def(line, type_word=None, fun_only=False):
+def read_var_def(line: str, type_word: str = None, fun_only: bool = False):
     """Attempt to read variable definition line"""
     if type_word is None:
         type_match = NAT_VAR_REGEX.match(line)
@@ -293,11 +293,11 @@ def read_var_def(line, type_word=None, fun_only=False):
     return "var", VAR_info(type_word, keywords, var_words)
 
 
-def read_fun_def(line, return_type=None, mod_flag=False):
+def read_fun_def(line: str, return_type=None, mod_flag: bool = False):
     """Attempt to read FUNCTION definition line"""
     mod_match = SUB_MOD_REGEX.match(line)
     mods_found = False
-    keywords = []
+    keywords: list[str] = []
     while mod_match is not None:
         mods_found = True
         line = line[mod_match.end(0) :]
@@ -333,9 +333,9 @@ def read_fun_def(line, return_type=None, mod_flag=False):
     return "fun", FUN_info(name, args, return_type, return_var, mod_flag, keywords)
 
 
-def read_sub_def(line: str, mod_flag=False):
+def read_sub_def(line: str, mod_flag: bool = False):
     """Attempt to read SUBROUTINE definition line"""
-    keywords = []
+    keywords: list[str] = []
     mod_match = SUB_MOD_REGEX.match(line)
     while mod_match is not None:
         line = line[mod_match.end(0) :]
@@ -360,7 +360,7 @@ def read_sub_def(line: str, mod_flag=False):
     return "sub", SUB_info(name, args, mod_flag, keywords)
 
 
-def read_block_def(line):
+def read_block_def(line: str):
     """Attempt to read BLOCK definition line"""
     block_match = BLOCK_REGEX.match(line)
     if block_match is not None:
@@ -394,7 +394,7 @@ def read_block_def(line):
     return None
 
 
-def read_associate_def(line):
+def read_associate_def(line: str):
     assoc_match = ASSOCIATE_REGEX.match(line)
     if assoc_match is not None:
         trailing_line = line[assoc_match.end(0) :]
@@ -405,7 +405,7 @@ def read_associate_def(line):
         return "assoc", var_words
 
 
-def read_select_def(line):
+def read_select_def(line: str):
     """Attempt to read SELECT definition line"""
     select_match = SELECT_REGEX.match(line)
     select_desc = None
@@ -432,7 +432,7 @@ def read_select_def(line):
     return "select", SELECT_info(select_type, select_binding, select_desc)
 
 
-def read_type_def(line):
+def read_type_def(line: str):
     """Attempt to read TYPE definition line"""
     type_match = TYPE_DEF_REGEX.match(line)
     if type_match is None:
@@ -441,7 +441,7 @@ def read_type_def(line):
     trailing_line = trailing_line.strip()
     # Parse keywords
     keyword_match = TATTR_LIST_REGEX.match(trailing_line)
-    keywords = []
+    keywords: list[str] = []
     parent = None
     while keyword_match is not None:
         keyword_strip = keyword_match.group(0).replace(",", " ").strip().upper()
@@ -474,7 +474,7 @@ def read_type_def(line):
     return "typ", CLASS_info(name, parent, keywords)
 
 
-def read_enum_def(line):
+def read_enum_def(line: str):
     """Attempt to read ENUM definition line"""
     enum_match = ENUM_DEF_REGEX.match(line)
     if enum_match is not None:
@@ -482,7 +482,7 @@ def read_enum_def(line):
     return None
 
 
-def read_generic_def(line):
+def read_generic_def(line: str):
     """Attempt to read generic procedure definition line"""
     generic_match = GENERIC_PRO_REGEX.match(line)
     if generic_match is None:
@@ -503,12 +503,12 @@ def read_generic_def(line):
     i1 = trailing_line.find("=>")
     if i1 < 0:
         return None
-    bound_name = trailing_line[:i1].strip()
+    bound_name: str = trailing_line[:i1].strip()
     if GEN_ASSIGN_REGEX.match(bound_name):
         return None
     pro_list = trailing_line[i1 + 2 :].split(",")
     #
-    pro_out = []
+    pro_out: list[str] = []
     for bound_pro in pro_list:
         if len(bound_pro.strip()) > 0:
             pro_out.append(bound_pro.strip())
@@ -518,7 +518,7 @@ def read_generic_def(line):
     return "gen", GEN_info(bound_name, pro_out, vis_flag)
 
 
-def read_mod_def(line):
+def read_mod_def(line: str):
     """Attempt to read MODULE and MODULE PROCEDURE definition lines"""
     mod_match = MOD_REGEX.match(line)
     if mod_match is None:
@@ -546,7 +546,7 @@ def read_mod_def(line):
         return "mod", name
 
 
-def read_submod_def(line):
+def read_submod_def(line: str):
     """Attempt to read SUBMODULE definition line"""
     submod_match = SUBMOD_REGEX.match(line)
     if submod_match is None:
@@ -570,7 +570,7 @@ def read_submod_def(line):
         return "smod", SMOD_info(name, parent_name)
 
 
-def read_prog_def(line):
+def read_prog_def(line: str):
     """Attempt to read PROGRAM definition line"""
     prog_match = PROG_REGEX.match(line)
     if prog_match is None:
@@ -579,7 +579,7 @@ def read_prog_def(line):
         return "prog", prog_match.group(1)
 
 
-def read_int_def(line):
+def read_int_def(line: str):
     """Attempt to read INTERFACE definition line"""
     int_match = INT_REGEX.match(line)
     if int_match is None:
@@ -594,7 +594,7 @@ def read_int_def(line):
         return "int", INT_info(int_match.group(2), is_abstract)
 
 
-def read_use_stmt(line):
+def read_use_stmt(line: str):
     """Attempt to read USE statement"""
     use_match = USE_REGEX.match(line)
     if use_match is None:
@@ -602,8 +602,8 @@ def read_use_stmt(line):
 
     trailing_line = line[use_match.end(0) :].lower()
     use_mod = use_match.group(2)
-    only_list = []
-    rename_map = {}
+    only_list: list[str] = []
+    rename_map: dict[str, str] = {}
     if use_match.group(3):
         for only_stmt in trailing_line.split(","):
             only_split = only_stmt.split("=>")
@@ -614,7 +614,7 @@ def read_use_stmt(line):
     return "use", USE_info(use_mod, only_list, rename_map)
 
 
-def read_imp_stmt(line):
+def read_imp_stmt(line: str):
     """Attempt to read IMPORT statement"""
     import_match = IMPORT_REGEX.match(line)
     if import_match is None:
@@ -625,7 +625,7 @@ def read_imp_stmt(line):
     return "import", import_list
 
 
-def read_inc_stmt(line):
+def read_inc_stmt(line: str):
     """Attempt to read INCLUDE statement"""
     inc_match = INCLUDE_REGEX.match(line)
     if inc_match is None:
@@ -635,7 +635,7 @@ def read_inc_stmt(line):
         return "inc", inc_path
 
 
-def read_vis_stmnt(line):
+def read_vis_stmnt(line: str):
     """Attempt to read PUBLIC/PRIVATE statement"""
     vis_match = VIS_REGEX.match(line)
     if vis_match is None:
