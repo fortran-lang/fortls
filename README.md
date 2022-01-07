@@ -28,29 +28,30 @@ potentially subject to change.
 
 ## Features
 
-- Document symbols (`textDocument/documentSymbol`)
-- Auto-complete (`textDocument/completion`)
-- Signature help (`textDocument/signatureHelp`)
-- GoTo/Peek definition (`textDocument/definition`)
-- Hover (`textDocument/hover`)
-- GoTo implementation (`textDocument/implementation`)
-- Find/Peek references (`textDocument/references`)
-- Project-wide symbol search (`workspace/symbol`)
+- Project-wide and Document symbol detection and Renaming
+- Hover support, Signature help and Auto-completion
+- GoTo/Peek implementation and Find/Peek references
 - Symbol renaming (`textDocument/rename`)
 - Documentation parsing ([Doxygen](http://www.doxygen.org/) and
   [FORD](https://github.com/Fortran-FOSS-Programmers/ford) styles)
-- Diagnostics (limited)
+- Access to multiple intrinsic modules and functions
+  - `ISO_FORTRAN_ENV` GCC 11.2.0
+  - `IOS_C_BINDING` GCC 11.2.0
+  - `IEEE_EXCEPTIONS`, `IEEE_ARITHMETIC`, `IEEE_FEATURES` GCC 11.2.0
+  - OpenMP `OMP_LIB`, `OMP_LIB_KINDS` v5.0
+  - OpenACC `OPENACC`, `OPENACC_KINDS` v3.1
+- Diagnostics
   - Multiple definitions with the same variable name
   - Variable definition masks definition from parent scope
   - Missing subroutine/function arguments
-  - Unknown user-defined type used in "TYPE"/"CLASS" definition
+  - Unknown user-defined type used in `TYPE`/`CLASS` definition
     (only if visible in project)
   - Unclosed blocks/scopes
   - Invalid scope nesting
-  - Unknown modules in "USE" statement
+  - Unknown modules in `USE` statement
   - Unimplemented deferred type-bound procedures
   - Use of unimported variables/objects in interface blocks
-  - Statement placement errors ("CONTAINS", "IMPLICIT", "IMPORT")
+  - Statement placement errors (`CONTAINS`, `IMPLICIT`, `IMPORT`)
 - Code actions (`textDocument/codeAction`) \[Experimental\]
   - Generate type-bound procedures and implementation templates for
     deferred procedures
@@ -277,6 +278,19 @@ Find references (`textDocument/references`):
 Diagnostics:
 
 ![image](https://raw.githubusercontent.com/gnikit/fortran-language-server/master/images/fortls_diag.png) -->
+
+## Implemented server requests
+
+| Request                       | Description                                            |
+| ----------------------------- | ------------------------------------------------------ |
+| `workspace/symbol`            | Get workspace-wide symbols                             |
+| `textDocument/documentSymbol` | Get document symbols e.g. functions, subroutines, etc. |
+| `textDocument/completion`     | Suggested tab-completion when typing                   |
+| `textDocument/signatureHelp`  | Get signature information at a given cursor position   |
+| `textDocument/definition`     | GoTo implementation/Peek implementation                |
+| `textDocument/references`     | Find all/Peek references                               |
+| `textDocument/rename`         | Rename a symbol across the workspace                   |
+| `textDocument/codeAction`     | **Experimental** Generate code                         |
 
 ## Acknowledgements
 
