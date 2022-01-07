@@ -23,6 +23,11 @@
     "doc": "ACOS(X) computes the arccosine of X (inverse of COS(X)).",
     "type": 3
   },
+  "ACOSD": {
+    "args": "X",
+    "doc": "ACOSD(X) computes the arccosine of X in degrees (inverse of COSD(X).",
+    "type": 3
+  },
   "ACOSH": {
     "args": "X",
     "doc": "ACOSH(X) computes the inverse hyperbolic cosine of X.",
@@ -47,6 +52,11 @@
     "args": "A,KIND=kind",
     "doc": "AINT(A,KIND=kind) truncates its argument to a whole number.",
     "type": 3
+  },
+  "ALARM": {
+    "args": "SECONDS,HANDLER,STATUS=status",
+    "doc": "ALARM(SECONDS,HANDLER,STATUS=status) causes external subroutine HANDLER to be executed after a delay of SECONDS by using alarm(2) to set up a signal and signal(2) to catch it. If STATUS is supplied, it will be returned with the number of seconds remaining until any previously scheduled alarm was due to be delivered, or zero if there was no previously scheduled alarm.",
+    "type": 2
   },
   "ALL": {
     "args": "MASK,DIM=dim",
@@ -73,6 +83,11 @@
     "doc": "ASIN(X) computes the arcsine of X (inverse of SIN(X)).",
     "type": 3
   },
+  "ASIND": {
+    "args": "X",
+    "doc": "ASIND(X) computes the arcsine of its X in degrees (inverse of SIND(X)).",
+    "type": 3
+  },
   "ASINH": {
     "args": "X",
     "doc": "ASINH(X) computes the inverse hyperbolic sine of X.",
@@ -88,15 +103,85 @@
     "doc": "ATAN(X) computes the arctangent of X (inverse of TAN(X)).",
     "type": 3
   },
+  "ATAND": {
+    "args": "X",
+    "doc": "ATAND(X) computes the arctangent of X in degrees (inverse of TAND).",
+    "type": 3
+  },
   "ATAN2": {
     "args": "Y,X",
     "doc": "ATAN2(Y,X) computes the principal value of the argument function of the complex number X + i Y.",
+    "type": 3
+  },
+  "ATAN2D": {
+    "args": "Y,X",
+    "doc": "ATAN2D(Y,X) computes the principal value of the argument function of the complex number X + i Y in degrees.",
     "type": 3
   },
   "ATANH": {
     "args": "X",
     "doc": "ATANH(X) computes the inverse hyperbolic tangent of X.",
     "type": 3
+  },
+  "ATOMIC_ADD": {
+    "args": "ATOM,VALUE",
+    "doc": "ATOMIC_ADD(ATOM,VALUE) atomically adds the value of VALUE to the variable ATOM.",
+    "type": 2
+  },
+  "ATOMIC_AND": {
+    "args": "ATOM,VALUE",
+    "doc": "ATOMIC_AND(ATOM,VALUE) atomically defines ATOM with the bitwise AND between the values of ATOM and VALUE.",
+    "type": 2
+  },
+  "ATOMIC_CAS": {
+    "args": "ATOM,OLD,COMPARE,NEW,STAT=stat",
+    "doc": "ATOMIC_CAS compares the variable ATOM with the value of COMPARE; if the value is the same, ATOM is set to the value of NEW. Additionally, OLD is set to the value of ATOM that was used for the comparison.",
+    "type": 2
+  },
+  "ATOMIC_DEFINE": {
+    "args": "ATOM,VALUE,STAT=stat",
+    "doc": "ATOMIC_DEFINE(ATOM,VALUE) defines the variable ATOM with the value VALUE atomically.",
+    "type": 2
+  },
+  "ATOMIC_FETCH_ADD": {
+    "args": "ATOM,VALUE,OLD,STAT=stat",
+    "doc": "ATOMIC_FETCH_ADD(ATOM,VALUE,OLD) atomically stores the value of ATOM in OLD and adds the value of VALUE to the variable ATOM.",
+    "type": 2
+  },
+  "ATOMIC_FETCH_AND": {
+    "args": "ATOM,VALUE,OLD,STAT=stat",
+    "doc": "ATOMIC_AND(ATOM,VALUE) atomically stores the value of ATOM in OLD and defines ATOM with the bitwise AND between the values of ATOM and VALUE.",
+    "type": 2
+  },
+  "ATOMIC_FETCH_OR": {
+    "args": "ATOM,VALUE,OLD,STAT=stat",
+    "doc": "ATOMIC_OR(ATOM,VALUE) atomically stores the value of ATOM in OLD and defines ATOM with the bitwise OR between the values of ATOM and VALUE.",
+    "type": 2
+  },
+  "ATOMIC_FETCH_XOR": {
+    "args": "ATOM,VALUE,OLD,STAT=stat",
+    "doc": "ATOMIC_XOR(ATOM,VALUE) atomically stores the value of ATOM in OLD and defines ATOM with the bitwise XOR between the values of ATOM and VALUE.",
+    "type": 2
+  },
+  "ATOMIC_OR": {
+    "args": "ATOM,VALUE,STAT=stat",
+    "doc": "ATOMIC_OR(ATOM,VALUE) atomically defines ATOM with the bitwise AND between the values of ATOM and VALUE.",
+    "type": 2
+  },
+  "ATOMIC_REF": {
+    "args": "ATOM,VALUE,STAT=stat",
+    "doc": "ATOMIC_DEFINE(ATOM,VALUE) atomically assigns the value of the variable ATOM to VALUE.",
+    "type": 2
+  },
+  "ATOMIC_XOR": {
+    "args": "ATOM,VALUE,STAT=stat",
+    "doc": "ATOMIC_AND(ATOM,VALUE) atomically defines ATOM with the bitwise XOR between the values of ATOM and VALUE.",
+    "type": 2
+  },
+  "BACKTRACE": {
+    "args": "",
+    "doc": "BACKTRACE shows a backtrace at an arbitrary place in user code. Program execution continues normally afterwards. The backtrace information is printed to the unit corresponding to ERROR_UNIT in ISO_FORTRAN_ENV.",
+    "type": 2
   },
   "BESSEL_J0": {
     "args": "X",
@@ -168,14 +253,54 @@
     "doc": "CHAR(I,KIND=kind) returns the character represented by the integer I.",
     "type": 3
   },
+  "CHDIR": {
+    "args": "NAME,STATUS=status",
+    "doc": "CHDIR(NAME,STATUS=status) change current working directory to a specified path.",
+    "type": 2
+  },
+  "CHMOD": {
+    "args": "NAME,MODE,STATUS=status",
+    "doc": "CHMOD(NAME,MODE,STATUS=status) changes the permissions of a file.",
+    "type": 2
+  },
   "CMPLX": {
     "args": "X,Y=y,KIND=kind",
     "doc": "CMPLX(X,Y=y,KIND=kind) returns a complex number where X is converted to the real component.",
     "type": 3
   },
+  "CO_BROADCAST": {
+    "args": "A,SOURCE_IMAGE,STAT=stat,ERRMSG=errmsg",
+    "doc": "CO_BROADCAST(A,SOURCE_IMAGE,STAT=stat,ERRMSG=errmsg) copies the value of argument A on the image with image index SOURCE_IMAGE to all images in the current team.",
+    "type": 2
+  },
+  "CO_MAX": {
+    "args": "A,RESULT_IMAGE=result_image,STAT=stat,ERRMSG=errmsg",
+    "doc": "CO_MAX(A,RESULT_IMAGE=result_image,STAT=stat,ERRMSG=errmsg) determines element-wise the maximal value of A on all images of the current team.",
+    "type": 2
+  },
+  "CO_MIN": {
+    "args": "A,RESULT_IMAGE=result_image,STAT=stat,ERRMSG=errmsg",
+    "doc": "CO_MIN(A,RESULT_IMAGE=result_image,STAT=stat,ERRMSG=errmsg) determines element-wise the minimal value of A on all images of the current team.",
+    "type": 2
+  },
+  "CO_REDUCE": {
+    "args": "A,OPERATION,RESULT_IMAGE=result_image,STAT=stat,ERRMSG=errmsg",
+    "doc": "CO_REDUCE(A,OPERATION,RESULT_IMAGE=result_image,STAT=stat,ERRMSG=errmsg) determines element-wise the reduction of the value of A on all images of the current team.",
+    "type": 2
+  },
+  "CO_SUM": {
+    "args": "A,RESULT_IMAGE=result_image,STAT=stat,ERRMSG=errmsg",
+    "doc": "CO_SUM(A,RESULT_IMAGE=result_image,STAT=stat,ERRMSG=errmsg) sums up the values of each element of A on all images of the current team.",
+    "type": 2
+  },
   "COMMAND_ARGUMENT_COUNT": {
     "args": "X",
     "doc": "COMMAND_ARGUMENT_COUNT() returns the number of arguments passed on the command line when the containing program was invoked.",
+    "type": 3
+  },
+  "COMPLEX": {
+    "args": "X,Y",
+    "doc": "COMPLEX(X,Y) returns a complex number where X is converted to the real component and Y is converted to the imaginary component.",
     "type": 3
   },
   "CONJG": {
@@ -188,6 +313,11 @@
     "doc": "COS(X) computes the cosine of X.",
     "type": 3
   },
+  "COSD": {
+    "args": "X",
+    "doc": "COSD(X) computes the cosine of X in degrees.",
+    "type": 3
+  },
   "COSH": {
     "args": "X",
     "doc": "COSH(X) computes the hyperbolic cosine of X.",
@@ -196,6 +326,11 @@
   "COTAN": {
     "args": "X",
     "doc": "COTAN(X) computes the cotangent of X.",
+    "type": 3
+  },
+  "COTAND": {
+    "args": "X",
+    "doc": "COTAND(X) computes the cotangent of X in degrees.",
     "type": 3
   },
   "COUNT": {
@@ -211,6 +346,11 @@
   "CSHIFT": {
     "args": "ARRAY,SHIFT,DIM=dim",
     "doc": "CSHIFT(ARRAY,SHIFT,DIM=dim) performs a circular shift on elements of ARRAY along the dimension of DIM.",
+    "type": 3
+  },
+  "CTIME": {
+    "args": "TIME",
+    "doc": "CTIME(TIME) converts a system time value, such as returned by TIME8, to a string. The output will be of the form ‘Sat Aug 19 18:13:14 1995’.",
     "type": 3
   },
   "DATE_AND_TIME": {
@@ -278,9 +418,24 @@
     "doc": "ERFC_SCALED(X) computes the exponentially-scaled complementary error function of X.",
     "type": 3
   },
+  "ETIME": {
+    "args": "VALUES(2),TIME,",
+    "doc": "ETIME(VALUES(2),TIME) returns the number of seconds of runtime since the start of the process’s execution in TIME.",
+    "type": 3
+  },
+  "EVENT_QUERY": {
+    "args": "EVENT,COUNT,STAT=stat",
+    "doc": "EVENT_QUERY(EVENT,COUNT,STAT=stat) assigns the number of events to COUNT which have been posted to the EVENT variable and not yet been removed by calling EVENT WAIT.",
+    "type": 2
+  },
   "EXECUTE_COMMAND_LINE": {
     "args": "COMMAND,WAIT=wait,EXITSTAT=exitstat,CMDSTAT=cmdstat,CMDMSG=cmdmsg",
     "doc": "EXECUTE_COMMAND_LINE(COMMAND,WAIT=wait,EXITSTAT=exitstat,CMDSTAT=cmdstat,CMDMSG=cmdmsg) runs a shell command, synchronously or asynchronously.",
+    "type": 2
+  },
+  "EXIT": {
+    "args": "STATUS=status",
+    "doc": "EXIT(STATUS=status) causes immediate termination of the program with status.",
     "type": 2
   },
   "EXP": {
@@ -298,9 +453,49 @@
     "doc": "EXTENDS_TYPE_OF(A,MOLD) queries dynamic type for extension.",
     "type": 3
   },
+  "FDATE": {
+    "args": "DATE",
+    "doc": "FDATE(DATE) returns the current date (using the same format as CTIME) in DATE. It is equivalent to CALL CTIME(DATE, TIME()).",
+    "type": 2
+  },
+  "FGET": {
+    "args": "C,STATUS=status",
+    "doc": "FDATE(C,STATUS=status) Read a single character in stream mode from stdin by bypassing normal formatted output.",
+    "type": 2
+  },
+  "FGETC": {
+    "args": "UNIT,C,STATUS=status",
+    "doc": "FDATE(UNIT,C,STATUS=status) Read a single character in stream mode by bypassing normal formatted output.",
+    "type": 2
+  },
+  "FINDLOC": {
+    "args": "ARRAY,VALUE,DIM=dim,MASK=mask,KIND=kind,BACK=back",
+    "doc": "FINDLOC(ARRAY,VALUE,DIM=dim,MASK=mask,KIND=kind,BACK=back) determines the location of the element in the array with the value given in the VALUE argument.",
+    "type": 3
+  },
   "FLOOR": {
     "args": "A,KIND=kind",
     "doc": "FLOOR(A,KIND=kind) returns the greatest integer less than or equal to A.",
+    "type": 3
+  },
+  "FLUSH": {
+    "args": "UNIT=unit",
+    "doc": "FLUSH(UNIT=unit) Flushes Fortran unit(s) currently open for output.",
+    "type": 2
+  },
+  "FNUM": {
+    "args": "UNIT",
+    "doc": "FNUM(UNIT) returns the POSIX file descriptor number corresponding to the open Fortran I/O unit UNIT.",
+    "type": 3
+  },
+  "FPUT": {
+    "args": "C,STATUS=status",
+    "doc": "FPUT(C,STATUS=status) Write a single character in stream mode to stdout by bypassing normal formatted output.",
+    "type": 3
+  },
+  "FPUTC": {
+    "args": "C,UNIT=unit,STATUS=status",
+    "doc": "FPUTC(C,UNIT=unit,STATUS=status) Write a single character in stream mode to stdout by bypassing normal formatted output.",
     "type": 3
   },
   "FRACTION": {
@@ -308,10 +503,40 @@
     "doc": "FRACTION(X) returns the fractional part of the model representation of X.",
     "type": 3
   },
+  "FREE": {
+    "args": "PTR",
+    "doc": "FREE(PTR) Frees memory previously allocated by MALLOC.",
+    "type": 2
+  },
+  "FSEEK": {
+    "args": "UNIT,OFFSET,WHENCE,STATUS=status",
+    "doc": "FSEEK(UNIT,OFFSET,WHENCE,STATUS=status) Moves UNIT to the specified OFFSET.",
+    "type": 2
+  },
+  "FSTAT": {
+    "args": "UNIT,VALUES",
+    "doc": "FSTAT(UNIT,VALUES) FSTAT is identical to STAT, except that information about an already opened file is obtained.",
+    "type": 3
+  },
+  "FTELL": {
+    "args": "UNIT",
+    "doc": "FSTAT(UNIT) Retrieves the current position within an open file.",
+    "type": 3
+  },
   "GAMMA": {
     "args": "X",
     "doc": "GAMMA(X) computes the gamma function of X.",
     "type": 3
+  },
+  "GERROR": {
+    "args": "RESULT",
+    "doc": "GERROR(RESULT) Returns the system error message corresponding to the last system error.",
+    "type": 2
+  },
+  "GETARG": {
+    "args": "POS,VALUE",
+    "doc": "GETARG(POS,VALUE) Retrieve the POS-th argument that was passed on the command line when the containing program was invoked.",
+    "type": 2
   },
   "GET_COMMAND": {
     "args": "COMMAND=command,LENGTH=length,STATUS=status",
@@ -323,10 +548,50 @@
     "doc": "GET_COMMAND_ARGUMENT(NUMBER=number,VALUE=value,LENGTH=length,STATUS=status) retrieve the NUMBER-th argument that was passed on the command line when the containing program was invoked.",
     "type": 2
   },
+  "GETCWD": {
+    "args": "C,STATUS=status",
+    "doc": "GETCWD(C,STATUS=status) Get current working directory.",
+    "type": 3
+  },
+  "GETENV": {
+    "args": "NAME,VALUE",
+    "doc": "GETENV(NAME,VALUE) Get the VALUE of the environmental variable NAME.",
+    "type": 2
+  },
   "GET_ENVIRONMENT_VARIABLE": {
     "args": "NAME=name,VALUE=value,LENGTH=length,STATUS=status,TRIM_NAME=trim_name",
     "doc": "GET_ENVIRONMENT_VARIABLE(NAME=name,VALUE=value,LENGTH=length,STATUS=status,TRIM_NAME=trim_name) gets the VALUE of the environmental variable NAME.",
     "type": 2
+  },
+  "GETGID": {
+    "args": "",
+    "doc": "GETGID() Returns the numerical group ID of the current process.",
+    "type": 3
+  },
+  "GETLOG": {
+    "args": "C",
+    "doc": "GETLOG(C)Gets the username under which the program is running.",
+    "type": 2
+  },
+  "GETPID": {
+    "args": "",
+    "doc": "GETPID() Returns the numerical process identifier of the current process.",
+    "type": 3
+  },
+  "GETUID": {
+    "args": "",
+    "doc": "GETUID() Returns the numerical user ID of the current process.",
+    "type": 3
+  },
+  "GMTIME": {
+    "args": "TIME,VALUES",
+    "doc": "GMTIME(TIME,VALUES) Given a system time value TIME (as provided by the TIME intrinsic), fills VALUES with values extracted from it appropriate to the UTC time zone, using gmtime(3).",
+    "type": 2
+  },
+  "HOSTNM": {
+    "args": "C,STATUS=status",
+    "doc": "HOSTNM(C,STATUS=status) Retrieves the host name of the system on which the program is running.",
+    "type": 3
   },
   "HUGE": {
     "args": "X",
@@ -358,6 +623,11 @@
     "doc": "IANY(MASK,DIM=dim) reduces with bitwise OR the elements of ARRAY along dimension DIM.",
     "type": 3
   },
+  "IARGC": {
+    "args": "",
+    "doc": "IARGC() returns the number of arguments passed on the command line when the containing program was invoked.",
+    "type": 3
+  },
   "IBCLR": {
     "args": "I,POS",
     "doc": "IBCLR(I,POS) returns the value of I with the bit at position POS set to zero.",
@@ -378,9 +648,19 @@
     "doc": "ICHAR(C,KIND=kind) returns the code for the character in the first character position of C in the system's native character set.",
     "type": 3
   },
+  "IDATE": {
+    "args": "VALUES",
+    "doc": "IDATE(VALUES) Fills VALUES with the numerical values at the current local time.",
+    "type": 2
+  },
   "IEOR": {
     "args": "I,J",
     "doc": "IEOR(I,J) Bitwise logical exclusive OR.",
+    "type": 3
+  },
+  "IEORNO": {
+    "args": "",
+    "doc": "IEORNO() Returns the last system error number, as given by the C errno variable.",
     "type": 3
   },
   "IMAGE_INDEX": {
@@ -393,6 +673,21 @@
     "doc": "INDEX(STRING,SUBSTRING,BACK=back,KIND=kind) returns the position of the start of the first occurrence of string SUBSTRING as a substring in STRING, counting from one.",
     "type": 3
   },
+  "INT": {
+    "args": "A,KIND=kind",
+    "doc": "INT(A,KIND=kind) Convert to integer type.",
+    "type": 3
+  },
+  "INT2": {
+    "args": "A",
+    "doc": "INT2(A) Convert to a KIND=2 integer type.",
+    "type": 3
+  },
+  "INT8": {
+    "args": "A",
+    "doc": "INT8(A) Convert to a KIND=8 integer type.",
+    "type": 3
+  },
   "IOR": {
     "args": "I,J",
     "doc": "IOR(I,J) Bitwise logical inclusive OR.",
@@ -403,14 +698,14 @@
     "doc": "IPARITY(ARRAY,DIM=dim,MASK=mask) reduces with bitwise XOR (exclusive or) the elements of ARRAY along dimension DIM if the corresponding element in MASK is TRUE.",
     "type": 3
   },
-  "ISHFT": {
-    "args": "I,SHIFT",
-    "doc": "ISHFT(I,SHIFT) returns a value corresponding to I with all of the bits shifted SHIFT places",
+  "IRAND": {
+    "args": "FLAG",
+    "doc": "IRAND(FLAG) returns a pseudo-random number from a uniform distribution between 0 and a system-dependent limit (which is in most cases 2147483647).",
     "type": 3
   },
-  "ISHFTC": {
-    "args": "I,SHIFT,SIZE=size",
-    "doc": "ISHFTC(I,SHIFT,SIZE=size) returns a value corresponding to I with the rightmost SIZE bits shifted circularly SHIFT places; that is, bits shifted out one end are shifted into the opposite end.",
+  "IS_CONTIGUOUS": {
+    "args": "ARRAY",
+    "doc": "IS_CONTIGUOUS(ARRAY) tests whether an array is contiguous.",
     "type": 3
   },
   "IS_IOSTAT_END": {
@@ -423,6 +718,36 @@
     "doc": "IS_IOSTAT_EOR(I) tests whether the variable I has the value of the I/O status 'end of record'",
     "type": 3
   },
+  "ISATTY": {
+    "args": "UNIT",
+    "doc": "ISATTY(UNIT) Determine whether a unit is connected to a terminal device.",
+    "type": 3
+  },
+  "ISHFT": {
+    "args": "I,SHIFT",
+    "doc": "ISHFT(I,SHIFT) returns a value corresponding to I with all of the bits shifted SHIFT places.",
+    "type": 3
+  },
+  "ISHFTC": {
+    "args": "I,SHIFT,SIZE=size",
+    "doc": "ISHFTC(I,SHIFT,SIZE=size) returns a value corresponding to I with the rightmost SIZE bits shifted circularly SHIFT places; that is, bits shifted out one end are shifted into the opposite end.",
+    "type": 3
+  },
+  "ISNAN": {
+    "args": "X",
+    "doc": "ISNAN(X) tests whether a floating-point value is an IEEE Not-a-Number (NaN).",
+    "type": 3
+  },
+  "ITIME": {
+    "args": "VALUES",
+    "doc": "ITIME(VALUES) Fills VALUES with the numerical values at the current local time.",
+    "type": 2
+  },
+  "KILL": {
+    "args": "PID,STATUS=status",
+    "doc": "KILL(PID,STATUS=status) Sends the signal specified by SIG to the process PID. See kill(2).",
+    "type": 3
+  },
   "KIND": {
     "args": "X",
     "doc": "KIND(X) returns the kind value of the entity X.",
@@ -431,6 +756,16 @@
   "LBOUND": {
     "args": "ARRAY,DIM=dim,KIND=kind",
     "doc": "LBOUND(ARRAY,DIM=dim,KIND=kind) returns the lower bounds of an array, or a single lower bound along the DIM dimension.",
+    "type": 3
+  },
+  "LCOBOUND": {
+    "args": "COARRAY,DIM=dim,KIND=kind",
+    "doc": "LCOBOUND(COARRAY,DIM=dim,KIND=kind) Returns the lower bounds of a coarray, or a single lower cobound along the DIM codimension.",
+    "type": 3
+  },
+  "LEADZ": {
+    "args": "I",
+    "doc": "LEADZ(I) returns the number of leading zero bits of an integer.",
     "type": 3
   },
   "LEN": {
@@ -453,6 +788,11 @@
     "doc": "LGT(STRING_A,STRING_B) determines whether one string is lexically greater than another string.",
     "type": 3
   },
+  "LINK": {
+    "args": "PATH1,PATH2",
+    "doc": "LINK(PATH1,PATH2) Makes a (hard) link from file PATH1 to PATH2.",
+    "type": 3
+  },
   "LLE": {
     "args": "STRING_A,STRING_B",
     "doc": "LLE(STRING_A,STRING_B) determines whether one string is lexically less than or equal to another string.",
@@ -463,6 +803,16 @@
     "doc": "LLT(STRING_A,STRING_B) determines whether one string is lexically less than another string.",
     "type": 3
   },
+  "LNBLNK": {
+    "args": "STRING",
+    "doc": "LNBLNK(STRING) Returns the length of a character string, ignoring any trailing blanks.",
+    "type": 3
+  },
+  "LOC": {
+    "args": "X",
+    "doc": "LOC(X) returns the address of X as an integer.",
+    "type": 3
+  },
   "LOG": {
     "args": "X",
     "doc": "LOG(X) computes the natural logarithm of X, i.e. the logarithm to the base e.",
@@ -471,6 +821,46 @@
   "LOG10": {
     "args": "X",
     "doc": "LOG10(X) computes the base 10 logarithm of X.",
+    "type": 3
+  },
+  "LOG_GAMMA": {
+    "args": "X",
+    "doc": "LOG_GAMMA(X) computes the natural logarithm of the absolute value of the Gamma function.",
+    "type": 3
+  },
+  "LOGICAL": {
+    "args": "L,KIND=kind",
+    "doc": "LOGICAL(L,KIND=kind) Converts one kind of LOGICAL variable to another.",
+    "type": 3
+  },
+  "LSHIFT": {
+    "args": "I,SHIFT",
+    "doc": "LSHIFT(I,SHIFT) returns a value corresponding to I with all of the bits shifted left by SHIFT places.",
+    "type": 3
+  },
+  "LSTAT": {
+    "args": "NAME,VALUES,STATUS=status",
+    "doc": "LSTAT(NAME,VALUES,STATUS=status) is identical to STAT, except that if path is a symbolic link, then the link itself is statted, not the file that it refers to.",
+    "type": 3
+  },
+  "LTIME": {
+    "args": "TIME,VALUES",
+    "doc": "LTIME(TIME,VALUES) Given a system time value TIME (as provided by the TIME intrinsic), fills VALUES with values extracted from it appropriate to the local time zone using localtime(3).",
+    "type": 2
+  },
+  "MALLOC": {
+    "args": "SIZE",
+    "doc": "MALLOC(SIZE) allocates SIZE bytes of dynamic memory and returns the address of the allocated memory.",
+    "type": 3
+  },
+  "MASKL": {
+    "args": "I,KIND=kind",
+    "doc": "MASKL(I,KIND=kind) has its leftmost I bits set to 1, and the remaining bits set to 0.",
+    "type": 3
+  },
+  "MASKR": {
+    "args": "I,KIND=kind",
+    "doc": "MASKR(I,KIND=kind) has its rightmost I bits set to 1, and the remaining bits set to 0.",
     "type": 3
   },
   "MATMUL": {
@@ -498,9 +888,24 @@
     "doc": "MAXVAL(ARRAY,DIM=dim,MASK=mask) determines the maximum value of the elements in an array.",
     "type": 3
   },
+  "MCLOCK": {
+    "args": "",
+    "doc": "MCLOCK() Returns the number of clock ticks since the start of the process, based on the function clock(3) in the C standard library.",
+    "type": 3
+  },
+  "MCLOCK8": {
+    "args": "",
+    "doc": "MCLOCK8() Returns the number of clock ticks since the start of the process, based on the function clock(3) in the C standard library.",
+    "type": 3
+  },
   "MERGE": {
     "args": "TSOURCE,FSOURCE,MASK",
     "doc": "MERGE(TSOURCE,FSOURCE,MASK) select values from two arrays according to a logical mask.",
+    "type": 3
+  },
+  "MERGE_BITS": {
+    "args": "I,J,MASK",
+    "doc": "MERGE_BITS(I,J,MASK) merges the bits of I and J as determined by the mask.",
     "type": 3
   },
   "MIN": {
@@ -558,6 +963,11 @@
     "doc": "NINT(A,KIND=kind) rounds its argument to the nearest whole number.",
     "type": 3
   },
+  "NORM2": {
+    "args": "ARRAY,DIM=dim",
+    "doc": "NORM2(ARRAY,DIM=dim) Calculates the Euclidean vector norm (L_2 norm) of ARRAY along dimension DIM.",
+    "type": 3
+  },
   "NOT": {
     "args": "I",
     "doc": "NOT(I) returns the bitwise Boolean inverse of I.",
@@ -568,8 +978,28 @@
     "type": 3
   },
   "PACK": {
-    "args": "A,KIND=kind",
-    "doc": "PACK(ARRAY,MASK,VECTOR=vector) stores the elements of ARRAY in an array of rank one.",
+    "args": "ARRAY,MASK=mask,VECTOR=vector",
+    "doc": "PACK(ARRAY,MASK=mask,VECTOR=vector) stores the elements of ARRAY in an array of rank one.",
+    "type": 3
+  },
+  "PARITY": {
+    "args": "MASK,DIM=dim",
+    "doc": "PARITY(MASK,DIM=dim) Calculates the parity, i.e. the reduction using .XOR., of MASK along dimension DIM.",
+    "type": 3
+  },
+  "PERROR": {
+    "args": "STRING",
+    "doc": "PERROR(STRING) Prints (on the C stderr stream) a newline-terminated error message corresponding to the last system error. This is prefixed by STRING, a colon and a space.",
+    "type": 2
+  },
+  "POPCNT": {
+    "args": "I",
+    "doc": "POPCNT(I) returns the number of bits set (’1’ bits) in the binary representation of I.",
+    "type": 3
+  },
+  "POPPAR": {
+    "args": "I",
+    "doc": "POPPAR(I) returns parity of the integer I, i.e. the parity of the number of bits set ('1' bits) in the binary representation of I. It is equal to 0 if I has an even number of bits set, and 1 for an odd number of '1' bits.",
     "type": 3
   },
   "PRECISION": {
@@ -592,6 +1022,21 @@
     "doc": "RADIX(X) returns the base of the model representing the entity X.",
     "type": 3
   },
+  "RAN": {
+    "args": "I",
+    "doc": "RAN(I) For compatibility with HP FORTRAN 77/iX, the RAN intrinsic is provided as an alias for RAND.",
+    "type": 3
+  },
+  "RAND": {
+    "args": "I",
+    "doc": "RAND(I) returns a pseudo-random number from a uniform distribution between 0 and 1.",
+    "type": 3
+  },
+  "RANDOM_INIT": {
+    "args": "REPEATABLE,IMAGE_DISTINCT",
+    "doc": "RANDOM_INIT(REPEATABLE,IMAGE_DISTINCT) Initializes the state of the pseudorandom number generator used by RANDOM_NUMBER.",
+    "type": 2
+  },
   "RANDOM_NUMBER": {
     "args": "HARVEST",
     "doc": "RANDOM_NUMBER(HARVEST) returns a single pseudorandom number or an array of pseudorandom numbers.",
@@ -605,6 +1050,21 @@
   "RANGE": {
     "args": "X",
     "doc": "RANGE(X) returns the decimal exponent range in the model of the type of X.",
+    "type": 3
+  },
+  "RANK": {
+    "args": "A",
+    "doc": "RANK(A) returns the rank of a scalar or array data object.",
+    "type": 3
+  },
+  "REAL": {
+    "args": "A,KIND=kind",
+    "doc": "REAL(A,KIND=kind) converts its argument A to a real type.",
+    "type": 3
+  },
+  "RENAME": {
+    "args": "PATH1,PATH2",
+    "doc": "RENAME(PATH1,PATH2) Renames a file from file PATH1 to PATH2.",
     "type": 3
   },
   "REPEAT": {
@@ -622,6 +1082,11 @@
     "doc": "RRSPACING(X) returns the reciprocal of the relative spacing of model numbers near X.",
     "type": 3
   },
+  "RSHIFT": {
+    "args": "I,SHIFT",
+    "doc": "RSHIFT(I,SHIFT) eturns a value corresponding to I with all of the bits shifted right by SHIFT places.",
+    "type": 3
+  },
   "SAME_TYPE_AS": {
     "args": "A,B",
     "doc": "SAME_TYPE_AS(A,B) query dynamic types for equality.",
@@ -633,8 +1098,18 @@
     "type": 3
   },
   "SCAN": {
-    "args": "SOURCE,KIND=kind",
+    "args": "STRING,SET,BACK=back,KIND=kind",
     "doc": "SCAN(STRING,SET,BACK=back,KIND=kind) scans a STRING for any of the characters in a SET of characters.",
+    "type": 3
+  },
+  "SECNDS": {
+    "args": "X",
+    "doc": "SECNDS(X) gets the time in seconds from the real-time system clock.",
+    "type": 3
+  },
+  "SECOND": {
+    "args": "TIME",
+    "doc": "SECOND(TIME) Returns a REAL(4) value representing the elapsed CPU time in seconds.",
     "type": 3
   },
   "SELECTED_CHAR_KIND": {
@@ -662,14 +1137,39 @@
     "doc": "SHAPE(SOURCE,KIND=kind) determines the shape of an array.",
     "type": 3
   },
+  "SHIFTA": {
+    "args": "I,SHIFT",
+    "doc": "SHIFTA(I,SHIFT) returns a value corresponding to I with all of the bits shifted right by SHIFT places.",
+    "type": 3
+  },
+  "SHIFTL": {
+    "args": "I,SHIFT",
+    "doc": "SHIFTL(I,SHIFT) returns a value corresponding to I with all of the bits shifted left by SHIFT places.",
+    "type": 3
+  },
+  "SHIFTR": {
+    "args": "I,SHIFT",
+    "doc": "SHIFTR(I,SHIFT) returns a value corresponding to I with all of the bits shifted right by SHIFT places.",
+    "type": 3
+  },
   "SIGN": {
     "args": "A,B",
     "doc": "SIGN(A,B) returns the value of A with the sign of B.",
     "type": 3
   },
+  "SIGNAL": {
+    "args": "NUMBER,HANDLER",
+    "doc": "SIGNAL(NUMBER,HANDLER) causes external subroutine HANDLER to be executed with a single integer argument when signal NUMBER occurs.",
+    "type": 3
+  },
   "SIN": {
     "args": "X",
     "doc": "SIN(X) computes the sine of X.",
+    "type": 3
+  },
+  "SIND": {
+    "args": "X",
+    "doc": "SIND(X) computes the sine of X in degrees.",
     "type": 3
   },
   "SINH": {
@@ -681,6 +1181,16 @@
     "args": "ARRAY,DIM=dim,KIND=kind",
     "doc": "SIZE(ARRAY,DIM=dim,KIND=kind) determines the extent of ARRAY along a specified dimension DIM, or the total number of elements in ARRAY if DIM is absent.",
     "type": 3
+  },
+  "SIZEOF": {
+    "args": "X",
+    "doc": "SIZEOF(X) calculates the number of bytes of storage the expression X occupies.",
+    "type": 3
+  },
+  "SLEEP": {
+    "args": "SECONDS",
+    "doc": "SLEEP(SECONDS) Calling this subroutine causes the process to pause for SECONDS seconds.",
+    "type": 2
   },
   "SPACING": {
     "args": "X",
@@ -697,9 +1207,34 @@
     "doc": "SQRT(X) computes the square root of X.",
     "type": 3
   },
+  "SRAND": {
+    "args": "SEED",
+    "doc": "SRAND(SEED) reinitializes the pseudo-random number generator called by RAND and IRAND.",
+    "type": 2
+  },
+  "STAT": {
+    "args": "NAME,VALUES",
+    "doc": "STAT(NAME,VALUES) This function returns information about a file.",
+    "type": 3
+  },
+  "STORAGE_SIZE": {
+    "args": "A,KIND=kind",
+    "doc": "STORAGE_SIZE(A,KIND=kind) Returns the storage size of argument A in bits.",
+    "type": 3
+  },
   "SUM": {
     "args": "ARRAY,DIM=dim,MASK=mask",
     "doc": "SUM(ARRAY,DIM=dim,MASK=mask) adds the elements of ARRAY along dimension DIM if the corresponding element in MASK is TRUE.",
+    "type": 3
+  },
+  "SYMLNK": {
+    "args": "PATH1,PATH2",
+    "doc": "SYMLNK(PATH1,PATH2) Makes a symbolic link from file PATH1 to PATH2.",
+    "type": 3
+  },
+  "SYSTEM": {
+    "args": "COMMAND,STATUS=status",
+    "doc": "SYSTEM(COMMAND,STATUS=status) Passes the command COMMAND to a shell (see system(3)).",
     "type": 3
   },
   "SYSTEM_CLOCK": {
@@ -712,14 +1247,39 @@
     "doc": "TAN(X) computes the tangent of X.",
     "type": 3
   },
+  "TAND": {
+    "args": "X",
+    "doc": "TAND(X) computes the tangent of X in degrees.",
+    "type": 3
+  },
   "TANH": {
     "args": "X",
     "doc": "TANH(X) computes the hyperbolic tangent of X.",
     "type": 3
   },
+  "THIS_IMAGE": {
+    "args": "DISTANCE=distance|COARRAY,DIM=dim",
+    "doc": "THIS_IMAGE(DISTANCE=distance|COARRAY,DIM=dim) Returns the cosubscript for this image.",
+    "type": 3
+  },
+  "TIME": {
+    "args": "",
+    "doc": "TIME() Returns the current time encoded as an integer.",
+    "type": 3
+  },
+  "TIME8": {
+    "args": "",
+    "doc": "TIME8() Returns the current time encoded as an integer. This value is suitable for passing to CTIME, GMTIME, and LTIME.",
+    "type": 3
+  },
   "TINY": {
     "args": "X",
     "doc": "TINY(X) returns the smallest positive (non zero) number in the model of the type of X.",
+    "type": 3
+  },
+  "TRAILZ": {
+    "args": "I",
+    "doc": "TRAILZ(I) returns the number of trailing zero bits of an integer.",
     "type": 3
   },
   "TRANSFER": {
@@ -737,19 +1297,44 @@
     "doc": "TRIM(STRING) removes trailing blank characters of a string.",
     "type": 3
   },
+  "TTYNAM": {
+    "args": "UNIT",
+    "doc": "TTYNAM(UNIT) Get the name of a terminal device.",
+    "type": 3
+  },
   "UBOUND": {
     "args": "ARRAY,DIM=dim,KIND=kind",
     "doc": "UBOUND(ARRAY,DIM=dim,KIND=kind) returns the upper bounds of an array, or a single upper bound along the DIM dimension.",
     "type": 3
   },
-  "UPACK": {
+  "UCOBOUND": {
+    "args": "ARRAY,DIM=dim,KIND=kind",
+    "doc": "UCOBOUND(ARRAY,DIM=dim,KIND=kind) Returns the upper cobounds of a coarray, or a single upper cobound along the DIM codimension.",
+    "type": 3
+  },
+  "UMASK": {
+    "args": "MASK",
+    "doc": "UMASK(MASK) Sets the file creation mask to MASK.",
+    "type": 3
+  },
+  "UNLINK": {
+    "args": "PATH",
+    "doc": "UNLINK(PATH) Unlinks the file PATH.",
+    "type": 3
+  },
+  "UNPACK": {
     "args": "VECTOR,MASK,FIELD",
-    "doc": "UPACK(VECTOR,MASK,FIELD) stores the elements of VECTOR in an array of higher rank.",
+    "doc": "UNPACK(VECTOR,MASK,FIELD) Store the elements of VECTOR in an array of higher rank.",
     "type": 3
   },
   "VERIFY": {
     "args": "STRING,SET,BACK=back,KIND=kind",
     "doc": "VERIFY(STRING,SET,BACK=back,KIND=kind) verifies that all the characters in STRING belong to the set of characters in SET.",
+    "type": 3
+  },
+  "XOR": {
+    "args": "I,J",
+    "doc": "XOR(I,J) Bitwise logical exclusive or.",
     "type": 3
   }
 }
