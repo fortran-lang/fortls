@@ -181,6 +181,7 @@ def load_intrinsics():
             int_funs.append(create_int_object(name, json_obj, json_obj["type"]))
     # Definitions taken from gfortran documentation
     # (https://gcc.gnu.org/onlinedocs/gfortran/Intrinsic-Modules.html#Intrinsic-Modules)
+    # Update OpenACC from here https://www.openacc.org/specification
     json_file = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "intrinsic_mods.json"
     )

@@ -7,6 +7,7 @@
 - Adds support for including preprocessor definitions from files same as `pp_defs`
 - Adds hover support for preprocessor variables
 - Adds Go To Definition for `include` statements
+- Adds intrinsic support for `OpenACC` version 3.1
 
 ### Changes
 

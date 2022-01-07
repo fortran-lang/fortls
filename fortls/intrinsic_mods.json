@@ -10,8 +10,7 @@
       },
       {
         "name": "omp_alloctrait",
-        "type": 3,
-        "desc": "TYPE"
+        "type": 4
       },
       {
         "name": "omp_sched_static",
@@ -1015,6 +1014,1049 @@
         "name": "omp_sync_hint_kind",
         "type": 3,
         "desc": "INTEGER"
+      }
+    ]
+  },
+  "openacc": {
+    "type": 0,
+    "name": "openacc",
+    "children": [
+      {
+        "name": "openacc_version",
+        "type": 3,
+        "desc": "INTEGER"
+      },
+      {
+        "name": "acc_device_property_kind",
+        "type": 3,
+        "desc": "INTEGER"
+      },
+      {
+        "name": "acc_get_num_devices",
+        "type": 2,
+        "return": "INTEGER",
+        "args": "dev_type",
+        "children": [
+          {
+            "name": "dev_type",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_device_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_set_device_type",
+        "type": 1,
+        "args": "dev_type",
+        "children": [
+          {
+            "name": "dev_type",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_device_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_get_device_type",
+        "type": 2,
+        "return": "INTEGER(KIND=acc_device_kind)"
+      },
+      {
+        "name": "acc_set_device_num",
+        "type": 1,
+        "args": "dev_num,dev_type",
+        "children": [
+          {
+            "name": "dev_num",
+            "type": 3,
+            "desc": "INTEGER"
+          },
+          {
+            "name": "dev_type",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_device_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_get_device_num",
+        "type": 2,
+        "return": "INTEGER",
+        "args": "dev_type",
+        "children": [
+          {
+            "name": "dev_type",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_device_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_get_property",
+        "type": 2,
+        "return": "INTEGER(KIND=c_size_t)",
+        "args": "dev_num,dev_type,property",
+        "children": [
+          {
+            "name": "dev_num",
+            "type": 3,
+            "desc": "INTEGER",
+            "mods": ["VALUE"]
+          },
+          {
+            "name": "dev_type",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_device_kind)",
+            "mods": ["VALUE"]
+          },
+          {
+            "name": "property",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_device_property_kind)",
+            "mods": ["VALUE"]
+          }
+        ]
+      },
+      {
+        "name": "acc_get_property_string",
+        "type": 1,
+        "args": "dev_num,dev_type,property,string",
+        "children": [
+          {
+            "name": "dev_num",
+            "type": 3,
+            "desc": "INTEGER",
+            "mods": ["VALUE"]
+          },
+          {
+            "name": "dev_type",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_device_kind)",
+            "mods": ["VALUE"]
+          },
+          {
+            "name": "property",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_device_property_kind)",
+            "mods": ["VALUE"]
+          },
+          {
+            "name": "string",
+            "type": 3,
+            "desc": "CHARACTER(LEN=*)"
+          }
+        ]
+      },
+      {
+        "name": "acc_init",
+        "type": 1,
+        "args": "dev_type",
+        "children": [
+          {
+            "name": "dev_type",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_device_kind)",
+            "mods": ["VALUE"]
+          }
+        ]
+      },
+      {
+        "name": "acc_shutdown",
+        "type": 1,
+        "args": "dev_type",
+        "children": [
+          {
+            "name": "dev_type",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_device_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_async_test",
+        "type": 2,
+        "return": "LOGICAL",
+        "args": "wait_arg",
+        "children": [
+          {
+            "name": "wait_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_async_test_device",
+        "type": 2,
+        "return": "LOGICAL",
+        "args": "wait_arg,dev_num",
+        "children": [
+          {
+            "name": "wait_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          },
+          {
+            "name": "dev_num",
+            "type": 3,
+            "desc": "INTEGER"
+          }
+        ]
+      },
+      {
+        "name": "acc_async_test_all",
+        "type": 2,
+        "return": "LOGICAL"
+      },
+      {
+        "name": "acc_async_test_all_device",
+        "type": 2,
+        "return": "LOGICAL",
+        "args": "dev_num",
+        "children": [
+          {
+            "name": "dev_num",
+            "type": 3,
+            "desc": "INTEGER"
+          }
+        ]
+      },
+      {
+        "name": "acc_wait",
+        "type": 1,
+        "args": "wait_arg",
+        "children": [
+          {
+            "name": "wait_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_wait",
+        "type": 1,
+        "args": "wait_arg,dev_num",
+        "children": [
+          {
+            "name": "wait_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          },
+          {
+            "name": "dev_num",
+            "type": 3,
+            "desc": "INTEGER"
+          }
+        ]
+      },
+      {
+        "name": "acc_wait_async",
+        "type": 1,
+        "args": "wait_arg,async_arg",
+        "children": [
+          {
+            "name": "wait_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          },
+          {
+            "name": "async_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_wait_device_async",
+        "type": 1,
+        "args": "wait_arg,async_arg,dev_num",
+        "children": [
+          {
+            "name": "wait_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          },
+          {
+            "name": "async_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          },
+          {
+            "name": "dev_num",
+            "type": 3,
+            "desc": "INTEGER"
+          }
+        ]
+      },
+      {
+        "name": "acc_wait_all",
+        "type": 1
+      },
+      {
+        "name": "acc_wait_all_device",
+        "type": 1,
+        "args": "dev_num",
+        "children": [
+          {
+            "name": "dev_num",
+            "type": 3,
+            "desc": "INTEGER"
+          }
+        ]
+      },
+      {
+        "name": "acc_wait_all_async",
+        "type": 1,
+        "args": "async_arg",
+        "children": [
+          {
+            "name": "async_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_wait_all_device_async",
+        "type": 1,
+        "args": "async_arg,dev_num",
+        "children": [
+          {
+            "name": "async_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          },
+          {
+            "name": "dev_num",
+            "type": 3,
+            "desc": "INTEGER"
+          }
+        ]
+      },
+      {
+        "name": "acc_get_default_async",
+        "type": 2,
+        "return": "INTEGER(KIND=acc_device_kind)"
+      },
+      {
+        "name": "acc_set_default_async",
+        "type": 1,
+        "args": "async_arg",
+        "children": [
+          {
+            "name": "async_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_device_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_on_device",
+        "type": 2,
+        "return": "LOGICAL",
+        "args": "dev_type",
+        "children": [
+          {
+            "name": "dev_type",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_device_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_copyin",
+        "type": 1,
+        "args": "data_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          }
+        ]
+      },
+      {
+        "name": "acc_copyin",
+        "type": 1,
+        "args": "data_arg,bytes",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "bytes",
+            "type": 3,
+            "desc": "INTEGER"
+          }
+        ]
+      },
+      {
+        "name": "acc_copyin_async",
+        "type": 1,
+        "args": "data_arg,async_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "async_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_copyin_async",
+        "type": 1,
+        "args": "data_arg,bytes,async_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "bytes",
+            "type": 3,
+            "desc": "INTEGER"
+          },
+          {
+            "name": "async_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_create",
+        "type": 1,
+        "args": "data_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          }
+        ]
+      },
+      {
+        "name": "acc_create",
+        "type": 1,
+        "args": "data_arg,bytes",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "bytes",
+            "type": 3,
+            "desc": "INTEGER"
+          }
+        ]
+      },
+      {
+        "name": "acc_create_async",
+        "type": 1,
+        "args": "data_arg,async_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "async_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_create_async",
+        "type": 1,
+        "args": "data_arg,bytes,async_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "bytes",
+            "type": 3,
+            "desc": "INTEGER"
+          },
+          {
+            "name": "async_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_copyout",
+        "type": 1,
+        "args": "data_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          }
+        ]
+      },
+      {
+        "name": "acc_copyout",
+        "type": 1,
+        "args": "data_arg,bytes",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "bytes",
+            "type": 3,
+            "desc": "INTEGER"
+          }
+        ]
+      },
+      {
+        "name": "acc_copyout_async",
+        "type": 1,
+        "args": "data_arg,async_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "async_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_copyout_async",
+        "type": 1,
+        "args": "data_arg,bytes,async_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "bytes",
+            "type": 3,
+            "desc": "INTEGER"
+          },
+          {
+            "name": "async_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_copyout_finalize",
+        "type": 1,
+        "args": "data_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          }
+        ]
+      },
+      {
+        "name": "acc_copyout_finalize",
+        "type": 1,
+        "args": "data_arg,bytes",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "bytes",
+            "type": 3,
+            "desc": "INTEGER"
+          }
+        ]
+      },
+      {
+        "name": "acc_copyout_finalize_async",
+        "type": 1,
+        "args": "data_arg,async_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "async_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_copyout_finalize_async",
+        "type": 1,
+        "args": "data_arg,bytes,async_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "bytes",
+            "type": 3,
+            "desc": "INTEGER"
+          },
+          {
+            "name": "async_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_delete",
+        "type": 1,
+        "args": "data_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          }
+        ]
+      },
+      {
+        "name": "acc_delete",
+        "type": 1,
+        "args": "data_arg,bytes",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "bytes",
+            "type": 3,
+            "desc": "INTEGER"
+          }
+        ]
+      },
+      {
+        "name": "acc_delete_async",
+        "type": 1,
+        "args": "data_arg,async_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "async_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_delete_async",
+        "type": 1,
+        "args": "data_arg,bytes,async_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "bytes",
+            "type": 3,
+            "desc": "INTEGER"
+          },
+          {
+            "name": "async_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_delete_finalize",
+        "type": 1,
+        "args": "data_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          }
+        ]
+      },
+      {
+        "name": "acc_delete_finalize",
+        "type": 1,
+        "args": "data_arg,bytes",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "bytes",
+            "type": 3,
+            "desc": "INTEGER"
+          }
+        ]
+      },
+      {
+        "name": "acc_delete_finalize_async",
+        "type": 1,
+        "args": "data_arg,async_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "async_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_delete_finalize_async",
+        "type": 1,
+        "args": "data_arg,bytes,async_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "bytes",
+            "type": 3,
+            "desc": "INTEGER"
+          },
+          {
+            "name": "async_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_update_device",
+        "type": 1,
+        "args": "data_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          }
+        ]
+      },
+      {
+        "name": "acc_update_device",
+        "type": 1,
+        "args": "data_arg,bytes",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "bytes",
+            "type": 3,
+            "desc": "INTEGER"
+          }
+        ]
+      },
+      {
+        "name": "acc_update_device_async",
+        "type": 1,
+        "args": "data_arg,async_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "async_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_update_device_async",
+        "type": 1,
+        "args": "data_arg,bytes,async_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "bytes",
+            "type": 3,
+            "desc": "INTEGER"
+          },
+          {
+            "name": "async_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_update_self",
+        "type": 1,
+        "args": "data_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          }
+        ]
+      },
+      {
+        "name": "acc_update_self",
+        "type": 1,
+        "args": "data_arg,bytes",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "bytes",
+            "type": 3,
+            "desc": "INTEGER"
+          }
+        ]
+      },
+      {
+        "name": "acc_update_self_async",
+        "type": 1,
+        "args": "data_arg,async_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "async_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_update_self_async",
+        "type": 1,
+        "args": "data_arg,bytes,async_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "bytes",
+            "type": 3,
+            "desc": "INTEGER"
+          },
+          {
+            "name": "async_arg",
+            "type": 3,
+            "desc": "INTEGER(KIND=acc_handle_kind)"
+          }
+        ]
+      },
+      {
+        "name": "acc_is_present",
+        "type": 2,
+        "return": "LOGICAL",
+        "args": "data_arg",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          }
+        ]
+      },
+      {
+        "name": "acc_is_present",
+        "type": 2,
+        "return": "LOGICAL",
+        "args": "data_arg,bytes",
+        "children": [
+          {
+            "name": "data_arg",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "bytes",
+            "type": 3,
+            "desc": "INTEGER"
+          }
+        ]
+      },
+      {
+        "name": "acc_memcpy_d2d",
+        "type": 1,
+        "args": "data_arg_dest,data_arg_src,bytes,dev_num_dest,dev_num_src",
+        "children": [
+          {
+            "name": "data_arg_dest",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "data_arg_src",
+            "type": 3,
+            "desc": "TYPE(*)",
+            "mods": ["DIMENSION(*)"]
+          },
+          {
+            "name": "bytes",
+            "type": 3,
+            "desc": "INTEGER"
+          },
+          {
+            "name": "dev_num_dest",
+            "type": 3,
+            "desc": "INTEGER"
+          },
+          {
+            "name": "dev_num_src",
+            "type": 3,
+            "desc": "INTEGER"
+          }
+        ]
+      }
+    ]
+  },
+  "openacc_kinds": {
+    "type": 0,
+    "name": "openacc_kinds",
+    "children": [
+      {
+        "name": "acc_device_kind",
+        "type": 3,
+        "desc": "INTEGER"
+      },
+      {
+        "name": "acc_device_none",
+        "type": 3,
+        "desc": "INTEGER(KIND=acc_device_kind)"
+      },
+      {
+        "name": "acc_device_default",
+        "type": 3,
+        "desc": "INTEGER(KIND=acc_device_kind)"
+      },
+      {
+        "name": "acc_device_host",
+        "type": 3,
+        "desc": "INTEGER(KIND=acc_device_kind)"
+      },
+      {
+        "name": "acc_device_not_host",
+        "type": 3,
+        "desc": "INTEGER(KIND=acc_device_kind)"
+      },
+      {
+        "name": "acc_device_nvidia",
+        "type": 3,
+        "desc": "INTEGER(KIND=acc_device_kind)"
+      },
+      {
+        "name": "acc_handle_kind",
+        "type": 3,
+        "desc": "INTEGER"
+      },
+      {
+        "name": "acc_async_noval",
+        "type": 3,
+        "desc": "INTEGER(KIND=acc_handle_kind)"
+      },
+      {
+        "name": "acc_async_sync",
+        "type": 3,
+        "desc": "INTEGER(KIND=acc_handle_kind)"
       }
     ]
   },
