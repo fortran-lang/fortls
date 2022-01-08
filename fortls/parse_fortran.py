@@ -5,7 +5,6 @@ import logging
 import os
 import re
 import sys
-from collections import namedtuple
 
 from fortls.constants import (
     DO_TYPE_ID,
@@ -44,6 +43,16 @@ from fortls.objects import (
     fortran_type,
     fortran_var,
     fortran_where,
+    VAR_info,
+    SUB_info,
+    FUN_info,
+    SELECT_info,
+    CLASS_info,
+    USE_info,
+    GEN_info,
+    SMOD_info,
+    INT_info,
+    VIS_info,
 )
 from fortls.regex_patterns import (
     ASSOCIATE_REGEX,
@@ -121,21 +130,6 @@ from fortls.regex_patterns import (
 
 if not PY3K:
     import io
-
-# Helper types
-VAR_info = namedtuple("VAR_info", ["type_word", "keywords", "var_names"])
-SUB_info = namedtuple("SUB_info", ["name", "args", "mod_flag", "keywords"])
-FUN_info = namedtuple(
-    "FUN_info", ["name", "args", "return_type", "return_var", "mod_flag", "keywords"]
-)
-SELECT_info = namedtuple("SELECT_info", ["type", "binding", "desc"])
-CLASS_info = namedtuple("CLASS_info", ["name", "parent", "keywords"])
-USE_info = namedtuple("USE_info", ["mod_name", "only_list", "rename_map"])
-GEN_info = namedtuple("GEN_info", ["bound_name", "pro_links", "vis_flag"])
-SMOD_info = namedtuple("SMOD_info", ["name", "parent"])
-INT_info = namedtuple("INT_info", ["name", "abstract"])
-VIS_info = namedtuple("VIS_info", ["type", "obj_names"])
-
 
 log = logging.getLogger(__name__)
 

@@ -1,8 +1,10 @@
+from __future__ import annotations, print_function
+
 import copy
-from dataclasses import dataclass
 import os
 import re
-from collections import namedtuple
+from typing import Dict, NamedTuple, List, Pattern
+from dataclasses import dataclass
 
 from fortls.constants import (
     ASSOC_TYPE_ID,
@@ -28,7 +30,41 @@ from fortls.jsonrpc import path_to_uri
 from fortls.regex_patterns import CLASS_VAR_REGEX, DEF_KIND_REGEX
 
 # Helper types
-USE_info = namedtuple("USE_info", ["only_list", "rename_map"])
+VAR_info = NamedTuple(
+    "VAR_info", [("type_word", str), ("keywords", List[str]), ("var_names", List[str])]
+)
+SUB_info = NamedTuple(
+    "SUB_info",
+    [("name", str), ("args", str), ("mod_flag", bool), ("keywords", List[str])],
+)
+FUN_info = NamedTuple(
+    "FUN_info",
+    [
+        ("name", str),
+        ("args", str),
+        ("return_type", None),
+        ("return_var", str),
+        ("mod_flag", bool),
+        ("keywords", List[str]),
+    ],
+)
+SELECT_info = NamedTuple(
+    "SELECT_info", [("type", int), ("binding", str), ("desc", str)]
+)
+CLASS_info = NamedTuple(
+    "CLASS_info", [("name", str), ("parent", str), ("keywords", List[str])]
+)
+USE_info = NamedTuple(
+    "USE_info",
+    [("mod_name", str), ("only_list", List[str]), ("rename_map", Dict[str, str])],
+)
+GEN_info = NamedTuple(
+    "GEN_info",
+    [("bound_name", str), ("pro_links", List[str]), ("vis_flag", int)],
+)
+SMOD_info = NamedTuple("SMOD_info", [("name", str), ("parent", str)])
+INT_info = NamedTuple("INT_info", [("name", str), ("abstract", bool)])
+VIS_info = NamedTuple("VIS_info", [("type", int), ("obj_names", List[str])])
 
 
 @dataclass
@@ -36,10 +72,17 @@ class INCLUDE_info:
     line_number: str
     path: str
     file: None  # fortran_file
-    scope_objs: list
+    scope_objs: list[str]
 
 
-def get_use_tree(scope, use_dict, obj_tree, only_list=[], rename_map={}, curr_path=[]):
+def get_use_tree(
+    scope: fortran_scope,
+    use_dict: dict,
+    obj_tree: dict,
+    only_list: list = [],
+    rename_map: dict = {},
+    curr_path: list = [],
+):
     def intersect_only(use_stmnt):
         tmp_list = []
         tmp_map = rename_map.copy()
@@ -89,12 +132,14 @@ def get_use_tree(scope, use_dict, obj_tree, only_list=[], rename_map={}, curr_pa
                                 rename_map=merged_rename
                             )
             else:
-                use_dict[use_stmnt.mod_name] = USE_info(set(), {})
+                use_dict[use_stmnt.mod_name] = USE_info(use_stmnt.mod_name, set(), {})
             # Skip if we have already visited module with the same only list
             if old_len == len(use_dict_mod.only_list):
                 continue
         else:
-            use_dict[use_stmnt.mod_name] = USE_info(set(merged_use_list), merged_rename)
+            use_dict[use_stmnt.mod_name] = USE_info(
+                use_stmnt.mod_name, set(merged_use_list), merged_rename
+            )
         # Descend USE tree
         use_dict = get_use_tree(
             obj_tree[use_stmnt.mod_name][0],
@@ -107,8 +152,16 @@ def get_use_tree(scope, use_dict, obj_tree, only_list=[], rename_map={}, curr_pa
     return use_dict
 
 
-def find_in_scope(scope, var_name: str, obj_tree, interface=False, local_only=False):
-    def check_scope(local_scope, var_name_lower, filter_public=False):
+def find_in_scope(
+    scope: fortran_scope,
+    var_name: str,
+    obj_tree: dict,
+    interface: bool = False,
+    local_only: bool = False,
+):
+    def check_scope(
+        local_scope: fortran_scope, var_name_lower: str, filter_public: bool = False
+    ):
         for child in local_scope.get_children():
             if child.name.startswith("#GEN_INT"):
                 tmp_var = check_scope(child, var_name_lower, filter_public)
@@ -176,8 +229,10 @@ def find_in_scope(scope, var_name: str, obj_tree, interface=False, local_only=Fa
     return None
 
 
-def find_in_workspace(obj_tree, query, filter_public=False, exact_match=False):
-    def add_children(mod_obj, query):
+def find_in_workspace(
+    obj_tree: dict, query: str, filter_public: bool = False, exact_match: bool = False
+):
+    def add_children(mod_obj, query: str):
         tmp_list = []
         for child_obj in mod_obj.get_children(filter_public):
             if child_obj.name.lower().find(query) >= 0:
@@ -204,7 +259,7 @@ def find_in_workspace(obj_tree, query, filter_public=False, exact_match=False):
     return matching_symbols
 
 
-def climb_type_tree(var_stack, curr_scope, obj_tree):
+def climb_type_tree(var_stack, curr_scope: fortran_scope, obj_tree: dict):
     """Walk up user-defined type sequence to determine final field type"""
     # Find base variable in current scope
     iVar = 0
@@ -236,27 +291,35 @@ def climb_type_tree(var_stack, curr_scope, obj_tree):
 
 # Helper classes
 class USE_line:
-    def __init__(self, mod_name, line_number, only_list=[], rename_map={}):
-        self.mod_name = mod_name.lower()
-        self.line_number = line_number
-        self.only_list = [only.lower() for only in only_list]
-        self.rename_map = {
+    def __init__(
+        self,
+        mod_name: str,
+        line_number: int,
+        only_list: list = [],
+        rename_map: dict = {},
+    ):
+        self.mod_name: str = mod_name.lower()
+        self.line_number: int = line_number
+        self.only_list: list = [only.lower() for only in only_list]
+        self.rename_map: dict = {
             key.lower(): value.lower() for key, value in rename_map.items()
         }
 
 
 class fortran_diagnostic:
-    def __init__(self, sline, message, severity=1, find_word=None):
-        self.sline = sline
-        self.message = message
-        self.severity = severity
-        self.find_word = find_word
-        self.has_related = False
+    def __init__(
+        self, sline: int, message: str, severity: int = 1, find_word: str = None
+    ):
+        self.sline: int = sline
+        self.message: str = message
+        self.severity: int = severity
+        self.find_word: str = find_word
+        self.has_related: bool = False
         self.related_path = None
         self.related_line = None
         self.related_message = None
 
-    def add_related(self, path, line, message):
+    def add_related(self, path: str, line: int, message: str):
         self.has_related = True
         self.related_path = path
         self.related_line = line
@@ -298,29 +361,29 @@ class fortran_diagnostic:
 # Fortran object classes
 class fortran_obj:
     def __init__(self):
-        self.vis = 0
-        self.def_vis = 0
-        self.doc_str = None
+        self.vis: int = 0
+        self.def_vis: int = 0
+        self.doc_str: str = None
         self.parent = None
-        self.eline = -1
+        self.eline: int = -1
         self.implicit_vars = None
 
-    def set_default_vis(self, new_vis):
+    def set_default_vis(self, new_vis: int):
         self.def_vis = new_vis
 
-    def set_visibility(self, new_vis):
+    def set_visibility(self, new_vis: int):
         self.vis = new_vis
 
     def set_parent(self, parent_obj):
         self.parent = parent_obj
 
-    def add_doc(self, doc_str):
+    def add_doc(self, doc_str: str):
         self.doc_str = doc_str
 
     def update_fqsn(self, enc_scope=None):
         return None
 
-    def end(self, line_number):
+    def end(self, line_number: int):
         self.eline = line_number
 
     def resolve_inherit(self, obj_tree, inherit_version):
@@ -406,30 +469,29 @@ class fortran_obj:
 
 
 class fortran_scope(fortran_obj):
-    def __init__(self, file_ast, line_number, name):
+    def __init__(self, file_ast, line_number: int, name: str):
         self.base_setup(file_ast, line_number, name)
 
-    def base_setup(self, file_ast, sline, name, keywords=[]):
+    def base_setup(self, file_ast, sline: int, name: str, keywords: list = []):
         self.file_ast = file_ast
-        self.sline = sline
-        self.eline = sline
-        self.name = name
-        self.children = []
-        self.members = []
-        self.use = []
-        self.keywords = keywords
+        self.sline: int = sline
+        self.eline: int = sline
+        self.name: str = name
+        self.children: list = []
+        self.members: list = []
+        self.use: list[USE_line] = []
+        self.keywords: list = keywords
         self.inherit = None
         self.parent = None
-        self.vis = 0
-        self.def_vis = 0
+        self.vis: int = 0
+        self.def_vis: int = 0
         self.contains_start = None
-        self.doc_str = None
+        self.doc_str: str = None
         self.implicit_vars = None
         self.implicit_line = None
+        self.FQSN: str = self.name.lower()
         if file_ast.enc_scope_name is not None:
             self.FQSN = file_ast.enc_scope_name.lower() + "::" + self.name.lower()
-        else:
-            self.FQSN = self.name.lower()
 
     def copy_from(self, copy_source):
         self.file_ast = copy_source.file_ast
@@ -692,7 +754,9 @@ class fortran_program(fortran_module):
 
 
 class fortran_submodule(fortran_module):
-    def __init__(self, file_ast, line_number, name, ancestor_name=None):
+    def __init__(
+        self, file_ast, line_number: int, name: str, ancestor_name: str = None
+    ):
         self.base_setup(file_ast, line_number, name)
         self.ancestor_name = ancestor_name
         self.ancestor_obj = None
@@ -767,15 +831,21 @@ class fortran_submodule(fortran_module):
 
 class fortran_subroutine(fortran_scope):
     def __init__(
-        self, file_ast, line_number, name, args="", mod_flag=False, keywords=[]
+        self,
+        file_ast,
+        line_number: int,
+        name: str,
+        args: str = "",
+        mod_flag: bool = False,
+        keywords: list = [],
     ):
         self.base_setup(file_ast, line_number, name, keywords=keywords)
-        self.args = args.replace(" ", "")
-        self.args_snip = self.args
-        self.arg_objs = []
-        self.in_children = []
-        self.missing_args = []
-        self.mod_scope = mod_flag
+        self.args: str = args.replace(" ", "")
+        self.args_snip: str = self.args
+        self.arg_objs: list = []
+        self.in_children: list = []
+        self.missing_args: list = []
+        self.mod_scope: bool = mod_flag
 
     def is_mod_scope(self):
         return self.mod_scope
@@ -977,27 +1047,26 @@ class fortran_function(fortran_subroutine):
     def __init__(
         self,
         file_ast,
-        line_number,
-        name,
-        args="",
-        mod_flag=False,
-        keywords=[],
+        line_number: int,
+        name: str,
+        args: str = "",
+        mod_flag: bool = False,
+        keywords: list = [],
         return_type=None,
         result_var=None,
     ):
         self.base_setup(file_ast, line_number, name, keywords=keywords)
-        self.args = args.replace(" ", "").lower()
-        self.args_snip = self.args
-        self.arg_objs = []
-        self.in_children = []
-        self.missing_args = []
-        self.mod_scope = mod_flag
+        self.args: str = args.replace(" ", "").lower()
+        self.args_snip: str = self.args
+        self.arg_objs: list = []
+        self.in_children: list = []
+        self.missing_args: list = []
+        self.mod_scope: bool = mod_flag
         self.result_var = result_var
         self.result_obj = None
+        self.return_type = None
         if return_type is not None:
             self.return_type = return_type[0]
-        else:
-            self.return_type = None
 
     def copy_interface(self, copy_source):
         # Copy arguments and returns
@@ -1099,10 +1168,10 @@ class fortran_function(fortran_subroutine):
 
 
 class fortran_type(fortran_scope):
-    def __init__(self, file_ast, line_number, name, keywords):
+    def __init__(self, file_ast, line_number: int, name: str, keywords: list):
         self.base_setup(file_ast, line_number, name, keywords=keywords)
         #
-        self.in_children = []
+        self.in_children: list = []
         self.inherit = None
         self.inherit_var = None
         self.inherit_tmp = None
@@ -1264,7 +1333,7 @@ class fortran_type(fortran_scope):
 
 
 class fortran_block(fortran_scope):
-    def __init__(self, file_ast, line_number, name):
+    def __init__(self, file_ast, line_number: int, name: str):
         self.base_setup(file_ast, line_number, name)
 
     def get_type(self, no_link=False):
@@ -1281,7 +1350,7 @@ class fortran_block(fortran_scope):
 
 
 class fortran_do(fortran_block):
-    def __init__(self, file_ast, line_number, name):
+    def __init__(self, file_ast, line_number: int, name: str):
         self.base_setup(file_ast, line_number, name)
 
     def get_type(self, no_link=False):
@@ -1292,7 +1361,7 @@ class fortran_do(fortran_block):
 
 
 class fortran_where(fortran_block):
-    def __init__(self, file_ast, line_number, name):
+    def __init__(self, file_ast, line_number: int, name: str):
         self.base_setup(file_ast, line_number, name)
 
     def get_type(self, no_link=False):
@@ -1303,7 +1372,7 @@ class fortran_where(fortran_block):
 
 
 class fortran_if(fortran_block):
-    def __init__(self, file_ast, line_number, name):
+    def __init__(self, file_ast, line_number: int, name: str):
         self.base_setup(file_ast, line_number, name)
 
     def get_type(self, no_link=False):
@@ -1314,7 +1383,7 @@ class fortran_if(fortran_block):
 
 
 class fortran_associate(fortran_block):
-    def __init__(self, file_ast, line_number, name):
+    def __init__(self, file_ast, line_number: int, name: str):
         self.base_setup(file_ast, line_number, name)
         self.assoc_links = []
 
@@ -1349,7 +1418,7 @@ class fortran_associate(fortran_block):
 
 
 class fortran_enum(fortran_block):
-    def __init__(self, file_ast, line_number, name):
+    def __init__(self, file_ast, line_number: int, name: str):
         self.base_setup(file_ast, line_number, name)
 
     def get_type(self, no_link=False):
@@ -1360,7 +1429,7 @@ class fortran_enum(fortran_block):
 
 
 class fortran_select(fortran_block):
-    def __init__(self, file_ast, line_number, name, select_info):
+    def __init__(self, file_ast, line_number: int, name: str, select_info):
         self.base_setup(file_ast, line_number, name)
         self.select_type = select_info.type
         self.binding_name = None
@@ -1417,7 +1486,7 @@ class fortran_select(fortran_block):
 
 
 class fortran_int(fortran_scope):
-    def __init__(self, file_ast, line_number, name, abstract=False):
+    def __init__(self, file_ast, line_number: list, name: str, abstract: bool = False):
         self.base_setup(file_ast, line_number, name)
         self.mems = []
         self.abstract = abstract
@@ -1455,11 +1524,11 @@ class fortran_var(fortran_obj):
     def __init__(
         self,
         file_ast,
-        line_number,
-        name,
-        var_desc,
-        keywords,
-        keyword_info={},
+        line_number: int,
+        name: str,
+        var_desc: str,
+        keywords: list,
+        keyword_info: dict = {},
         link_obj=None,
     ):
         self.base_setup(
@@ -1467,33 +1536,38 @@ class fortran_var(fortran_obj):
         )
 
     def base_setup(
-        self, file_ast, line_number, name, var_desc, keywords, keyword_info, link_obj
+        self,
+        file_ast,
+        line_number: int,
+        name: str,
+        var_desc: str,
+        keywords: list,
+        keyword_info: dict,
+        link_obj: str,
     ):
         self.file_ast = file_ast
-        self.sline = line_number
-        self.eline = line_number
-        self.name = name
-        self.desc = var_desc
-        self.keywords = keywords
-        self.keyword_info = keyword_info
-        self.doc_str = None
-        self.callable = CLASS_VAR_REGEX.match(var_desc) is not None
-        self.children = []
-        self.use = []
-        self.vis = 0
+        self.sline: int = line_number
+        self.eline: int = line_number
+        self.name: int = name
+        self.desc: str = var_desc
+        self.keywords: list = keywords
+        self.keyword_info: dict = keyword_info
+        self.doc_str: str = None
+        self.callable: bool = CLASS_VAR_REGEX.match(var_desc) is not None
+        self.children: list = []
+        self.use: list[USE_line] = []
+        self.vis: int = 0
         self.parent = None
         self.link_obj = None
         self.type_obj = None
-        self.is_const = False
+        self.is_const: bool = False
         self.param_val: str = None
+        self.link_name: str = None
+        self.FQSN: str = self.name.lower()
         if link_obj is not None:
             self.link_name = link_obj.lower()
-        else:
-            self.link_name = None
         if file_ast.enc_scope_name is not None:
             self.FQSN = file_ast.enc_scope_name.lower() + "::" + self.name.lower()
-        else:
-            self.FQSN = self.name.lower()
         if self.keywords.count(KEYWORD_ID_DICT["public"]) > 0:
             self.vis = 1
         if self.keywords.count(KEYWORD_ID_DICT["private"]) > 0:
@@ -1653,18 +1727,18 @@ class fortran_meth(fortran_var):
     def __init__(
         self,
         file_ast,
-        line_number,
-        name,
-        var_desc,
-        keywords,
-        keyword_info,
+        line_number: int,
+        name: str,
+        var_desc: str,
+        keywords: list,
+        keyword_info: dict,
         link_obj=None,
     ):
         self.base_setup(
             file_ast, line_number, name, var_desc, keywords, keyword_info, link_obj
         )
-        self.drop_arg = -1
-        self.pass_name = keyword_info.get("pass")
+        self.drop_arg: int = -1
+        self.pass_name: str = keyword_info.get("pass")
         if link_obj is None:
             self.link_name = get_paren_substring(var_desc.lower())
 
@@ -1781,27 +1855,27 @@ class fortran_meth(fortran_var):
 class fortran_ast:
     def __init__(self, file_obj=None):
         self.file = file_obj
-        self.path = None
+        self.path: str = None
         if file_obj is not None:
             self.path = file_obj.path
-        self.global_dict = {}
-        self.scope_list = []
-        self.variable_list = []
-        self.public_list = []
-        self.private_list = []
-        self.scope_stack = []
-        self.end_stack = []
-        self.pp_if = []
-        self.include_statements = []
-        self.end_errors = []
-        self.parse_errors = []
-        self.inherit_objs = []
-        self.linkable_objs = []
+        self.global_dict: dict = {}
+        self.scope_list: list = []
+        self.variable_list: list = []
+        self.public_list: list = []
+        self.private_list: list = []
+        self.scope_stack: list = []
+        self.end_stack: list = []
+        self.pp_if: list = []
+        self.include_statements: list = []
+        self.end_errors: list = []
+        self.parse_errors: list = []
+        self.inherit_objs: list = []
+        self.linkable_objs: list = []
         self.none_scope = None
         self.inc_scope = None
         self.current_scope = None
-        self.END_SCOPE_REGEX = None
-        self.enc_scope_name = None
+        self.END_SCOPE_REGEX: Pattern = None
+        self.enc_scope_name: str = None
         self.last_obj = None
         self.pending_doc = None
 
@@ -1821,7 +1895,11 @@ class fortran_ast:
         return self.current_scope.FQSN
 
     def add_scope(
-        self, new_scope, END_SCOPE_REGEX, exportable=True, req_container=False
+        self,
+        new_scope: fortran_scope,
+        END_SCOPE_REGEX,
+        exportable: bool = True,
+        req_container: bool = False,
     ):
         self.scope_list.append(new_scope)
         if new_scope.require_inherit():
@@ -1850,7 +1928,7 @@ class fortran_ast:
             self.last_obj.add_doc(self.pending_doc)
             self.pending_doc = None
 
-    def end_scope(self, line_number, check=True):
+    def end_scope(self, line_number: int, check: bool = True):
         if (
             (self.current_scope is None) or (self.current_scope is self.none_scope)
         ) and check:
@@ -1883,21 +1961,27 @@ class fortran_ast:
     def add_int_member(self, key):
         self.current_scope.add_member(key)
 
-    def add_private(self, name):
+    def add_private(self, name: str):
         self.private_list.append(self.enc_scope_name + "::" + name)
 
-    def add_public(self, name):
+    def add_public(self, name: str):
         self.public_list.append(self.enc_scope_name + "::" + name)
 
-    def add_use(self, mod_word, line_number, only_list=[], rename_map={}):
+    def add_use(
+        self,
+        mod_word: str,
+        line_number: int,
+        only_list: list = [],
+        rename_map: dict = {},
+    ):
         if self.current_scope is None:
             self.create_none_scope()
         self.current_scope.add_use(mod_word, line_number, only_list, rename_map)
 
-    def add_include(self, path, line_number):
+    def add_include(self, path: str, line_number: int):
         self.include_statements.append(INCLUDE_info(line_number, path, None, []))
 
-    def add_doc(self, doc_string, forward=False):
+    def add_doc(self, doc_string: str, forward: bool = False):
         if doc_string == "":
             return
         if forward:
@@ -1906,14 +1990,14 @@ class fortran_ast:
             if self.last_obj is not None:
                 self.last_obj.add_doc(doc_string)
 
-    def start_ppif(self, line_number):
+    def start_ppif(self, line_number: int):
         self.pp_if.append([line_number - 1, -1])
 
     def end_ppif(self, line_number):
         if len(self.pp_if) > 0:
             self.pp_if[-1][1] = line_number - 1
 
-    def get_scopes(self, line_number=None):
+    def get_scopes(self, line_number: int = None):
         if line_number is None:
             return self.scope_list
         scope_list = []
@@ -1926,7 +2010,7 @@ class fortran_ast:
             return [self.none_scope]
         return scope_list
 
-    def get_inner_scope(self, line_number):
+    def get_inner_scope(self, line_number: int):
         scope_sline = -1
         curr_scope = None
         for scope in self.scope_list:
@@ -1938,7 +2022,7 @@ class fortran_ast:
             return self.none_scope
         return curr_scope
 
-    def get_object(self, FQSN):
+    def get_object(self, FQSN: str):
         FQSN_split = FQSN.split("::")
         curr_obj = self.global_dict.get(FQSN_split[0])
         if curr_obj is None:
@@ -1968,7 +2052,7 @@ class fortran_ast:
                 curr_obj = next_obj
         return curr_obj
 
-    def resolve_includes(self, workspace, path=None):
+    def resolve_includes(self, workspace, path: str = None):
         file_dir = os.path.dirname(self.path)
         for inc in self.include_statements:
             file_path = os.path.normpath(os.path.join(file_dir, inc.path))
@@ -2000,7 +2084,7 @@ class fortran_ast:
         for linkable_obj in self.linkable_objs:
             linkable_obj.resolve_link(obj_tree)
 
-    def close_file(self, line_number):
+    def close_file(self, line_number: int):
         # Close open scopes
         while self.current_scope is not None:
             self.end_scope(line_number, check=False)
