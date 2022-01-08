@@ -279,7 +279,7 @@ def test_comp():
     exp_results = (
         # test_prog.f08
         [1, "myfun", "DOUBLE PRECISION FUNCTION myfun(n, xval)"],
-        [4, "glob_sub", "SUBROUTINE glob_sub(n, xval, yval)"],
+        [9, "glob_sub", "SUBROUTINE glob_sub(n, xval, yval)"],
         [1, "bound_nopass", "SUBROUTINE bound_nopass(a, b)"],
         [1, "bound_pass", "SUBROUTINE bound_pass(arg1)"],
         [1, "stretch_vector", "TYPE(scaled_vector)"],
@@ -310,16 +310,16 @@ def test_comp():
         [1, "n", "INTEGER(4)"],
         [2, "a", "REAL(8)"],
         # test_block.f08
-        [7, "READ", "STATEMENT"],
-        [8, "READ", "STATEMENT"],
         [9, "READ", "STATEMENT"],
+        [10, "READ", "STATEMENT"],
+        [11, "READ", "STATEMENT"],
         # subdir/test_generic.f90
         [4, "my_gen", "SUBROUTINE my_gen(self, a, b)"],
         # subdir/test_inherit.f90
         [1, "val", "REAL(8)"],
         # subdir/test_rename.F90
         [1, "localname", "INTEGER"],
-        [1, "renamed_var2", "REAL(8)"],
+        [2, "renamed_var2", "REAL(8)"],
         # subdir/test_vis.f90
         [3, "some_type", "TYPE"],
         # test_import.f90
