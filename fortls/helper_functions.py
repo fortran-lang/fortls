@@ -21,8 +21,21 @@ from fortls.regex_patterns import (
 log = logging.getLogger(__name__)
 
 
-def expand_name(line, char_poss):
-    """Get full word containing given cursor position"""
+def expand_name(line: str, char_poss: int) -> str:
+    """Get full word containing given cursor position
+
+    Parameters
+    ----------
+    line : str
+        Text line
+    char_poss : int
+        Column position along the line
+
+    Returns
+    -------
+    str
+        Word regex match for the input column
+    """
     # The order here is important.
     # WORD will capture substrings in logical and strings
     regexs = [LOGICAL_REGEX, SQ_STRING_REGEX, DQ_STRING_REGEX, WORD_REGEX, NUMBER_REGEX]
@@ -33,10 +46,21 @@ def expand_name(line, char_poss):
     return ""
 
 
-def detect_fixed_format(file_lines):
+def detect_fixed_format(file_lines: list[str]) -> bool:
     """Detect fixed/free format by looking for characters in label columns
     and variable declarations before column 6. Treat intersection format
-    files as free format."""
+    files as free format.
+
+    Parameters
+    ----------
+    file_lines : list[str]
+        List of consecutive file lines
+
+    Returns
+    -------
+    bool
+        True if file_lines are of Fixed Fortran style
+    """
     for line in file_lines:
         if FREE_FORMAT_TEST.match(line):
             return False
@@ -51,8 +75,20 @@ def detect_fixed_format(file_lines):
     return True
 
 
-def strip_line_label(line):
-    """Strip leading numeric line label"""
+def strip_line_label(line: str) -> tuple[str, str | None]:
+    """Strip leading numeric line label
+
+    Parameters
+    ----------
+    line : str
+        Text line
+
+    Returns
+    -------
+    tuple[str, str | None]
+        Output string, Line label returns None if no line label present
+    """
+
     match = LINE_LABEL_REGEX.match(line)
     if match is None:
         return line, None
@@ -62,8 +98,21 @@ def strip_line_label(line):
         return out_str, line_label
 
 
-def strip_strings(in_line, maintain_len=False):
-    """String string literals from code line"""
+def strip_strings(in_line: str, maintain_len: bool = False) -> str:
+    """Strips string literals from code line
+
+    Parameters
+    ----------
+    in_line : str
+        Text string
+    maintain_len : bool, optional
+        Maintain the len(in_line) in the output string, by default False
+
+    Returns
+    -------
+    str
+        Stripped string
+    """
 
     def repl_sq(m):
         return "'{0}'".format(" " * (len(m.group()) - 2))
@@ -80,12 +129,22 @@ def strip_strings(in_line, maintain_len=False):
     return out_line
 
 
-def separate_def_list(test_str):
+def separate_def_list(test_str: str) -> list[str] | None:
     """Separate definition lists, skipping parenthesis and bracket groups
 
     Examples:
       "var1, var2, var3" -> ["var1", "var2", "var3"]
       "var, init_var(3) = [1,2,3], array(3,3)" -> ["var", "init_var", "array"]
+
+    Parameters
+    ----------
+    test_str : str
+        Text string
+
+    Returns
+    -------
+    list[str] | None
+        [description]
     """
     stripped_str = strip_strings(test_str)
     paren_count = 0
@@ -111,8 +170,21 @@ def separate_def_list(test_str):
     return def_list
 
 
-def find_word_in_line(line, word):
-    """Find Fortran word in line"""
+def find_word_in_line(line: str, word: str) -> tuple[int, int]:
+    """Find Fortran word in line
+
+    Parameters
+    ----------
+    line : str
+        Text line
+    word : str
+        word to find in line
+
+    Returns
+    -------
+    tuple[int, int]
+        start and end positions (indices) of the word if not found it returns
+        -1, len(word) -1"""
     i0 = -1
     for poss_name in WORD_REGEX.finditer(line):
         if poss_name.group() == word:
@@ -121,9 +193,20 @@ def find_word_in_line(line, word):
     return i0, i0 + len(word)
 
 
-def find_paren_match(test_str):
+def find_paren_match(test_str: str) -> int:
     """Find matching closing parenthesis by searching forward,
-    returns -1 if no match is found"""
+    returns -1 if no match is found
+
+    Parameters
+    ----------
+    test_str : str
+        Input string
+
+    Returns
+    -------
+    int
+        The index of the matching `)` character in the string
+    """
     paren_count = 1
     ind = -1
     for (i, char) in enumerate(test_str):
