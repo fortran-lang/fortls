@@ -5,6 +5,9 @@ program preprocessor
     integer, parameter :: var = 1000
     PCType :: tmp
     print*, 999, 3.14, "some", var, PETSC_ERR_MEM
-    print*, PETSC_ERR_INT_OVERFLOW
+    print*, PETSC_ERR_INT_OVERFLOW, varVar
+    ewrite(1,*) 'Assemble EP P1 matrix and rhs sytem'
+    ewrite2(1,*) 'Assemble EP P1 matrix and rhs sytem'
+
 #endif
 end program preprocessor

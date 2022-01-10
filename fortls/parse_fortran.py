@@ -1203,6 +1203,14 @@ def preprocess_file(
             output_file.append(line)
             pp_defines.append(i + 1)
             def_name = match.group(2)
+            # If this is an argument list of a function add them to the name
+            # get_definition will only return the function name upon hover
+            # hence if the argument list is appended in the def_name then
+            # querying the dictionary will not yield a result.
+            # Need to properly parse the preprocessor files instead of this.
+            # This also does not allow for multiline argument list definitions.
+            # if match.group(3):
+            #     def_name += match.group(3)
             if (match.group(1) == "define") and (def_name not in defs_tmp):
                 eq_ind = line[match.end(0) :].find(" ")
                 if eq_ind >= 0:

@@ -105,7 +105,7 @@ FREE_FORMAT_TEST = re.compile(r"[ ]{1,4}[a-z]", re.I)
 # Preprocessor mathching rules
 DEFINED_REGEX = re.compile(r"defined[ ]*\([ ]*([a-z_][a-z0-9_]*)[ ]*\)", re.I)
 PP_REGEX = re.compile(r"#(if |ifdef|ifndef|else|elif|endif)")
-PP_DEF_REGEX = re.compile(r"#(define|undef)[ ]*([a-z0-9_]+)", re.I)
+PP_DEF_REGEX = re.compile(r"#(define|undef)[ ]*([\w]+)(\((\w+(,[ ]*)?)+\))?", re.I)
 PP_DEF_TEST_REGEX = re.compile(r"(![ ]*)?defined[ ]*\([ ]*([a-z0-9_]*)[ ]*\)$", re.I)
 PP_INCLUDE_REGEX = re.compile(r"#include[ ]*([\"a-z0-9_\.]*)", re.I)
 # Context matching rules

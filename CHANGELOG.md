@@ -15,6 +15,12 @@
 - Update constant parameters for `omp_lib` and `omp_lib_kinds` Interface v5.0
 - Format json files with `prettier`
 
+### Fixes
+
+- Fixes the hover of preprocessor functions. It now displays the function name
+  witout the argument list and the function body. The argument list cannot be
+  multiline but the function body can.
+
 ## 1.16.0
 
 ### Adds
