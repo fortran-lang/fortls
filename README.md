@@ -6,7 +6,7 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 `fortls` is an implementation of the [Language Server Protocol](https://github.com/Microsoft/language-server-protocol)
-(LSP) for Fortran using Python (3.6+).
+(LSP) for Fortran using Python (3.7+).
 
 Editor extensions that can integrate with `fortls` to provide autocomplete and
 other IDE-like functionality are available for
@@ -60,6 +60,7 @@ potentially subject to change.
 
 - Signature help is not available for overloaded subroutines/functions
 - Diagnostics are only updated when files are saved or opened/closed
+- Files included for preprocessor are not parsed for Fortran objects
 
 ## Installation
 
@@ -67,7 +68,7 @@ potentially subject to change.
 pip install fortls
 ```
 
-## fortls settings
+## Settings
 
 The following global settings can be used when launching the language
 server.
@@ -185,6 +186,7 @@ By default all source directories under `root_dir` are recursively included.
 Source file directories can also be specified manually by specifying
 their paths in the `source_dirs` variable in the configuration options file.
 Paths can be absolute or relative to `root_dir`.
+`root_dir` does not need to be specified manually as it is always included.
 
 When defining `source_dirs` in the configuration options filethe default behaviour (i.e. including
 all files in all subdirectories under `root_dir`) is overriden. To include them
@@ -195,8 +197,6 @@ back again one can do
   "source_dirs": ["/**", "all", "other", "dirs"]
 }
 ```
-
-> NOTE: `root_dir` does not need to be specified manually as it is always included.
 
 ### Preprocessing
 

@@ -2,3 +2,4 @@
 .vscode
 *.egg-info 
 dist/
+docs/_build/
