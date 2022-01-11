@@ -83,7 +83,7 @@ def init_file(filepath, pp_defs, pp_suffixes, include_dirs):
 
 
 class LangServer:
-    def __init__(self, conn, debug_log=False, settings={}):
+    def __init__(self, conn, debug_log: bool = False, settings: dict = {}):
         self.conn = conn
         self.running = True
         self.root_path = None
@@ -221,7 +221,9 @@ class LangServer:
         )
         self.source_dirs.add(self.root_path)
         self.__config_logger(request)
-        self.__load_config_file()
+        init_debug_log = self.__load_config_file()
+        if init_debug_log:
+            self.__config_logger(request)
         self.__load_intrinsics()
         self.__add_source_dirs()
 
@@ -1432,7 +1434,7 @@ class LangServer:
             code=-32601, message="method {} not found".format(request["method"])
         )
 
-    def __load_config_file(self) -> None:
+    def __load_config_file(self) -> bool | None:
         """Loads the configuration file for the Language Server"""
 
         # Check for config file
@@ -1459,7 +1461,13 @@ class LangServer:
                 self.__load_config_file_preproc(config_dict)
 
                 # Debug options
-                self.debug_log = config_dict.get("debug_log", self.debug_log)
+                debugging: bool = config_dict.get("debug_log", self.debug_log)
+                # If conf option is different than the debug option passed as a
+                # command line argument return True so that debug log is setup
+                if debugging != self.debug_log and not self.debug_log:
+                    self.debug_log = True
+                    return True
+                return False
 
         except FileNotFoundError:
             msg = f"Error settings file '{self.config}' not found"
