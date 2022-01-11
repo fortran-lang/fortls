@@ -1,11 +1,10 @@
-from __future__ import print_function
+from __future__ import print_function, annotations
 
 import hashlib
 import logging
 import os
 import re
 import sys
-from collections import namedtuple
 
 from fortls.constants import (
     DO_TYPE_ID,
@@ -44,6 +43,16 @@ from fortls.objects import (
     fortran_type,
     fortran_var,
     fortran_where,
+    VAR_info,
+    SUB_info,
+    FUN_info,
+    SELECT_info,
+    CLASS_info,
+    USE_info,
+    GEN_info,
+    SMOD_info,
+    INT_info,
+    VIS_info,
 )
 from fortls.regex_patterns import (
     ASSOCIATE_REGEX,
@@ -122,26 +131,24 @@ from fortls.regex_patterns import (
 if not PY3K:
     import io
 
-# Helper types
-VAR_info = namedtuple("VAR_info", ["type_word", "keywords", "var_names"])
-SUB_info = namedtuple("SUB_info", ["name", "args", "mod_flag", "keywords"])
-FUN_info = namedtuple(
-    "FUN_info", ["name", "args", "return_type", "return_var", "mod_flag", "keywords"]
-)
-SELECT_info = namedtuple("SELECT_info", ["type", "binding", "desc"])
-CLASS_info = namedtuple("CLASS_info", ["name", "parent", "keywords"])
-USE_info = namedtuple("USE_info", ["mod_name", "only_list", "rename_map"])
-GEN_info = namedtuple("GEN_info", ["bound_name", "pro_links", "vis_flag"])
-SMOD_info = namedtuple("SMOD_info", ["name", "parent"])
-INT_info = namedtuple("INT_info", ["name", "abstract"])
-VIS_info = namedtuple("VIS_info", ["type", "obj_names"])
-
-
 log = logging.getLogger(__name__)
 
 
-def get_line_context(line):
-    """Get context of ending position in line (for completion)"""
+def get_line_context(line: str) -> tuple[str, None]:
+    """Get context of ending position in line (for completion)
+
+    Parameters
+    ----------
+    line : str
+        file line
+
+    Returns
+    -------
+    tuple[str, None]
+        Possible string values:
+        `var_key`, `pro_line`, `var_only`, `mod_mems`, `mod_only`, `pro_link`,
+        `skip`, `import`, `vis`, `call`, `type_only`, `int_only`, `first`, `default`
+    """
     last_level, sections = get_paren_level(line)
     lev1_end = sections[-1][1]
     # Test if variable definition statement
@@ -201,7 +208,7 @@ def get_line_context(line):
         return "default", None
 
 
-def parse_var_keywords(test_str):
+def parse_var_keywords(test_str: str) -> tuple[list[str], str]:
     """Parse Fortran variable declaration keywords"""
     keyword_match = KEYWORD_LIST_REGEX.match(test_str)
     keywords = []
@@ -221,7 +228,7 @@ def parse_var_keywords(test_str):
     return keywords, test_str
 
 
-def read_var_def(line, type_word=None, fun_only=False):
+def read_var_def(line: str, type_word: str = None, fun_only: bool = False):
     """Attempt to read variable definition line"""
     if type_word is None:
         type_match = NAT_VAR_REGEX.match(line)
@@ -280,11 +287,11 @@ def read_var_def(line, type_word=None, fun_only=False):
     return "var", VAR_info(type_word, keywords, var_words)
 
 
-def read_fun_def(line, return_type=None, mod_flag=False):
+def read_fun_def(line: str, return_type=None, mod_flag: bool = False):
     """Attempt to read FUNCTION definition line"""
     mod_match = SUB_MOD_REGEX.match(line)
     mods_found = False
-    keywords = []
+    keywords: list[str] = []
     while mod_match is not None:
         mods_found = True
         line = line[mod_match.end(0) :]
@@ -320,9 +327,9 @@ def read_fun_def(line, return_type=None, mod_flag=False):
     return "fun", FUN_info(name, args, return_type, return_var, mod_flag, keywords)
 
 
-def read_sub_def(line, mod_flag=False):
+def read_sub_def(line: str, mod_flag: bool = False):
     """Attempt to read SUBROUTINE definition line"""
-    keywords = []
+    keywords: list[str] = []
     mod_match = SUB_MOD_REGEX.match(line)
     while mod_match is not None:
         line = line[mod_match.end(0) :]
@@ -347,7 +354,7 @@ def read_sub_def(line, mod_flag=False):
     return "sub", SUB_info(name, args, mod_flag, keywords)
 
 
-def read_block_def(line):
+def read_block_def(line: str):
     """Attempt to read BLOCK definition line"""
     block_match = BLOCK_REGEX.match(line)
     if block_match is not None:
@@ -381,7 +388,7 @@ def read_block_def(line):
     return None
 
 
-def read_associate_def(line):
+def read_associate_def(line: str):
     assoc_match = ASSOCIATE_REGEX.match(line)
     if assoc_match is not None:
         trailing_line = line[assoc_match.end(0) :]
@@ -392,7 +399,7 @@ def read_associate_def(line):
         return "assoc", var_words
 
 
-def read_select_def(line):
+def read_select_def(line: str):
     """Attempt to read SELECT definition line"""
     select_match = SELECT_REGEX.match(line)
     select_desc = None
@@ -419,7 +426,7 @@ def read_select_def(line):
     return "select", SELECT_info(select_type, select_binding, select_desc)
 
 
-def read_type_def(line):
+def read_type_def(line: str):
     """Attempt to read TYPE definition line"""
     type_match = TYPE_DEF_REGEX.match(line)
     if type_match is None:
@@ -428,7 +435,7 @@ def read_type_def(line):
     trailing_line = trailing_line.strip()
     # Parse keywords
     keyword_match = TATTR_LIST_REGEX.match(trailing_line)
-    keywords = []
+    keywords: list[str] = []
     parent = None
     while keyword_match is not None:
         keyword_strip = keyword_match.group(0).replace(",", " ").strip().upper()
@@ -461,7 +468,7 @@ def read_type_def(line):
     return "typ", CLASS_info(name, parent, keywords)
 
 
-def read_enum_def(line):
+def read_enum_def(line: str):
     """Attempt to read ENUM definition line"""
     enum_match = ENUM_DEF_REGEX.match(line)
     if enum_match is not None:
@@ -469,7 +476,7 @@ def read_enum_def(line):
     return None
 
 
-def read_generic_def(line):
+def read_generic_def(line: str):
     """Attempt to read generic procedure definition line"""
     generic_match = GENERIC_PRO_REGEX.match(line)
     if generic_match is None:
@@ -490,12 +497,12 @@ def read_generic_def(line):
     i1 = trailing_line.find("=>")
     if i1 < 0:
         return None
-    bound_name = trailing_line[:i1].strip()
+    bound_name: str = trailing_line[:i1].strip()
     if GEN_ASSIGN_REGEX.match(bound_name):
         return None
     pro_list = trailing_line[i1 + 2 :].split(",")
     #
-    pro_out = []
+    pro_out: list[str] = []
     for bound_pro in pro_list:
         if len(bound_pro.strip()) > 0:
             pro_out.append(bound_pro.strip())
@@ -505,7 +512,7 @@ def read_generic_def(line):
     return "gen", GEN_info(bound_name, pro_out, vis_flag)
 
 
-def read_mod_def(line):
+def read_mod_def(line: str):
     """Attempt to read MODULE and MODULE PROCEDURE definition lines"""
     mod_match = MOD_REGEX.match(line)
     if mod_match is None:
@@ -533,7 +540,7 @@ def read_mod_def(line):
         return "mod", name
 
 
-def read_submod_def(line):
+def read_submod_def(line: str):
     """Attempt to read SUBMODULE definition line"""
     submod_match = SUBMOD_REGEX.match(line)
     if submod_match is None:
@@ -557,7 +564,7 @@ def read_submod_def(line):
         return "smod", SMOD_info(name, parent_name)
 
 
-def read_prog_def(line):
+def read_prog_def(line: str):
     """Attempt to read PROGRAM definition line"""
     prog_match = PROG_REGEX.match(line)
     if prog_match is None:
@@ -566,7 +573,7 @@ def read_prog_def(line):
         return "prog", prog_match.group(1)
 
 
-def read_int_def(line):
+def read_int_def(line: str):
     """Attempt to read INTERFACE definition line"""
     int_match = INT_REGEX.match(line)
     if int_match is None:
@@ -581,7 +588,7 @@ def read_int_def(line):
         return "int", INT_info(int_match.group(2), is_abstract)
 
 
-def read_use_stmt(line):
+def read_use_stmt(line: str):
     """Attempt to read USE statement"""
     use_match = USE_REGEX.match(line)
     if use_match is None:
@@ -589,8 +596,8 @@ def read_use_stmt(line):
 
     trailing_line = line[use_match.end(0) :].lower()
     use_mod = use_match.group(2)
-    only_list = []
-    rename_map = {}
+    only_list: list[str] = []
+    rename_map: dict[str, str] = {}
     if use_match.group(3):
         for only_stmt in trailing_line.split(","):
             only_split = only_stmt.split("=>")
@@ -601,7 +608,7 @@ def read_use_stmt(line):
     return "use", USE_info(use_mod, only_list, rename_map)
 
 
-def read_imp_stmt(line):
+def read_imp_stmt(line: str):
     """Attempt to read IMPORT statement"""
     import_match = IMPORT_REGEX.match(line)
     if import_match is None:
@@ -612,7 +619,7 @@ def read_imp_stmt(line):
     return "import", import_list
 
 
-def read_inc_stmt(line):
+def read_inc_stmt(line: str):
     """Attempt to read INCLUDE statement"""
     inc_match = INCLUDE_REGEX.match(line)
     if inc_match is None:
@@ -622,7 +629,7 @@ def read_inc_stmt(line):
         return "inc", inc_path
 
 
-def read_vis_stmnt(line):
+def read_vis_stmnt(line: str):
     """Attempt to read PUBLIC/PRIVATE statement"""
     vis_match = VIS_REGEX.match(line)
     if vis_match is None:
@@ -658,14 +665,16 @@ def_tests = [
 
 
 class fortran_file:
-    def __init__(self, path=None, pp_suffixes=None):
-        self.path = path
-        self.contents_split = []
-        self.contents_pp = []
-        self.nLines = 0
-        self.fixed = False
-        self.ast = None
-        self.hash = None
+    def __init__(self, path: str = None, pp_suffixes: list = None):
+        self.path: str = path
+        self.contents_split: list = []
+        self.contents_pp: list = []
+        self.pp_defs: dict = {}
+        self.nLines: int = 0
+        self.fixed: bool = False
+        self.preproc: bool = False
+        self.ast: fortran_ast = None
+        self.hash: str = None
         if path is not None:
             _, file_ext = os.path.splitext(os.path.basename(path))
             if pp_suffixes is not None:
@@ -675,43 +684,54 @@ class fortran_file:
         else:
             self.preproc = False
 
-    def copy(self):
+    def copy(self) -> fortran_file:
         """Copy content to new file object (does not copy objects)"""
         copy_obj = fortran_file(self.path)
         copy_obj.preproc = self.preproc
         copy_obj.fixed = self.fixed
+        copy_obj.contents_pp = self.contents_pp
+        copy_obj.contents_split = self.contents_split
+        copy_obj.pp_defs = self.pp_defs
         copy_obj.set_contents(self.contents_split)
         return copy_obj
 
-    def load_from_disk(self):
-        """Read file from disk"""
+    def load_from_disk(self) -> tuple[str | None, bool | None]:
+        """Read file from disk or update file contents only if they have changed
+        A MD5 hash is used to determine that
+
+        Returns
+        -------
+        tuple[str|None, bool|None]
+            `str` : string containing IO error message else None
+            `bool`: boolean indicating if the file has changed
+        """
+        contents: str
         try:
             if PY3K:
-                with open(
-                    self.path, "r", encoding="utf-8", errors="replace"
-                ) as fhandle:
-                    contents = re.sub(r"\t", r" ", fhandle.read())
-                    self.hash = hashlib.md5(contents.encode("utf-8")).hexdigest()
-                    self.contents_split = contents.splitlines()
+                with open(self.path, "r", encoding="utf-8", errors="replace") as f:
+                    contents = re.sub(r"\t", r" ", f.read())
             else:
-                with io.open(
-                    self.path, "r", encoding="utf-8", errors="replace"
-                ) as fhandle:
-                    contents = re.sub(r"\t", r" ", fhandle.read())
-                    self.hash = hashlib.md5(contents.encode("utf-8")).hexdigest()
-                    self.contents_split = contents.splitlines()
+                with io.open(self.path, "r", encoding="utf-8", errors="replace") as f:
+                    contents = re.sub(r"\t", r" ", f.read())
+        except OSError:
+            return "Could not read/decode file", None
+        else:
+            # Check if files are the same
+            hash = hashlib.md5(contents.encode("utf-8")).hexdigest()
+            if hash == self.hash:
+                return None, False
+
+            self.hash = hash
+            self.contents_split = contents.splitlines()
             self.fixed = detect_fixed_format(self.contents_split)
             self.contents_pp = self.contents_split
             self.nLines = len(self.contents_split)
-        except:
-            return "Could not read/decode file"
-        else:
-            return None
+            return None, True
 
-    def apply_change(self, change):
+    def apply_change(self, change: dict) -> bool:
         """Apply a change to the file."""
 
-        def check_change_reparse(line_number):
+        def check_change_reparse(line_number: int) -> bool:
             if (line_number < 0) or (line_number > self.nLines - 1):
                 return True
             pre_lines, curr_line, _ = self.get_code_line(line_number, forward=False)
@@ -808,7 +828,7 @@ class fortran_file:
         self.set_contents(new_contents)
         return True
 
-    def set_contents(self, contents_split, detect_format=True):
+    def set_contents(self, contents_split: list, detect_format: bool = True):
         """Set file contents"""
         self.contents_split = contents_split
         self.contents_pp = self.contents_split
@@ -816,7 +836,7 @@ class fortran_file:
         if detect_format:
             self.fixed = detect_fixed_format(self.contents_split)
 
-    def get_line(self, line_number, pp_content=False):
+    def get_line(self, line_number: int, pp_content: bool = False) -> str:
         """Get single line from file"""
         try:
             if pp_content:
@@ -828,12 +848,12 @@ class fortran_file:
 
     def get_code_line(
         self,
-        line_number,
-        forward=True,
-        backward=True,
-        pp_content=False,
-        strip_comment=False,
-    ):
+        line_number: int,
+        forward: bool = True,
+        backward: bool = True,
+        pp_content: bool = False,
+        strip_comment: bool = False,
+    ) -> tuple[list[str], str, list[str]]:
         """Get full code line from file including any adjacent continuations"""
         curr_line = self.get_line(line_number, pp_content)
         if curr_line is None:
@@ -933,7 +953,7 @@ class fortran_file:
         pre_lines.reverse()
         return pre_lines, curr_line, post_lines
 
-    def strip_comment(self, line):
+    def strip_comment(self, line: str) -> str:
         """Strip comment from line"""
         if self.fixed:
             if (FIXED_COMMENT_LINE_MATCH.match(line) is not None) and (
@@ -946,14 +966,19 @@ class fortran_file:
         return line
 
     def find_word_in_code_line(
-        self, line_number, find_word, forward=True, backward=False, pp_content=False
-    ):
+        self,
+        line_number: int,
+        word: str,
+        forward: bool = True,
+        backward: bool = False,
+        pp_content: bool = False,
+    ) -> tuple[int, int, int]:
         back_lines, curr_line, forward_lines = self.get_code_line(
             line_number, forward=forward, backward=backward, pp_content=pp_content
         )
         i0 = i1 = -1
         if curr_line is not None:
-            find_word_lower = find_word.lower()
+            find_word_lower = word.lower()
             i0, i1 = find_word_in_line(curr_line.lower(), find_word_lower)
         if backward and (i0 < 0):
             back_lines.reverse()
@@ -970,8 +995,10 @@ class fortran_file:
                     return line_number, i0, i1
         return line_number, i0, i1
 
-    def preprocess(self, pp_defs={}, include_dirs=[], debug=False):
-        self.contents_pp, pp_skips, pp_defines, _ = preprocess_file(
+    def preprocess(
+        self, pp_defs: dict = {}, include_dirs: list = [], debug: bool = False
+    ) -> tuple[list, list]:
+        self.contents_pp, pp_skips, pp_defines, self.pp_defs = preprocess_file(
             self.contents_split,
             self.path,
             pp_defs=pp_defs,
@@ -1033,14 +1060,18 @@ class fortran_file:
 
 
 def preprocess_file(
-    contents_split, file_path=None, pp_defs={}, include_dirs=[], debug=False
+    contents_split: list,
+    file_path: str = None,
+    pp_defs: dict = {},
+    include_dirs: list = [],
+    debug: bool = False,
 ):
     # Look for and mark excluded preprocessor paths in file
     # Initial implementation only looks for "if" and "ifndef" statements.
     # For "if" statements all blocks are excluded except the "else" block if present
     # For "ifndef" statements all blocks excluding the first block are excluded
-    def eval_pp_if(text, defs={}):
-        def replace_ops(expr):
+    def eval_pp_if(text, defs: dict = {}):
+        def replace_ops(expr: str):
             expr = expr.replace("&&", " and ")
             expr = expr.replace("||", " or ")
             expr = expr.replace("!=", " <> ")
@@ -1048,7 +1079,7 @@ def preprocess_file(
             expr = expr.replace(" <> ", " != ")
             return expr
 
-        def replace_defined(line):
+        def replace_defined(line: str):
             i0 = 0
             out_line = ""
             for match in DEFINED_REGEX.finditer(line):
@@ -1061,7 +1092,7 @@ def preprocess_file(
                 out_line += line[i0:]
             return out_line
 
-        def replace_vars(line):
+        def replace_vars(line: str):
             i0 = 0
             out_line = ""
             for match in WORD_REGEX.finditer(line):
@@ -1172,6 +1203,14 @@ def preprocess_file(
             output_file.append(line)
             pp_defines.append(i + 1)
             def_name = match.group(2)
+            # If this is an argument list of a function add them to the name
+            # get_definition will only return the function name upon hover
+            # hence if the argument list is appended in the def_name then
+            # querying the dictionary will not yield a result.
+            # Need to properly parse the preprocessor files instead of this.
+            # This also does not allow for multiline argument list definitions.
+            # if match.group(3):
+            #     def_name += match.group(3)
             if (match.group(1) == "define") and (def_name not in defs_tmp):
                 eq_ind = line[match.end(0) :].find(" ")
                 if eq_ind >= 0:
@@ -1204,7 +1243,7 @@ def preprocess_file(
             if include_path is not None:
                 try:
                     include_file = fortran_file(include_path)
-                    err_string = include_file.load_from_disk()
+                    err_string, _ = include_file.load_from_disk()
                     if err_string is None:
                         log.debug(f'\n!!! Parsing include file "{include_path}"')
                         _, _, _, defs_tmp = preprocess_file(
@@ -1239,7 +1278,12 @@ def preprocess_file(
     return output_file, pp_skips, pp_defines, defs_tmp
 
 
-def process_file(file_obj, close_open_scopes, debug=False, pp_defs={}, include_dirs=[]):
+def process_file(
+    file_obj: fortran_file,
+    debug: bool = False,
+    pp_defs: dict = {},
+    include_dirs: list = [],
+):
     """Build file AST by parsing file"""
 
     def parser_debug_msg(msg: str, line: str, ln: int):

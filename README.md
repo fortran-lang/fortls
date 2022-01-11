@@ -6,7 +6,7 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 `fortls` is an implementation of the [Language Server Protocol](https://github.com/Microsoft/language-server-protocol)
-(LSP) for Fortran using Python (3.6+).
+(LSP) for Fortran using Python (3.7+).
 
 Editor extensions that can integrate with `fortls` to provide autocomplete and
 other IDE-like functionality are available for
@@ -28,29 +28,30 @@ potentially subject to change.
 
 ## Features
 
-- Document symbols (`textDocument/documentSymbol`)
-- Auto-complete (`textDocument/completion`)
-- Signature help (`textDocument/signatureHelp`)
-- GoTo/Peek definition (`textDocument/definition`)
-- Hover (`textDocument/hover`)
-- GoTo implementation (`textDocument/implementation`)
-- Find/Peek references (`textDocument/references`)
-- Project-wide symbol search (`workspace/symbol`)
+- Project-wide and Document symbol detection and Renaming
+- Hover support, Signature help and Auto-completion
+- GoTo/Peek implementation and Find/Peek references
 - Symbol renaming (`textDocument/rename`)
 - Documentation parsing ([Doxygen](http://www.doxygen.org/) and
   [FORD](https://github.com/Fortran-FOSS-Programmers/ford) styles)
-- Diagnostics (limited)
+- Access to multiple intrinsic modules and functions
+  - `ISO_FORTRAN_ENV` GCC 11.2.0
+  - `IOS_C_BINDING` GCC 11.2.0
+  - `IEEE_EXCEPTIONS`, `IEEE_ARITHMETIC`, `IEEE_FEATURES` GCC 11.2.0
+  - OpenMP `OMP_LIB`, `OMP_LIB_KINDS` v5.0
+  - OpenACC `OPENACC`, `OPENACC_KINDS` v3.1
+- Diagnostics
   - Multiple definitions with the same variable name
   - Variable definition masks definition from parent scope
   - Missing subroutine/function arguments
-  - Unknown user-defined type used in "TYPE"/"CLASS" definition
+  - Unknown user-defined type used in `TYPE`/`CLASS` definition
     (only if visible in project)
   - Unclosed blocks/scopes
   - Invalid scope nesting
-  - Unknown modules in "USE" statement
+  - Unknown modules in `USE` statement
   - Unimplemented deferred type-bound procedures
   - Use of unimported variables/objects in interface blocks
-  - Statement placement errors ("CONTAINS", "IMPLICIT", "IMPORT")
+  - Statement placement errors (`CONTAINS`, `IMPLICIT`, `IMPORT`)
 - Code actions (`textDocument/codeAction`) \[Experimental\]
   - Generate type-bound procedures and implementation templates for
     deferred procedures
@@ -59,6 +60,7 @@ potentially subject to change.
 
 - Signature help is not available for overloaded subroutines/functions
 - Diagnostics are only updated when files are saved or opened/closed
+- Files included for preprocessor are not parsed for Fortran objects
 
 ## Installation
 
@@ -66,7 +68,7 @@ potentially subject to change.
 pip install fortls
 ```
 
-## fortls settings
+## Settings
 
 The following global settings can be used when launching the language
 server.
@@ -155,6 +157,7 @@ All command line options are also available through the **options** file as well
 - `max_line_length` Maximum line length (default: none)
 - `max_comment_line_length` Maximum comment line length (default:
   none)
+- `incl_suffixes` Add more Fortran extensions to be parsed by the server
 
 ## Additional settings
 
@@ -184,6 +187,7 @@ By default all source directories under `root_dir` are recursively included.
 Source file directories can also be specified manually by specifying
 their paths in the `source_dirs` variable in the configuration options file.
 Paths can be absolute or relative to `root_dir`.
+`root_dir` does not need to be specified manually as it is always included.
 
 When defining `source_dirs` in the configuration options filethe default behaviour (i.e. including
 all files in all subdirectories under `root_dir`) is overriden. To include them
@@ -194,8 +198,6 @@ back again one can do
   "source_dirs": ["/**", "all", "other", "dirs"]
 }
 ```
-
-> NOTE: `root_dir` does not need to be specified manually as it is always included.
 
 ### Preprocessing
 
@@ -277,6 +279,19 @@ Find references (`textDocument/references`):
 Diagnostics:
 
 ![image](https://raw.githubusercontent.com/gnikit/fortran-language-server/master/images/fortls_diag.png) -->
+
+## Implemented server requests
+
+| Request                       | Description                                            |
+| ----------------------------- | ------------------------------------------------------ |
+| `workspace/symbol`            | Get workspace-wide symbols                             |
+| `textDocument/documentSymbol` | Get document symbols e.g. functions, subroutines, etc. |
+| `textDocument/completion`     | Suggested tab-completion when typing                   |
+| `textDocument/signatureHelp`  | Get signature information at a given cursor position   |
+| `textDocument/definition`     | GoTo implementation/Peek implementation                |
+| `textDocument/references`     | Find all/Peek references                               |
+| `textDocument/rename`         | Rename a symbol across the workspace                   |
+| `textDocument/codeAction`     | **Experimental** Generate code                         |
 
 ## Acknowledgements
 

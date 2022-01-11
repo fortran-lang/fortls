@@ -52,10 +52,10 @@
     }
   },
   "vis": {
-    "PRIVATE": { },
-    "PUBLIC": { }
+    "PRIVATE": {},
+    "PUBLIC": {}
   },
   "param": {
-    "PARAMETER": { }
+    "PARAMETER": {}
   }
 }

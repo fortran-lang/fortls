@@ -1,4 +1,3 @@
-# TODO: make FORTRAN_EXT_REGEX be able to update from user input extensions
 # TODO: enable jsonc C-style comments
 from __future__ import annotations
 
@@ -9,6 +8,7 @@ import re
 import traceback
 from multiprocessing import Pool
 from pathlib import Path
+from typing import Pattern
 
 # Local modules
 from fortls.constants import (
@@ -52,11 +52,11 @@ from fortls.regex_patterns import (
     LOGICAL_REGEX,
     NUMBER_REGEX,
     SQ_STRING_REGEX,
+    src_file_exts,
 )
 
 log = logging.getLogger(__name__)
 # Global regexes
-FORTRAN_EXT_REGEX = re.compile(r"\.F(77|90|95|03|08|OR|PP)?$", re.I)
 # TODO: I think this can be replaced by fortls.regex_patterns type & class
 TYPE_DEF_REGEX = re.compile(r"[ ]*(TYPE|CLASS)[ ]*\([a-z0-9_ ]*$", re.I)
 # TODO: I think this can be replaced by fortls.regex_patterns
@@ -70,14 +70,11 @@ END_REGEX = re.compile(
 def init_file(filepath, pp_defs, pp_suffixes, include_dirs):
     #
     file_obj = fortran_file(filepath, pp_suffixes)
-    err_str = file_obj.load_from_disk()
-    if err_str is not None:
+    err_str, _ = file_obj.load_from_disk()
+    if err_str:
         return None, err_str
-    #
     try:
-        file_ast = process_file(
-            file_obj, True, pp_defs=pp_defs, include_dirs=include_dirs
-        )
+        file_ast = process_file(file_obj, pp_defs=pp_defs, include_dirs=include_dirs)
     except:
         log.error("Error while parsing file %s", filepath, exc_info=True)
         return None, "Error during parsing"
@@ -86,7 +83,7 @@ def init_file(filepath, pp_defs, pp_suffixes, include_dirs):
 
 
 class LangServer:
-    def __init__(self, conn, debug_log=False, settings={}):
+    def __init__(self, conn, debug_log: bool = False, settings: dict = {}):
         self.conn = conn
         self.running = True
         self.root_path = None
@@ -97,13 +94,15 @@ class LangServer:
         self.link_version = 0
         self.source_dirs = set()
         self.excl_paths = set()
-        self.excl_suffixes = []
+        self.incl_suffixes: list[str] = []
+        self.excl_suffixes: list[str] = []
         self.post_messages = []
         self.pp_suffixes = None
         self.pp_defs = {}
         self.include_dirs = []
         self.streaming = True
         self.debug_log = debug_log
+        self.FORTRAN_SRC_EXT_REGEX: Pattern[str] = src_file_exts()
         # Intrinsic (re-loaded during initialize)
         (
             self.statements,
@@ -222,7 +221,9 @@ class LangServer:
         )
         self.source_dirs.add(self.root_path)
         self.__config_logger(request)
-        self.__load_config_file()
+        init_debug_log = self.__load_config_file()
+        if init_debug_log:
+            self.__config_logger(request)
         self.__load_intrinsics()
         self.__add_source_dirs()
 
@@ -685,7 +686,13 @@ class LangServer:
             )
         return item_list
 
-    def get_definition(self, def_file, def_line, def_char, hover_req=False):
+    def get_definition(
+        self,
+        def_file: fortran_file,
+        def_line: int,
+        def_char: int,
+        hover_req: bool = False,
+    ):
         # Get full line (and possible continuations) from file
         pre_lines, curr_line, _ = def_file.get_code_line(
             def_line, forward=False, strip_comment=True
@@ -701,9 +708,18 @@ class LangServer:
             def_name = expand_name(curr_line, def_char)
         except:
             return None
-        # print(var_stack, def_name)
         if def_name == "":
             return None
+        # Search in Preprocessor defined variables
+        if def_name in def_file.pp_defs:
+            var = fortran_var(
+                def_file.ast,
+                def_line + 1,
+                def_name,
+                f"#define {def_name} {def_file.pp_defs.get(def_name)}",
+                [],
+            )
+            return var
         curr_scope = def_file.ast.get_inner_scope(def_line + 1)
         # Traverse type tree if necessary
         if is_member:
@@ -995,7 +1011,7 @@ class LangServer:
             }
         return None
 
-    def serve_hover(self, request):
+    def serve_hover(self, request: dict):
         def create_hover(string, highlight):
             if highlight:
                 return {"language": self.hover_language, "value": string}
@@ -1023,12 +1039,12 @@ class LangServer:
                 pass
 
         # Get parameters from request
-        params = request["params"]
-        uri = params["textDocument"]["uri"]
-        def_line = params["position"]["line"]
-        def_char = params["position"]["character"]
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
+        def_line: int = params["position"]["line"]
+        def_char: int = params["position"]["character"]
         path = path_from_uri(uri)
-        file_obj = self.workspace.get(path)
+        file_obj: fortran_file = self.workspace.get(path)
         if file_obj is None:
             return None
         # Find object
@@ -1281,6 +1297,7 @@ class LangServer:
             # tmp_file.ast.resolve_links(self.obj_tree, self.link_version)
         elif file_obj.preproc:
             file_obj.preprocess(pp_defs=self.pp_defs)
+            self.pp_defs = {**self.pp_defs, **file_obj.pp_defs}
 
     def serve_onOpen(self, request):
         self.serve_onSave(request, did_open=True)
@@ -1339,16 +1356,18 @@ class LangServer:
                             return False, None
                         else:
                             return False, "File does not exist"  # Error during load
-                hash_old = file_obj.hash
-                err_string = file_obj.load_from_disk()
-                if err_string is not None:
-                    log.error(err_string + ": %s", filepath)
+                err_string, file_changed = file_obj.load_from_disk()
+                if err_string:
+                    log.error(f"{err_string} : {filepath}")
                     return False, err_string  # Error during file read
-                if hash_old == file_obj.hash:
+                if not file_changed:
                     return False, None
             ast_new = process_file(
-                file_obj, True, pp_defs=self.pp_defs, include_dirs=self.include_dirs
+                file_obj, pp_defs=self.pp_defs, include_dirs=self.include_dirs
             )
+            # Add the included read in pp_defs from to the ones specified in the
+            # configuration file
+            self.pp_defs = {**self.pp_defs, **file_obj.pp_defs}
         except:
             log.error("Error while parsing file %s", filepath, exc_info=True)
             return False, "Error during parsing"  # Error during parsing
@@ -1415,7 +1434,7 @@ class LangServer:
             code=-32601, message="method {} not found".format(request["method"])
         )
 
-    def __load_config_file(self) -> None:
+    def __load_config_file(self) -> bool | None:
         """Loads the configuration file for the Language Server"""
 
         # Check for config file
@@ -1442,7 +1461,13 @@ class LangServer:
                 self.__load_config_file_preproc(config_dict)
 
                 # Debug options
-                self.debug_log = config_dict.get("debug_log", self.debug_log)
+                debugging: bool = config_dict.get("debug_log", self.debug_log)
+                # If conf option is different than the debug option passed as a
+                # command line argument return True so that debug log is setup
+                if debugging != self.debug_log and not self.debug_log:
+                    self.debug_log = True
+                    return True
+                return False
 
         except FileNotFoundError:
             msg = f"Error settings file '{self.config}' not found"
@@ -1476,6 +1501,9 @@ class LangServer:
         self.source_dirs = {i for i in self.source_dirs if i not in self.excl_paths}
 
     def __load_config_file_general(self, config_dict) -> None:
+        self.incl_suffixes = config_dict.get("incl_suffixes", [])
+        # Update the source file REGEX
+        self.FORTRAN_SRC_EXT_REGEX = src_file_exts(self.incl_suffixes)
         self.excl_suffixes = config_dict.get("excl_suffixes", [])
         self.lowercase_intrinsics = config_dict.get(
             "lowercase_intrinsics", self.lowercase_intrinsics
@@ -1520,7 +1548,7 @@ class LangServer:
         self.source_dirs = set()
         for root, dirs, files in os.walk(self.root_path):
             # Match not found
-            if not list(filter(FORTRAN_EXT_REGEX.search, files)):
+            if not list(filter(self.FORTRAN_SRC_EXT_REGEX.search, files)):
                 continue
             if root not in self.source_dirs and root not in self.excl_paths:
                 self.source_dirs.add(str(Path(root).resolve()))
@@ -1548,7 +1576,7 @@ class LangServer:
                 if not os.path.isfile(p):
                     continue
                 # File extension must match supported extensions
-                if not FORTRAN_EXT_REGEX.search(f):
+                if not self.FORTRAN_SRC_EXT_REGEX.search(f):
                     continue
                 # File cannot be in excluded paths/files
                 if p in self.excl_paths:
