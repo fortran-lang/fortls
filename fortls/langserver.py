@@ -1,4 +1,3 @@
-# TODO: make FORTRAN_EXT_REGEX be able to update from user input extensions
 # TODO: enable jsonc C-style comments
 from __future__ import annotations
 
@@ -9,6 +8,7 @@ import re
 import traceback
 from multiprocessing import Pool
 from pathlib import Path
+from typing import Pattern
 
 # Local modules
 from fortls.constants import (
@@ -52,11 +52,11 @@ from fortls.regex_patterns import (
     LOGICAL_REGEX,
     NUMBER_REGEX,
     SQ_STRING_REGEX,
+    src_file_exts,
 )
 
 log = logging.getLogger(__name__)
 # Global regexes
-FORTRAN_EXT_REGEX = re.compile(r"\.F(77|90|95|03|08|OR|PP)?$", re.I)
 # TODO: I think this can be replaced by fortls.regex_patterns type & class
 TYPE_DEF_REGEX = re.compile(r"[ ]*(TYPE|CLASS)[ ]*\([a-z0-9_ ]*$", re.I)
 # TODO: I think this can be replaced by fortls.regex_patterns
@@ -94,13 +94,15 @@ class LangServer:
         self.link_version = 0
         self.source_dirs = set()
         self.excl_paths = set()
-        self.excl_suffixes = []
+        self.incl_suffixes: list[str] = []
+        self.excl_suffixes: list[str] = []
         self.post_messages = []
         self.pp_suffixes = None
         self.pp_defs = {}
         self.include_dirs = []
         self.streaming = True
         self.debug_log = debug_log
+        self.FORTRAN_SRC_EXT_REGEX: Pattern[str] = src_file_exts()
         # Intrinsic (re-loaded during initialize)
         (
             self.statements,
@@ -1491,6 +1493,9 @@ class LangServer:
         self.source_dirs = {i for i in self.source_dirs if i not in self.excl_paths}
 
     def __load_config_file_general(self, config_dict) -> None:
+        self.incl_suffixes = config_dict.get("incl_suffixes", [])
+        # Update the source file REGEX
+        self.FORTRAN_SRC_EXT_REGEX = src_file_exts(self.incl_suffixes)
         self.excl_suffixes = config_dict.get("excl_suffixes", [])
         self.lowercase_intrinsics = config_dict.get(
             "lowercase_intrinsics", self.lowercase_intrinsics
@@ -1535,7 +1540,7 @@ class LangServer:
         self.source_dirs = set()
         for root, dirs, files in os.walk(self.root_path):
             # Match not found
-            if not list(filter(FORTRAN_EXT_REGEX.search, files)):
+            if not list(filter(self.FORTRAN_SRC_EXT_REGEX.search, files)):
                 continue
             if root not in self.source_dirs and root not in self.excl_paths:
                 self.source_dirs.add(str(Path(root).resolve()))
@@ -1563,7 +1568,7 @@ class LangServer:
                 if not os.path.isfile(p):
                     continue
                 # File extension must match supported extensions
-                if not FORTRAN_EXT_REGEX.search(f):
+                if not self.FORTRAN_SRC_EXT_REGEX.search(f):
                     continue
                 # File cannot be in excluded paths/files
                 if p in self.excl_paths:

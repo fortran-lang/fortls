@@ -157,6 +157,7 @@ All command line options are also available through the **options** file as well
 - `max_line_length` Maximum line length (default: none)
 - `max_comment_line_length` Maximum comment line length (default:
   none)
+- `incl_suffixes` Add more Fortran extensions to be parsed by the server
 
 ## Additional settings
 

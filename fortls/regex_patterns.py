@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import re
+from typing import Pattern
 
 USE_REGEX = re.compile(
     r"[ ]*USE([, ]+(?:INTRINSIC|NON_INTRINSIC))?[ :]+(\w*)([, ]+ONLY[ :]+)?",
@@ -125,3 +128,32 @@ END_REGEX = re.compile(
 CLASS_VAR_REGEX = re.compile(r"(TYPE|CLASS)[ ]*\(", re.I)
 DEF_KIND_REGEX = re.compile(r"([a-z]*)[ ]*\((?:KIND|LEN)?[ =]*([a-z_]\w*)", re.I)
 OBJBREAK_REGEX = re.compile(r"[\/\-(.,+*<>=$: ]", re.I)
+
+
+def src_file_exts(input_exts: list[str] = []) -> Pattern[str]:
+    """Create a REGEX for which file extensions the Language Server should parse
+    Default extensions are
+    F F03 F05 F08 F18 F77 F90 F95 FOR FPP f f03 f05 f08 f18 f77 f90 f95 for fpp
+
+    Parameters
+    ----------
+    input_exts : list[str], optional
+        Additional Fortran, by default []
+
+    Returns
+    -------
+    Pattern[str]
+        A compiled regular expression, by default
+        '.(F|F03|F05|F08|F18|F77|F90|F95|FOR|FPP|f|f03|f05|f08|f18|f77|f90|f95|for|fpp)?'
+    """
+    EXTS = ["", "77", "90", "95", "03", "05", "08", "18", "OR", "PP"]
+    FORTRAN_FILE_EXTS = []
+    for e in EXTS:
+        FORTRAN_FILE_EXTS.extend([f"F{e}".upper(), f"f{e}".lower()])
+    # Add the custom extensions for the server to parse
+    for e in input_exts:
+        if e.startswith("."):
+            FORTRAN_FILE_EXTS.append(e.replace(".", ""))
+    # Cast into a set to ensure uniqueness of extensions & sort for consistency
+    # Create a regular expression from this
+    return re.compile(fr"\.({'|'.join(sorted(set(FORTRAN_FILE_EXTS)))})?$")
