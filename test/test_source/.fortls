@@ -1,9 +1,0 @@
-{
-  "source_dirs": [
-    "**/"
-  ],
-  "excl_paths": [
-    "excldir/**"
-  ]
-
-}

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fortls - the Fortran Language Server &mdash; fortls 1.16.0 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Developers’ documentations" href="modules.html" />
+    <link rel="prev" title="fortls" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> fortls
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">fortls - the Fortran Language Server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#fortls-vs-fortran-language-server">fortls vs fortran-language-server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#features">Features</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#notes-limitations">Notes/Limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#settings">Settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#debug-settings">Debug settings</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#additional-settings">Additional settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#default-file-extensions">Default file extensions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#excluding-folders-and-file-extensions">Excluding folders and file extensions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#including-source-directories">Including source directories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#preprocessing">Preprocessing</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#implemented-server-requests">Implemented server requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#support">Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bug-reports">Bug reports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#license">License</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Developers’ documentations</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">fortls</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>fortls - the Fortran Language Server</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/README.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="tex2jax_ignore mathjax_ignore section" id="fortls-the-fortran-language-server">
+<h1>fortls - the Fortran Language Server<a class="headerlink" href="#fortls-the-fortran-language-server" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://pypi.org/project/fortls/"><img alt="PyPI Latest Release" src="https://img.shields.io/pypi/v/fortls.svg" /></a>
+<a class="reference external" href="https://github.com/gnikit/fortran-language-server/actions/workflows/main.yml"><img alt="Tests" src="https://github.com/gnikit/fortran-language-server/actions/workflows/main.yml/badge.svg" /></a>
+<a class="reference external" href="https://github.com/gnikit/fortran-language-server/blob/master/LICENSE"><img alt="image" src="https://img.shields.io/github/license/gnikit/fortran-language-server.svg" /></a>
+<a class="reference external" href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a></p>
+<p><code class="docutils literal notranslate"><span class="pre">fortls</span></code> is an implementation of the <a class="reference external" href="https://github.com/Microsoft/language-server-protocol">Language Server Protocol</a>
+(LSP) for Fortran using Python (3.7+).</p>
+<p>Editor extensions that can integrate with <code class="docutils literal notranslate"><span class="pre">fortls</span></code> to provide autocomplete and
+other IDE-like functionality are available for
+<a class="reference external" href="https://github.com/krvajal/vscode-fortran-support">Visual Studio Code</a>,
+<a class="reference external" href="https://atom.io/packages/ide-fortran">Atom</a>,
+<a class="reference external" href="https://github.com/michaelkonecny/vs-fortran-ls-client">Visual Studio</a>,
+<a class="reference external" href="https://github.com/hansec/fortran-language-server/wiki/Using-forts-with-vim">(Neo)vim</a>,
+and <a class="reference external" href="https://github.com/emacs-lsp/lsp-mode">Emacs</a>.</p>
+<div class="section" id="fortls-vs-fortran-language-server">
+<h2>fortls vs fortran-language-server<a class="headerlink" href="#fortls-vs-fortran-language-server" title="Permalink to this headline">¶</a></h2>
+<p>This project is based on &#64;hansec’s original Language Server implementation but the two projects have since diverged.
+<code class="docutils literal notranslate"><span class="pre">fortls</span></code> (this project) is now developed independently of the upstream <code class="docutils literal notranslate"><span class="pre">hansec/fortran-language-server</span></code> project and contains numerous bug fixes and new features
+the original <code class="docutils literal notranslate"><span class="pre">fortran-language-server</span></code> does not.</p>
+<p>The name of executable for this project has been chosen to remain <code class="docutils literal notranslate"><span class="pre">fortls</span></code>
+to allow for integration with pre-existing plugins and workflows but it is
+potentially subject to change.</p>
+</div>
+<div class="section" id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Project-wide and Document symbol detection and Renaming</p></li>
+<li><p>Hover support, Signature help and Auto-completion</p></li>
+<li><p>GoTo/Peek implementation and Find/Peek references</p></li>
+<li><p>Symbol renaming (<code class="docutils literal notranslate"><span class="pre">textDocument/rename</span></code>)</p></li>
+<li><p>Documentation parsing (<a class="reference external" href="http://www.doxygen.org/">Doxygen</a> and
+<a class="reference external" href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a> styles)</p></li>
+<li><p>Access to multiple intrinsic modules and functions</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">ISO_FORTRAN_ENV</span></code> GCC 11.2.0</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">IOS_C_BINDING</span></code> GCC 11.2.0</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">IEEE_EXCEPTIONS</span></code>, <code class="docutils literal notranslate"><span class="pre">IEEE_ARITHMETIC</span></code>, <code class="docutils literal notranslate"><span class="pre">IEEE_FEATURES</span></code> GCC 11.2.0</p></li>
+<li><p>OpenMP <code class="docutils literal notranslate"><span class="pre">OMP_LIB</span></code>, <code class="docutils literal notranslate"><span class="pre">OMP_LIB_KINDS</span></code> v5.0</p></li>
+<li><p>OpenACC <code class="docutils literal notranslate"><span class="pre">OPENACC</span></code>, <code class="docutils literal notranslate"><span class="pre">OPENACC_KINDS</span></code> v3.1</p></li>
+</ul>
+</li>
+<li><p>Diagnostics</p>
+<ul>
+<li><p>Multiple definitions with the same variable name</p></li>
+<li><p>Variable definition masks definition from parent scope</p></li>
+<li><p>Missing subroutine/function arguments</p></li>
+<li><p>Unknown user-defined type used in <code class="docutils literal notranslate"><span class="pre">TYPE</span></code>/<code class="docutils literal notranslate"><span class="pre">CLASS</span></code> definition
+(only if visible in project)</p></li>
+<li><p>Unclosed blocks/scopes</p></li>
+<li><p>Invalid scope nesting</p></li>
+<li><p>Unknown modules in <code class="docutils literal notranslate"><span class="pre">USE</span></code> statement</p></li>
+<li><p>Unimplemented deferred type-bound procedures</p></li>
+<li><p>Use of unimported variables/objects in interface blocks</p></li>
+<li><p>Statement placement errors (<code class="docutils literal notranslate"><span class="pre">CONTAINS</span></code>, <code class="docutils literal notranslate"><span class="pre">IMPLICIT</span></code>, <code class="docutils literal notranslate"><span class="pre">IMPORT</span></code>)</p></li>
+</ul>
+</li>
+<li><p>Code actions (<code class="docutils literal notranslate"><span class="pre">textDocument/codeAction</span></code>) [Experimental]</p>
+<ul>
+<li><p>Generate type-bound procedures and implementation templates for
+deferred procedures</p></li>
+</ul>
+</li>
+</ul>
+<div class="section" id="notes-limitations">
+<h3>Notes/Limitations<a class="headerlink" href="#notes-limitations" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Signature help is not available for overloaded subroutines/functions</p></li>
+<li><p>Diagnostics are only updated when files are saved or opened/closed</p></li>
+<li><p>Files included for preprocessor are not parsed for Fortran objects</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>pip install fortls
+</pre></div>
+</div>
+</div>
+<div class="section" id="settings">
+<h2>Settings<a class="headerlink" href="#settings" title="Permalink to this headline">¶</a></h2>
+<p>The following global settings can be used when launching the language
+server.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--config</span></code> Configuration options file (default: <code class="docutils literal notranslate"><span class="pre">.fortls</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--nthreads</span></code> Number of threads to use during workspace
+initialization (default: 4)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--notify_init</span></code> Send notification message when workspace
+initialization is complete</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--symbol_skip_mem</span></code> Do not include type members in document symbol
+results</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--incremental_sync</span></code> Use incremental document synchronization</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--autocomplete_no_prefix</span></code> Do not filter autocomplete results by
+variable prefix</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--autocomplete_no_snippets</span></code> Do not use snippets with place holders
+in autocomplete results</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--autocomplete_name_only</span></code> Complete only the name of procedures and
+not the parameters</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--lowercase_intrinsics</span></code> Use lowercase for intrinsics and keywords
+in autocomplete requests</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--use_signature_help</span></code> Use signature help instead of snippets for
+subroutines/functions</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--variable_hover</span></code> Show hover information for variables (default:
+subroutines/functions only)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--hover_signature</span></code> Show signature information in hover for argument
+(also enables ‘–variable_hover’)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--preserve_keyword_order</span></code> Display variable keywords information in
+original order (default: sort to consistent ordering)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--enable_code_actions</span></code> Enable experimental code actions (default:
+false)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--disable_diagnostics</span></code> Disable code diagnostics (default: false)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--max_line_length</span></code> Maximum line length (default: none)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--max_comment_line_length</span></code> Maximum comment line length (default:
+none)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--debug_log</span></code> Write debug information to <code class="docutils literal notranslate"><span class="pre">root_dir/fortls_debug.log</span></code>
+(requires a specified <code class="docutils literal notranslate"><span class="pre">root_dir</span></code> during initialization)</p></li>
+</ul>
+<div class="section" id="debug-settings">
+<h3>Debug settings<a class="headerlink" href="#debug-settings" title="Permalink to this headline">¶</a></h3>
+<p>The following settings can be used to perform <a class="reference external" href="https://github.com/hansec/fortran-language-server/wiki">standalone debug
+tests</a> on the
+fortls</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--debug_filepath=DEBUG_FILEPATH</span></code> File path for fortls tests</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--debug_rootpath=DEBUG_ROOTPATH</span></code> Root path for fortls tests</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--debug_line=DEBUG_LINE</span></code> Line position for fortls (1-indexed)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--debug_char=DEBUG_CHAR</span></code> Character position for fortls tests (1-indexed)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--debug_full_result</span></code> Print full result object instead of condensed
+version</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--debug_parser</span></code> Test source code parser on specified file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--debug_diagnostics</span></code> Test diagnostic notifications for specified
+file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--debug_symbols</span></code> Test symbol request for specified file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--debug_workspace_symbols=QUERY_STRING</span></code> Test workspace/symbol
+request for project-wide search</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--debug_completion</span></code> Test completion request for specified file and
+position</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--debug_signature</span></code> Test signatureHelp request for specified file
+and position</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--debug_definition</span></code> Test definition request for specified file and
+position</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--debug_hover</span></code> Test hover request for specified file and position</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--debug_implementation</span></code> Test implementation request for specified
+file and position</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--debug_references</span></code> Test references request for specified file and
+position</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--debug_rename=RENAME_STRING</span></code> Test rename request for specified
+file and position</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--debug_actions</span></code> Test codeAction request for specified file and
+position</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>Project specific settings can be specified by creating a <strong>options</strong> JSON file.
+You can specify the location and name of the file with the <code class="docutils literal notranslate"><span class="pre">--config</span></code> option.
+By default the options file is assumed to be <code class="docutils literal notranslate"><span class="pre">root_dir</span></code> with the name <code class="docutils literal notranslate"><span class="pre">.fortls</span></code>.</p>
+<p>All command line options are also available through the <strong>options</strong> file as well.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lowercase_intrinsics</span></code> Use lowercase for intrinsics and keywords in
+autocomplete requests (default: false)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">debug_log</span></code> Write debug information to <code class="docutils literal notranslate"><span class="pre">root_dir/fortls_debug.log</span></code>
+(default: false)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">disable_diagnostics</span></code> Disable diagnostics for this project only
+(default: false)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_line_length</span></code> Maximum line length (default: none)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_comment_line_length</span></code> Maximum comment line length (default:
+none)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">incl_suffixes</span></code> Add more Fortran extensions to be parsed by the server</p></li>
+</ul>
+</div>
+<div class="section" id="additional-settings">
+<h2>Additional settings<a class="headerlink" href="#additional-settings" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="default-file-extensions">
+<h3>Default file extensions<a class="headerlink" href="#default-file-extensions" title="Permalink to this headline">¶</a></h3>
+<p>By default all files with the suffix <code class="docutils literal notranslate"><span class="pre">F,F77,F90,F95,F03,F08,FOR,FPP</span></code>
+(case-insensitive) in the <code class="docutils literal notranslate"><span class="pre">root_dir</span></code> directory, specified during
+initialization, and all its sub-directories are parsed and included in
+the project.</p>
+</div>
+<div class="section" id="excluding-folders-and-file-extensions">
+<h3>Excluding folders and file extensions<a class="headerlink" href="#excluding-folders-and-file-extensions" title="Permalink to this headline">¶</a></h3>
+<p>Directories and files can be excluded from the project by specifying
+their paths in the <code class="docutils literal notranslate"><span class="pre">excl_paths</span></code> variable in the options file.
+Paths can be absolute or relative to <code class="docutils literal notranslate"><span class="pre">root_dir</span></code>.</p>
+<p>Excluded directories <strong>will not</strong> exclude all sub-directories.
+Source files with a common suffix may also be excluded using the
+<code class="docutils literal notranslate"><span class="pre">excl_suffixes</span></code> variable.</p>
+<blockquote>
+<div><p>NOTE: All directory inputs fields (<code class="docutils literal notranslate"><span class="pre">excl_paths</span></code>, <code class="docutils literal notranslate"><span class="pre">source_dirs</span></code>, <code class="docutils literal notranslate"><span class="pre">include_dirs</span></code>) support
+<a class="reference external" href="https://docs.python.org/3/library/glob.html">Python glob patterns</a> e.g. <code class="docutils literal notranslate"><span class="pre">/**</span></code>, <code class="docutils literal notranslate"><span class="pre">*</span></code>, etc.</p>
+</div></blockquote>
+</div>
+<div class="section" id="including-source-directories">
+<h3>Including source directories<a class="headerlink" href="#including-source-directories" title="Permalink to this headline">¶</a></h3>
+<p>By default all source directories under <code class="docutils literal notranslate"><span class="pre">root_dir</span></code> are recursively included.
+Source file directories can also be specified manually by specifying
+their paths in the <code class="docutils literal notranslate"><span class="pre">source_dirs</span></code> variable in the configuration options file.
+Paths can be absolute or relative to <code class="docutils literal notranslate"><span class="pre">root_dir</span></code>.
+<code class="docutils literal notranslate"><span class="pre">root_dir</span></code> does not need to be specified manually as it is always included.</p>
+<p>When defining <code class="docutils literal notranslate"><span class="pre">source_dirs</span></code> in the configuration options filethe default behaviour (i.e. including
+all files in all subdirectories under <code class="docutils literal notranslate"><span class="pre">root_dir</span></code>) is overriden. To include them
+back again one can do</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;source_dirs&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;/**&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;other&quot;</span><span class="p">,</span> <span class="s2">&quot;dirs&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="preprocessing">
+<h3>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this headline">¶</a></h3>
+<p><strong>Note:</strong> Preprocessor support is not “complete”, see below. For
+preprocessed files the <code class="docutils literal notranslate"><span class="pre">fortls</span></code> will only analyze code within
+preprocessor conditional regions if the conditional test can be
+evaluated by the server or if the region is the <em>default</em> path (ie. a
+bare <code class="docutils literal notranslate"><span class="pre">#else</span></code> region).</p>
+<p><strong>Note:</strong> Currently, <code class="docutils literal notranslate"><span class="pre">#include</span></code> statements are only used for
+preprocessing (ie. tracking definitions). Fortran objects defined in
+these files will not be processed.</p>
+<p>File suffixes for preprocessing can be controlled with the variable
+<code class="docutils literal notranslate"><span class="pre">pp_suffixes</span></code> in a workspace’s configuration options file. When this variable is
+used <em>only</em> those files with the specified suffixes will be
+preprocessed. If an empty array is specified then <em>no</em> preprocessing
+will be performed on any files. By default, or if the variable is
+omitted or <code class="docutils literal notranslate"><span class="pre">null</span></code>, only files with upper case suffixes are preprocessed.</p>
+<p>Preprocessor definitions can be set for each project, to improve support
+for Fortran files using conditional compilation, using the <code class="docutils literal notranslate"><span class="pre">pp_defs</span></code>
+variable in the configuration options file. Preprocessing is performed <em>only</em> for
+files where the file extension is all caps (ie. “.F90”, “.F”, etc.).
+Currently, support for preprocessing is limited to variables declared in
+the project’s configuration options file or in the source file of interest as
+<code class="docutils literal notranslate"><span class="pre">#include</span></code> files and inheritance through <code class="docutils literal notranslate"><span class="pre">USE</span></code> statements are yet not
+supported. Variable substitution is also performed within files, but is
+currently limited to non-recursive cases. For example, <code class="docutils literal notranslate"><span class="pre">#define</span> <span class="pre">PP_VAR1</span> <span class="pre">PP_VAR2</span></code> will cause <code class="docutils literal notranslate"><span class="pre">PP_VAR1</span></code> to be replaced with the text <code class="docutils literal notranslate"><span class="pre">PP_VAR2</span></code>
+throughout the file, not that value of <code class="docutils literal notranslate"><span class="pre">PP_VAR2</span></code>.</p>
+<p>Include directories can be specified using the variable <code class="docutils literal notranslate"><span class="pre">include_dirs</span></code>
+in a workspace’s configuration options file. These directories are <em>only</em> used to
+search for preprocessor <code class="docutils literal notranslate"><span class="pre">#include</span></code>’d files. The directory containing the
+file where an <code class="docutils literal notranslate"><span class="pre">#include</span></code> statement is encountered is always searched.
+File search is performed starting with the containing directory followed
+by the specified <code class="docutils literal notranslate"><span class="pre">include_dirs</span></code> specified paths, in order (left to
+right).</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;source_dirs&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;subdir1/**&quot;</span><span class="p">,</span> <span class="s2">&quot;subdir2&quot;</span><span class="p">],</span>
+  <span class="nt">&quot;excl_paths&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;subdir3/**&quot;</span><span class="p">,</span> <span class="s2">&quot;subdir1/file_to_skip.F90&quot;</span><span class="p">],</span>
+  <span class="nt">&quot;excl_suffixes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;_skip.f90&quot;</span><span class="p">],</span>
+  <span class="nt">&quot;pp_suffixes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;.f03&quot;</span><span class="p">,</span> <span class="s2">&quot;.F90&quot;</span><span class="p">],</span>
+  <span class="nt">&quot;pp_defs&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&quot;HAVE_PACKAGE&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span> <span class="p">},</span>
+  <span class="nt">&quot;include_dirs&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;rel_include/dir_path&quot;</span><span class="p">,</span> <span class="s2">&quot;/abs/include/dir/path&quot;</span><span class="p">],</span>
+  <span class="nt">&quot;lowercase_intrinsics&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="nt">&quot;debug_log&quot;</span><span class="p">:</span> <span class="kc">false</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<!-- ## Editor examples (Atom)
+
+Document symbols (`textDocument/documentSymbol`):
+
+![image](https://raw.githubusercontent.com/gnikit/fortran-language-server/master/images/fortls_outline.png)
+
+Auto-complete (`textDocument/completion`):
+
+![image](https://raw.githubusercontent.com/gnikit/fortran-language-server/master/images/fortls_autocomplete.gif)
+
+Signature help (`textDocument/signatureHelp`):
+
+![image](https://raw.githubusercontent.com/gnikit/fortran-language-server/master/images/fortls_sigHelp.gif)
+
+Goto definition (`textDocument/definition`):
+
+![image](https://raw.githubusercontent.com/gnikit/fortran-language-server/master/images/fortls_gotodef.gif)
+
+Hover (`textDocument/hover`):
+
+![image](https://raw.githubusercontent.com/gnikit/fortran-language-server/master/images/fortls_hover.gif)
+
+Find references (`textDocument/references`):
+
+![image](https://raw.githubusercontent.com/gnikit/fortran-language-server/master/images/fortls_refs.png)
+
+Diagnostics:
+
+![image](https://raw.githubusercontent.com/gnikit/fortran-language-server/master/images/fortls_diag.png) -->
+</div>
+</div>
+<div class="section" id="implemented-server-requests">
+<h2>Implemented server requests<a class="headerlink" href="#implemented-server-requests" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Request</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">workspace/symbol</span></code></p></td>
+<td><p>Get workspace-wide symbols</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">textDocument/documentSymbol</span></code></p></td>
+<td><p>Get document symbols e.g. functions, subroutines, etc.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">textDocument/completion</span></code></p></td>
+<td><p>Suggested tab-completion when typing</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">textDocument/signatureHelp</span></code></p></td>
+<td><p>Get signature information at a given cursor position</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">textDocument/definition</span></code></p></td>
+<td><p>GoTo implementation/Peek implementation</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">textDocument/references</span></code></p></td>
+<td><p>Find all/Peek references</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">textDocument/rename</span></code></p></td>
+<td><p>Rename a symbol across the workspace</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">textDocument/codeAction</span></code></p></td>
+<td><p><strong>Experimental</strong> Generate code</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this headline">¶</a></h2>
+<p>This project would not have been possible without the original work of <a class="reference external" href="https://github.com/hansec/">&#64;hansec</a>
+and the original <a class="reference external" href="https://github.com/hansec/fortran-language-server"><code class="docutils literal notranslate"><span class="pre">fortran-language-server</span></code></a></p>
+</div>
+<div class="section" id="support">
+<h2>Support<a class="headerlink" href="#support" title="Permalink to this headline">¶</a></h2>
+<p>If you want to support this project you can do it through</p>
+<p><a class="reference external" href="https://paypal.me/inikit"><img alt="Alt" src="https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-150px.png" /></a>
+<a class="reference external" href="https://www.buymeacoffee.com/gnikit"><img alt="&quot;Buy Me A Coffee&quot;" src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" /></a></p>
+<p>Support the original project go <a class="reference external" href="https://paypal.me/hansec">here</a></p>
+</div>
+<div class="section" id="bug-reports">
+<h2>Bug reports<a class="headerlink" href="#bug-reports" title="Permalink to this headline">¶</a></h2>
+<p>When <a class="reference external" href="https://github.com/gnikit/fortran-language-server/issues/new">filing bugs</a>
+please provide example code to reproduce the observed issue.</p>
+</div>
+<div class="section" id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<p>This project is made available under the <a class="reference external" href="https://github.com/gnikit/fortran-language-server/blob/master/LICENSE">MIT License</a>.</p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="fortls" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="modules.html" class="btn btn-neutral float-right" title="Developers’ documentations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Giannis Nikiteas.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
