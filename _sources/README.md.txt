@@ -2,6 +2,7 @@
 
 [![PyPI Latest Release](https://img.shields.io/pypi/v/fortls.svg)](https://pypi.org/project/fortls/)
 [![Tests](https://github.com/gnikit/fortran-language-server/actions/workflows/main.yml/badge.svg)](https://github.com/gnikit/fortran-language-server/actions/workflows/main.yml)
+[![Documentation](https://github.com/gnikit/fortls/actions/workflows/docs.yml/badge.svg)](https://github.com/gnikit/fortls/actions/workflows/docs.yml)
 [![image](https://img.shields.io/github/license/gnikit/fortran-language-server.svg)](https://github.com/gnikit/fortran-language-server/blob/master/LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
