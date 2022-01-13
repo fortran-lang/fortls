@@ -1,4 +1,6 @@
 import os
+
+# from types import NoneType
 from setup_tests import (
     run_request,
     write_rpc_request,
@@ -175,6 +177,7 @@ def test_workspace_symbols():
         objs = (
             ["test", 6, 7],
             ["test_abstract", 2, 0],
+            ["test_external", 2, 0],
             ["test_free", 2, 0],
             ["test_gen_type", 5, 1],
             ["test_generic", 2, 0],
@@ -374,6 +377,10 @@ def test_sig():
 
 def test_def():
     def check_return(result_array, checks):
+        # If no definition is given result is None
+        if result_array is None:
+            assert not checks[0]
+            return None
         assert result_array["uri"] == path_to_uri(checks[2])
         assert result_array["range"]["start"]["line"] == checks[0]
         assert result_array["range"]["start"]["line"] == checks[1]
@@ -403,6 +410,7 @@ def test_def():
     file_path = os.path.join(test_dir, "test_inc.f90")
     string += def_request(file_path, 2, 15)
     string += def_request(file_path, 10, 2)
+    string += def_request(file_path, 12, 13)
     file_path = os.path.join(test_dir, "subdir", "test_inc2.f90")
     string += def_request(file_path, 3, 2)
     file_path = os.path.join(test_dir, "subdir", "test_rename.F90")
@@ -427,6 +435,7 @@ def test_def():
         # test_inc.f90
         [2, 2, os.path.join(test_dir, "subdir", "test_inc2.f90")],
         [0, 0, os.path.join(test_dir, "subdir", "test_inc2.f90")],
+        [None],
         # subdir/test_inc2.f90
         [4, 4, os.path.join(test_dir, "test_inc.f90")],
         # subdir/test_rename.F90
@@ -586,6 +595,11 @@ def test_diagnostics():
     """
     Tests some aspects of diagnostics
     """
+
+    def check_return(results, ref_results):
+        for i, r in enumerate(results):
+            assert r["diagnostics"] == ref_results[i]
+
     string = write_rpc_request(1, "initialize", {"rootPath": test_dir})
     # Test subroutines and functions with interfaces as arguments
     file_path = os.path.join(test_dir, "test_diagnostic_int.f90")
@@ -607,10 +621,64 @@ def test_diagnostics():
     string += write_rpc_notification(
         "textDocument/didOpen", {"textDocument": {"uri": file_path}}
     )
+    # Test that externals can be split between multiple lines
+    # and that diagnostics for multiple definitions of externals can account
+    # for that
+    file_path = os.path.join(test_dir, "diag", "test_external.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
     errcode, results = run_request(string)
     assert errcode == 0
-    # check that the diagnostics list is empty
-    assert not results[1]["diagnostics"]
+    ref_results = [
+        [],
+        [],
+        [],
+        [],
+        [
+            {
+                "range": {
+                    "start": {"line": 7, "character": 17},
+                    "end": {"line": 7, "character": 22},
+                },
+                "message": 'Variable "VAR_B" declared twice in scope',
+                "severity": 1,
+                "relatedInformation": [
+                    {
+                        "location": {
+                            "uri": f"file://{file_path}",
+                            "range": {
+                                "start": {"line": 5, "character": 0},
+                                "end": {"line": 5, "character": 0},
+                            },
+                        },
+                        "message": "First declaration",
+                    }
+                ],
+            },
+            {
+                "range": {
+                    "start": {"line": 8, "character": 17},
+                    "end": {"line": 8, "character": 22},
+                },
+                "message": 'Variable "VAR_A" declared twice in scope',
+                "severity": 1,
+                "relatedInformation": [
+                    {
+                        "location": {
+                            "uri": f"file://{file_path}",
+                            "range": {
+                                "start": {"line": 3, "character": 0},
+                                "end": {"line": 3, "character": 0},
+                            },
+                        },
+                        "message": "First declaration",
+                    }
+                ],
+            },
+        ],
+    ]
+    check_return(results[1:], ref_results)
 
 
 if __name__ == "__main__":

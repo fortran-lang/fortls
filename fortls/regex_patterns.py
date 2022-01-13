@@ -63,7 +63,7 @@ END_ENUMD_REGEX = re.compile(r"ENUM", re.I)
 NAT_VAR_REGEX = re.compile(
     r"[ ]*(INTEGER|REAL|DOUBLE[ ]*PRECISION|COMPLEX"
     r"|DOUBLE[ ]*COMPLEX|CHARACTER|LOGICAL|PROCEDURE"
-    r"|EXTERNAL|CLASS|TYPE)",
+    r"|EXTERNAL|CLASS|TYPE)",  # external :: variable is handled by this
     re.I,
 )
 KIND_SPEC_REGEX = re.compile(r"[ ]*([*]?\([ ]*[a-z0-9_*:]|\*[ ]*[0-9:]*)", re.I)
@@ -71,7 +71,7 @@ KEYWORD_LIST_REGEX = re.compile(
     r"[ ]*,[ ]*(PUBLIC|PRIVATE|ALLOCATABLE|"
     r"POINTER|TARGET|DIMENSION\(|"
     r"OPTIONAL|INTENT\([inout]*\)|DEFERRED|NOPASS|"
-    r"PASS\([a-z0-9_]*\)|SAVE|PARAMETER|"
+    r"PASS\([a-z0-9_]*\)|SAVE|PARAMETER|EXTERNAL|"
     r"CONTIGUOUS)",
     re.I,
 )

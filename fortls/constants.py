@@ -26,6 +26,7 @@ KEYWORD_LIST = [
     "elemental",
     "recursive",
     "abstract",
+    "external",
 ]
 KEYWORD_ID_DICT = {keyword: ind for (ind, keyword) in enumerate(KEYWORD_LIST)}
 

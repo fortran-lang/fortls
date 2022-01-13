@@ -188,6 +188,8 @@ def find_in_scope(
         strip_str = strip_str.replace("'", "")
         for inc in scope.file_ast.include_statements:
             if strip_str == inc.path:
+                if inc.file is None:
+                    return None
                 return fortran_include(inc.file.ast, inc.line_number, inc.path)
 
     # Setup USE search
@@ -473,7 +475,7 @@ class fortran_scope(fortran_obj):
         self.base_setup(file_ast, line_number, name)
 
     def base_setup(self, file_ast, sline: int, name: str, keywords: list = []):
-        self.file_ast = file_ast
+        self.file_ast: fortran_ast = file_ast
         self.sline: int = sline
         self.eline: int = sline
         self.name: str = name
@@ -585,7 +587,7 @@ class fortran_scope(fortran_obj):
                 contains_line = self.eline
             else:
                 contains_line = self.contains_start
-        # Detect interface defintions
+        # Detect interface definitions
         is_interface = False
         if (
             (self.parent is not None)
@@ -625,9 +627,7 @@ class fortran_scope(fortran_obj):
                 if line_number > FQSN_dict[child.FQSN]:
                     new_diag = fortran_diagnostic(
                         line_number,
-                        message='Variable "{0}" declared twice in scope'.format(
-                            child.name
-                        ),
+                        message=f'Variable "{child.name}" declared twice in scope',
                         severity=1,
                         find_word=child.name,
                     )
@@ -651,8 +651,8 @@ class fortran_scope(fortran_obj):
                         continue
                     new_diag = fortran_diagnostic(
                         line_number,
-                        message='Variable "{0}" masks variable in parent scope'.format(
-                            child.name
+                        message=(
+                            f'Variable "{child.name}" masks variable in parent scope'
                         ),
                         severity=2,
                         find_word=child.name,
@@ -755,7 +755,11 @@ class fortran_program(fortran_module):
 
 class fortran_submodule(fortran_module):
     def __init__(
-        self, file_ast, line_number: int, name: str, ancestor_name: str = None
+        self,
+        file_ast: fortran_ast,
+        line_number: int,
+        name: str,
+        ancestor_name: str = None,
     ):
         self.base_setup(file_ast, line_number, name)
         self.ancestor_name = ancestor_name
@@ -832,7 +836,7 @@ class fortran_submodule(fortran_module):
 class fortran_subroutine(fortran_scope):
     def __init__(
         self,
-        file_ast,
+        file_ast: fortran_ast,
         line_number: int,
         name: str,
         args: str = "",
@@ -1046,7 +1050,7 @@ class fortran_subroutine(fortran_scope):
 class fortran_function(fortran_subroutine):
     def __init__(
         self,
-        file_ast,
+        file_ast: fortran_ast,
         line_number: int,
         name: str,
         args: str = "",
@@ -1168,7 +1172,9 @@ class fortran_function(fortran_subroutine):
 
 
 class fortran_type(fortran_scope):
-    def __init__(self, file_ast, line_number: int, name: str, keywords: list):
+    def __init__(
+        self, file_ast: fortran_ast, line_number: int, name: str, keywords: list
+    ):
         self.base_setup(file_ast, line_number, name, keywords=keywords)
         #
         self.in_children: list = []
@@ -1333,7 +1339,7 @@ class fortran_type(fortran_scope):
 
 
 class fortran_block(fortran_scope):
-    def __init__(self, file_ast, line_number: int, name: str):
+    def __init__(self, file_ast: fortran_ast, line_number: int, name: str):
         self.base_setup(file_ast, line_number, name)
 
     def get_type(self, no_link=False):
@@ -1350,7 +1356,7 @@ class fortran_block(fortran_scope):
 
 
 class fortran_do(fortran_block):
-    def __init__(self, file_ast, line_number: int, name: str):
+    def __init__(self, file_ast: fortran_ast, line_number: int, name: str):
         self.base_setup(file_ast, line_number, name)
 
     def get_type(self, no_link=False):
@@ -1361,7 +1367,7 @@ class fortran_do(fortran_block):
 
 
 class fortran_where(fortran_block):
-    def __init__(self, file_ast, line_number: int, name: str):
+    def __init__(self, file_ast: fortran_ast, line_number: int, name: str):
         self.base_setup(file_ast, line_number, name)
 
     def get_type(self, no_link=False):
@@ -1372,7 +1378,7 @@ class fortran_where(fortran_block):
 
 
 class fortran_if(fortran_block):
-    def __init__(self, file_ast, line_number: int, name: str):
+    def __init__(self, file_ast: fortran_ast, line_number: int, name: str):
         self.base_setup(file_ast, line_number, name)
 
     def get_type(self, no_link=False):
@@ -1383,7 +1389,7 @@ class fortran_if(fortran_block):
 
 
 class fortran_associate(fortran_block):
-    def __init__(self, file_ast, line_number: int, name: str):
+    def __init__(self, file_ast: fortran_ast, line_number: int, name: str):
         self.base_setup(file_ast, line_number, name)
         self.assoc_links = []
 
@@ -1418,7 +1424,7 @@ class fortran_associate(fortran_block):
 
 
 class fortran_enum(fortran_block):
-    def __init__(self, file_ast, line_number: int, name: str):
+    def __init__(self, file_ast: fortran_ast, line_number: int, name: str):
         self.base_setup(file_ast, line_number, name)
 
     def get_type(self, no_link=False):
@@ -1429,7 +1435,7 @@ class fortran_enum(fortran_block):
 
 
 class fortran_select(fortran_block):
-    def __init__(self, file_ast, line_number: int, name: str, select_info):
+    def __init__(self, file_ast: fortran_ast, line_number: int, name: str, select_info):
         self.base_setup(file_ast, line_number, name)
         self.select_type = select_info.type
         self.binding_name = None
@@ -1486,7 +1492,13 @@ class fortran_select(fortran_block):
 
 
 class fortran_int(fortran_scope):
-    def __init__(self, file_ast, line_number: list, name: str, abstract: bool = False):
+    def __init__(
+        self,
+        file_ast: fortran_ast,
+        line_number: list,
+        name: str,
+        abstract: bool = False,
+    ):
         self.base_setup(file_ast, line_number, name)
         self.mems = []
         self.abstract = abstract
@@ -1523,7 +1535,7 @@ class fortran_int(fortran_scope):
 class fortran_var(fortran_obj):
     def __init__(
         self,
-        file_ast,
+        file_ast: fortran_ast,
         line_number: int,
         name: str,
         var_desc: str,
@@ -1537,7 +1549,7 @@ class fortran_var(fortran_obj):
 
     def base_setup(
         self,
-        file_ast,
+        file_ast: fortran_ast,
         line_number: int,
         name: str,
         var_desc: str,
@@ -1545,10 +1557,10 @@ class fortran_var(fortran_obj):
         keyword_info: dict,
         link_obj: str,
     ):
-        self.file_ast = file_ast
+        self.file_ast: fortran_ast = file_ast
         self.sline: int = line_number
         self.eline: int = line_number
-        self.name: int = name
+        self.name: str = name
         self.desc: str = var_desc
         self.keywords: list = keywords
         self.keyword_info: dict = keyword_info
@@ -1561,6 +1573,7 @@ class fortran_var(fortran_obj):
         self.link_obj = None
         self.type_obj = None
         self.is_const: bool = False
+        self.is_external: bool = False
         self.param_val: str = None
         self.link_name: str = None
         self.FQSN: str = self.name.lower()
@@ -1574,6 +1587,11 @@ class fortran_var(fortran_obj):
             self.vis = -1
         if self.keywords.count(KEYWORD_ID_DICT["parameter"]) > 0:
             self.is_const = True
+        if (
+            self.keywords.count(KEYWORD_ID_DICT["external"]) > 0
+            or self.desc.lower() == "external"
+        ):
+            self.is_external = True
 
     def update_fqsn(self, enc_scope=None):
         if enc_scope is not None:
@@ -1665,6 +1683,10 @@ class fortran_var(fortran_obj):
     def set_parameter_val(self, val: str):
         self.param_val = val
 
+    def set_external_attr(self):
+        self.keywords.append(KEYWORD_ID_DICT["external"])
+        self.is_external = True
+
     def check_definition(self, obj_tree, known_types={}, interface=False):
         # Check for type definition in scope
         type_match = DEF_KIND_REGEX.match(self.desc)
@@ -1726,7 +1748,7 @@ class fortran_var(fortran_obj):
 class fortran_meth(fortran_var):
     def __init__(
         self,
-        file_ast,
+        file_ast: fortran_ast,
         line_number: int,
         name: str,
         var_desc: str,
@@ -1871,6 +1893,7 @@ class fortran_ast:
         self.parse_errors: list = []
         self.inherit_objs: list = []
         self.linkable_objs: list = []
+        self.external_objs: list = []
         self.none_scope = None
         self.inc_scope = None
         self.current_scope = None
@@ -1945,12 +1968,14 @@ class fortran_ast:
             self.END_SCOPE_REGEX = None
         self.enc_scope_name = self.get_enc_scope_name()
 
-    def add_variable(self, new_var):
+    def add_variable(self, new_var: fortran_var):
         if self.current_scope is None:
             self.create_none_scope()
             new_var.FQSN = self.none_scope.FQSN + "::" + new_var.name.lower()
         self.current_scope.add_child(new_var)
         self.variable_list.append(new_var)
+        if new_var.is_external:
+            self.external_objs.append(new_var)
         if new_var.require_link():
             self.linkable_objs.append(new_var)
         self.last_obj = new_var
