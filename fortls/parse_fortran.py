@@ -1643,7 +1643,7 @@ def process_file(
                 if obj_info.var_names is None:
                     continue
                 desc_string = obj_info.type_word
-                link_name = None
+                link_name: str = None
                 procedure_def = False
                 if desc_string[:3] == "PRO":
                     if file_ast.current_scope.get_type() == INTERFACE_TYPE_ID:
@@ -1654,7 +1654,7 @@ def process_file(
                     procedure_def = True
                     link_name = get_paren_substring(desc_string)
                 for var_name in obj_info.var_names:
-                    link_name = None
+                    link_name: str = None
                     if var_name.find("=>") > -1:
                         name_split = var_name.split("=>")
                         name_raw = name_split[0]
