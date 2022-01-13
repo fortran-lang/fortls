@@ -24,6 +24,8 @@
   multiline but the function body can.
 - Fixes objects marked `EXTERNAL` across multiple lines
   ([#169](https://github.com/hansec/fortran-language-server/issues/169))
+- Fixes include with external files
+  ([gnikit/fortls#13](https://github.com/gnikit/fortls/issues/13))
 
 ## 1.16.0
 

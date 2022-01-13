@@ -1,4 +1,5 @@
 import os
+# from types import NoneType
 from setup_tests import (
     run_request,
     write_rpc_request,
@@ -375,6 +376,10 @@ def test_sig():
 
 def test_def():
     def check_return(result_array, checks):
+        # If no definition is given result is None
+        if result_array is None:
+            assert not checks[0]
+            return None
         assert result_array["uri"] == path_to_uri(checks[2])
         assert result_array["range"]["start"]["line"] == checks[0]
         assert result_array["range"]["start"]["line"] == checks[1]
@@ -404,6 +409,7 @@ def test_def():
     file_path = os.path.join(test_dir, "test_inc.f90")
     string += def_request(file_path, 2, 15)
     string += def_request(file_path, 10, 2)
+    string += def_request(file_path, 12, 13)
     file_path = os.path.join(test_dir, "subdir", "test_inc2.f90")
     string += def_request(file_path, 3, 2)
     file_path = os.path.join(test_dir, "subdir", "test_rename.F90")
@@ -428,6 +434,7 @@ def test_def():
         # test_inc.f90
         [2, 2, os.path.join(test_dir, "subdir", "test_inc2.f90")],
         [0, 0, os.path.join(test_dir, "subdir", "test_inc2.f90")],
+        [None],
         # subdir/test_inc2.f90
         [4, 4, os.path.join(test_dir, "test_inc.f90")],
         # subdir/test_rename.F90

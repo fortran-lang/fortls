@@ -188,6 +188,8 @@ def find_in_scope(
         strip_str = strip_str.replace("'", "")
         for inc in scope.file_ast.include_statements:
             if strip_str == inc.path:
+                if inc.file is None:
+                    return None
                 return fortran_include(inc.file.ast, inc.line_number, inc.path)
 
     # Setup USE search

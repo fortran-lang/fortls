@@ -10,5 +10,6 @@ SUBROUTINE test_sub
 
 val2
 END SUBROUTINE test_sub
+include 'mpi.f'
 
 END MODULE test_mod
