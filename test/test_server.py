@@ -175,6 +175,7 @@ def test_workspace_symbols():
         objs = (
             ["test", 6, 7],
             ["test_abstract", 2, 0],
+            ["test_external", 2, 0],
             ["test_free", 2, 0],
             ["test_gen_type", 5, 1],
             ["test_generic", 2, 0],
@@ -586,6 +587,11 @@ def test_diagnostics():
     """
     Tests some aspects of diagnostics
     """
+
+    def check_return(results, ref_results):
+        for i, r in enumerate(results):
+            assert r["diagnostics"] == ref_results[i]
+
     string = write_rpc_request(1, "initialize", {"rootPath": test_dir})
     # Test subroutines and functions with interfaces as arguments
     file_path = os.path.join(test_dir, "test_diagnostic_int.f90")
@@ -607,10 +613,64 @@ def test_diagnostics():
     string += write_rpc_notification(
         "textDocument/didOpen", {"textDocument": {"uri": file_path}}
     )
+    # Test that externals can be split between multiple lines
+    # and that diagnostics for multiple definitions of externals can account
+    # for that
+    file_path = os.path.join(test_dir, "diag", "test_external.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
     errcode, results = run_request(string)
     assert errcode == 0
-    # check that the diagnostics list is empty
-    assert not results[1]["diagnostics"]
+    ref_results = [
+        [],
+        [],
+        [],
+        [],
+        [
+            {
+                "range": {
+                    "start": {"line": 7, "character": 17},
+                    "end": {"line": 7, "character": 22},
+                },
+                "message": 'Variable "VAR_B" declared twice in scope',
+                "severity": 1,
+                "relatedInformation": [
+                    {
+                        "location": {
+                            "uri": f"file://{file_path}",
+                            "range": {
+                                "start": {"line": 5, "character": 0},
+                                "end": {"line": 5, "character": 0},
+                            },
+                        },
+                        "message": "First declaration",
+                    }
+                ],
+            },
+            {
+                "range": {
+                    "start": {"line": 8, "character": 17},
+                    "end": {"line": 8, "character": 22},
+                },
+                "message": 'Variable "VAR_A" declared twice in scope',
+                "severity": 1,
+                "relatedInformation": [
+                    {
+                        "location": {
+                            "uri": f"file://{file_path}",
+                            "range": {
+                                "start": {"line": 3, "character": 0},
+                                "end": {"line": 3, "character": 0},
+                            },
+                        },
+                        "message": "First declaration",
+                    }
+                ],
+            },
+        ],
+    ]
+    check_return(results[1:], ref_results)
 
 
 if __name__ == "__main__":

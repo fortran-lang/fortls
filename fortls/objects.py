@@ -1561,6 +1561,7 @@ class fortran_var(fortran_obj):
         self.link_obj = None
         self.type_obj = None
         self.is_const: bool = False
+        self.is_external: bool = False
         self.param_val: str = None
         self.link_name: str = None
         self.FQSN: str = self.name.lower()
@@ -1574,6 +1575,11 @@ class fortran_var(fortran_obj):
             self.vis = -1
         if self.keywords.count(KEYWORD_ID_DICT["parameter"]) > 0:
             self.is_const = True
+        if (
+            self.keywords.count(KEYWORD_ID_DICT["external"]) > 0
+            or self.desc.lower() == "external"
+        ):
+            self.is_external = True
 
     def update_fqsn(self, enc_scope=None):
         if enc_scope is not None:
@@ -1664,6 +1670,10 @@ class fortran_var(fortran_obj):
 
     def set_parameter_val(self, val: str):
         self.param_val = val
+
+    def set_external_attr(self):
+        self.keywords.append(KEYWORD_ID_DICT["external"])
+        self.is_external = True
 
     def check_definition(self, obj_tree, known_types={}, interface=False):
         # Check for type definition in scope
@@ -1871,6 +1881,7 @@ class fortran_ast:
         self.parse_errors: list = []
         self.inherit_objs: list = []
         self.linkable_objs: list = []
+        self.external_objs: list = []
         self.none_scope = None
         self.inc_scope = None
         self.current_scope = None
@@ -1945,12 +1956,14 @@ class fortran_ast:
             self.END_SCOPE_REGEX = None
         self.enc_scope_name = self.get_enc_scope_name()
 
-    def add_variable(self, new_var):
+    def add_variable(self, new_var: fortran_var):
         if self.current_scope is None:
             self.create_none_scope()
             new_var.FQSN = self.none_scope.FQSN + "::" + new_var.name.lower()
         self.current_scope.add_child(new_var)
         self.variable_list.append(new_var)
+        if new_var.is_external:
+            self.external_objs.append(new_var)
         if new_var.require_link():
             self.linkable_objs.append(new_var)
         self.last_obj = new_var

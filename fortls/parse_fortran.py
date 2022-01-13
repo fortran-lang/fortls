@@ -664,6 +664,107 @@ def_tests = [
 ]
 
 
+def find_external_type(
+    file_ast: fortran_ast, desc_string: str, name_stripped: str
+) -> bool:
+    """Encountered a variable with EXTERNAL as its type
+    Try and find an already defined variable with a
+    NORMAL Fortran Type"""
+    if not desc_string.upper() == "EXTERNAL":
+        return False
+    counter = 0
+    # Definition without EXTERNAL has already been parsed
+    for v in file_ast.variable_list:
+        if name_stripped == v.name:
+            # If variable is already in external objs it has
+            # been parsed correctly so exit
+            if v in file_ast.external_objs:
+                return False
+
+            v.set_external_attr()
+            file_ast.external_objs.append(v)
+            counter += 1
+            # TODO: do I need to update AST any more?
+    if counter == 1:
+        return True
+    else:
+        return False
+
+
+def find_external_attr(
+    file_ast: fortran_ast, name_stripped: str, new_var: fortran_var
+) -> bool:
+    """Check if this NORMAL Fortran variable is in the
+    external_objs with only EXTERNAL as its type"""
+    counter = 0
+    for v in file_ast.external_objs:
+        if v.name != name_stripped:
+            continue
+        if v.desc.upper() != "EXTERNAL":
+            continue
+        # We do this once
+        if counter == 0:
+            v.desc = new_var.desc
+            v.set_external_attr()
+        # TODO: do i need to update AST any more?
+        counter += 1
+
+    # Only one definition encountered
+    if counter == 1:
+        return True
+    # If no variable or multiple variables add to AST.
+    # Multiple defs will throw diagnostic error as it should
+    else:
+        return False
+
+
+def find_external(
+    file_ast: fortran_ast,
+    desc_string: str,
+    name_stripped: str,
+    new_var: fortran_var,
+) -> bool:
+    """Find a procedure, function, subroutine, etc. that has been defined as
+    `EXTERNAL`. `EXTERNAL`s are parsed as `fortran_var`, since there is no
+    way of knowing if `real, external :: val` is a function or a subroutine.
+
+    This method exists solely for `EXTERNAL`s that are defined across multiple
+    lines e.g.
+    `EXTERNAL VAR`
+    `REAL VAR`
+
+    or
+
+    `REAL VAR`
+    `EXTERNAL VAR`
+
+
+    Parameters
+    ----------
+    file_ast : fortran_ast
+        AST
+    desc_string : str
+        Variable type e.g. `REAL`, `INTEGER`, `EXTERNAL`
+    name_stripped : str
+        Variable name
+    new_var : fortran_var
+        The line variable that we are attempting to match with an `EXTERNAL`
+        definition
+
+    Returns
+    -------
+    bool
+        True if the variable is `EXTERNAL` and we manage to link it to the
+        rest of its components, else False
+    """
+    if find_external_type(file_ast, desc_string, name_stripped):
+        return True
+    elif desc_string.upper() != "EXTERNAL":
+        if find_external_attr(file_ast, name_stripped, new_var):
+            return True
+    return False
+
+
 class fortran_file:
     def __init__(self, path: str = None, pp_suffixes: list = None):
         self.path: str = path
@@ -1607,6 +1708,12 @@ def process_file(
                             if match:
                                 var = match.group(1).strip()
                                 new_var.set_parameter_val(var)
+
+                        # Check if the "variable" is external and if so cycle
+                        if find_external(file_ast, desc_string, name_stripped, new_var):
+                            continue
+
+                    # if not merge_external:
                     file_ast.add_variable(new_var)
                 parser_debug_msg("VARIABLE", line, line_number)
 
