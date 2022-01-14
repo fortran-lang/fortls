@@ -3,3 +3,4 @@
 *.egg-info 
 dist/
 docs/_build/
+docs/fortls_changes.md

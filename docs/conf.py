@@ -15,6 +15,40 @@ import sys
 
 sys.path.insert(0, os.path.abspath(".."))
 
+# Generate the agglomerated changes (from the CHANGELOG) between fortls
+# and the fortran-language-server project
+with open("../CHANGELOG.md", "r") as f:
+    lns = f.readlines()
+
+lns = lns[0 : lns.index("## 1.12.0\n")]
+changes = {
+    "Added": [],
+    "Changed": [],
+    "Deprecated": [],
+    "Removed": [],
+    "Fixed": [],
+    "Security": [],
+}
+
+field = ""
+for i in lns:
+    if i.startswith("## "):
+        continue
+    if i.startswith("### "):
+        field = i[4:-1]
+        continue
+    if i.startswith("- ") or i.startswith("  "):
+        changes[field].append(i)
+
+new_file = ["# Unique fortls features (not in fortran-language-server)\n"]
+for key, val in changes.items():
+    if val:
+        new_file.append(f"\n## {key}\n\n")
+        new_file.extend(val)
+
+with open("fortls_changes.md", "w") as f:
+    f.writelines(new_file)
+
 
 # -- Project information -----------------------------------------------------
 
