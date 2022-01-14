@@ -2,7 +2,7 @@
 
 ## 2.0.0
 
-### Adds
+### Added
 
 - Adds support for including preprocessor definitions from files same as `pp_defs`
 - Adds hover support for preprocessor variables
@@ -12,13 +12,13 @@
 - Adds `incl_suffixes` as a configuration option
 - Adds `EXTERNAL` as an attribute upon hover
 
-### Changes
+### Changed
 
 - Update constant parameters for `omp_lib` and `omp_lib_kinds` Interface v5.0
 - Format json files with `prettier`
 - Initialises the log channel and adds `$/setTrace` to override client's (i.e. VS Code) loglevel
 
-### Fixes
+### Fixed
 
 - Fixes the hover of preprocessor functions. It now displays the function name
   witout the argument list and the function body. The argument list cannot be
@@ -30,7 +30,7 @@
 
 ## 1.16.0
 
-### Adds
+### Added
 
 - Adds value for `PARAMETER` variables on hover
   ([#116](https://github.com/hansec/fortran-language-server/issues/116))
@@ -38,95 +38,95 @@
 
 ## 1.15.2
 
-### Fixes
+### Fixed
 
 - Further improves the literal variable hover added in v1.14.0
 
 ## 1.15.1
 
-### Fixes
+### Fixed
 
 - Fixes premature end of scope with variables named `end`
   ([gnikit/fortls#9](https://github.com/gnikit/fortls/issues/9))
 
 ## 1.15.0
 
-### Adds
+### Added
 
 - Adds `--config` option which allows arbitrary named configuration files
 
 ## 1.14.4
 
-### Fixes
+### Fixed
 
 - Fixes import host association includes (autocomplete work not complete)
   ([#187](https://github.com/hansec/fortran-language-server/issues/187))
 
 ## 1.14.3
 
-### Fixes
+### Fixed
 
 - Fixes parsing of `non_intrinsic` modules
   ([#206](https://github.com/hansec/fortran-language-server/issues/206))
 
 ## 1.14.2
 
-### Fixes
+### Fixed
 
 - Fixes error while parsing submodule parent name with spaces
   ([#207](https://github.com/hansec/fortran-language-server/issues/207))
 
 ## 1.14.1
 
-### Fixes
+### Fixed
 
 - Fixes language server features not triggering for variables in column 0
 
 ## 1.14.0
 
-### Fixes
+### Fixed
 
 - Fixes (partially) Fortran literal variable hover
   ([#188](https://github.com/hansec/fortran-language-server/issues/188))
 
 ## 1.13.0
 
-### Improvements
+### Added
 
 - Adds Python glob support for `excl_paths`, `source_dirs`, `include_dirs`
 
 ## 1.12.1
 
-### Fixes
+### Fixed
 
 - Fixes diagnostic error with interfaces as function arguments
   ([#200](https://github.com/hansec/fortran-language-server/issues/200))
 
 ## 1.12.0
 
-### Improvements
+### Changed
 
 - Add support for disabling diagnostics globally or on a per-project basis, ref [PR 163](https://github.com/hansec/fortran-language-server/pull/163)
 
-### Fixes
+### Fixed
 
 - Fix bug with enum declarations, fixes [#167](https://github.com/hansec/fortran-language-server/issues/167)
 - Fix typo in "ISHIFT" and "ISHIFTC" intrinsic functions, ref [PR 165](https://github.com/hansec/fortran-language-server/pull/165)
 
 ## 1.11.1
 
-### Fixes
+### Fixed
 
 - Fix bug with hover requests introduced in v1.11.0, fixes [#159](https://github.com/hansec/fortran-language-server/issues/159)
 
 ## 1.11.0
 
-### Improvements
+### Changed
 
 - Add support for specifying the language name returned for hover requests, ref [Fortran IntelliSense #17](https://github.com/hansec/vscode-fortran-ls/issues/17)
 - Add support for submodule implementations using the "PROCEDURE" keyword, fixes [#152](https://github.com/hansec/fortran-language-server/issues/152)
 
-### Fixes
+### Fixed
 
 - Fix bug with keywords in old style function declarations, fixes [#154](https://github.com/hansec/fortran-language-server/issues/154)
 - Fix bug when searching an empty scope, fixes [#151](https://github.com/hansec/fortran-language-server/issues/151)
@@ -135,18 +135,18 @@
 
 ## 1.10.3
 
-### Fixes
+### Fixed
 
 - Fix parsing bug with spaces in "old-style" kind specifications, fixes [#142](https://github.com/hansec/fortran-language-server/issues/142)
 - Fix issue with erroneous sub-word matching in preprocessor macro substitutions, fixes [#141](https://github.com/hansec/fortran-language-server/issues/141)
 
 ## 1.10.2
 
-### Improvements
+### Changed
 
 - Add support for "old-style" character length specification, fixes [#130](https://github.com/hansec/fortran-language-server/issues/130) and [#134](https://github.com/hansec/fortran-language-server/issues/134)
 
-### Fixes
+### Fixed
 
 - Fix "can't set attribute" error in USE traversal, fixes [#132](https://github.com/hansec/fortran-language-server/issues/132)
 - Fix bugs related to optional leading ampersands on continuation lines, fixes [#131](https://github.com/hansec/fortran-language-server/issues/131)
@@ -154,13 +154,13 @@
 
 ## 1.10.1
 
-### Fixes
+### Fixed
 
 - Fix bug in semicolon parsing, fixes [#127](https://github.com/hansec/fortran-language-server/issues/127)
 
 ## 1.10.0
 
-### Improvements
+### Changed
 
 - Initial implementation of preprocessor include file handling, ref [#115](https://github.com/hansec/fortran-language-server/issues/115)
 - Add support for specifying file suffixes for preprocessing, ref [#115](https://github.com/hansec/fortran-language-server/issues/115)
@@ -169,7 +169,7 @@
 - Add support for IMPURE keyword (contributed by @mcocdawc)
 - Improve readability by replacing various result arrays with namedtuples
 
-### Fixes
+### Fixed
 
 - Fix bug in open string literal detection, fixes [#124](https://github.com/hansec/fortran-language-server/issues/124)
 - Fix bug with multiline docstrings that start with a trailing comment, fixes [#118](https://github.com/hansec/fortran-language-server/issues/118)
@@ -181,13 +181,13 @@
 
 ## 1.9.1
 
-### Fixes
+### Fixed
 
 - Fix bug in USE ONLY accounting used for graph pruning, fixes [#122](https://github.com/hansec/fortran-language-server/issues/122)
 
 ## 1.9.0
 
-### Improvements
+### Changed
 
 - Add support for USE statement renaming requests, ref [#109](https://github.com/hansec/fortran-language-server/issues/109)
 - Add support for argument information in variable hover requests, fixes [#107](https://github.com/hansec/fortran-language-server/issues/107)
@@ -196,14 +196,14 @@
 - Reduce unnecessary parsing with single line file changes
 - Debugging: Add support for printing full result object
 
-### Fixes
+### Fixed
 
 - Remove required space between "DOUBLE PRECISION" and "DOUBLE COMPLEX" definitions, fixes [#110](https://github.com/hansec/fortran-language-server/issues/110)
 - Fix requests when a user-defined type variable has the same name as a defined type used in that scope
 
 ## 1.8.2
 
-### Fixes
+### Fixed
 
 - Fix parsing single line WHERE statements with trailing parentheses, fixes [#106](https://github.com/hansec/fortran-language-server/issues/106)
 - Fix erroneous object duplication diagnostics for DO, INTERFACE, etc. blocks
@@ -212,14 +212,14 @@
 
 ## 1.8.1
 
-### Fixes
+### Fixed
 
 - Fix bug with requests in lines with tab characters, fixes [#93](https://github.com/hansec/fortran-language-server/issues/93)
 - Fix bug with requests following "WRITE(\*,\*)" statements
 
 ## 1.8.0
 
-### Improvements
+### Changed
 
 - Add full support for ASSOCIATE statements, fixes [#101](https://github.com/hansec/fortran-language-server/issues/101)
 - Filter completion suggestions after "MODULE PROCEDURE" statements, fixes [#103](https://github.com/hansec/fortran-language-server/issues/103)
@@ -231,7 +231,7 @@
 
 ## 1.7.3
 
-### Fixes
+### Fixed
 
 - Fix case preservation in hover requests, fixes [#102](https://github.com/hansec/fortran-language-server/issues/102)
 - Fix rename requests for type-bound procedures without an explicit link statement (ie. "=>"), fixes [#104](https://github.com/hansec/fortran-language-server/issues/104)
@@ -241,20 +241,20 @@
 
 ## 1.7.2
 
-### Fixes
+### Fixed
 
 - Fix bug with definition/hover requests involving intrinsic functions/modules/variables (introduced in v1.7)
 
 ## 1.7.1
 
-### Fixes
+### Fixed
 
 - Fix bug with completion and signatureHelp requests on continuation lines (introduced in v1.7)
 - Fix out-of-range error with various requests on zero-length lines (introduced in v1.7)
 
 ## 1.7.0
 
-### Improvements
+### Changed
 
 - Add initial support for "textDocument/codeAction" requests, generate unimplemented deferred procedures
 - Show subroutine/function keywords ("PURE", "ELEMENTAL", etc.)
@@ -265,7 +265,7 @@
 - Command line options: Set number of threads used during initialization
 - Significant refactoring of core code
 
-### Fixes
+### Fixed
 
 - Fix "RecursionError" exception with circular user-defined type references, fixes [#100](https://github.com/hansec/fortran-language-server/issues/100)
 - Fix bug detecting TYPE definitions with an immediately following colon, ref [#100](https://github.com/hansec/fortran-language-server/issues/100)
@@ -273,7 +273,7 @@
 
 ## 1.6.0
 
-### Improvements
+### Changed
 
 - Add support for EXTERNAL subroutines
 - Diagnostics: Missing subroutine/function arguments and argument declarations
@@ -284,23 +284,23 @@
 
 ## 1.5.1
 
-### Improvements
+### Changed
 
 - Add support for semicolon separators and multiline preprocessor macros, fixes [#98](https://github.com/hansec/fortran-language-server/issues/98)
 - Add various "parsing errors" to debug_parser output
 
-### Fixes
+### Fixed
 
 - Use consistent file access method across debug_parser run and language server requests
 
 ## 1.5.0
 
-### Improvements
+### Changed
 
 - Add support for "textDocument/rename" requests
 - Add initial support for Doxygen and FORD style comment blocks, ref [#44](https://github.com/hansec/fortran-language-server/issues/44)
 
-### Fixes
+### Fixed
 
 - Fix language server crash with unknown user-defined type fields
 
@@ -310,12 +310,12 @@
 
 ## 1.4.0
 
-### Improvements
+### Changed
 
 - Add support for "textDocument/implementation" requests, ref [#94](https://github.com/hansec/fortran-language-server/issues/94)
 - Add option to preserve keyword ordering, ref [#97](https://github.com/hansec/fortran-language-server/issues/97)
 
-### Fixes
+### Fixed
 
 - Fix parsing bug with single line WHERE statements, fixes [#92](https://github.com/hansec/fortran-language-server/issues/92)
 - Fix bug with keyword parsing with nested parenthesis, fixes [#97](https://github.com/hansec/fortran-language-server/issues/97)
@@ -324,14 +324,14 @@
 
 ## 1.3.0
 
-### Improvements
+### Changed
 
 - Add support for user-defined type members in "textDocument/references" requests, fixes [#88](https://github.com/hansec/fortran-language-server/issues/88)
 - Link type-bound procedures with no explicit link to matching named scope in module, fixes [#89](https://github.com/hansec/fortran-language-server/issues/89)
 - Report diagnostics related to misplaced "CONTAINS" statements
 - Restructure README for improved clarity on capabilities/limitations
 
-### Fixes
+### Fixed
 
 - Fix bug with blank/empty lines in free-format continuations, fixes [#91](https://github.com/hansec/fortran-language-server/issues/91)
 - Fix exception in "textDocument/references" requests when no object is found, fixes [#86](https://github.com/hansec/fortran-language-server/issues/86)
@@ -339,43 +339,43 @@
 
 ## 1.2.1
 
-### Fixes
+### Fixed
 
 - Fix bug in nested user-defined type inheritance, fixes [#85](https://github.com/hansec/fortran-language-server/issues/85)
 - Fix bug in completion requests with empty parenthesis in request line
 
 ## 1.2.0
 
-### Improvements
+### Changed
 
 - Add support for local variables/objects in "textDocument/references" requests, ref [#84](https://github.com/hansec/fortran-language-server/issues/78)
 - Improve preprocessing to handle more types of conditional statements and macro substitution, ref [#78](https://github.com/hansec/fortran-language-server/issues/78)
 - Report diagnostics for excess "END" statements instead of causing parser failure, ref [#78](https://github.com/hansec/fortran-language-server/issues/78)
 
-### Fixes
+### Fixed
 
 - Fix missing "textDocument/references" results when line starts with target object, fixes [#84](https://github.com/hansec/fortran-language-server/issues/84)
 
 ## 1.1.1
 
-### Fixes
+### Fixed
 
 - Fix bug with backslash URI separators on Windows, fixes [#83](https://github.com/hansec/fortran-language-server/issues/83)
 
 ## 1.1.0
 
-### Improvements
+### Changed
 
 - Add initial implementation of simple preprocessor, ref [#78](https://github.com/hansec/fortran-language-server/issues/78)
 
-### Fixes
+### Fixed
 
 - Updated Fixed/Free detection logic using ampersands to check for comment line, fixes [#81](https://github.com/hansec/fortran-language-server/issues/81)
 - Support use of "END" as a variable, fixes [#82](https://github.com/hansec/fortran-language-server/issues/82)
 
 ## 1.0.5
 
-### Fixes
+### Fixed
 
 - Add support for named "SELECT" statements, fixes [#80](https://github.com/hansec/fortran-language-server/issues/80)
 - Track scopes for "ASSIGNMENT" and "OPERATOR" interface statements, fixes [#79](https://github.com/hansec/fortran-language-server/issues/79)
@@ -384,14 +384,14 @@
 
 ## 1.0.4
 
-### Fixes
+### Fixed
 
 - Normalize file paths when storing/accessing file index, fixes [#75](https://github.com/hansec/fortran-language-server/issues/75)
 - Fix intrinsic statement "COUNT" ([#76](https://github.com/hansec/fortran-language-server/pull/76))
 
 ## 1.0.3
 
-### Fixes
+### Fixed
 
 - Further improve discrimination between end statements and variables/block labels, ref [#73](https://github.com/hansec/fortran-language-server/issues/73)
 - Fix autocomplete errors when ASSOCIATE and ENUM statements are present
@@ -399,20 +399,20 @@
 
 ## 1.0.2
 
-### Fixes
+### Fixed
 
 - Fix discrimination between end statements and variables with underscores, fixes [#73](https://github.com/hansec/fortran-language-server/issues/73)
 - Detect enum definitions, fixes [#74](https://github.com/hansec/fortran-language-server/issues/74)
 
 ## 1.0.1
 
-### Fixes
+### Fixed
 
 - Detect and support associate statements, fixes [#72](https://github.com/hansec/fortran-language-server/issues/72)
 
 ## 1.0.0
 
-### Improvements
+### Changed
 
 - Add parsing of DO/IF/WHERE blocks and report scope end errors
 - Detect and report errors with invalid parent for scope definitions
@@ -420,7 +420,7 @@
 - Downgrade missing use warnings to information level
 - Add intrinsic declaration statement "double complex" ([#70](https://github.com/hansec/fortran-language-server/pull/70))
 
-### Fixes
+### Fixed
 
 - Fix bug with leading whitespace on visibility statements, fixes [#69](https://github.com/hansec/fortran-language-server/issues/69)
 - Fix parsing errors when "&" and "!" characters are present inside string literals
@@ -428,7 +428,7 @@
 
 ## 0.9.3
 
-### Fixes
+### Fixed
 
 - Fix detection of function definitions with leading module and variable statements, fixes [#66](https://github.com/hansec/fortran-language-server/issues/66)
 - Properly close remaining open scopes at end of file
@@ -436,22 +436,22 @@
 
 ## 0.9.2
 
-### Improvements
+### Changed
 
 - Improve handling of different file encodings, [PR #57](https://github.com/hansec/fortran-language-server/pull/57)
 
-### Fixes
+### Fixed
 
 - Fix autocomplete results for inherited members of user-defined types when the member type definition is only available in parent type's scope
 
 ## 0.9.1
 
-### Improvements
+### Changed
 
 - Add support for generic interfaces in type-bound procedures, [#64](https://github.com/hansec/fortran-language-server/issues/64)
 - Add parent scope information to masked variable errors, [#48](https://github.com/hansec/fortran-language-server/issues/48)
 
-### Fixes
+### Fixed
 
 - Fix parsing deferred length character definitions, [#61](https://github.com/hansec/fortran-language-server/issues/61)
 - Fix parsing function definitions with modifiers before type, [#63](https://github.com/hansec/fortran-language-server/issues/63)
@@ -459,12 +459,12 @@
 
 ## 0.9.0
 
-### Improvements
+### Changed
 
 - Add basic support for workspace/symbol requests
 - Add support for excluding source files based on a common suffix
 
-### Fixes
+### Fixed
 
 - Prevent detection of variables starting with "use" as USE statements, [#59](https://github.com/hansec/fortran-language-server/issues/59)
 - Improve parsing of USE ONLY statements, [#53](https://github.com/hansec/fortran-language-server/issues/53)
@@ -473,14 +473,14 @@
 
 ## 0.8.4
 
-### Fixes
+### Fixed
 
 - Check for existence of file during "textDocument/didClose" requests, [#46](https://github.com/hansec/fortran-language-server/issues/46)
 - Encode text as UTF-8 in change requests, fixes [#41](https://github.com/hansec/fortran-language-server/issues/41)
 
 ## 0.8.3
 
-### Improvements
+### Changed
 
 - Add support for generating debug logs
 - Add Fortran statements to autocomplete suggestions
@@ -488,19 +488,19 @@
 
 ## 0.8.2
 
-### Improvements
+### Changed
 
 - Add support for F03 style bracket array initialization, fixes [#35](https://github.com/hansec/fortran-language-server/issues/35)
 
 ## 0.8.1
 
-### Fixes
+### Fixed
 
 - Fix crash in completion requests with intrinsic modules
 
 ## 0.8.0
 
-### Improvements
+### Changed
 
 - Reformat completion information and snippets to match common language server conventions
 - Provide hover information for overloaded interfaces
@@ -509,33 +509,33 @@
 - Add support for arguments defined as interfaces in hover and signatureHelp requests
 - Unbetafy signatureHelp support
 
-### Fixes
+### Fixed
 
 - Fix linking type bound procedures with same name as subroutine/function definition
 
 ## 0.7.3
 
-### Fixes
+### Fixed
 
 - Improve detection of block statements, fixes [#32](https://github.com/hansec/fortran-language-server/issues/32)
 - Fix autocompletion with mixed case object definitions
 
 ## 0.7.2
 
-### Fixes
+### Fixed
 
 - Fix variable definition detection without spaces, fixes [#30](https://github.com/hansec/fortran-language-server/issues/30)
 
 ## 0.7.1
 
-### Improvements
+### Changed
 
 - Add option for displaying hover information for variables
 - Add subroutine/function keywords to hover information
 - Add more keywords to variable information
 - Support spaces between subroutine name and parentheses in signatureHelp
 
-### Fixes
+### Fixed
 
 - Fix bug with file paths that include spaces, fixes [#29](https://github.com/hansec/fortran-language-server/issues/29)
 - Fix bug where arguments were erroneously dropped for procedure variables
@@ -544,33 +544,33 @@
 
 ## 0.7.0
 
-### Improvements
+### Changed
 
 - Add support for signatureHelp requests with non-overloaded subroutines/functions
 - Provide autocomplete and hover information for procedures with explicit interface definitions
 - Add support for Fortran 2008 block constructs, fixes [#23](https://github.com/hansec/fortran-language-server/issues/23)
 - Add support for "DOUBLE COMPLEX" datatype
 
-### Fixes
+### Fixed
 
 - Fix bug where external interfaces were erroneously public in default private modules
 - Fix bug producing repeated objects with include statements
 
 ## 0.6.2
 
-### Improvements
+### Changed
 
 - Catch and report more types of errors related to file processing, fixes [#21](https://github.com/hansec/fortran-language-server/issues/21)
 
 ## 0.6.1
 
-### Fixes
+### Fixed
 
 - Fix bug with incremental sync using VSCode on windows, fixes [#20](https://github.com/hansec/fortran-language-server/issues/20)
 
 ## 0.6.0
 
-### Improvements
+### Changed
 
 - Add keywords to autocomplete results in variable definition statements
 - Filter autocompletion results in extend, import, and procedure statements
@@ -579,7 +579,7 @@
 - Ignore autocomplete and definition requests on preprocessor lines
 - Add option to test completion and definition requests in debug mode
 
-### Fixes
+### Fixed
 
 - Improve export of abstract and external interfaces for completion and definition requests
 - Fix scope name detection to prevent confusing variables that start with Fortran statement names
@@ -589,25 +589,25 @@
 
 ## 0.5.0
 
-### Improvements
+### Changed
 
 - Add intrinsic functions and modules to autocomplete suggestions
 - Add support for include statements
 
-### Fixes
+### Fixed
 
 - Remove erroneously included global objects from autocomplete results in USE ONLY statements
 - Fix displayed type for derived type objects in autocomplete requests
 
 ## 0.4.0
 
-### Improvements
+### Changed
 
 - Add support for find_references, global and top-level module objects only
 - Filter autocomplete suggestions for callable objects in call statements
 - Speedup initialization and updates on large projects by accelerating construction of USE tree
 
-### Fixes
+### Fixed
 
 - Fix parser error with definitions requiring enclosing scopes in #include files and unnamed programs, fixes [#17](https://github.com/hansec/fortran-language-server/issues/17)
 - Fix parser failure with visibility statements in included fortran files, fixes [#16](https://github.com/hansec/fortran-language-server/issues/16)
@@ -615,38 +615,38 @@
 
 ## 0.3.7
 
-### Improvements
+### Changed
 
 - Automatically trigger autocomplete on `%` character
 - Show named interfaces and prototypes in document outline
 - Add support for autocomplete without prefix filtering
 
-### Fixes
+### Fixed
 
 - Fix occasional language server error in autocompletion with class methods
 
 ## 0.3.6
 
-### Improvements
+### Changed
 
 - Add support for fortran submodules, fixes [#14](https://github.com/hansec/fortran-language-server/issues/14) and [#15](https://github.com/hansec/fortran-language-server/issues/15)
 - Improve line tokenization and parsing
 
-### Fixes
+### Fixed
 
 - Fix parsing errors with incomplete function definitions
 - Fix bugs in symbol and parser debugging
 
 ## 0.3.5
 
-### Fixes
+### Fixed
 
 - Improve unicode file handling with Python 3.x
 - Add support for unnamed programs, fixes [#13](https://github.com/hansec/fortran-language-server/issues/13)
 
 ## 0.3.4
 
-### Fixes
+### Fixed
 
 - Fix parser error with uppercase characters in scope names, fixes [#11](https://github.com/hansec/fortran-language-server/issues/11)
 - Add support for object names with a leading underscore, fixes [#9](https://github.com/hansec/fortran-language-server/issues/9)
@@ -654,13 +654,13 @@
 
 ## 0.3.3
 
-### Improvements
+### Changed
 
 - Improved Windows support and added AppVeyor CI testing
 - Add support for snippets in autocompletion
 - Ignore requests in comment sections
 
-### Fixes
+### Fixed
 
 - Fix bug with string/byte handling in Python 3
 - Fix bug with multiprocess support on Windows
@@ -668,7 +668,7 @@
 
 ## 0.3.2
 
-### Fixes
+### Fixed
 
 - Fix parsing variable definitions containing separators inside strings, fixes [#4](https://github.com/hansec/fortran-language-server/issues/4)
 - Fix incorrect variable masking error in functions, fixes [#5](https://github.com/hansec/fortran-language-server/issues/5)
@@ -676,25 +676,25 @@
 
 ## 0.3.1
 
-### Improvements
+### Changed
 
 - Do not show warnings for variable masking in interface definitions
 - Respect visibility statements when searching for object in scope
 
-### Fixes
+### Fixed
 
 - Fix bug in incremental document sync with ending newline
 
 ## 0.3.0
 
-### Improvements
+### Changed
 
 - Add basic file diagnostics (double declaration, variable masking, unknown USE)
 - Indicate optional arguments in autocomplete suggestions
 - Detect source code format from file contents instead of extension
 - Add support for incremental document synchronization
 
-### Fixes
+### Fixed
 
 - Fix parsing error when variable definition line is incomplete
 - Fix incorrect line handling with open parentheses
@@ -702,7 +702,7 @@
 
 ## 0.2.0
 
-### Improvements
+### Changed
 
 - Add support for recursive directory inclusion from "root_path"
 - Provide option to skip type members in documentSymbol requests
@@ -710,32 +710,32 @@
 - Filter interface suggestions to only show unique signatures
 - Link imported procedures in interface definitions
 
-### Fixes
+### Fixed
 
 - Fix line continuation handling for free form files with trailing and leading ampersands
 - Improve parentheses matching in line parsing
 
 ## 0.1.4
 
-### Improvements
+### Changed
 
 - Handle line continuations in language server requests
 - Add server version number to help output
 
-### Fixes
+### Fixed
 
 - Fix bug when parsing files with unicode characters
 
 ## 0.1.3
 
-### Improvements
+### Changed
 
 - Include interfaces in autocomplete suggestions
 - Restrict autocomplete suggestions by object visibility
 - Improve USE statement traversal
 - Add notifications for parser failures
 
-### Fixes
+### Fixed
 
 - Fix bug where parsing errors during workspace initialization could crash the language server
 
