@@ -16,6 +16,7 @@
 
 - Update constant parameters for `omp_lib` and `omp_lib_kinds` Interface v5.0
 - Format json files with `prettier`
+- Initialises the log channel and adds `$/setTrace` to override client's (i.e. VS Code) loglevel
 
 ### Fixes
 

@@ -1,5 +1,4 @@
 import json
-import logging
 
 try:
     import Queue
@@ -16,7 +15,7 @@ except ImportError:
     from urllib2 import quote
     from urlparse import unquote
 
-log = logging.getLogger(__name__)
+from fortls.constants import log
 
 
 def path_from_uri(uri: str) -> str:

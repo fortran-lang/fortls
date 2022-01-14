@@ -1,4 +1,4 @@
-from __future__ import print_function, annotations
+from __future__ import annotations, print_function
 
 import hashlib
 import logging
@@ -12,6 +12,7 @@ from fortls.constants import (
     PY3K,
     SELECT_TYPE_ID,
     SUBMODULE_TYPE_ID,
+    log,
 )
 from fortls.helper_functions import (
     detect_fixed_format,
@@ -25,6 +26,16 @@ from fortls.helper_functions import (
     strip_strings,
 )
 from fortls.objects import (
+    CLASS_info,
+    FUN_info,
+    GEN_info,
+    INT_info,
+    SELECT_info,
+    SMOD_info,
+    SUB_info,
+    USE_info,
+    VAR_info,
+    VIS_info,
     fortran_associate,
     fortran_ast,
     fortran_block,
@@ -43,16 +54,6 @@ from fortls.objects import (
     fortran_type,
     fortran_var,
     fortran_where,
-    VAR_info,
-    SUB_info,
-    FUN_info,
-    SELECT_info,
-    CLASS_info,
-    USE_info,
-    GEN_info,
-    SMOD_info,
-    INT_info,
-    VIS_info,
 )
 from fortls.regex_patterns import (
     ASSOCIATE_REGEX,
@@ -130,8 +131,6 @@ from fortls.regex_patterns import (
 
 if not PY3K:
     import io
-
-log = logging.getLogger(__name__)
 
 
 def get_line_context(line: str) -> tuple[str, None]:

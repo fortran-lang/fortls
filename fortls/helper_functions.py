@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import logging
 import os
 from pathlib import Path
 
-from fortls.constants import KEYWORD_ID_DICT, KEYWORD_LIST, sort_keywords
+from fortls.constants import KEYWORD_ID_DICT, KEYWORD_LIST, log, sort_keywords
 from fortls.regex_patterns import (
     DQ_STRING_REGEX,
     FIXED_COMMENT_LINE_MATCH,
@@ -17,8 +16,6 @@ from fortls.regex_patterns import (
     SQ_STRING_REGEX,
     WORD_REGEX,
 )
-
-log = logging.getLogger(__name__)
 
 
 def expand_name(line: str, char_poss: int) -> str:

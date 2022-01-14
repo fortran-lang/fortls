@@ -1,6 +1,9 @@
 import sys
+import logging
 
 PY3K = sys.version_info >= (3, 0)
+
+log = logging.getLogger(__name__)
 
 # Global variables
 sort_keywords = True

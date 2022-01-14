@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Pattern
 
 # Local modules
+from fortls._version import __version__
 from fortls.constants import (
     CLASS_TYPE_ID,
     FORTRAN_LITERAL,
@@ -21,6 +22,7 @@ from fortls.constants import (
     SELECT_TYPE_ID,
     SUBROUTINE_TYPE_ID,
     VAR_TYPE_ID,
+    log,
 )
 from fortls.helper_functions import (
     expand_name,
@@ -55,7 +57,6 @@ from fortls.regex_patterns import (
     src_file_exts,
 )
 
-log = logging.getLogger(__name__)
 # Global regexes
 # TODO: I think this can be replaced by fortls.regex_patterns type & class
 TYPE_DEF_REGEX = re.compile(r"[ ]*(TYPE|CLASS)[ ]*\([a-z0-9_ ]*$", re.I)
@@ -179,6 +180,7 @@ class LangServer:
             "workspace/didChangeWatchedFiles": noop,
             "workspace/symbol": self.serve_workspace_symbol,
             "$/cancelRequest": noop,
+            "$/setTrace": noop,
             "shutdown": noop,
             "exit": self.serve_exit,
         }.get(request["method"], self.serve_default)
@@ -190,7 +192,7 @@ class LangServer:
             try:
                 handler(request)
             except:
-                log.warning("error handling notification %s", request, exc_info=True)
+                log.exception("error handling request: %s", request, exc_info=True)
             return
         #
         try:
@@ -220,6 +222,11 @@ class LangServer:
             params.get("rootUri") or params.get("rootPath") or ""
         )
         self.source_dirs.add(self.root_path)
+        logging.basicConfig(
+            format="[%(levelname)-.4s - %(asctime)s] %(message)s",
+            datefmt="%H:%M:%S",
+            level=logging.INFO,
+        )
         self.__config_logger(request)
         init_debug_log = self.__load_config_file()
         if init_debug_log:
@@ -229,6 +236,7 @@ class LangServer:
 
         # Initialize workspace
         self.workspace_init()
+        log.info(f"fortls - Fortran Language Server v{__version__} Initialized")
         #
         server_capabilities = {
             "completionProvider": {
@@ -251,7 +259,7 @@ class LangServer:
         if self.enable_code_actions:
             server_capabilities["codeActionProvider"] = True
         if self.notify_init:
-            self.post_messages.append([3, "FORTLS initialization complete"])
+            self.post_messages.append([3, "fortls initialization complete"])
         return {"capabilities": server_capabilities}
 
     def serve_workspace_symbol(self, request):
