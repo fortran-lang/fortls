@@ -84,25 +84,23 @@ def init_file(filepath, pp_defs, pp_suffixes, include_dirs):
 
 
 class LangServer:
-    def __init__(self, conn, debug_log: bool = False, settings: dict = {}):
+    def __init__(self, conn, settings: dict):
         self.conn = conn
-        self.running = True
-        self.root_path = None
-        self.fs = None
+        self.running: bool = True
+        self.root_path: str = None
         self.all_symbols = None
-        self.workspace = {}
-        self.obj_tree = {}
+        self.workspace: dict = {}
+        self.obj_tree: dict = {}
         self.link_version = 0
-        self.source_dirs = set()
-        self.excl_paths = set()
-        self.incl_suffixes: list[str] = []
-        self.excl_suffixes: list[str] = []
+        # Parse a dictionary of the command line interface and make them into
+        # class variable. This way the command line and the file interfaces
+        # are always on sync, with the same default arguments
+        for k, v in settings.items():
+            setattr(self, k, v)
+
+        self.sync_type: int = 2 if self.incremental_sync else 1
+        self.variable_hover: bool = self.variable_hover or self.hover_signature
         self.post_messages = []
-        self.pp_suffixes = None
-        self.pp_defs = {}
-        self.include_dirs = []
-        self.streaming = True
-        self.debug_log = debug_log
         self.FORTRAN_SRC_EXT_REGEX: Pattern[str] = src_file_exts()
         # Intrinsic (re-loaded during initialize)
         (
@@ -111,25 +109,6 @@ class LangServer:
             self.intrinsic_funs,
             self.intrinsic_mods,
         ) = load_intrinsics()
-        # Get launch settings
-        self.config = settings.get("config", ".fortls")
-        self.nthreads = settings.get("nthreads", 4)
-        self.notify_init = settings.get("notify_init", False)
-        self.symbol_include_mem = settings.get("symbol_include_mem", True)
-        self.sync_type = settings.get("sync_type", 1)
-        self.autocomplete_no_prefix = settings.get("autocomplete_no_prefix", False)
-        self.autocomplete_no_snippets = settings.get("autocomplete_no_snippets", False)
-        self.autocomplete_name_only = settings.get("autocomplete_name_only", False)
-        self.lowercase_intrinsics = settings.get("lowercase_intrinsics", False)
-        self.use_signature_help = settings.get("use_signature_help", False)
-        self.variable_hover = settings.get("variable_hover", False)
-        self.hover_signature = settings.get("hover_signature", False)
-        self.hover_language = settings.get("hover_language", "fortran90")
-        self.sort_keywords = settings.get("sort_keywords", True)
-        self.enable_code_actions = settings.get("enable_code_actions", False)
-        self.disable_diagnostics = settings.get("disable_diagnostics", False)
-        self.max_line_length = settings.get("max_line_length", -1)
-        self.max_comment_line_length = settings.get("max_comment_line_length", -1)
         # Set object settings
         set_keyword_ordering(self.sort_keywords)
 
@@ -228,7 +207,7 @@ class LangServer:
             level=logging.INFO,
         )
         self.__config_logger(request)
-        init_debug_log = self.__load_config_file()
+        init_debug_log = self._load_config_file()
         if init_debug_log:
             self.__config_logger(request)
         self.__load_intrinsics()
@@ -360,7 +339,7 @@ class LangServer:
                 tmp_out["containerName"] = tmp_list[0]
             test_output.append(tmp_out)
             # If class add members
-            if (scope.get_type() == CLASS_TYPE_ID) and self.symbol_include_mem:
+            if scope.get_type() == CLASS_TYPE_ID and not self.symbol_skip_mem:
                 for child in scope.children:
                     tmp_out = {}
                     tmp_out["name"] = child.name
@@ -1442,7 +1421,7 @@ class LangServer:
             code=-32601, message="method {} not found".format(request["method"])
         )
 
-    def __load_config_file(self) -> bool | None:
+    def _load_config_file(self) -> bool | None:
         """Loads the configuration file for the Language Server"""
 
         # Check for config file
@@ -1487,7 +1466,7 @@ class LangServer:
             self.post_messages.append([1, msg])
             log.error(msg)
 
-    def __load_config_file_dirs(self, config_dict) -> None:
+    def __load_config_file_dirs(self, config_dict: dict) -> None:
         # Exclude paths (directories & files)
         # with glob resolution
         for path in config_dict.get("excl_paths", []):
@@ -1507,34 +1486,63 @@ class LangServer:
             )
         # Keep all directories present in source_dirs but not excl_paths
         self.source_dirs = {i for i in self.source_dirs if i not in self.excl_paths}
-
-    def __load_config_file_general(self, config_dict) -> None:
         self.incl_suffixes = config_dict.get("incl_suffixes", [])
         # Update the source file REGEX
         self.FORTRAN_SRC_EXT_REGEX = src_file_exts(self.incl_suffixes)
-        self.excl_suffixes = config_dict.get("excl_suffixes", [])
+        self.excl_suffixes = set(config_dict.get("excl_suffixes", []))
+
+    def __load_config_file_general(self, config_dict: dict) -> None:
+        # General options ------------------------------------------------------
+        self.nthreads = config_dict.get("nthreads", self.nthreads)
+        self.notify_init = config_dict.get("notify_init", self.notify_init)
+        self.incremental_sync = config_dict.get(
+            "incremental_sync", self.incremental_sync
+        )
+        self.sync_type: int = 2 if self.incremental_sync else 1
+        self.sort_keywords = config_dict.get("sort_keywords", self.sort_keywords)
+
+        # Autocomplete options -------------------------------------------------
+        self.autocomplete_no_prefix = config_dict.get(
+            "autocomplete_no_prefix", self.autocomplete_no_prefix
+        )
+        self.autocomplete_no_snippets = config_dict.get(
+            "autocomplete_no_snippets", self.autocomplete_no_snippets
+        )
+        self.autocomplete_name_only = config_dict.get(
+            "autocomplete_name_only", self.autocomplete_name_only
+        )
         self.lowercase_intrinsics = config_dict.get(
             "lowercase_intrinsics", self.lowercase_intrinsics
         )
         self.use_signature_help = config_dict.get(
             "use_signature_help", self.use_signature_help
         )
+
+        # Hover options --------------------------------------------------------
         self.variable_hover = config_dict.get("variable_hover", self.variable_hover)
         self.hover_signature = config_dict.get("hover_signature", self.hover_signature)
-        self.enable_code_actions = config_dict.get(
-            "enable_code_actions", self.enable_code_actions
-        )
-        self.disable_diagnostics = config_dict.get(
-            "disable_diagnostics", self.disable_diagnostics
-        )
+        self.hover_language = config_dict.get("hover_language", self.hover_language)
+
+        # Diagnostic options ---------------------------------------------------
         self.max_line_length = config_dict.get("max_line_length", self.max_line_length)
         self.max_comment_line_length = config_dict.get(
             "max_comment_line_length", self.max_comment_line_length
         )
+        self.disable_diagnostics = config_dict.get(
+            "disable_diagnostics", self.disable_diagnostics
+        )
 
-    def __load_config_file_preproc(self, config_dict) -> None:
-        self.pp_suffixes = config_dict.get("pp_suffixes", None)
-        self.pp_defs = config_dict.get("pp_defs", {})
+        # Symbols options ------------------------------------------------------
+        self.symbol_skip_mem = config_dict.get("symbol_skip_mem", self.symbol_skip_mem)
+
+        # Code Actions options -------------------------------------------------
+        self.enable_code_actions = config_dict.get(
+            "enable_code_actions", self.enable_code_actions
+        )
+
+    def __load_config_file_preproc(self, config_dict: dict) -> None:
+        self.pp_suffixes = config_dict.get("pp_suffixes", None)  # TODO: set def
+        self.pp_defs = config_dict.get("pp_defs", {})  # TODO: set other dif?
         if isinstance(self.pp_defs, list):
             self.pp_defs = {key: "" for key in self.pp_defs}
 
@@ -1564,7 +1572,7 @@ class LangServer:
     def __get_source_files(self) -> list[str]:
         """Get all the source files present in `self.source_dirs`,
         exclude any files found in `self.excl_paths`^ and ignore
-        any files ending with `self_excl_suffixes`.
+        any files ending with `self.excl_suffixes`.
 
         ^: the only case where this has not allready happened is when
            `source_dirs` is not specified or a configuration file is not present
@@ -1576,7 +1584,6 @@ class LangServer:
         """
         # Get filenames
         file_list = []
-        excl_suffixes = set(self.excl_suffixes)
         for src_dir in self.source_dirs:
             for f in os.listdir(src_dir):
                 p = os.path.join(src_dir, f)
@@ -1590,7 +1597,7 @@ class LangServer:
                 if p in self.excl_paths:
                     continue
                 # File cannot have an excluded extension
-                if any(f.endswith(ext) for ext in excl_suffixes):
+                if any(f.endswith(ext) for ext in self.excl_suffixes):
                     continue
                 file_list.append(p)
         return file_list

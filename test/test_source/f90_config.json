@@ -1,0 +1,37 @@
+{
+  "nthreads": 8,
+  "notify_init": true,
+  "incremental_sync": true,
+  "sort_keywords": true,
+
+  "source_dirs": ["subdir", "pp/**"],
+  "incl_suffixes": [".FF", ".fpc", ".h", "f20"],
+  "excl_suffixes": ["_tmp.f90", "_h5hut_tests.F90"],
+  "excl_paths": ["excldir", "hover/**"],
+
+  "autocomplete_no_prefix": true,
+  "autocomplete_no_snippets": true,
+  "autocomplete_name_only": true,
+  "lowercase_intrinsics": true,
+  "use_signature_help": true,
+
+  "variable_hover": true,
+  "hover_signature": true,
+  "hover_language": "FortranFreeForm",
+
+  "max_line_length": 80,
+  "max_comment_line_length": 80,
+  "disable_diagnostics": true,
+
+  "pp_suffixes": [".h", ".fh"],
+  "include_dirs": ["./include/**"],
+  "pp_defs": {
+    "HAVE_PETSC": "",
+    "HAVE_ZOLTAN": "",
+    "Mat": "type(tMat)"
+  },
+
+  "symbol_skip_mem": true,
+
+  "enable_code_actions": true
+}

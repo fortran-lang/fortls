@@ -17,6 +17,12 @@
 - Update constant parameters for `omp_lib` and `omp_lib_kinds` Interface v5.0
 - Format json files with `prettier`
 - Initialises the log channel and adds `$/setTrace` to override client's (i.e. VS Code) loglevel
+- Unified the interfaces from the command line and the configuration options file
+  ([gnikit/fortls#17](https://github.com/gnikit/fortls/issues/17))
+
+### Deprecated
+
+- Option `--preserve_keyword_order` has been substituted with its opposite `--sort_keywords`
 
 ### Fixed
 

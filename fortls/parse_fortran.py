@@ -775,9 +775,9 @@ class fortran_file:
         self.preproc: bool = False
         self.ast: fortran_ast = None
         self.hash: str = None
-        if path is not None:
+        if path:
             _, file_ext = os.path.splitext(os.path.basename(path))
-            if pp_suffixes is not None:
+            if pp_suffixes:
                 self.preproc = file_ext in pp_suffixes
             else:
                 self.preproc = file_ext == file_ext.upper()

@@ -521,7 +521,9 @@ def test_hover():
     string += hover_req(file_path, 6, 28)
     string += hover_req(file_path, 7, 38)
     string += hover_req(file_path, 7, 55)
-    errcode, results = run_request(string, fortls_args=" --variable_hover")
+    errcode, results = run_request(
+        string, fortls_args=" --variable_hover --sort_keywords"
+    )
     assert errcode == 0
     #
     ref_results = (
