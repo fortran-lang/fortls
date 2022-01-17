@@ -20,6 +20,14 @@ fortls.helper\_functions module
    :undoc-members:
    :show-inheritance:
 
+fortls.interface module
+-----------------------
+
+.. automodule:: fortls.interface
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 fortls.intrinsics module
 ------------------------
 

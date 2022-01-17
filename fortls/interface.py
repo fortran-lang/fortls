@@ -12,7 +12,7 @@ class SetAction(argparse.Action):
         setattr(namespace, self.dest, set(values))
 
 
-def commandline_args() -> argparse.ArgumentParser:
+def commandline_args(name: str = "fortls") -> argparse.ArgumentParser:
     """Parses the command line arguments to the Language Server
 
     Returns
@@ -23,7 +23,7 @@ def commandline_args() -> argparse.ArgumentParser:
 
     parser = argparse.ArgumentParser(
         description=f"fortls {__version__}",
-        prog=__name__,
+        prog=name,
         usage="%(prog)s [options] [debug options]",
         formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=60),
     )
@@ -47,6 +47,7 @@ def commandline_args() -> argparse.ArgumentParser:
         "--nthreads",
         type=int,
         default=4,
+        metavar="INTEGER",
         help=(
             "Number of threads to use during workspace initialization (default:"
             " %(default)s)"
@@ -75,7 +76,7 @@ def commandline_args() -> argparse.ArgumentParser:
     parser.add_argument(
         "--preserve_keyword_order",
         action="store_true",
-        help="DEPRECATED options, this is now the default. To sort use sort_keywords",
+        help="DEPRECATED, this is now the default. To sort use sort_keywords",
     )
     parser.add_argument(
         "--debug_log",
@@ -87,19 +88,21 @@ def commandline_args() -> argparse.ArgumentParser:
     )
 
     # File parsing options -----------------------------------------------------
-    group = parser.add_argument_group("File parsing options")
+    group = parser.add_argument_group("Sources file parsing options")
     group.add_argument(
         "--source_dirs",
         type=str,
         nargs="*",
         default=set(),
         action=SetAction,
+        metavar="DIRS",
         help="Folders containing source files (default: %(default)s)",
     )
     group.add_argument(
         "--incl_suffixes",
         type=str,
         nargs="*",
+        metavar="SUFFIXES",
         help=(
             "Consider additional file extensions to the default (default: "
             "F,F77,F90,F95,F03,F08,FOR,FPP (lower & upper casing))"
@@ -111,6 +114,7 @@ def commandline_args() -> argparse.ArgumentParser:
         nargs="*",
         default=set(),
         action=SetAction,
+        metavar="SUFFIXES",
         help="Source file extensions to be excluded (default: %(default)s)",
     )
     group.add_argument(
@@ -119,6 +123,7 @@ def commandline_args() -> argparse.ArgumentParser:
         nargs="*",
         default=set(),
         action=SetAction,
+        metavar="DIRS",
         help="Folders to exclude from parsing",
     )
 
@@ -183,12 +188,14 @@ def commandline_args() -> argparse.ArgumentParser:
         "--max_line_length",
         type=int,
         default=-1,
+        metavar="INTEGER",
         help="Maximum line length (default: %(default)s)",
     )
     group.add_argument(
         "--max_comment_line_length",
         type=int,
         default=-1,
+        metavar="INTEGER",
         help="Maximum comment line length (default: %(default)s)",
     )
     group.add_argument(
@@ -201,9 +208,11 @@ def commandline_args() -> argparse.ArgumentParser:
         "--pp_suffixes",
         type=str,
         nargs="*",
-        help="File extensions to be parsed ONLY for preprocessor commands",
-        # TODO: add a default that is an empty list?
-        # TODO: make a set?
+        metavar="SUFFIXES",
+        help=(
+            "File extensions to be parsed ONLY for preprocessor commands "
+            "(default: all uppercase source file suffixes)"
+        ),
     )
     group.add_argument(
         "--include_dirs",
@@ -211,6 +220,7 @@ def commandline_args() -> argparse.ArgumentParser:
         type=str,
         nargs="*",
         default=list(),
+        metavar="DIRS",
         help="Folders containing preprocessor files with extensions PP_SUFFIXES.",
     )
     group.add_argument(
@@ -278,66 +288,6 @@ def _debug_commandline_args(parser: argparse.ArgumentParser) -> None:
         hide_opt("DEBUG"), hide_opt("Options for debugging language server")
     )
     group.add_argument(
-        "--debug_parser",
-        action="store_true",
-        help=hide_opt("Test source code parser on specified file"),
-    )
-    group.add_argument(
-        "--debug_diagnostics",
-        action="store_true",
-        help=hide_opt("Test diagnostic notifications for specified file"),
-    )
-    group.add_argument(
-        "--debug_symbols",
-        action="store_true",
-        help=hide_opt("Test symbol request for specified file"),
-    )
-    group.add_argument(
-        "--debug_workspace_symbols",
-        type=str,
-        help=hide_opt("Test workspace/symbol request"),
-    )
-    group.add_argument(
-        "--debug_completion",
-        action="store_true",
-        help=hide_opt("Test completion request for specified file and position"),
-    )
-    group.add_argument(
-        "--debug_signature",
-        action="store_true",
-        help=hide_opt("Test signatureHelp request for specified file and position"),
-    )
-    group.add_argument(
-        "--debug_definition",
-        action="store_true",
-        help=hide_opt("Test definition request for specified file and position"),
-    )
-    group.add_argument(
-        "--debug_hover",
-        action="store_true",
-        help=hide_opt("Test hover request for specified file and position"),
-    )
-    group.add_argument(
-        "--debug_implementation",
-        action="store_true",
-        help=hide_opt("Test implementation request for specified file and position"),
-    )
-    group.add_argument(
-        "--debug_references",
-        action="store_true",
-        help=hide_opt("Test references request for specified file and position"),
-    )
-    group.add_argument(
-        "--debug_rename",
-        type=str,
-        help=hide_opt("Test rename request for specified file and position"),
-    )
-    group.add_argument(
-        "--debug_actions",
-        action="store_true",
-        help=hide_opt("Test codeAction request for specified file and position"),
-    )
-    group.add_argument(
         "--debug_filepath",
         type=str,
         help=hide_opt("File path for language server tests"),
@@ -348,13 +298,93 @@ def _debug_commandline_args(parser: argparse.ArgumentParser) -> None:
         help=hide_opt("Root path for language server tests"),
     )
     group.add_argument(
+        "--debug_parser",
+        action="store_true",
+        help=hide_opt("Test source code parser on specified file"),
+    )
+    group.add_argument(
+        "--debug_hover",
+        action="store_true",
+        help=hide_opt(
+            "Test `textDocument/hover` request for specified file and position"
+        ),
+    )
+    group.add_argument(
+        "--debug_rename",
+        type=str,
+        metavar="RENAME_STRING",
+        help=hide_opt(
+            "Test `textDocument/rename` request for specified file and position"
+        ),
+    )
+    group.add_argument(
+        "--debug_actions",
+        action="store_true",
+        help=hide_opt(
+            "Test `textDocument/codeAction` request for specified file and position"
+        ),
+    )
+    group.add_argument(
+        "--debug_symbols",
+        action="store_true",
+        help=hide_opt("Test `textDocument/documentSymbol` request for specified file"),
+    )
+    group.add_argument(
+        "--debug_completion",
+        action="store_true",
+        help=hide_opt(
+            "Test `textDocument/completion` request for specified file and position"
+        ),
+    )
+    group.add_argument(
+        "--debug_signature",
+        action="store_true",
+        help=hide_opt(
+            "Test `textDocument/signatureHelp` request for specified file and position"
+        ),
+    )
+    group.add_argument(
+        "--debug_definition",
+        action="store_true",
+        help=hide_opt(
+            "Test `textDocument/definition` request for specified file and position"
+        ),
+    )
+    group.add_argument(
+        "--debug_references",
+        action="store_true",
+        help=hide_opt(
+            "Test `textDocument/references` request for specified file and position"
+        ),
+    )
+    group.add_argument(
+        "--debug_diagnostics",
+        action="store_true",
+        help=hide_opt("Test diagnostic notifications for specified file"),
+    )
+    group.add_argument(
+        "--debug_implementation",
+        action="store_true",
+        help=hide_opt(
+            "Test `textDocument/implementation` request for specified file and position"
+        ),
+    )
+    group.add_argument(
+        "--debug_workspace_symbols",
+        type=str,
+        metavar="QUERY_STRING",
+        help=hide_opt("Test `workspace/symbol` request"),
+    )
+    group.add_argument(
         "--debug_line",
         type=int,
+        metavar="INTEGER",
         help=hide_opt("Line position for language server tests (1-indexed)"),
     )
     group.add_argument(
         "--debug_char",
         type=int,
+        metavar="INTEGER",
         help=hide_opt("Character position for language server tests (1-indexed)"),
     )
     group.add_argument(

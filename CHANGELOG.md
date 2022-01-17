@@ -19,6 +19,7 @@
 - Initialises the log channel and adds `$/setTrace` to override client's (i.e. VS Code) loglevel
 - Unified the interfaces from the command line and the configuration options file
   ([gnikit/fortls#17](https://github.com/gnikit/fortls/issues/17))
+- Updated the documentation and simplified the README.md
 
 ### Deprecated
 
