@@ -186,6 +186,7 @@ def test_workspace_symbols():
             ["test_int", 2, 0],
             ["test_mod", 2, 0],
             ["test_nonint_mod", 2, 0],
+            ["test_preproc_keywords", 2, 0],
             ["test_program", 2, 0],
             ["test_rename_sub", 6, 9],
             ["test_select", 2, 0],

@@ -111,6 +111,7 @@ PP_REGEX = re.compile(r"#(if |ifdef|ifndef|else|elif|endif)")
 PP_DEF_REGEX = re.compile(r"#(define|undef)[ ]*([\w]+)(\((\w+(,[ ]*)?)+\))?", re.I)
 PP_DEF_TEST_REGEX = re.compile(r"(![ ]*)?defined[ ]*\([ ]*([a-z0-9_]*)[ ]*\)$", re.I)
 PP_INCLUDE_REGEX = re.compile(r"#include[ ]*([\"a-z0-9_\.]*)", re.I)
+PP_ANY_REGEX = re.compile(r"(^#:?\w+)")
 # Context matching rules
 CALL_REGEX = re.compile(r"[ ]*CALL[ ]+[a-z0-9_%]*$", re.I)
 INT_STMNT_REGEX = re.compile(r"^[ ]*[a-z]*$", re.I)
