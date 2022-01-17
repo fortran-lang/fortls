@@ -38,6 +38,8 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="README.html">fortls - the Fortran Language Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="options.html">Configuration options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fortls_changes.html">Unique fortls features (not in fortran-language-server)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Developers’ documentations</a></li>
 </ul>
 
@@ -203,6 +205,8 @@
 </li>
       <li><a href="fortls.html#fortls.objects.fortran_ast.close_file">close_file() (fortls.objects.fortran_ast method)</a>
 </li>
+      <li><a href="fortls.html#fortls.interface.commandline_args">commandline_args() (in module fortls.interface)</a>
+</li>
       <li><a href="fortls.html#fortls.parse_fortran.fortran_file.copy">copy() (fortls.parse_fortran.fortran_file method)</a>
 </li>
       <li><a href="fortls.html#fortls.objects.fortran_scope.copy_from">copy_from() (fortls.objects.fortran_scope method)</a>
@@ -287,6 +291,8 @@
 </li>
       <li><a href="fortls.html#module-fortls.helper_functions">fortls.helper_functions (module)</a>
 </li>
+      <li><a href="fortls.html#module-fortls.interface">fortls.interface (module)</a>
+</li>
       <li><a href="fortls.html#module-fortls.intrinsics">fortls.intrinsics (module)</a>
 </li>
       <li><a href="fortls.html#module-fortls.jsonrpc">fortls.jsonrpc (module)</a>
@@ -303,10 +309,10 @@
 </li>
       <li><a href="fortls.html#fortls.objects.fortran_ast">fortran_ast (class in fortls.objects)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.fortran_block">fortran_block (class in fortls.objects)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="fortls.html#fortls.objects.fortran_block">fortran_block (class in fortls.objects)</a>
+</li>
       <li><a href="fortls.html#fortls.objects.fortran_diagnostic">fortran_diagnostic (class in fortls.objects)</a>
 </li>
       <li><a href="fortls.html#fortls.objects.fortran_do">fortran_do (class in fortls.objects)</a>
@@ -743,20 +749,16 @@
         <li><a href="fortls.html#fortls.objects.SMOD_info.parent">(fortls.objects.SMOD_info attribute)</a>
 </li>
       </ul></li>
-      <li><a href="fortls.html#fortls.parse_args">parse_args() (in module fortls)</a>
-</li>
-      <li><a href="fortls.html#fortls.parse_debug_args">parse_debug_args() (in module fortls)</a>
-</li>
       <li><a href="fortls.html#fortls.parse_fortran.parse_var_keywords">parse_var_keywords() (in module fortls.parse_fortran)</a>
 </li>
       <li><a href="fortls.html#fortls.objects.INCLUDE_info.path">path (fortls.objects.INCLUDE_info attribute)</a>
 </li>
       <li><a href="fortls.html#fortls.jsonrpc.path_from_uri">path_from_uri() (in module fortls.jsonrpc)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="fortls.html#fortls.jsonrpc.path_to_uri">path_to_uri() (in module fortls.jsonrpc)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="fortls.html#fortls.langserver.LangServer.post_message">post_message() (fortls.langserver.LangServer method)</a>
 </li>
       <li><a href="fortls.html#fortls.parse_fortran.fortran_file.preprocess">preprocess() (fortls.parse_fortran.fortran_file method)</a>
@@ -981,9 +983,9 @@
         <li><a href="fortls.html#fortls.objects.fortran_scope.set_parent">(fortls.objects.fortran_scope method)</a>
 </li>
       </ul></li>
-      <li><a href="fortls.html#fortls.set_settings">set_settings() (in module fortls)</a>
-</li>
       <li><a href="fortls.html#fortls.objects.fortran_obj.set_visibility">set_visibility() (fortls.objects.fortran_obj method)</a>
+</li>
+      <li><a href="fortls.html#fortls.interface.SetAction">SetAction (class in fortls.interface)</a>
 </li>
       <li><a href="fortls.html#fortls.objects.SMOD_info">SMOD_info (class in fortls.objects)</a>
 </li>

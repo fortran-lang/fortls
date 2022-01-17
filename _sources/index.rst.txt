@@ -11,6 +11,8 @@ fortls
    :caption: Contents:
 
    README.md
+   options.rst
+   fortls_changes.md
    modules.rst
 
 ..
