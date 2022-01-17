@@ -1,6 +1,5 @@
 from __future__ import print_function
 
-import argparse
 import json
 import os
 import pprint
@@ -12,6 +11,7 @@ from .helper_functions import resolve_globs, only_dirs
 from .jsonrpc import JSONRPC2Connection, ReadWriter, path_from_uri
 from .langserver import LangServer
 from .parse_fortran import fortran_file, process_file
+from .interface import commandline_args
 
 
 def error_exit(error_str):
@@ -22,7 +22,7 @@ def error_exit(error_str):
 def main():
     #
     freeze_support()
-    args = parse_args()
+    args = commandline_args(__name__).parse_args()
 
     if args.version:
         print("{0}".format(__version__))
@@ -43,313 +43,18 @@ def main():
         or args.debug_workspace_symbols
     )
 
-    settings = set_settings(args)
-
     if args.debug_parser:
         debug_server_parser(args)
 
     elif debug_server:
-        debug_server_general(args, settings)
+        debug_server_general(args, vars(args))
 
     else:
         stdin, stdout = _binary_stdio()
         LangServer(
             conn=JSONRPC2Connection(ReadWriter(stdin, stdout)),
-            debug_log=args.debug_log,
-            settings=settings,
+            settings=vars(args),
         ).run()
-
-
-def parse_args() -> argparse.Namespace:
-    """Parses the command line arguments to the Language Server
-
-    Returns
-    -------
-    argparse.Namespace
-        command line arguments
-    """
-
-    parser = argparse.ArgumentParser(
-        description=f"fortls {__version__}",
-        prog=__name__,
-        usage="%(prog)s [options] [debug options]",
-    )
-
-    parser.add_argument(
-        "-v",
-        "--version",
-        action="store_true",
-        help="Print server version number and exit",
-    )
-    parser.add_argument(
-        "--config", type=str, default=".fortls", help="Configuration options file"
-    )
-    parser.add_argument(
-        "--nthreads",
-        type=int,
-        default=4,
-        help="Number of threads to use during workspace initialization (default: 4)",
-    )
-    parser.add_argument(
-        "--notify_init",
-        action="store_true",
-        help="Send notification message when workspace initialization is complete",
-    )
-    parser.add_argument(
-        "--symbol_skip_mem",
-        action="store_true",
-        help="Do not include type members in document symbol results",
-    )
-    parser.add_argument(
-        "--incremental_sync",
-        action="store_true",
-        help="Use incremental document synchronization (beta)",
-    )
-    parser.add_argument(
-        "--autocomplete_no_prefix",
-        action="store_true",
-        help="Do not filter autocomplete results by variable prefix",
-    )
-    parser.add_argument(
-        "--autocomplete_no_snippets",
-        action="store_true",
-        help="Do not use snippets with place holders in autocomplete results",
-    )
-    parser.add_argument(
-        "--autocomplete_name_only",
-        action="store_true",
-        help="Complete only the name of procedures and not the parameters",
-    )
-    parser.add_argument(
-        "--lowercase_intrinsics",
-        action="store_true",
-        help="Use lowercase for intrinsics and keywords in autocomplete requests",
-    )
-    parser.add_argument(
-        "--use_signature_help",
-        action="store_true",
-        help="Use signature help instead of subroutine/function snippets",
-    )
-    parser.add_argument(
-        "--variable_hover",
-        action="store_true",
-        help=(
-            "Show hover information for variables (default: subroutines/functions only)"
-        ),
-    )
-    parser.add_argument(
-        "--hover_signature",
-        action="store_true",
-        help=(
-            "Show signature information in hover for argument (also enables"
-            " '--variable_hover')"
-        ),
-    )
-    parser.add_argument(
-        "--hover_language",
-        type=str,
-        default=None,
-        help=(
-            "Language used for responses to hover requests (for editor syntax"
-            " highlighting)"
-        ),
-    )
-    parser.add_argument(
-        "--preserve_keyword_order",
-        action="store_true",
-        help=(
-            "Display variable keywords information in original order (default: sort to"
-            " consistent ordering)"
-        ),
-    )
-    parser.add_argument(
-        "--enable_code_actions",
-        action="store_true",
-        help="Enable experimental code actions (default: false)",
-    )
-    parser.add_argument(
-        "--max_line_length",
-        type=int,
-        default=-1,
-        help="Maximum line length (default: none)",
-    )
-    parser.add_argument(
-        "--max_comment_line_length",
-        type=int,
-        default=-1,
-        help="Maximum comment line length (default: none)",
-    )
-    parser.add_argument(
-        "--disable_diagnostics", action="store_true", help="Disable diagnostics"
-    )
-    parser.add_argument(
-        "--debug_log",
-        action="store_true",
-        help="Generate debug log in project root folder",
-    )
-    parser.add_argument(
-        "--debug_help", action="help", help="Display options for debugging fortls"
-    )
-
-    # By default debug arguments are hidden
-    parse_debug_args(parser)
-
-    return parser.parse_args()
-
-
-def parse_debug_args(parser: argparse.ArgumentParser) -> None:
-    """Parse the debug arguments if any are present.
-    if none are present the arguments are suppressed in the help menu
-
-    Parameters
-    ----------
-    parser : argparse.ArgumentParser
-        an argument parser
-
-    Returns
-    -------
-    None
-        Operates and updates the parser
-    """
-
-    # Only show debug options if an argument starting with --debug_ was input.
-    # if suppressed the option will be hidden from the help menu.
-    HIDE_DEBUG = True
-    if any("--debug_" in arg for arg in sys.argv):
-        HIDE_DEBUG = False
-
-    def hide_opt(help: str) -> str:
-        if not HIDE_DEBUG:
-            return help
-        else:
-            return argparse.SUPPRESS
-
-    group = parser.add_argument_group(
-        hide_opt("DEBUG"), hide_opt("Options for debugging language server")
-    )
-    group.add_argument(
-        "--debug_parser",
-        action="store_true",
-        help=hide_opt("Test source code parser on specified file"),
-    )
-    group.add_argument(
-        "--debug_diagnostics",
-        action="store_true",
-        help=hide_opt("Test diagnostic notifications for specified file"),
-    )
-    group.add_argument(
-        "--debug_symbols",
-        action="store_true",
-        help=hide_opt("Test symbol request for specified file"),
-    )
-    group.add_argument(
-        "--debug_workspace_symbols",
-        type=str,
-        help=hide_opt("Test workspace/symbol request"),
-    )
-    group.add_argument(
-        "--debug_completion",
-        action="store_true",
-        help=hide_opt("Test completion request for specified file and position"),
-    )
-    group.add_argument(
-        "--debug_signature",
-        action="store_true",
-        help=hide_opt("Test signatureHelp request for specified file and position"),
-    )
-    group.add_argument(
-        "--debug_definition",
-        action="store_true",
-        help=hide_opt("Test definition request for specified file and position"),
-    )
-    group.add_argument(
-        "--debug_hover",
-        action="store_true",
-        help=hide_opt("Test hover request for specified file and position"),
-    )
-    group.add_argument(
-        "--debug_implementation",
-        action="store_true",
-        help=hide_opt("Test implementation request for specified file and position"),
-    )
-    group.add_argument(
-        "--debug_references",
-        action="store_true",
-        help=hide_opt("Test references request for specified file and position"),
-    )
-    group.add_argument(
-        "--debug_rename",
-        type=str,
-        help=hide_opt("Test rename request for specified file and position"),
-    )
-    group.add_argument(
-        "--debug_actions",
-        action="store_true",
-        help=hide_opt("Test codeAction request for specified file and position"),
-    )
-    group.add_argument(
-        "--debug_filepath",
-        type=str,
-        help=hide_opt("File path for language server tests"),
-    )
-    group.add_argument(
-        "--debug_rootpath",
-        type=str,
-        help=hide_opt("Root path for language server tests"),
-    )
-    group.add_argument(
-        "--debug_line",
-        type=int,
-        help=hide_opt("Line position for language server tests (1-indexed)"),
-    )
-    group.add_argument(
-        "--debug_char",
-        type=int,
-        help=hide_opt("Character position for language server tests (1-indexed)"),
-    )
-    group.add_argument(
-        "--debug_full_result",
-        action="store_true",
-        help=hide_opt("Print full result object instead of condensed version"),
-    )
-
-
-def set_settings(args):
-    """Sets the settings dictionary from the command line arguments
-
-    Parameters
-    ----------
-    args : Namespace
-        command line arguments
-
-    Returns
-    -------
-    dict[str, Any]
-        settings for the Language Server
-    """
-    settings = {
-        "config": args.config,
-        "nthreads": args.nthreads,
-        "notify_init": args.notify_init,
-        "symbol_include_mem": (not args.symbol_skip_mem),
-        "sync_type": 2 if args.incremental_sync else 1,
-        "autocomplete_no_prefix": args.autocomplete_no_prefix,
-        "autocomplete_no_snippets": args.autocomplete_no_snippets,
-        "autocomplete_name_only": args.autocomplete_name_only,
-        "lowercase_intrinsics": args.lowercase_intrinsics,
-        "use_signature_help": args.use_signature_help,
-        "variable_hover": (args.variable_hover or args.hover_signature),
-        "hover_signature": args.hover_signature,
-        "sort_keywords": (not args.preserve_keyword_order),
-        "enable_code_actions": (args.enable_code_actions or args.debug_actions),
-        "max_line_length": args.max_line_length,
-        "max_comment_line_length": args.max_comment_line_length,
-        "disable_diagnostics": args.disable_diagnostics,
-    }
-    if args.hover_language is not None:
-        settings["hover_language"] = args.hover_language
-
-    return settings
 
 
 def debug_server_general(args, settings):
@@ -369,7 +74,6 @@ def debug_server_general(args, settings):
     tmpout = os.fdopen(pwb, "wb")
     s = LangServer(
         conn=JSONRPC2Connection(ReadWriter(tmpin, tmpout)),
-        debug_log=args.debug_log,
         settings=settings,
     )
     #

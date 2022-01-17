@@ -319,7 +319,8 @@ def map_keywords(keywords):
     for keyword in keywords:
         keyword_prefix = keyword.split("(")[0].lower()
         keyword_ind = KEYWORD_ID_DICT.get(keyword_prefix)
-        if keyword_ind:
+        # keyword_ind can be 0 which if 0: evaluates to False
+        if keyword_ind is not None:
             mapped_keywords.append(keyword_ind)
             if keyword_prefix in ("intent", "dimension", "pass"):
                 keyword_substring = get_paren_substring(keyword)
