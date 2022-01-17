@@ -57,7 +57,7 @@ copyright = "2021, Giannis Nikiteas"
 author = "Giannis Nikiteas"
 
 # The full version, including alpha/beta/rc tags
-release = "1.16.0"
+release = "2.0.0"
 
 
 # -- General configuration ---------------------------------------------------
