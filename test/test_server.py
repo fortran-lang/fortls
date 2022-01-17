@@ -178,6 +178,7 @@ def test_workspace_symbols():
             ["test", 6, 7],
             ["test_abstract", 2, 0],
             ["test_external", 2, 0],
+            ["test_forall", 2, 0],
             ["test_free", 2, 0],
             ["test_gen_type", 5, 1],
             ["test_generic", 2, 0],
@@ -603,6 +604,7 @@ def test_diagnostics():
 
     def check_return(results, ref_results):
         for i, r in enumerate(results):
+            print(r["diagnostics"], ref_results[i])
             assert r["diagnostics"] == ref_results[i]
 
     string = write_rpc_request(1, "initialize", {"rootPath": test_dir})
@@ -633,8 +635,15 @@ def test_diagnostics():
     string += write_rpc_notification(
         "textDocument/didOpen", {"textDocument": {"uri": file_path}}
     )
+    # Checks that forall with end forall inside a case select does not cause
+    # unexpected end of scope.
+    file_path = os.path.join(test_dir, "diag", "test_forall.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
     errcode, results = run_request(string)
     assert errcode == 0
+    file_path = os.path.join(test_dir, "diag", "test_external.f90")
     ref_results = [
         [],
         [],
@@ -682,6 +691,7 @@ def test_diagnostics():
                 ],
             },
         ],
+        [],
     ]
     check_return(results[1:], ref_results)
 

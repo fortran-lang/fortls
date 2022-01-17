@@ -36,6 +36,8 @@
   ([gnikit/fortls#13](https://github.com/gnikit/fortls/issues/13))
 - `POINTER` attribute now displays upon hover
   ([gnikit/fortls#16](https://github.com/gnikit/fortls/issues/16))
+- Fixes `END FORALL` end of scope error
+  ([gnikit/fortls#18](https://github.com/gnikit/fortls/issues/18))
 
 ## 1.16.0
 
