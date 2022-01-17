@@ -104,6 +104,7 @@ from fortls.regex_patterns import (
     NAT_VAR_REGEX,
     NON_DEF_REGEX,
     PARAMETER_VAL_REGEX,
+    PP_ANY_REGEX,
     PP_DEF_REGEX,
     PP_INCLUDE_REGEX,
     PP_REGEX,
@@ -978,7 +979,7 @@ class fortran_file:
                     line_ind -= 1
             else:  # Free format file
                 opt_cont_match = FREE_CONT_REGEX.match(curr_line)
-                if opt_cont_match is not None:
+                if opt_cont_match:
                     curr_line = (
                         " " * opt_cont_match.end(0) + curr_line[opt_cont_match.end(0) :]
                     )
@@ -989,7 +990,7 @@ class fortran_file:
                     tmp_no_comm = tmp_line.split("!")[0]
                     cont_ind = tmp_no_comm.rfind("&")
                     opt_cont_match = FREE_CONT_REGEX.match(tmp_no_comm)
-                    if opt_cont_match is not None:
+                    if opt_cont_match:
                         if cont_ind == opt_cont_match.end(0) - 1:
                             break
                         tmp_no_comm = (
@@ -1022,6 +1023,7 @@ class fortran_file:
                 if iComm < 0:
                     iComm = iAmper + 1
                 next_line = ""
+                # Read the next line if needed
                 while (iAmper >= 0) and (iAmper < iComm):
                     if line_ind == line_number + 1:
                         curr_line = curr_line[:iAmper]
@@ -1029,14 +1031,19 @@ class fortran_file:
                         post_lines[-1] = next_line[:iAmper]
                     next_line = self.get_line(line_ind, pp_content)
                     line_ind += 1
+                    # Skip any preprocessor statements when seeking the next line
+                    if PP_ANY_REGEX.match(next_line):
+                        next_line = ""
+                        post_lines.append("")
+                        continue
                     # Skip empty or comment lines
                     match = FREE_COMMENT_LINE_MATCH.match(next_line)
-                    if (next_line.rstrip() == "") or (match is not None):
+                    if next_line.rstrip() == "" or match:
                         next_line = ""
                         post_lines.append("")
                         continue
                     opt_cont_match = FREE_CONT_REGEX.match(next_line)
-                    if opt_cont_match is not None:
+                    if opt_cont_match:
                         next_line = (
                             " " * opt_cont_match.end(0)
                             + next_line[opt_cont_match.end(0) :]
@@ -1056,9 +1063,7 @@ class fortran_file:
     def strip_comment(self, line: str) -> str:
         """Strip comment from line"""
         if self.fixed:
-            if (FIXED_COMMENT_LINE_MATCH.match(line) is not None) and (
-                FIXED_OPENMP_MATCH.match(line) is not None
-            ):
+            if FIXED_COMMENT_LINE_MATCH.match(line) and FIXED_OPENMP_MATCH.match(line):
                 return ""
         else:
             if FREE_OPENMP_MATCH.match(line) is None:

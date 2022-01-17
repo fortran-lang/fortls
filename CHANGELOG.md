@@ -38,6 +38,9 @@
   ([gnikit/fortls#16](https://github.com/gnikit/fortls/issues/16))
 - Fixes `END FORALL` end of scope error
   ([gnikit/fortls#18](https://github.com/gnikit/fortls/issues/18))
+- Fixes Fortran line continuation definitions intermingled with preprocessor directives
+  ([#203](https://github.com/hansec/fortran-language-server/issues/203))
+  ([gnikit/fortls#4](https://github.com/gnikit/fortls/issues/4))
 
 ## 1.16.0
 
