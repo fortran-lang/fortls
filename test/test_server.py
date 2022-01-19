@@ -195,6 +195,7 @@ def test_workspace_symbols():
             ["test_str1", 13, 5],
             ["test_str2", 13, 5],
             ["test_sub", 6, 8],
+            ["test_use_ordering", 2, 9],
             ["test_vis_mod", 2, 0],
         )
         assert len(result_array) == len(objs)
@@ -642,6 +643,11 @@ def test_diagnostics():
     string += write_rpc_notification(
         "textDocument/didOpen", {"textDocument": {"uri": file_path}}
     )
+    # Test USE directive ordering errors
+    file_path = os.path.join(test_dir, "diag", "test_use_ordering.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
     errcode, results = run_request(string)
     assert errcode == 0
     file_path = os.path.join(test_dir, "diag", "test_external.f90")
@@ -692,6 +698,7 @@ def test_diagnostics():
                 ],
             },
         ],
+        [],
         [],
     ]
     check_return(results[1:], ref_results)

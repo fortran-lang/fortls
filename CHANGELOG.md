@@ -41,6 +41,9 @@
 - Fixes Fortran line continuation definitions intermingled with preprocessor directives
   ([#203](https://github.com/hansec/fortran-language-server/issues/203))
   ([gnikit/fortls#4](https://github.com/gnikit/fortls/issues/4))
+- Fixes `USE` directive ordering issues
+  ([#184](https://github.com/hansec/fortran-language-server/issues/184))
+  ([gnikit/fortls#7](https://github.com/gnikit/fortls/issues/7))
 
 ## 1.16.0
 
