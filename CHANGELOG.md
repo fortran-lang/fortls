@@ -1,5 +1,11 @@
 # CHANGELONG
 
+## 2.0.1
+
+### Fixed
+
+- Fixed some mutable default argument warnings in methods and classes
+
 ## 2.0.0
 
 ### Added

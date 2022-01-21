@@ -79,9 +79,9 @@ def get_use_tree(
     scope: fortran_scope,
     use_dict: dict,
     obj_tree: dict,
-    only_list: list = [],
-    rename_map: dict = {},
-    curr_path: list = [],
+    only_list: list = None,
+    rename_map: dict = None,
+    curr_path: list = None,
 ):
     def intersect_only(use_stmnt):
         tmp_list = []
@@ -96,6 +96,13 @@ def get_use_tree(
             else:
                 tmp_map.pop(val1, None)
         return tmp_list, tmp_map
+
+    if only_list is None:
+        only_list = []
+    if rename_map is None:
+        rename_map = {}
+    if curr_path is None:
+        curr_path = []
 
     # Detect and break circular references
     if scope.FQSN in curr_path:
@@ -297,15 +304,17 @@ class USE_line:
         self,
         mod_name: str,
         line_number: int,
-        only_list: list = [],
-        rename_map: dict = {},
+        only_list: list = None,
+        rename_map: dict = None,
     ):
         self.mod_name: str = mod_name.lower()
         self.line_number: int = line_number
-        self.only_list: list = [only.lower() for only in only_list]
-        self.rename_map: dict = {
-            key.lower(): value.lower() for key, value in rename_map.items()
-        }
+        if only_list is not None:
+            self.only_list: list = [only.lower() for only in only_list]
+        if rename_map is not None:
+            self.rename_map: dict = {
+                key.lower(): value.lower() for key, value in rename_map.items()
+            }
 
 
 class fortran_diagnostic:
@@ -466,7 +475,9 @@ class fortran_obj:
     def check_valid_parent(self):
         return True
 
-    def check_definition(self, obj_tree, known_types={}, interface=False):
+    def check_definition(self, obj_tree, known_types: dict = None, interface=False):
+        if known_types is None:
+            known_types = {}
         return None, known_types
 
 
@@ -474,7 +485,9 @@ class fortran_scope(fortran_obj):
     def __init__(self, file_ast, line_number: int, name: str):
         self.base_setup(file_ast, line_number, name)
 
-    def base_setup(self, file_ast, sline: int, name: str, keywords: list = []):
+    def base_setup(self, file_ast, sline: int, name: str, keywords: list = None):
+        if keywords is None:
+            keywords = []
         self.file_ast: fortran_ast = file_ast
         self.sline: int = sline
         self.eline: int = sline
@@ -514,7 +527,13 @@ class fortran_scope(fortran_obj):
         self.implicit_vars = copy_source.implicit_vars
         self.implicit_line = copy_source.implicit_line
 
-    def add_use(self, use_mod, line_number, only_list=[], rename_map={}):
+    def add_use(
+        self, use_mod, line_number, only_list: list = None, rename_map: dict = None
+    ):
+        if only_list is None:
+            only_list = []
+        if rename_map is None:
+            rename_map = {}
         self.use.append(USE_line(use_mod, line_number, only_list, rename_map))
 
     def set_inherit(self, inherit_type):
@@ -841,8 +860,10 @@ class fortran_subroutine(fortran_scope):
         name: str,
         args: str = "",
         mod_flag: bool = False,
-        keywords: list = [],
+        keywords: list = None,
     ):
+        if keywords is None:
+            keywords = []
         self.base_setup(file_ast, line_number, name, keywords=keywords)
         self.args: str = args.replace(" ", "")
         self.args_snip: str = self.args
@@ -1055,10 +1076,12 @@ class fortran_function(fortran_subroutine):
         name: str,
         args: str = "",
         mod_flag: bool = False,
-        keywords: list = [],
+        keywords: list = None,
         return_type=None,
         result_var=None,
     ):
+        if keywords is None:
+            keywords = []
         self.base_setup(file_ast, line_number, name, keywords=keywords)
         self.args: str = args.replace(" ", "").lower()
         self.args_snip: str = self.args
@@ -1495,7 +1518,7 @@ class fortran_int(fortran_scope):
     def __init__(
         self,
         file_ast: fortran_ast,
-        line_number: list,
+        line_number: int,
         name: str,
         abstract: bool = False,
     ):
@@ -1540,9 +1563,11 @@ class fortran_var(fortran_obj):
         name: str,
         var_desc: str,
         keywords: list,
-        keyword_info: dict = {},
+        keyword_info: dict = None,
         link_obj=None,
     ):
+        if keyword_info is None:
+            keyword_info = {}
         self.base_setup(
             file_ast, line_number, name, var_desc, keywords, keyword_info, link_obj
         )
@@ -1920,7 +1945,7 @@ class fortran_ast:
     def add_scope(
         self,
         new_scope: fortran_scope,
-        END_SCOPE_REGEX,
+        END_SCOPE_REGEX: Pattern[str],
         exportable: bool = True,
         req_container: bool = False,
     ):

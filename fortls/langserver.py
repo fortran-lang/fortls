@@ -382,8 +382,10 @@ class LangServer:
         ):
             #
             def child_candidates(
-                scope, only_list=[], filter_public=True, req_abstract=False
+                scope, only_list: list = None, filter_public=True, req_abstract=False
             ):
+                if only_list is None:
+                    only_list = []
                 tmp_list = []
                 # Filter children
                 nonly = len(only_list)

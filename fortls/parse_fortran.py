@@ -1101,8 +1101,13 @@ class fortran_file:
         return line_number, i0, i1
 
     def preprocess(
-        self, pp_defs: dict = {}, include_dirs: list = [], debug: bool = False
+        self, pp_defs: dict = None, include_dirs: list = None, debug: bool = False
     ) -> tuple[list, list]:
+        if pp_defs is None:
+            pp_defs = {}
+        if include_dirs is None:
+            include_dirs = []
+
         self.contents_pp, pp_skips, pp_defines, self.pp_defs = preprocess_file(
             self.contents_split,
             self.path,
@@ -1167,15 +1172,15 @@ class fortran_file:
 def preprocess_file(
     contents_split: list,
     file_path: str = None,
-    pp_defs: dict = {},
-    include_dirs: list = [],
+    pp_defs: dict = None,
+    include_dirs: list = None,
     debug: bool = False,
 ):
     # Look for and mark excluded preprocessor paths in file
     # Initial implementation only looks for "if" and "ifndef" statements.
     # For "if" statements all blocks are excluded except the "else" block if present
     # For "ifndef" statements all blocks excluding the first block are excluded
-    def eval_pp_if(text, defs: dict = {}):
+    def eval_pp_if(text, defs: dict = None):
         def replace_ops(expr: str):
             expr = expr.replace("&&", " and ")
             expr = expr.replace("||", " or ")
@@ -1212,6 +1217,8 @@ def preprocess_file(
             out_line = out_line.replace("$%", "False")
             return out_line
 
+        if defs is None:
+            defs = {}
         out_line = replace_defined(text)
         out_line = replace_vars(out_line)
         try:
@@ -1221,7 +1228,10 @@ def preprocess_file(
         else:
             return line_res
 
-    #
+    if pp_defs is None:
+        pp_defs = {}
+    if include_dirs is None:
+        include_dirs = []
     if file_path is not None:
         include_dirs = [os.path.dirname(file_path)] + include_dirs
     pp_skips = []
@@ -1386,14 +1396,18 @@ def preprocess_file(
 def process_file(
     file_obj: fortran_file,
     debug: bool = False,
-    pp_defs: dict = {},
-    include_dirs: list = [],
+    pp_defs: dict = None,
+    include_dirs: list = None,
 ):
     """Build file AST by parsing file"""
 
     def parser_debug_msg(msg: str, line: str, ln: int):
         log.debug(f"{line.strip()} !!! {msg} statement({ln})")
 
+    if pp_defs is None:
+        pp_defs = {}
+    if include_dirs is None:
+        include_dirs = []
     # Configure the parser logger
     if debug:
         logging.basicConfig(
