@@ -41,7 +41,7 @@ jobs:
 
       - name: Set __version__
         shell: bash
-        run: sed -i "s/\".*\"/\"${VERSION}\"/g" "fortls/_version.py"
+        run: sed -i "s@\".*\"@\"${VERSION}\"@g" "fortls/_version.py"
 
       - name: Commit the new version
         shell: bash
