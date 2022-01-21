@@ -1548,8 +1548,8 @@ class LangServer:
         if isinstance(self.pp_defs, list):
             self.pp_defs = {key: "" for key in self.pp_defs}
 
-        for path in config_dict.get("include_dirs", []):
-            self.include_dirs.extend(
+        for path in config_dict.get("include_dirs", set()):
+            self.include_dirs.update(
                 only_dirs(resolve_globs(path, self.root_path), self.post_messages)
             )
 
