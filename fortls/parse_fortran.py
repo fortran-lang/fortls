@@ -596,13 +596,13 @@ def read_use_stmt(line: str):
 
     trailing_line = line[use_match.end(0) :].lower()
     use_mod = use_match.group(2)
-    only_list: list[str] = []
+    only_list: set[str] = set()
     rename_map: dict[str, str] = {}
     if use_match.group(3):
         for only_stmt in trailing_line.split(","):
             only_split = only_stmt.split("=>")
             only_name = only_split[0].strip()
-            only_list.append(only_name)
+            only_list.add(only_name)
             if len(only_split) == 2:
                 rename_map[only_name] = only_split[1].strip()
     return "use", USE_info(use_mod, only_list, rename_map)

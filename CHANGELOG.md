@@ -2,6 +2,10 @@
 
 ## 2.0.1
 
+### Changed
+
+- Changed `USE_info` named tuple to storing use modules as `sets` instead of `lists`
+
 ### Fixed
 
 - Fixed some mutable default argument warnings in methods and classes

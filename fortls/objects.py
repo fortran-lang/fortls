@@ -3,7 +3,7 @@ from __future__ import annotations, print_function
 import copy
 import os
 import re
-from typing import Dict, NamedTuple, List, Pattern
+from typing import Dict, NamedTuple, List, Set, Pattern
 from dataclasses import dataclass
 
 from fortls.constants import (
@@ -56,7 +56,7 @@ CLASS_info = NamedTuple(
 )
 USE_info = NamedTuple(
     "USE_info",
-    [("mod_name", str), ("only_list", List[str]), ("rename_map", Dict[str, str])],
+    [("mod_name", str), ("only_list", Set[str]), ("rename_map", Dict[str, str])],
 )
 GEN_info = NamedTuple(
     "GEN_info",
