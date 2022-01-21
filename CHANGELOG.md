@@ -2,6 +2,10 @@
 
 ## 2.0.1
 
+### Added
+
+- Add support for absolute include, source and exclude paths
+
 ### Changed
 
 - Changed `USE_info` named tuple to storing use modules as `sets` instead of `lists`

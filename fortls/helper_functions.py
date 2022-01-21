@@ -258,7 +258,7 @@ def get_line_prefix(pre_lines: list, curr_line: str, col: int, qs: bool = True) 
 
 
 def resolve_globs(glob_path: str, root_path: str = None) -> list[str]:
-    """Resolve glob patterns
+    """Resolve paths (absolute and relative) and glob patterns
 
     Parameters
     ----------
@@ -277,16 +277,14 @@ def resolve_globs(glob_path: str, root_path: str = None) -> list[str]:
         Expanded glob patterns with absolute paths.
         Absolute paths are used to resolve any potential ambiguity
     """
-    # Path.glob returns a generator, we then cast the Path obj to a str
-    # alternatively use p.as_posix()
-    if root_path:
-        return [str(p) for p in Path(root_path).resolve().glob(glob_path)]
-    # Attempt to extract the root and glob pattern from the glob_path
-    # This is substantially less robust that then above
+    # Resolve absolute paths i.e. not in our root_path
+    if os.path.isabs(glob_path) or not root_path:
+        p = Path(glob_path).resolve()
+        root = p.root
+        rel = str(p.relative_to(root))  # contains glob pattern
+        return [str(p.resolve()) for p in Path(root).glob(rel)]
     else:
-        p = Path(glob_path).expanduser()
-        parts = p.parts[p.is_absolute() :]
-        return [str(i) for i in Path(p.root).resolve().glob(str(Path(*parts)))]
+        return [str(p.resolve()) for p in Path(root_path).resolve().glob(glob_path)]
 
 
 def only_dirs(paths: list[str], err_msg: list = []) -> list[str]:
