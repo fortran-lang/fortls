@@ -1653,298 +1653,298 @@ def process_file(
             obj_read = test(line_no_comment)
             if obj_read is not None:
                 break
-        #
-        if obj_read is not None:
-            obj_type = obj_read[0]
-            obj_info = obj_read[1]
-            if obj_type == "var":
-                if obj_info.var_names is None:
+        # Move to next line if nothing in the definition tests matches
+        if obj_read is None:
+            continue
+
+        obj_type = obj_read[0]
+        obj_info = obj_read[1]
+        if obj_type == "var":
+            if obj_info.var_names is None:
+                continue
+            desc_string = obj_info.type_word
+            link_name: str = None
+            procedure_def = False
+            if desc_string[:3] == "PRO":
+                if file_ast.current_scope.get_type() == INTERFACE_TYPE_ID:
+                    for var_name in obj_info.var_names:
+                        file_ast.add_int_member(var_name)
+                    parser_debug_msg("INTERFACE-PRO", line, line_number)
                     continue
-                desc_string = obj_info.type_word
+                procedure_def = True
+                link_name = get_paren_substring(desc_string)
+            for var_name in obj_info.var_names:
                 link_name: str = None
-                procedure_def = False
-                if desc_string[:3] == "PRO":
-                    if file_ast.current_scope.get_type() == INTERFACE_TYPE_ID:
-                        for var_name in obj_info.var_names:
-                            file_ast.add_int_member(var_name)
-                        parser_debug_msg("INTERFACE-PRO", line, line_number)
-                        continue
-                    procedure_def = True
-                    link_name = get_paren_substring(desc_string)
-                for var_name in obj_info.var_names:
-                    link_name: str = None
-                    if var_name.find("=>") > -1:
-                        name_split = var_name.split("=>")
-                        name_raw = name_split[0]
-                        link_name = name_split[1].split("(")[0].strip()
-                        if link_name.lower() == "null":
-                            link_name = None
+                if var_name.find("=>") > -1:
+                    name_split = var_name.split("=>")
+                    name_raw = name_split[0]
+                    link_name = name_split[1].split("(")[0].strip()
+                    if link_name.lower() == "null":
+                        link_name = None
+                else:
+                    name_raw = var_name.split("=")[0]
+                # Add dimension if specified
+                key_tmp = obj_info.keywords[:]
+                iparen = name_raw.find("(")
+                if iparen == 0:
+                    continue
+                elif iparen > 0:
+                    if name_raw[iparen - 1] == "*":
+                        iparen -= 1
+                        if desc_string.find("(") < 0:
+                            desc_string += f"*({get_paren_substring(name_raw)})"
                     else:
-                        name_raw = var_name.split("=")[0]
-                    # Add dimension if specified
-                    key_tmp = obj_info.keywords[:]
-                    iparen = name_raw.find("(")
-                    if iparen == 0:
-                        continue
-                    elif iparen > 0:
-                        if name_raw[iparen - 1] == "*":
-                            iparen -= 1
-                            if desc_string.find("(") < 0:
-                                desc_string += f"*({get_paren_substring(name_raw)})"
-                        else:
-                            key_tmp.append(
-                                f"dimension({get_paren_substring(name_raw)})"
-                            )
-                        name_raw = name_raw[:iparen]
-                    name_stripped = name_raw.strip()
-                    keywords, keyword_info = map_keywords(key_tmp)
-                    if procedure_def:
-                        new_var = fortran_meth(
-                            file_ast,
-                            line_number,
-                            name_stripped,
-                            desc_string,
-                            keywords,
-                            keyword_info=keyword_info,
-                            link_obj=link_name,
-                        )
-                    else:
-                        new_var = fortran_var(
-                            file_ast,
-                            line_number,
-                            name_stripped,
-                            desc_string,
-                            keywords,
-                            keyword_info=keyword_info,
-                            link_obj=link_name,
-                        )
-                        # If the object is fortran_var and a parameter include
-                        #  the value in hover
-                        if new_var.is_parameter():
-                            _, col = find_word_in_line(line, name_stripped)
-                            match = PARAMETER_VAL_REGEX.match(line[col:])
-                            if match:
-                                var = match.group(1).strip()
-                                new_var.set_parameter_val(var)
-
-                        # Check if the "variable" is external and if so cycle
-                        if find_external(file_ast, desc_string, name_stripped, new_var):
-                            continue
-
-                    # if not merge_external:
-                    file_ast.add_variable(new_var)
-                parser_debug_msg("VARIABLE", line, line_number)
-
-            elif obj_type == "mod":
-                new_mod = fortran_module(file_ast, line_number, obj_info)
-                file_ast.add_scope(new_mod, END_MOD_REGEX)
-                parser_debug_msg("MODULE", line, line_number)
-
-            elif obj_type == "smod":
-                new_smod = fortran_submodule(
-                    file_ast, line_number, obj_info.name, ancestor_name=obj_info.parent
-                )
-                file_ast.add_scope(new_smod, END_SMOD_REGEX)
-                parser_debug_msg("SUBMODULE", line, line_number)
-
-            elif obj_type == "prog":
-                new_prog = fortran_program(file_ast, line_number, obj_info)
-                file_ast.add_scope(new_prog, END_PROG_REGEX)
-                parser_debug_msg("PROGRAM", line, line_number)
-
-            elif obj_type == "sub":
-                keywords, _ = map_keywords(obj_info.keywords)
-                new_sub = fortran_subroutine(
-                    file_ast,
-                    line_number,
-                    obj_info.name,
-                    args=obj_info.args,
-                    mod_flag=obj_info.mod_flag,
-                    keywords=keywords,
-                )
-                file_ast.add_scope(new_sub, END_SUB_REGEX)
-                parser_debug_msg("SUBROUTINE", line, line_number)
-
-            elif obj_type == "fun":
-                keywords, _ = map_keywords(obj_info.keywords)
-                new_fun = fortran_function(
-                    file_ast,
-                    line_number,
-                    obj_info.name,
-                    args=obj_info.args,
-                    mod_flag=obj_info.mod_flag,
-                    keywords=keywords,
-                    return_type=obj_info.return_type,
-                    result_var=obj_info.return_var,
-                )
-                file_ast.add_scope(new_fun, END_FUN_REGEX)
-                if obj_info.return_type is not None:
-                    keywords, keyword_info = map_keywords(obj_info.return_type[1])
-                    new_obj = fortran_var(
+                        key_tmp.append(f"dimension({get_paren_substring(name_raw)})")
+                    name_raw = name_raw[:iparen]
+                name_stripped = name_raw.strip()
+                keywords, keyword_info = map_keywords(key_tmp)
+                if procedure_def:
+                    new_var = fortran_meth(
                         file_ast,
                         line_number,
-                        obj_info.name,
-                        obj_info.return_type[0],
+                        name_stripped,
+                        desc_string,
                         keywords,
-                        keyword_info,
-                    )
-                    file_ast.add_variable(new_obj)
-                parser_debug_msg("FUNCTION", line, line_number)
-
-            elif obj_type == "block":
-                name = obj_info
-                if name is None:
-                    block_counter += 1
-                    name = f"#BLOCK{block_counter}"
-                new_block = fortran_block(file_ast, line_number, name)
-                file_ast.add_scope(new_block, END_BLOCK_REGEX, req_container=True)
-                parser_debug_msg("BLOCK", line, line_number)
-
-            elif obj_type == "do":
-                do_counter += 1
-                name = f"#DO{do_counter}"
-                if obj_info != "":
-                    block_id_stack.append(obj_info)
-                new_do = fortran_do(file_ast, line_number, name)
-                file_ast.add_scope(new_do, END_DO_REGEX, req_container=True)
-                parser_debug_msg("DO", line, line_number)
-
-            elif obj_type == "where":
-                # Add block if WHERE is not single line
-                if not obj_info:
-                    do_counter += 1
-                    name = f"#WHERE{do_counter}"
-                    new_do = fortran_where(file_ast, line_number, name)
-                    file_ast.add_scope(new_do, END_WHERE_REGEX, req_container=True)
-                parser_debug_msg("WHERE", line, line_number)
-
-            elif obj_type == "assoc":
-                block_counter += 1
-                name = f"#ASSOC{block_counter}"
-                new_assoc = fortran_associate(file_ast, line_number, name)
-                file_ast.add_scope(new_assoc, END_ASSOCIATE_REGEX, req_container=True)
-                for bound_var in obj_info:
-                    binding_split = bound_var.split("=>")
-                    if len(binding_split) == 2:
-                        binding_name = binding_split[0].strip()
-                        link_name = binding_split[1].strip()
-                        file_ast.add_variable(
-                            new_assoc.create_binding_variable(
-                                file_ast, line_number, binding_name, link_name
-                            )
-                        )
-                parser_debug_msg("ASSOCIATE", line, line_number)
-
-            elif obj_type == "if":
-                if_counter += 1
-                name = f"#IF{if_counter}"
-                new_if = fortran_if(file_ast, line_number, name)
-                file_ast.add_scope(new_if, END_IF_REGEX, req_container=True)
-                parser_debug_msg("IF", line, line_number)
-
-            elif obj_type == "select":
-                select_counter += 1
-                name = f"#SELECT{select_counter}"
-                new_select = fortran_select(file_ast, line_number, name, obj_info)
-                file_ast.add_scope(new_select, END_SELECT_REGEX, req_container=True)
-                new_var = new_select.create_binding_variable(
-                    file_ast,
-                    line_number,
-                    f"{obj_info.desc}({obj_info.binding})",
-                    obj_info.type,
-                )
-                if new_var is not None:
-                    file_ast.add_variable(new_var)
-                parser_debug_msg("SELECT", line, line_number)
-
-            elif obj_type == "typ":
-                keywords, _ = map_keywords(obj_info.keywords)
-                new_type = fortran_type(file_ast, line_number, obj_info.name, keywords)
-                if obj_info.parent is not None:
-                    new_type.set_inherit(obj_info.parent)
-                file_ast.add_scope(new_type, END_TYPED_REGEX, req_container=True)
-                parser_debug_msg("TYPE", line, line_number)
-
-            elif obj_type == "enum":
-                block_counter += 1
-                name = f"#ENUM{block_counter}"
-                new_enum = fortran_enum(file_ast, line_number, name)
-                file_ast.add_scope(new_enum, END_ENUMD_REGEX, req_container=True)
-                parser_debug_msg("ENUM", line, line_number)
-
-            elif obj_type == "int":
-                name = obj_info.name
-                if name is None:
-                    int_counter += 1
-                    name = f"#GEN_INT{int_counter}"
-                new_int = fortran_int(
-                    file_ast, line_number, name, abstract=obj_info.abstract
-                )
-                file_ast.add_scope(new_int, END_INT_REGEX, req_container=True)
-                parser_debug_msg("INTERFACE", line, line_number)
-
-            elif obj_type == "gen":
-                new_int = fortran_int(
-                    file_ast, line_number, obj_info.bound_name, abstract=False
-                )
-                new_int.set_visibility(obj_info.vis_flag)
-                file_ast.add_scope(new_int, END_INT_REGEX, req_container=True)
-                for pro_link in obj_info.pro_links:
-                    file_ast.add_int_member(pro_link)
-                file_ast.end_scope(line_number)
-                parser_debug_msg("GENERIC", line, line_number)
-
-            elif obj_type == "int_pro":
-                if file_ast.current_scope is not None:
-                    if file_ast.current_scope.get_type() == INTERFACE_TYPE_ID:
-                        for name in obj_info:
-                            file_ast.add_int_member(name)
-                        parser_debug_msg("INTERFACE-PRO", line, line_number)
-
-                    elif file_ast.current_scope.get_type() == SUBMODULE_TYPE_ID:
-                        new_impl = fortran_scope(file_ast, line_number, obj_info[0])
-                        file_ast.add_scope(new_impl, END_PRO_REGEX)
-                        parser_debug_msg("INTERFACE_IMPL", line, line_number)
-
-            elif obj_type == "use":
-                file_ast.add_use(
-                    obj_info.mod_name,
-                    line_number,
-                    obj_info.only_list,
-                    obj_info.rename_map,
-                )
-                parser_debug_msg("USE", line, line_number)
-
-            elif obj_type == "import":
-                file_ast.add_use("#IMPORT", line_number, obj_info)
-                parser_debug_msg("IMPORT", line, line_number)
-
-            elif obj_type == "inc":
-                file_ast.add_include(obj_info, line_number)
-                parser_debug_msg("INCLUDE", line, line_number)
-
-            elif obj_type == "vis":
-                if file_ast.current_scope is None:
-                    file_ast.parse_errors.append(
-                        {
-                            "line": line_number,
-                            "schar": 0,
-                            "echar": 0,
-                            "mess": "Visibility statement without enclosing scope",
-                            "sev": 1,
-                        }
+                        keyword_info=keyword_info,
+                        link_obj=link_name,
                     )
                 else:
-                    if (len(obj_info.obj_names) == 0) and (obj_info.type == 1):
-                        file_ast.current_scope.set_default_vis(-1)
+                    new_var = fortran_var(
+                        file_ast,
+                        line_number,
+                        name_stripped,
+                        desc_string,
+                        keywords,
+                        keyword_info=keyword_info,
+                        link_obj=link_name,
+                    )
+                    # If the object is fortran_var and a parameter include
+                    #  the value in hover
+                    if new_var.is_parameter():
+                        _, col = find_word_in_line(line, name_stripped)
+                        match = PARAMETER_VAL_REGEX.match(line[col:])
+                        if match:
+                            var = match.group(1).strip()
+                            new_var.set_parameter_val(var)
+
+                    # Check if the "variable" is external and if so cycle
+                    if find_external(file_ast, desc_string, name_stripped, new_var):
+                        continue
+
+                # if not merge_external:
+                file_ast.add_variable(new_var)
+            parser_debug_msg("VARIABLE", line, line_number)
+
+        elif obj_type == "mod":
+            new_mod = fortran_module(file_ast, line_number, obj_info)
+            file_ast.add_scope(new_mod, END_MOD_REGEX)
+            parser_debug_msg("MODULE", line, line_number)
+
+        elif obj_type == "smod":
+            new_smod = fortran_submodule(
+                file_ast, line_number, obj_info.name, ancestor_name=obj_info.parent
+            )
+            file_ast.add_scope(new_smod, END_SMOD_REGEX)
+            parser_debug_msg("SUBMODULE", line, line_number)
+
+        elif obj_type == "prog":
+            new_prog = fortran_program(file_ast, line_number, obj_info)
+            file_ast.add_scope(new_prog, END_PROG_REGEX)
+            parser_debug_msg("PROGRAM", line, line_number)
+
+        elif obj_type == "sub":
+            keywords, _ = map_keywords(obj_info.keywords)
+            new_sub = fortran_subroutine(
+                file_ast,
+                line_number,
+                obj_info.name,
+                args=obj_info.args,
+                mod_flag=obj_info.mod_flag,
+                keywords=keywords,
+            )
+            file_ast.add_scope(new_sub, END_SUB_REGEX)
+            parser_debug_msg("SUBROUTINE", line, line_number)
+
+        elif obj_type == "fun":
+            keywords, _ = map_keywords(obj_info.keywords)
+            new_fun = fortran_function(
+                file_ast,
+                line_number,
+                obj_info.name,
+                args=obj_info.args,
+                mod_flag=obj_info.mod_flag,
+                keywords=keywords,
+                return_type=obj_info.return_type,
+                result_var=obj_info.return_var,
+            )
+            file_ast.add_scope(new_fun, END_FUN_REGEX)
+            if obj_info.return_type is not None:
+                keywords, keyword_info = map_keywords(obj_info.return_type[1])
+                new_obj = fortran_var(
+                    file_ast,
+                    line_number,
+                    obj_info.name,
+                    obj_info.return_type[0],
+                    keywords,
+                    keyword_info,
+                )
+                file_ast.add_variable(new_obj)
+            parser_debug_msg("FUNCTION", line, line_number)
+
+        elif obj_type == "block":
+            name = obj_info
+            if name is None:
+                block_counter += 1
+                name = f"#BLOCK{block_counter}"
+            new_block = fortran_block(file_ast, line_number, name)
+            file_ast.add_scope(new_block, END_BLOCK_REGEX, req_container=True)
+            parser_debug_msg("BLOCK", line, line_number)
+
+        elif obj_type == "do":
+            do_counter += 1
+            name = f"#DO{do_counter}"
+            if obj_info != "":
+                block_id_stack.append(obj_info)
+            new_do = fortran_do(file_ast, line_number, name)
+            file_ast.add_scope(new_do, END_DO_REGEX, req_container=True)
+            parser_debug_msg("DO", line, line_number)
+
+        elif obj_type == "where":
+            # Add block if WHERE is not single line
+            if not obj_info:
+                do_counter += 1
+                name = f"#WHERE{do_counter}"
+                new_do = fortran_where(file_ast, line_number, name)
+                file_ast.add_scope(new_do, END_WHERE_REGEX, req_container=True)
+            parser_debug_msg("WHERE", line, line_number)
+
+        elif obj_type == "assoc":
+            block_counter += 1
+            name = f"#ASSOC{block_counter}"
+            new_assoc = fortran_associate(file_ast, line_number, name)
+            file_ast.add_scope(new_assoc, END_ASSOCIATE_REGEX, req_container=True)
+            for bound_var in obj_info:
+                binding_split = bound_var.split("=>")
+                if len(binding_split) == 2:
+                    binding_name = binding_split[0].strip()
+                    link_name = binding_split[1].strip()
+                    file_ast.add_variable(
+                        new_assoc.create_binding_variable(
+                            file_ast, line_number, binding_name, link_name
+                        )
+                    )
+            parser_debug_msg("ASSOCIATE", line, line_number)
+
+        elif obj_type == "if":
+            if_counter += 1
+            name = f"#IF{if_counter}"
+            new_if = fortran_if(file_ast, line_number, name)
+            file_ast.add_scope(new_if, END_IF_REGEX, req_container=True)
+            parser_debug_msg("IF", line, line_number)
+
+        elif obj_type == "select":
+            select_counter += 1
+            name = f"#SELECT{select_counter}"
+            new_select = fortran_select(file_ast, line_number, name, obj_info)
+            file_ast.add_scope(new_select, END_SELECT_REGEX, req_container=True)
+            new_var = new_select.create_binding_variable(
+                file_ast,
+                line_number,
+                f"{obj_info.desc}({obj_info.binding})",
+                obj_info.type,
+            )
+            if new_var is not None:
+                file_ast.add_variable(new_var)
+            parser_debug_msg("SELECT", line, line_number)
+
+        elif obj_type == "typ":
+            keywords, _ = map_keywords(obj_info.keywords)
+            new_type = fortran_type(file_ast, line_number, obj_info.name, keywords)
+            if obj_info.parent is not None:
+                new_type.set_inherit(obj_info.parent)
+            file_ast.add_scope(new_type, END_TYPED_REGEX, req_container=True)
+            parser_debug_msg("TYPE", line, line_number)
+
+        elif obj_type == "enum":
+            block_counter += 1
+            name = f"#ENUM{block_counter}"
+            new_enum = fortran_enum(file_ast, line_number, name)
+            file_ast.add_scope(new_enum, END_ENUMD_REGEX, req_container=True)
+            parser_debug_msg("ENUM", line, line_number)
+
+        elif obj_type == "int":
+            name = obj_info.name
+            if name is None:
+                int_counter += 1
+                name = f"#GEN_INT{int_counter}"
+            new_int = fortran_int(
+                file_ast, line_number, name, abstract=obj_info.abstract
+            )
+            file_ast.add_scope(new_int, END_INT_REGEX, req_container=True)
+            parser_debug_msg("INTERFACE", line, line_number)
+
+        elif obj_type == "gen":
+            new_int = fortran_int(
+                file_ast, line_number, obj_info.bound_name, abstract=False
+            )
+            new_int.set_visibility(obj_info.vis_flag)
+            file_ast.add_scope(new_int, END_INT_REGEX, req_container=True)
+            for pro_link in obj_info.pro_links:
+                file_ast.add_int_member(pro_link)
+            file_ast.end_scope(line_number)
+            parser_debug_msg("GENERIC", line, line_number)
+
+        elif obj_type == "int_pro":
+            if file_ast.current_scope is not None:
+                if file_ast.current_scope.get_type() == INTERFACE_TYPE_ID:
+                    for name in obj_info:
+                        file_ast.add_int_member(name)
+                    parser_debug_msg("INTERFACE-PRO", line, line_number)
+
+                elif file_ast.current_scope.get_type() == SUBMODULE_TYPE_ID:
+                    new_impl = fortran_scope(file_ast, line_number, obj_info[0])
+                    file_ast.add_scope(new_impl, END_PRO_REGEX)
+                    parser_debug_msg("INTERFACE_IMPL", line, line_number)
+
+        elif obj_type == "use":
+            file_ast.add_use(
+                obj_info.mod_name,
+                line_number,
+                obj_info.only_list,
+                obj_info.rename_map,
+            )
+            parser_debug_msg("USE", line, line_number)
+
+        elif obj_type == "import":
+            file_ast.add_use("#IMPORT", line_number, obj_info)
+            parser_debug_msg("IMPORT", line, line_number)
+
+        elif obj_type == "inc":
+            file_ast.add_include(obj_info, line_number)
+            parser_debug_msg("INCLUDE", line, line_number)
+
+        elif obj_type == "vis":
+            if file_ast.current_scope is None:
+                file_ast.parse_errors.append(
+                    {
+                        "line": line_number,
+                        "schar": 0,
+                        "echar": 0,
+                        "mess": "Visibility statement without enclosing scope",
+                        "sev": 1,
+                    }
+                )
+            else:
+                if (len(obj_info.obj_names) == 0) and (obj_info.type == 1):
+                    file_ast.current_scope.set_default_vis(-1)
+                else:
+                    if obj_info.type == 1:
+                        for word in obj_info.obj_names:
+                            file_ast.add_private(word)
                     else:
-                        if obj_info.type == 1:
-                            for word in obj_info.obj_names:
-                                file_ast.add_private(word)
-                        else:
-                            for word in obj_info.obj_names:
-                                file_ast.add_public(word)
-                parser_debug_msg("Visibility", line, line_number)
+                        for word in obj_info.obj_names:
+                            file_ast.add_public(word)
+            parser_debug_msg("Visibility", line, line_number)
 
     file_ast.close_file(line_number)
     if debug:
