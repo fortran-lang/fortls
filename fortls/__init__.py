@@ -461,7 +461,7 @@ def debug_server_parser(args):
     # Get preprocessor definitions from config file
     pp_suffixes = None
     pp_defs = {}
-    include_dirs = []
+    include_dirs = set()
     if args.debug_rootpath:
         config_path = os.path.join(args.debug_rootpath, args.config)
         config_exists = os.path.isfile(config_path)
@@ -471,9 +471,9 @@ def debug_server_parser(args):
                     config_dict = json.load(fhandle)
                     pp_suffixes = config_dict.get("pp_suffixes", None)
                     pp_defs = config_dict.get("pp_defs", {})
-                    include_dirs = []
-                    for path in config_dict.get("include_dirs", []):
-                        include_dirs.extend(
+                    include_dirs = set()
+                    for path in config_dict.get("include_dirs", set()):
+                        include_dirs.update(
                             only_dirs(resolve_globs(path, args.debug_rootpath))
                         )
 

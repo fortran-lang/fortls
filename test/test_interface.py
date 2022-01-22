@@ -68,7 +68,7 @@ def test_command_line_preprocessor_options():
         ' {"HAVE_PETSC":"","HAVE_ZOLTAN":"","Mat":"type(tMat)"}'.split()
     )
     assert args.pp_suffixes == [".h", ".fh"]
-    assert args.include_dirs == ["/usr/include/**", "./local/incl"]
+    assert args.include_dirs == set(["/usr/include/**", "./local/incl"])
     assert args.pp_defs == {"HAVE_PETSC": "", "HAVE_ZOLTAN": "", "Mat": "type(tMat)"}
 
 
@@ -145,7 +145,7 @@ def test_config_file_preprocessor_options():
     server, root = unittest_server_init()
     # Preprocessor options
     assert server.pp_suffixes == [".h", ".fh"]
-    assert server.include_dirs == [f"{root}/include"]
+    assert server.include_dirs == set([f"{root}/include"])
     assert server.pp_defs == {
         "HAVE_PETSC": "",
         "HAVE_ZOLTAN": "",

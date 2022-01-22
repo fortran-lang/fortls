@@ -1,5 +1,23 @@
 # CHANGELONG
 
+## 2.0.1
+
+### Added
+
+- Add support for absolute include, source and exclude paths
+
+### Changed
+
+- Changed `USE_info` named tuple to storing use modules as `sets` instead of `lists`
+- Changed `include_dirs` from a `list` to a `set`
+
+### Fixed
+
+- Fixed some mutable default argument warnings in methods and classes
+- Fixed private variables showing in autocomplete
+  ([#191](https://github.com/hansec/fortran-language-server/issues/191))
+  ([gnikit/fortls#3](https://github.com/gnikit/fortls/issues/3))
+
 ## 2.0.0
 
 ### Added

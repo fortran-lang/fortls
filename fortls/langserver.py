@@ -382,8 +382,10 @@ class LangServer:
         ):
             #
             def child_candidates(
-                scope, only_list=[], filter_public=True, req_abstract=False
+                scope, only_list: list = None, filter_public=True, req_abstract=False
             ):
+                if only_list is None:
+                    only_list = []
                 tmp_list = []
                 # Filter children
                 nonly = len(only_list)
@@ -1546,8 +1548,8 @@ class LangServer:
         if isinstance(self.pp_defs, list):
             self.pp_defs = {key: "" for key in self.pp_defs}
 
-        for path in config_dict.get("include_dirs", []):
-            self.include_dirs.extend(
+        for path in config_dict.get("include_dirs", set()):
+            self.include_dirs.update(
                 only_dirs(resolve_globs(path, self.root_path), self.post_messages)
             )
 

@@ -41,7 +41,15 @@ jobs:
 
       - name: Set __version__
         shell: bash
-        run: sed -i "s/PLACEHOLDER/${VERSION}/g" "fortls/_version.py"
+        run: sed -i "s@\".*\"@\"${VERSION}\"@g" "fortls/_version.py"
+
+      - name: Commit the new version
+        shell: bash
+        run: |
+          git config --global user.name 'gnikit'
+          git config --global user.email 'gnikit@users.noreply.github.com'
+          git commit fortls/_version.py -am "Auto-Update version"
+          git push
 
       - name: Build package
         run: python -m build

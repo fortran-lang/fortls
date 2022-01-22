@@ -219,7 +219,8 @@ def commandline_args(name: str = "fortls") -> argparse.ArgumentParser:
         # "--pp_include_dirs",  # TODO: make main
         type=str,
         nargs="*",
-        default=list(),
+        default=set(),
+        action=SetAction,
         metavar="DIRS",
         help="Folders containing preprocessor files with extensions PP_SUFFIXES.",
     )
