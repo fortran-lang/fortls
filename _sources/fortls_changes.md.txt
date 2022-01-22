@@ -2,6 +2,7 @@
 
 ## Added
 
+- Add support for absolute include, source and exclude paths
 - Adds support for including preprocessor definitions from files same as `pp_defs`
 - Adds hover support for preprocessor variables
 - Adds Go To Definition for `include` statements
@@ -17,6 +18,8 @@
 
 ## Changed
 
+- Changed `USE_info` named tuple to storing use modules as `sets` instead of `lists`
+- Changed `include_dirs` from a `list` to a `set`
 - Update constant parameters for `omp_lib` and `omp_lib_kinds` Interface v5.0
 - Format json files with `prettier`
 - Initialises the log channel and adds `$/setTrace` to override client's (i.e. VS Code) loglevel
@@ -30,6 +33,10 @@
 
 ## Fixed
 
+- Fixed some mutable default argument warnings in methods and classes
+- Fixed private variables showing in autocomplete
+  ([#191](https://github.com/hansec/fortran-language-server/issues/191))
+  ([gnikit/fortls#3](https://github.com/gnikit/fortls/issues/3))
 - Fixes the hover of preprocessor functions. It now displays the function name
   witout the argument list and the function body. The argument list cannot be
   multiline but the function body can.

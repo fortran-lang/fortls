@@ -79,6 +79,7 @@
 <div class="section" id="added">
 <h2>Added<a class="headerlink" href="#added" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
+<li><p>Add support for absolute include, source and exclude paths</p></li>
 <li><p>Adds support for including preprocessor definitions from files same as <code class="docutils literal notranslate"><span class="pre">pp_defs</span></code></p></li>
 <li><p>Adds hover support for preprocessor variables</p></li>
 <li><p>Adds Go To Definition for <code class="docutils literal notranslate"><span class="pre">include</span></code> statements</p></li>
@@ -96,6 +97,8 @@
 <div class="section" id="changed">
 <h2>Changed<a class="headerlink" href="#changed" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
+<li><p>Changed <code class="docutils literal notranslate"><span class="pre">USE_info</span></code> named tuple to storing use modules as <code class="docutils literal notranslate"><span class="pre">sets</span></code> instead of <code class="docutils literal notranslate"><span class="pre">lists</span></code></p></li>
+<li><p>Changed <code class="docutils literal notranslate"><span class="pre">include_dirs</span></code> from a <code class="docutils literal notranslate"><span class="pre">list</span></code> to a <code class="docutils literal notranslate"><span class="pre">set</span></code></p></li>
 <li><p>Update constant parameters for <code class="docutils literal notranslate"><span class="pre">omp_lib</span></code> and <code class="docutils literal notranslate"><span class="pre">omp_lib_kinds</span></code> Interface v5.0</p></li>
 <li><p>Format json files with <code class="docutils literal notranslate"><span class="pre">prettier</span></code></p></li>
 <li><p>Initialises the log channel and adds <code class="docutils literal notranslate"><span class="pre">$/setTrace</span></code> to override client’s (i.e. VS Code) loglevel</p></li>
@@ -113,6 +116,10 @@
 <div class="section" id="fixed">
 <h2>Fixed<a class="headerlink" href="#fixed" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
+<li><p>Fixed some mutable default argument warnings in methods and classes</p></li>
+<li><p>Fixed private variables showing in autocomplete
+(<a class="reference external" href="https://github.com/hansec/fortran-language-server/issues/191">#191</a>)
+(<a class="reference external" href="https://github.com/gnikit/fortls/issues/3">gnikit/fortls#3</a>)</p></li>
 <li><p>Fixes the hover of preprocessor functions. It now displays the function name
 witout the argument list and the function body. The argument list cannot be
 multiline but the function body can.</p></li>

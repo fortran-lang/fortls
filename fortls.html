@@ -238,7 +238,7 @@ via backward search up through the line.</p>
 <dl class="function">
 <dt id="fortls.helper_functions.resolve_globs">
 <code class="sig-prename descclassname">fortls.helper_functions.</code><code class="sig-name descname">resolve_globs</code><span class="sig-paren">(</span><em class="sig-param">glob_path</em>, <em class="sig-param">root_path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.resolve_globs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Resolve glob patterns</p>
+<dd><p>Resolve paths (absolute and relative) and glob patterns</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -921,7 +921,7 @@ otherwise you will leak a thread.</p>
 
 <dl class="class">
 <dt id="fortls.objects.USE_line">
-<em class="property">class </em><code class="sig-prename descclassname">fortls.objects.</code><code class="sig-name descname">USE_line</code><span class="sig-paren">(</span><em class="sig-param">mod_name</em>, <em class="sig-param">line_number</em>, <em class="sig-param">only_list=[]</em>, <em class="sig-param">rename_map={}</em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.USE_line" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">fortls.objects.</code><code class="sig-name descname">USE_line</code><span class="sig-paren">(</span><em class="sig-param">mod_name</em>, <em class="sig-param">line_number</em>, <em class="sig-param">only_list=None</em>, <em class="sig-param">rename_map=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.USE_line" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 </dd></dl>
 
@@ -1198,7 +1198,7 @@ otherwise you will leak a thread.</p>
 
 <dl class="class">
 <dt id="fortls.objects.fortran_function">
-<em class="property">class </em><code class="sig-prename descclassname">fortls.objects.</code><code class="sig-name descname">fortran_function</code><span class="sig-paren">(</span><em class="sig-param">file_ast</em>, <em class="sig-param">line_number</em>, <em class="sig-param">name</em>, <em class="sig-param">args=''</em>, <em class="sig-param">mod_flag=False</em>, <em class="sig-param">keywords=[]</em>, <em class="sig-param">return_type=None</em>, <em class="sig-param">result_var=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.fortran_function" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">fortls.objects.</code><code class="sig-name descname">fortran_function</code><span class="sig-paren">(</span><em class="sig-param">file_ast</em>, <em class="sig-param">line_number</em>, <em class="sig-param">name</em>, <em class="sig-param">args=''</em>, <em class="sig-param">mod_flag=False</em>, <em class="sig-param">keywords=None</em>, <em class="sig-param">return_type=None</em>, <em class="sig-param">result_var=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.fortran_function" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#fortls.objects.fortran_subroutine" title="fortls.objects.fortran_subroutine"><code class="xref py py-class docutils literal notranslate"><span class="pre">fortls.objects.fortran_subroutine</span></code></a></p>
 <dl class="method">
 <dt id="fortls.objects.fortran_function.copy_interface">
@@ -1393,7 +1393,7 @@ otherwise you will leak a thread.</p>
 
 <dl class="method">
 <dt id="fortls.objects.fortran_obj.check_definition">
-<code class="sig-name descname">check_definition</code><span class="sig-paren">(</span><em class="sig-param">obj_tree</em>, <em class="sig-param">known_types={}</em>, <em class="sig-param">interface=False</em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.fortran_obj.check_definition" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">check_definition</code><span class="sig-paren">(</span><em class="sig-param">obj_tree</em>, <em class="sig-param">known_types=None</em>, <em class="sig-param">interface=False</em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.fortran_obj.check_definition" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1575,12 +1575,12 @@ otherwise you will leak a thread.</p>
 
 <dl class="method">
 <dt id="fortls.objects.fortran_scope.add_use">
-<code class="sig-name descname">add_use</code><span class="sig-paren">(</span><em class="sig-param">use_mod</em>, <em class="sig-param">line_number</em>, <em class="sig-param">only_list=[]</em>, <em class="sig-param">rename_map={}</em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.fortran_scope.add_use" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_use</code><span class="sig-paren">(</span><em class="sig-param">use_mod</em>, <em class="sig-param">line_number</em>, <em class="sig-param">only_list=None</em>, <em class="sig-param">rename_map=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.fortran_scope.add_use" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="fortls.objects.fortran_scope.base_setup">
-<code class="sig-name descname">base_setup</code><span class="sig-paren">(</span><em class="sig-param">file_ast</em>, <em class="sig-param">sline</em>, <em class="sig-param">name</em>, <em class="sig-param">keywords=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.fortran_scope.base_setup" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">base_setup</code><span class="sig-paren">(</span><em class="sig-param">file_ast</em>, <em class="sig-param">sline</em>, <em class="sig-param">name</em>, <em class="sig-param">keywords=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.fortran_scope.base_setup" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1705,7 +1705,7 @@ otherwise you will leak a thread.</p>
 
 <dl class="class">
 <dt id="fortls.objects.fortran_subroutine">
-<em class="property">class </em><code class="sig-prename descclassname">fortls.objects.</code><code class="sig-name descname">fortran_subroutine</code><span class="sig-paren">(</span><em class="sig-param">file_ast</em>, <em class="sig-param">line_number</em>, <em class="sig-param">name</em>, <em class="sig-param">args=''</em>, <em class="sig-param">mod_flag=False</em>, <em class="sig-param">keywords=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.fortran_subroutine" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">fortls.objects.</code><code class="sig-name descname">fortran_subroutine</code><span class="sig-paren">(</span><em class="sig-param">file_ast</em>, <em class="sig-param">line_number</em>, <em class="sig-param">name</em>, <em class="sig-param">args=''</em>, <em class="sig-param">mod_flag=False</em>, <em class="sig-param">keywords=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.fortran_subroutine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#fortls.objects.fortran_scope" title="fortls.objects.fortran_scope"><code class="xref py py-class docutils literal notranslate"><span class="pre">fortls.objects.fortran_scope</span></code></a></p>
 <dl class="method">
 <dt id="fortls.objects.fortran_subroutine.check_valid_parent">
@@ -1837,7 +1837,7 @@ otherwise you will leak a thread.</p>
 
 <dl class="class">
 <dt id="fortls.objects.fortran_var">
-<em class="property">class </em><code class="sig-prename descclassname">fortls.objects.</code><code class="sig-name descname">fortran_var</code><span class="sig-paren">(</span><em class="sig-param">file_ast</em>, <em class="sig-param">line_number</em>, <em class="sig-param">name</em>, <em class="sig-param">var_desc</em>, <em class="sig-param">keywords</em>, <em class="sig-param">keyword_info={}</em>, <em class="sig-param">link_obj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.fortran_var" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">fortls.objects.</code><code class="sig-name descname">fortran_var</code><span class="sig-paren">(</span><em class="sig-param">file_ast</em>, <em class="sig-param">line_number</em>, <em class="sig-param">name</em>, <em class="sig-param">var_desc</em>, <em class="sig-param">keywords</em>, <em class="sig-param">keyword_info=None</em>, <em class="sig-param">link_obj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.fortran_var" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#fortls.objects.fortran_obj" title="fortls.objects.fortran_obj"><code class="xref py py-class docutils literal notranslate"><span class="pre">fortls.objects.fortran_obj</span></code></a></p>
 <dl class="method">
 <dt id="fortls.objects.fortran_var.base_setup">
@@ -1939,7 +1939,7 @@ otherwise you will leak a thread.</p>
 
 <dl class="function">
 <dt id="fortls.objects.get_use_tree">
-<code class="sig-prename descclassname">fortls.objects.</code><code class="sig-name descname">get_use_tree</code><span class="sig-paren">(</span><em class="sig-param">scope</em>, <em class="sig-param">use_dict</em>, <em class="sig-param">obj_tree</em>, <em class="sig-param">only_list=[]</em>, <em class="sig-param">rename_map={}</em>, <em class="sig-param">curr_path=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.get_use_tree" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">fortls.objects.</code><code class="sig-name descname">get_use_tree</code><span class="sig-paren">(</span><em class="sig-param">scope</em>, <em class="sig-param">use_dict</em>, <em class="sig-param">obj_tree</em>, <em class="sig-param">only_list=None</em>, <em class="sig-param">rename_map=None</em>, <em class="sig-param">curr_path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.get_use_tree" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -2074,7 +2074,7 @@ A MD5 hash is used to determine that</p>
 
 <dl class="method">
 <dt id="fortls.parse_fortran.fortran_file.preprocess">
-<code class="sig-name descname">preprocess</code><span class="sig-paren">(</span><em class="sig-param">pp_defs={}</em>, <em class="sig-param">include_dirs=[]</em>, <em class="sig-param">debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.fortran_file.preprocess" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">preprocess</code><span class="sig-paren">(</span><em class="sig-param">pp_defs=None</em>, <em class="sig-param">include_dirs=None</em>, <em class="sig-param">debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.fortran_file.preprocess" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -2123,12 +2123,12 @@ A MD5 hash is used to determine that</p>
 
 <dl class="function">
 <dt id="fortls.parse_fortran.preprocess_file">
-<code class="sig-prename descclassname">fortls.parse_fortran.</code><code class="sig-name descname">preprocess_file</code><span class="sig-paren">(</span><em class="sig-param">contents_split</em>, <em class="sig-param">file_path=None</em>, <em class="sig-param">pp_defs={}</em>, <em class="sig-param">include_dirs=[]</em>, <em class="sig-param">debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.preprocess_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">fortls.parse_fortran.</code><code class="sig-name descname">preprocess_file</code><span class="sig-paren">(</span><em class="sig-param">contents_split</em>, <em class="sig-param">file_path=None</em>, <em class="sig-param">pp_defs=None</em>, <em class="sig-param">include_dirs=None</em>, <em class="sig-param">debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.preprocess_file" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="fortls.parse_fortran.process_file">
-<code class="sig-prename descclassname">fortls.parse_fortran.</code><code class="sig-name descname">process_file</code><span class="sig-paren">(</span><em class="sig-param">file_obj</em>, <em class="sig-param">debug=False</em>, <em class="sig-param">pp_defs={}</em>, <em class="sig-param">include_dirs=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.process_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">fortls.parse_fortran.</code><code class="sig-name descname">process_file</code><span class="sig-paren">(</span><em class="sig-param">file_obj</em>, <em class="sig-param">debug=False</em>, <em class="sig-param">pp_defs=None</em>, <em class="sig-param">include_dirs=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.process_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build file AST by parsing file</p>
 </dd></dl>
 
