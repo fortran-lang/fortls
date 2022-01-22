@@ -20,6 +20,7 @@
 
 - Changed `USE_info` named tuple to storing use modules as `sets` instead of `lists`
 - Changed `include_dirs` from a `list` to a `set`
+- Automates the versioning with GitHub releases
 - Update constant parameters for `omp_lib` and `omp_lib_kinds` Interface v5.0
 - Format json files with `prettier`
 - Initialises the log channel and adds `$/setTrace` to override client's (i.e. VS Code) loglevel
