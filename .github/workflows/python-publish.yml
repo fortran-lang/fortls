@@ -18,6 +18,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      # This is a temporary workaround until GitHub Actions start natively
+      # supporting signed commits like they should
+      - name: Import GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v4
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -37,20 +49,24 @@ jobs:
       - name: Set global variables
         shell: bash
         run: |
-          echo "VERSION=${{ steps.get_version.outputs.VERSION}}" >> $GITHUB_ENV
+          echo "VERSION=${{ steps.get_version.outputs.VERSION }}" >> $GITHUB_ENV
 
       - name: Set __version__
         shell: bash
         run: sed -i "s@\".*\"@\"${VERSION}\"@g" "fortls/_version.py"
 
-      - name: Commit the new version
+      - name: Commit the new version to dev
         shell: bash
         run: |
           git config --global user.name 'gnikit'
-          git config --global user.email 'gnikit@users.noreply.github.com'
-          git commit fortls/_version.py -m "Auto-Update version"
+          git config --global user.email 'giannis.nikiteas@gmail.com'
+          git fetch origin
+          git switch dev
+          git commit -S fortls/_version.py -m "Auto-Update version" -v
+          git push
           git tag -f "${VERSION}"
-          git push -f
+          git push --delete origin "${VERSION}"
+          git push origin "${VERSION}"
 
       - name: Build package
         run: python -m build
