@@ -1,5 +1,11 @@
 # CHANGELONG
 
+## Unreleased
+
+### Added
+
+- Added coverage metric for Codecov
+
 ## 2.0.1
 
 ### Added

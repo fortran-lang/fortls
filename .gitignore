@@ -11,3 +11,5 @@ docs/fortls_changes.md
 *.mod
 *.smod
 *.log
+
+.coverage

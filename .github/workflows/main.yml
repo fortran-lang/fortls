@@ -1,6 +1,7 @@
 name: Tests
 
-on: [push, pull_request]
+on:
+  [push, pull_request]
   # Allows you to run this workflow manually from the Actions tab
   # workflow_dispatch:
 
@@ -28,3 +29,23 @@ jobs:
 
       - name: Lint
         run: black --diff --check --verbose .
+
+  coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+
+      - name: Coverage report
+        run: |
+          pip install -r test_requirements.txt
+          pytest --cov=fortls --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
