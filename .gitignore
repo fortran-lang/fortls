@@ -9,4 +9,5 @@ docs/fortls_changes.md
 
 *.o
 *.mod
+*.smod
 *.log
