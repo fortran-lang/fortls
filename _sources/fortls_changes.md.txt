@@ -2,6 +2,7 @@
 
 ## Added
 
+- Added coverage metric for Codecov
 - Add support for absolute include, source and exclude paths
 - Adds support for including preprocessor definitions from files same as `pp_defs`
 - Adds hover support for preprocessor variables
