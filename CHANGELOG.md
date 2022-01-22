@@ -10,6 +10,7 @@
 
 - Changed `USE_info` named tuple to storing use modules as `sets` instead of `lists`
 - Changed `include_dirs` from a `list` to a `set`
+- Automates the versioning with GitHub releases
 
 ### Fixed
 
