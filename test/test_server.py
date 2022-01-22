@@ -187,6 +187,7 @@ def test_workspace_symbols():
             ["test_mod", 2, 0],
             ["test_nonint_mod", 2, 0],
             ["test_preproc_keywords", 2, 0],
+            ["test_private", 2, 8],
             ["test_program", 2, 0],
             ["test_rename_sub", 6, 9],
             ["test_select", 2, 0],
@@ -279,6 +280,9 @@ def test_comp():
     string += comp_request(file_path, 8, 10)
     file_path = os.path.join(test_dir, "test_import.f90")
     string += comp_request(file_path, 15, 20)
+    file_path = os.path.join(test_dir, "completion", "test_vis_mod_completion.f90")
+    string += comp_request(file_path, 12, 16)
+    string += comp_request(file_path, 12, 24)
     errcode, results = run_request(string)
     assert errcode == 0
     #
@@ -330,7 +334,11 @@ def test_comp():
         [3, "some_type", "TYPE"],
         # test_import.f90
         # TODO: this should be 1, mytype2 should not appear in autocomplete
+        # see #5 and #8 on GitHub
         [2, "mytype", "TYPE"],
+        # completion/test_vis_mod_completion.f90
+        [1, "some_var", "INTEGER"],
+        [3, "length", "INTEGER"],
     )
     assert len(exp_results) + 1 == len(results)
     for i in range(len(exp_results)):

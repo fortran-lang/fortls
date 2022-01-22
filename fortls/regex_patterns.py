@@ -79,7 +79,7 @@ PARAMETER_VAL_REGEX = re.compile(r"[\w]*[\s\&]*=[\s\&]*([\w\.\*\-\+\\]*)", re.I)
 TATTR_LIST_REGEX = re.compile(
     r"[ ]*,[ ]*(PUBLIC|PRIVATE|ABSTRACT|EXTENDS\([a-z0-9_]*\))", re.I
 )
-VIS_REGEX = re.compile(r"[ ]*(PUBLIC|PRIVATE)[ :]", re.I)
+VIS_REGEX = re.compile(r"[ ]*\b(PUBLIC|PRIVATE)\b", re.I)
 WORD_REGEX = re.compile(r"[a-z_][a-z0-9_]*", re.I)
 NUMBER_REGEX = re.compile(
     r"[\+\-]?(\b\d+\.?\d*|\.\d+)(_\w+|d[\+\-]?\d+|e[\+\-]?\d+(_\w+)?)?(?![a-z_])",

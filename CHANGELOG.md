@@ -14,6 +14,9 @@
 ### Fixed
 
 - Fixed some mutable default argument warnings in methods and classes
+- Fixed private variables showing in autocomplete
+  ([#191](https://github.com/hansec/fortran-language-server/issues/191))
+  ([gnikit/fortls#3](https://github.com/gnikit/fortls/issues/3))
 
 ## 2.0.0
 
