@@ -1,0 +1,3 @@
+[run]
+dynamic_context = test_function
+omit = fortls/__init__.py
