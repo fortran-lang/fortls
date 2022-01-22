@@ -48,8 +48,9 @@ jobs:
         run: |
           git config --global user.name 'gnikit'
           git config --global user.email 'gnikit@users.noreply.github.com'
-          git commit fortls/_version.py -am "Auto-Update version"
-          git push
+          git commit fortls/_version.py -m "Auto-Update version"
+          git tag -f "${VERSION}"
+          git push -f
 
       - name: Build package
         run: python -m build
