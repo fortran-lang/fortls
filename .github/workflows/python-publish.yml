@@ -55,18 +55,21 @@ jobs:
         shell: bash
         run: sed -i "s@\".*\"@\"${VERSION}\"@g" "fortls/_version.py"
 
-      - name: Commit the new version to dev
-        shell: bash
-        run: |
-          git config --global user.name 'gnikit'
-          git config --global user.email 'giannis.nikiteas@gmail.com'
-          git fetch origin
-          git switch dev
-          git commit -S fortls/_version.py -m "Auto-Update version" -v
-          git push
-          git tag -f "${VERSION}"
-          git push --delete origin "${VERSION}"
-          git push origin "${VERSION}"
+      # Disabled the workflow because it messes up with the Releases on GitHub
+      # releases that use tags through force-push are marked as drafts
+      # will have to manually update the versions in _version.py
+      # - name: Commit the new version to dev
+      #   shell: bash
+      #   run: |
+      #     git config --global user.name 'gnikit'
+      #     git config --global user.email 'giannis.nikiteas@gmail.com'
+      #     git fetch origin
+      #     git switch dev
+      #     git commit -S fortls/_version.py -m "Auto-Update version" -v
+      #     git push
+      #     git tag -f "${VERSION}"
+      #     git push --delete origin "${VERSION}"
+      #     git push origin "${VERSION}"
 
       - name: Build package
         run: python -m build
