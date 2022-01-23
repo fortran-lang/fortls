@@ -321,9 +321,7 @@ class LangServer:
                     continue
             else:
                 scope_type = map_types(scope.get_type())
-            tmp_out = {}
-            tmp_out["name"] = scope.name
-            tmp_out["kind"] = scope_type
+            tmp_out = {"name": scope.name, "kind": scope_type}
             sline = scope.sline - 1
             eline = scope.eline - 1
             tmp_out["location"] = {
@@ -341,17 +339,18 @@ class LangServer:
             # If class add members
             if scope.get_type() == CLASS_TYPE_ID and not self.symbol_skip_mem:
                 for child in scope.children:
-                    tmp_out = {}
-                    tmp_out["name"] = child.name
-                    tmp_out["kind"] = map_types(child.get_type(), True)
-                    tmp_out["location"] = {
-                        "uri": uri,
-                        "range": {
-                            "start": {"line": child.sline - 1, "character": 0},
-                            "end": {"line": child.sline - 1, "character": 0},
+                    tmp_out = {
+                        "name": child.name,
+                        "kind": map_types(child.get_type(), True),
+                        "location": {
+                            "uri": uri,
+                            "range": {
+                                "start": {"line": child.sline - 1, "character": 0},
+                                "end": {"line": child.sline - 1, "character": 0},
+                            },
                         },
+                        "containerName": scope.name,
                     }
-                    tmp_out["containerName"] = scope.name
                     test_output.append(tmp_out)
         return test_output
 
