@@ -1,12 +1,13 @@
 import os
+from pathlib import Path
 
 # from types import NoneType
 from setup_tests import (
-    run_request,
-    write_rpc_request,
-    write_rpc_notification,
     path_to_uri,
+    run_request,
     test_dir,
+    write_rpc_notification,
+    write_rpc_request,
 )
 
 
@@ -658,7 +659,7 @@ def test_diagnostics():
     )
     errcode, results = run_request(string)
     assert errcode == 0
-    file_path = os.path.join(test_dir, "diag", "test_external.f90")
+    root = Path(test_dir)
     ref_results = [
         [],
         [],
@@ -675,7 +676,7 @@ def test_diagnostics():
                 "relatedInformation": [
                     {
                         "location": {
-                            "uri": f"file://{file_path}",
+                            "uri": f"file://{root/'diag'/'test_external.f90'}",
                             "range": {
                                 "start": {"line": 5, "character": 0},
                                 "end": {"line": 5, "character": 0},
@@ -695,7 +696,7 @@ def test_diagnostics():
                 "relatedInformation": [
                     {
                         "location": {
-                            "uri": f"file://{file_path}",
+                            "uri": f"file://{root/'diag'/'test_external.f90'}",
                             "range": {
                                 "start": {"line": 3, "character": 0},
                                 "end": {"line": 3, "character": 0},
