@@ -5,6 +5,7 @@
 ### Added
 
 - Added coverage metric for Codecov
+- Added coverage for `WHERE`, `ENUM`, max line/comment diagnostics and multilines
 
 ## 2.0.1
 

@@ -49,6 +49,15 @@ def test_init():
     check_return(results[0])
 
 
+def test_logger():
+    """Test the logger"""
+    string = write_rpc_request(1, "initialize", {"rootPath": test_dir})
+    errcode, results = run_request(string, " --debug_log")
+    assert errcode == 0
+    assert results[1]["type"] == 3
+    assert results[1]["message"] == "FORTLS debugging enabled"
+
+
 def test_open():
     string = write_rpc_request(1, "initialize", {"rootPath": test_dir})
     file_path = os.path.join(test_dir, "subdir", "test_free.f90")
@@ -178,6 +187,7 @@ def test_workspace_symbols():
         objs = (
             ["test", 6, 7],
             ["test_abstract", 2, 0],
+            ["test_enum", 2, 0],
             ["test_external", 2, 0],
             ["test_forall", 2, 0],
             ["test_free", 2, 0],
@@ -185,6 +195,7 @@ def test_workspace_symbols():
             ["test_generic", 2, 0],
             ["test_inherit", 2, 0],
             ["test_int", 2, 0],
+            ["test_lines", 2, 0],
             ["test_mod", 2, 0],
             ["test_nonint_mod", 2, 0],
             ["test_preproc_keywords", 2, 0],
@@ -193,12 +204,14 @@ def test_workspace_symbols():
             ["test_rename_sub", 6, 9],
             ["test_select", 2, 0],
             ["test_select_sub", 6, 16],
+            ["test_semicolon", 2, 0],
             ["test_sig_Sub", 6, 67],
             ["test_str1", 13, 5],
             ["test_str2", 13, 5],
             ["test_sub", 6, 8],
             ["test_use_ordering", 2, 9],
             ["test_vis_mod", 2, 0],
+            ["test_where", 2, 0],
         )
         assert len(result_array) == len(objs)
         for i, obj in enumerate(objs):
@@ -657,8 +670,37 @@ def test_diagnostics():
     string += write_rpc_notification(
         "textDocument/didOpen", {"textDocument": {"uri": file_path}}
     )
+    # Test where blocks
+    file_path = os.path.join(test_dir, "diag", "test_where.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
+    # Test where semicolon (multi-line)
+    file_path = os.path.join(test_dir, "diag", "test_semicolon.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
+    # Test ENUM block
+    file_path = os.path.join(test_dir, "diag", "test_enum.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
     errcode, results = run_request(string)
     assert errcode == 0
+
+    # Load a different config file
+    # Test long lines
+    root = os.path.join(test_dir, "diag")
+    string = write_rpc_request(1, "initialize", {"rootPath": root})
+    file_path = os.path.join(test_dir, "diag", "test_lines.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
+    file_path = os.path.join(test_dir, "diag", "conf_long_lines.json")
+    errcode, res = run_request(string, f" --config {file_path}")
+    assert errcode == 0
+    results.extend(res[1:])
+
     root = Path(test_dir)
     ref_results = [
         [],
@@ -709,12 +751,36 @@ def test_diagnostics():
         ],
         [],
         [],
+        [],
+        [],
+        [],
+        [
+            {
+                "range": {
+                    "start": {"line": 2, "character": 100},
+                    "end": {"line": 2, "character": 155},
+                },
+                "message": 'Line length exceeds "max_line_length" (100)',
+                "severity": 2,
+            },
+            {
+                "range": {
+                    "start": {"line": 3, "character": 100},
+                    "end": {"line": 3, "character": 127},
+                },
+                "message": (
+                    'Comment line length exceeds "max_comment_line_length" (100)'
+                ),
+                "severity": 2,
+            },
+        ],
     ]
     check_return(results[1:], ref_results)
 
 
 if __name__ == "__main__":
     test_init()
+    test_logger()
     test_open()
     test_change()
     test_symbols()
