@@ -54,17 +54,7 @@ class fortran_intrinsic_obj(fortran_obj):
             arg_snip = None
         else:
             arg_list = self.args.split(",")
-            place_holders = []
-            for i, arg in enumerate(arg_list):
-                opt_split = arg.split("=")
-                if len(opt_split) > 1:
-                    place_holders.append(
-                        "{1}=${{{0}:{2}}}".format(i + 1, opt_split[0], opt_split[1])
-                    )
-                else:
-                    place_holders.append("${{{0}:{1}}}".format(i + 1, arg))
-            arg_str = "({0})".format(", ".join(arg_list))
-            arg_snip = "({0})".format(", ".join(place_holders))
+            arg_str, arg_snip = self.get_placeholders(arg_list)
         name = self.name
         if name_replace is not None:
             name = name_replace
@@ -79,9 +69,6 @@ class fortran_intrinsic_obj(fortran_obj):
             arg_sigs.append({"label": arg})
         call_sig, _ = self.get_snippet()
         return call_sig, self.doc_str, arg_sigs
-
-    def get_documentation(self):
-        return self.doc_str
 
     def get_hover(self, long=False):
         return self.doc_str, False

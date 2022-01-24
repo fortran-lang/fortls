@@ -258,35 +258,11 @@ def write_rpc_notification(method, params):
 
 
 def read_rpc_messages(content):
-    def read_header_content_length(line):
-        if len(line) < 2 or line[-2:] != "\r\n":
-            raise JSONRPC2ProtocolError("Line endings must be \\r\\n")
-        if line.startswith("Content-Length: "):
-            _, value = line.split("Content-Length: ")
-            value = value.strip()
-            try:
-                return int(value)
-            except ValueError:
-                raise JSONRPC2ProtocolError(f"Invalid Content-Length header: {value}")
-
-    def receive_next():
-        line = content.readline()
-        if line == "":
-            raise EOFError()
-        length = read_header_content_length(line)
-        # Keep reading headers until we find the sentinel line
-        # for the JSON request.
-        while line != "\r\n":
-            line = content.readline()
-        body = content.read(length)
-        # log.debug("RECV %s", body)
-        return json.loads(body)
-
-    #
+    conn = JSONRPC2Connection(content)
     result_list = []
     while True:
         try:
-            result = receive_next()
+            result = conn._receive()
         except EOFError:
             break
         else:

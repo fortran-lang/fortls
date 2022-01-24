@@ -134,7 +134,7 @@ if not PY3K:
     import io
 
 
-def get_line_context(line: str) -> tuple[str, None]:
+def get_line_context(line: str) -> tuple[str, None] | tuple[str, str]:
     """Get context of ending position in line (for completion)
 
     Parameters
@@ -896,7 +896,7 @@ class fortran_file:
         end_line = change_range["end"]["line"]
         end_col = change_range["end"]["character"]
 
-        # Check for an edit occuring at the very end of the file
+        # Check for an edit occurring at the very end of the file
         if start_line == self.nLines:
             self.set_contents(self.contents_split + text_split)
             return True

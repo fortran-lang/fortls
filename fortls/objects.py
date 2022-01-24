@@ -69,7 +69,7 @@ VIS_info = NamedTuple("VIS_info", [("type", int), ("obj_names", List[str])])
 
 @dataclass
 class INCLUDE_info:
-    line_number: str
+    line_number: int
     path: str
     file: None  # fortran_file
     scope_objs: list[str]
@@ -421,6 +421,19 @@ class fortran_obj:
     def get_snippet(self, name_replace=None, drop_arg=-1):
         return None, None
 
+    @staticmethod
+    def get_placeholders(arg_list: list[str]):
+        place_holders = []
+        for i, arg in enumerate(arg_list):
+            opt_split = arg.split("=")
+            if len(opt_split) > 1:
+                place_holders.append(f"{opt_split[0]}=${{{i+1}}}:{{{opt_split[1]}}}")
+            else:
+                place_holders.append(f"${{{i+1}}}:{{{arg}}}")
+        arg_str = f"({', '.join(arg_list)})"
+        arg_snip = f"({', '.join(place_holders)})"
+        return arg_str, arg_snip
+
     def get_documentation(self):
         return self.doc_str
 
@@ -482,15 +495,13 @@ class fortran_obj:
 
 
 class fortran_scope(fortran_obj):
-    def __init__(self, file_ast, line_number: int, name: str):
-        self.base_setup(file_ast, line_number, name)
-
-    def base_setup(self, file_ast, sline: int, name: str, keywords: list = None):
+    def __init__(self, file_ast, line_number: int, name: str, keywords: list = None):
+        super().__init__()
         if keywords is None:
             keywords = []
         self.file_ast: fortran_ast = file_ast
-        self.sline: int = sline
-        self.eline: int = sline
+        self.sline: int = line_number
+        self.eline: int = line_number
         self.name: str = name
         self.children: list = []
         self.members: list = []
@@ -498,34 +509,17 @@ class fortran_scope(fortran_obj):
         self.keywords: list = keywords
         self.inherit = None
         self.parent = None
-        self.vis: int = 0
-        self.def_vis: int = 0
         self.contains_start = None
-        self.doc_str: str = None
-        self.implicit_vars = None
         self.implicit_line = None
         self.FQSN: str = self.name.lower()
         if file_ast.enc_scope_name is not None:
             self.FQSN = file_ast.enc_scope_name.lower() + "::" + self.name.lower()
 
-    def copy_from(self, copy_source):
-        self.file_ast = copy_source.file_ast
-        self.name = copy_source.name
-        self.FQSN = copy_source.FQSN
-        self.sline = copy_source.sline
-        self.eline = copy_source.eline
-        self.keywords = copy_source.keywords
-        self.children = copy_source.children
-        self.members = copy_source.members
-        self.use = copy_source.use
-        self.inherit = copy_source.inherit
-        self.parent = copy_source.parent
-        self.vis = copy_source.vis
-        self.def_vis = copy_source.def_vis
-        self.contains_start = copy_source.contains_start
-        self.doc_str = copy_source.doc_str
-        self.implicit_vars = copy_source.implicit_vars
-        self.implicit_line = copy_source.implicit_line
+    def copy_from(self, copy_source: fortran_scope):
+        # Pass the reference, we don't want shallow copy since that would still
+        # result into 2 versions of attributes between copy_source and self
+        for k, v in copy_source.__dict__.items():
+            setattr(self, k, v)
 
     def add_use(
         self, use_mod, line_number, only_list: list = None, rename_map: dict = None
@@ -763,7 +757,7 @@ class fortran_module(fortran_scope):
 
 
 class fortran_include(fortran_scope):
-    def get_dec(self):
+    def get_desc(self):
         return "INCLUDE"
 
 
@@ -780,7 +774,7 @@ class fortran_submodule(fortran_module):
         name: str,
         ancestor_name: str = None,
     ):
-        self.base_setup(file_ast, line_number, name)
+        super().__init__(file_ast, line_number, name)
         self.ancestor_name = ancestor_name
         self.ancestor_obj = None
 
@@ -862,9 +856,7 @@ class fortran_subroutine(fortran_scope):
         mod_flag: bool = False,
         keywords: list = None,
     ):
-        if keywords is None:
-            keywords = []
-        self.base_setup(file_ast, line_number, name, keywords=keywords)
+        super().__init__(file_ast, line_number, name, keywords)
         self.args: str = args.replace(" ", "")
         self.args_snip: str = self.args
         self.arg_objs: list = []
@@ -878,7 +870,7 @@ class fortran_subroutine(fortran_scope):
     def is_callable(self):
         return True
 
-    def copy_interface(self, copy_source):
+    def copy_interface(self, copy_source: fortran_subroutine) -> list[str]:
         # Copy arguments
         self.args = copy_source.args
         self.args_snip = copy_source.args_snip
@@ -894,6 +886,7 @@ class fortran_subroutine(fortran_scope):
                 continue
             if child.name.lower() not in child_names:
                 self.in_children.append(child)
+        return child_names
 
     def get_children(self, public_only=False):
         tmp_list = copy.copy(self.children)
@@ -905,7 +898,7 @@ class fortran_subroutine(fortran_scope):
             return
         arg_list = self.args.replace(" ", "").split(",")
         arg_list_lower = self.args.lower().replace(" ", "").split(",")
-        self.arg_objs = [None for arg in arg_list]
+        self.arg_objs = [None] * len(arg_list)
         # check_objs = copy.copy(self.children)
         # for child in self.children:
         #     if child.is_external_int():
@@ -949,17 +942,7 @@ class fortran_subroutine(fortran_scope):
             del arg_list[drop_arg]
         arg_snip = None
         if len(arg_list) > 0:
-            place_holders = []
-            for i, arg in enumerate(arg_list):
-                opt_split = arg.split("=")
-                if len(opt_split) > 1:
-                    place_holders.append(
-                        "{1}=${{{0}:{2}}}".format(i + 1, opt_split[0], opt_split[1])
-                    )
-                else:
-                    place_holders.append("${{{0}:{1}}}".format(i + 1, arg))
-            arg_str = "({0})".format(", ".join(arg_list))
-            arg_snip = "({0})".format(", ".join(place_holders))
+            arg_str, arg_snip = self.get_placeholders(arg_list)
         else:
             arg_str = "()"
         name = self.name
@@ -976,21 +959,26 @@ class fortran_subroutine(fortran_scope):
     def get_hover(self, long=False, include_doc=True, drop_arg=-1):
         sub_sig, _ = self.get_snippet(drop_arg=drop_arg)
         keyword_list = get_keywords(self.keywords)
-        keyword_list.append("SUBROUTINE ")
+        keyword_list.append(f"{self.get_desc()} ")
         hover_array = [" ".join(keyword_list) + sub_sig]
+        self.get_docs_full(hover_array, long, include_doc, drop_arg)
+        return "\n ".join(hover_array), long
+
+    def get_docs_full(
+        self, hover_array: list[str], long=False, include_doc=True, drop_arg=-1
+    ):
         doc_str = self.get_documentation()
-        if include_doc and (doc_str is not None):
+        if include_doc and doc_str is not None:
             hover_array[0] += "\n" + doc_str
         if long:
-            for (i, arg_obj) in enumerate(self.arg_objs):
-                if (arg_obj is None) or (i == drop_arg):
+            for i, arg_obj in enumerate(self.arg_objs):
+                if arg_obj is None or i == drop_arg:
                     continue
                 arg_doc, _ = arg_obj.get_hover(include_doc=False)
-                hover_array.append("{0} :: {1}".format(arg_doc, arg_obj.name))
+                hover_array.append(f"{arg_doc} :: {arg_obj.name}")
                 doc_str = arg_obj.get_documentation()
                 if include_doc and (doc_str is not None):
                     hover_array += doc_str.splitlines()
-        return "\n ".join(hover_array), long
 
     def get_signature(self, drop_arg=-1):
         arg_sigs = []
@@ -1011,12 +999,11 @@ class fortran_subroutine(fortran_scope):
         call_sig, _ = self.get_snippet()
         return call_sig, self.get_documentation(), arg_sigs
 
-    def get_interface(self, name_replace=None, change_arg=-1, change_strings=None):
-        sub_sig, _ = self.get_snippet(name_replace=name_replace)
-        keyword_list = get_keywords(self.keywords)
-        keyword_list.append("SUBROUTINE ")
-        interface_array = [" ".join(keyword_list) + sub_sig]
-        for (i, arg_obj) in enumerate(self.arg_objs):
+    def get_interface_array(
+        self, keywords: list[str], signature: str, change_arg=-1, change_strings=None
+    ):
+        interface_array = [" ".join(keywords) + signature]
+        for i, arg_obj in enumerate(self.arg_objs):
             if arg_obj is None:
                 return None
             arg_doc, _ = arg_obj.get_hover(include_doc=False)
@@ -1025,7 +1012,16 @@ class fortran_subroutine(fortran_scope):
                 if i0 >= 0:
                     i1 = i0 + len(change_strings[0])
                     arg_doc = arg_doc[:i0] + change_strings[1] + arg_doc[i1:]
-            interface_array.append("{0} :: {1}".format(arg_doc, arg_obj.name))
+            interface_array.append(f"{arg_doc} :: {arg_obj.name}")
+        return interface_array
+
+    def get_interface(self, name_replace=None, change_arg=-1, change_strings=None):
+        sub_sig, _ = self.get_snippet(name_replace=name_replace)
+        keyword_list = get_keywords(self.keywords)
+        keyword_list.append("SUBROUTINE ")
+        interface_array = self.get_interface_array(
+            keyword_list, sub_sig, change_arg, change_strings
+        )
         name = self.name
         if name_replace is not None:
             name = name_replace
@@ -1052,7 +1048,7 @@ class fortran_subroutine(fortran_scope):
             )
             errors.append(new_diag)
         implicit_flag = self.get_implicit()
-        if (implicit_flag is None) or (implicit_flag):
+        if (implicit_flag is None) or implicit_flag:
             return errors
         arg_list = self.args.replace(" ", "").split(",")
         for (i, arg_obj) in enumerate(self.arg_objs):
@@ -1080,9 +1076,7 @@ class fortran_function(fortran_subroutine):
         return_type=None,
         result_var=None,
     ):
-        if keywords is None:
-            keywords = []
-        self.base_setup(file_ast, line_number, name, keywords=keywords)
+        super().__init__(file_ast, line_number, name, args, mod_flag, keywords)
         self.args: str = args.replace(" ", "").lower()
         self.args_snip: str = self.args
         self.arg_objs: list = []
@@ -1095,24 +1089,12 @@ class fortran_function(fortran_subroutine):
         if return_type is not None:
             self.return_type = return_type[0]
 
-    def copy_interface(self, copy_source):
-        # Copy arguments and returns
-        self.args = copy_source.args
-        self.args_snip = copy_source.args_snip
-        self.arg_objs = copy_source.arg_objs
+    def copy_interface(self, copy_source: fortran_function):
+        # Call the parent class method
+        child_names = super().copy_interface(copy_source)
+        # Return specific options
         self.result_var = copy_source.result_var
         self.result_obj = copy_source.result_obj
-        # Get current fields
-        child_names = []
-        for child in self.children:
-            child_names.append(child.name.lower())
-        # Import arg_objs from copy object
-        self.in_children = []
-        for child in copy_source.arg_objs:
-            if child is None:
-                continue
-            if child.name.lower() not in child_names:
-                self.in_children.append(child)
         if copy_source.result_obj is not None:
             if copy_source.result_obj.name.lower() not in child_names:
                 self.in_children.append(copy_source.result_obj)
@@ -1147,21 +1129,8 @@ class fortran_function(fortran_subroutine):
             fun_return = self.return_type
         keyword_list = get_keywords(self.keywords)
         keyword_list.append("FUNCTION")
-        hover_array = [
-            "{0} {1} {2}".format(fun_return, " ".join(keyword_list), fun_sig)
-        ]
-        doc_str = self.get_documentation()
-        if include_doc and (doc_str is not None):
-            hover_array[0] += "\n" + doc_str
-        if long:
-            for (i, arg_obj) in enumerate(self.arg_objs):
-                if (arg_obj is None) or (i == drop_arg):
-                    continue
-                arg_doc, _ = arg_obj.get_hover(include_doc=False)
-                hover_array.append("{0} :: {1}".format(arg_doc, arg_obj.name))
-                doc_str = arg_obj.get_documentation()
-                if include_doc and (doc_str is not None):
-                    hover_array += doc_str.splitlines()
+        hover_array = [f"{fun_return} {' '.join(keyword_list)} {fun_sig}"]
+        self.get_docs_full(hover_array, long, include_doc, drop_arg)
         return "\n ".join(hover_array), long
 
     def get_interface(self, name_replace=None, change_arg=-1, change_strings=None):
@@ -1173,17 +1142,9 @@ class fortran_function(fortran_subroutine):
             fun_sig += " RESULT({0})".format(self.result_obj.name)
         keyword_list += get_keywords(self.keywords)
         keyword_list.append("FUNCTION ")
-        interface_array = [" ".join(keyword_list) + fun_sig]
-        for (i, arg_obj) in enumerate(self.arg_objs):
-            if arg_obj is None:
-                return None
-            arg_doc, _ = arg_obj.get_hover(include_doc=False)
-            if i == change_arg:
-                i0 = arg_doc.lower().find(change_strings[0].lower())
-                if i0 >= 0:
-                    i1 = i0 + len(change_strings[0])
-                    arg_doc = arg_doc[:i0] + change_strings[1] + arg_doc[i1:]
-            interface_array.append("{0} :: {1}".format(arg_doc, arg_obj.name))
+        interface_array = self.get_interface_array(
+            keyword_list, fun_sig, change_arg, change_strings
+        )
         if self.result_obj is not None:
             arg_doc, _ = self.result_obj.get_hover(include_doc=False)
             interface_array.append("{0} :: {1}".format(arg_doc, self.result_obj.name))
@@ -1198,7 +1159,7 @@ class fortran_type(fortran_scope):
     def __init__(
         self, file_ast: fortran_ast, line_number: int, name: str, keywords: list
     ):
-        self.base_setup(file_ast, line_number, name, keywords=keywords)
+        super().__init__(file_ast, line_number, name, keywords)
         #
         self.in_children: list = []
         self.inherit = None
@@ -1250,7 +1211,7 @@ class fortran_type(fortran_scope):
     def require_inherit(self):
         return True
 
-    def get_overriden(self, field_name):
+    def get_overridden(self, field_name):
         ret_list = []
         field_name = field_name.lower()
         for child in self.children:
@@ -1258,7 +1219,7 @@ class fortran_type(fortran_scope):
                 ret_list.append(child)
                 break
         if self.inherit_var is not None:
-            ret_list += self.inherit_var.get_overriden(field_name)
+            ret_list += self.inherit_var.get_overridden(field_name)
         return ret_list
 
     def check_valid_parent(self):
@@ -1363,7 +1324,7 @@ class fortran_type(fortran_scope):
 
 class fortran_block(fortran_scope):
     def __init__(self, file_ast: fortran_ast, line_number: int, name: str):
-        self.base_setup(file_ast, line_number, name)
+        super().__init__(file_ast, line_number, name)
 
     def get_type(self, no_link=False):
         return BLOCK_TYPE_ID
@@ -1380,7 +1341,7 @@ class fortran_block(fortran_scope):
 
 class fortran_do(fortran_block):
     def __init__(self, file_ast: fortran_ast, line_number: int, name: str):
-        self.base_setup(file_ast, line_number, name)
+        super().__init__(file_ast, line_number, name)
 
     def get_type(self, no_link=False):
         return DO_TYPE_ID
@@ -1391,7 +1352,7 @@ class fortran_do(fortran_block):
 
 class fortran_where(fortran_block):
     def __init__(self, file_ast: fortran_ast, line_number: int, name: str):
-        self.base_setup(file_ast, line_number, name)
+        super().__init__(file_ast, line_number, name)
 
     def get_type(self, no_link=False):
         return WHERE_TYPE_ID
@@ -1402,7 +1363,7 @@ class fortran_where(fortran_block):
 
 class fortran_if(fortran_block):
     def __init__(self, file_ast: fortran_ast, line_number: int, name: str):
-        self.base_setup(file_ast, line_number, name)
+        super().__init__(file_ast, line_number, name)
 
     def get_type(self, no_link=False):
         return IF_TYPE_ID
@@ -1413,7 +1374,7 @@ class fortran_if(fortran_block):
 
 class fortran_associate(fortran_block):
     def __init__(self, file_ast: fortran_ast, line_number: int, name: str):
-        self.base_setup(file_ast, line_number, name)
+        super().__init__(file_ast, line_number, name)
         self.assoc_links = []
 
     def get_type(self, no_link=False):
@@ -1448,7 +1409,7 @@ class fortran_associate(fortran_block):
 
 class fortran_enum(fortran_block):
     def __init__(self, file_ast: fortran_ast, line_number: int, name: str):
-        self.base_setup(file_ast, line_number, name)
+        super().__init__(file_ast, line_number, name)
 
     def get_type(self, no_link=False):
         return ENUM_TYPE_ID
@@ -1459,7 +1420,7 @@ class fortran_enum(fortran_block):
 
 class fortran_select(fortran_block):
     def __init__(self, file_ast: fortran_ast, line_number: int, name: str, select_info):
-        self.base_setup(file_ast, line_number, name)
+        super().__init__(file_ast, line_number, name)
         self.select_type = select_info.type
         self.binding_name = None
         self.bound_var = None
@@ -1522,7 +1483,7 @@ class fortran_int(fortran_scope):
         name: str,
         abstract: bool = False,
     ):
-        self.base_setup(file_ast, line_number, name)
+        super().__init__(file_ast, line_number, name)
         self.mems = []
         self.abstract = abstract
         self.external = name.startswith("#GEN_INT") and (not abstract)
@@ -1566,22 +1527,9 @@ class fortran_var(fortran_obj):
         keyword_info: dict = None,
         link_obj=None,
     ):
+        super().__init__()
         if keyword_info is None:
             keyword_info = {}
-        self.base_setup(
-            file_ast, line_number, name, var_desc, keywords, keyword_info, link_obj
-        )
-
-    def base_setup(
-        self,
-        file_ast: fortran_ast,
-        line_number: int,
-        name: str,
-        var_desc: str,
-        keywords: list,
-        keyword_info: dict,
-        link_obj: str,
-    ):
         self.file_ast: fortran_ast = file_ast
         self.sline: int = line_number
         self.eline: int = line_number
@@ -1589,12 +1537,9 @@ class fortran_var(fortran_obj):
         self.desc: str = var_desc
         self.keywords: list = keywords
         self.keyword_info: dict = keyword_info
-        self.doc_str: str = None
         self.callable: bool = CLASS_VAR_REGEX.match(var_desc) is not None
         self.children: list = []
         self.use: list[USE_line] = []
-        self.vis: int = 0
-        self.parent = None
         self.link_obj = None
         self.type_obj = None
         self.is_const: bool = False
@@ -1781,7 +1726,7 @@ class fortran_meth(fortran_var):
         keyword_info: dict,
         link_obj=None,
     ):
-        self.base_setup(
+        super().__init__(
             file_ast, line_number, name, var_desc, keywords, keyword_info, link_obj
         )
         self.drop_arg: int = -1

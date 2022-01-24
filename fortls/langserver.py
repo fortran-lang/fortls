@@ -206,12 +206,12 @@ class LangServer:
             datefmt="%H:%M:%S",
             level=logging.INFO,
         )
-        self.__config_logger(request)
+        self._config_logger(request)
         init_debug_log = self._load_config_file()
         if init_debug_log:
-            self.__config_logger(request)
-        self.__load_intrinsics()
-        self.__add_source_dirs()
+            self._config_logger(request)
+        self._load_intrinsics()
+        self._add_source_dirs()
 
         # Initialize workspace
         self.workspace_init()
@@ -905,7 +905,7 @@ class LangServer:
                             ref_match = True
                         elif var_def.parent.get_type() == CLASS_TYPE_ID:
                             if type_mem:
-                                for inherit_def in var_def.parent.get_overriden(
+                                for inherit_def in var_def.parent.get_overridden(
                                     def_name
                                 ):
                                     if def_fqsn == inherit_def.FQSN:
@@ -984,19 +984,7 @@ class LangServer:
             return None
         # Construct link reference
         if var_obj.file_ast.file is not None:
-            var_file = var_obj.file_ast.file
-            sline, schar, echar = var_file.find_word_in_code_line(
-                var_obj.sline - 1, var_obj.name
-            )
-            if schar < 0:
-                schar = echar = 0
-            return {
-                "uri": path_to_uri(var_file.path),
-                "range": {
-                    "start": {"line": sline, "character": schar},
-                    "end": {"line": sline, "character": echar},
-                },
-            }
+            return self._create_ref_link(var_obj)
         return None
 
     def serve_hover(self, request: dict):
@@ -1052,7 +1040,7 @@ class LangServer:
                     hover_array.append(create_hover(hover_str, highlight))
         elif self.variable_hover and (var_type == VAR_TYPE_ID):
             # Unless we have a Fortran literal include the desc in the hover msg
-            # See get_definition for an explanaiton about this default name
+            # See get_definition for an explanation about this default name
             if not var_obj.desc.startswith(FORTRAN_LITERAL):
                 hover_str, highlight = var_obj.get_hover()
                 hover_array.append(create_hover(hover_str, highlight))
@@ -1095,19 +1083,7 @@ class LangServer:
         if var_obj.parent.get_type() == CLASS_TYPE_ID:
             impl_obj = var_obj.link_obj
             if (impl_obj is not None) and (impl_obj.file_ast.file is not None):
-                impl_file = impl_obj.file_ast.file
-                sline, schar, echar = impl_file.find_word_in_code_line(
-                    impl_obj.sline - 1, impl_obj.name
-                )
-                if schar < 0:
-                    schar = echar = 0
-                return {
-                    "uri": path_to_uri(impl_file.path),
-                    "range": {
-                        "start": {"line": sline, "character": schar},
-                        "end": {"line": sline, "character": echar},
-                    },
-                }
+                return self._create_ref_link(impl_obj)
         return None
 
     def serve_rename(self, request):
@@ -1379,7 +1355,7 @@ class LangServer:
 
     def workspace_init(self):
 
-        file_list = self.__get_source_files()
+        file_list = self._get_source_files()
         # Process files
         pool = Pool(processes=self.nthreads)
         results = {}
@@ -1440,13 +1416,13 @@ class LangServer:
                 config_dict = json.load(jsonfile)
 
                 # Include and Exclude directories
-                self.__load_config_file_dirs(config_dict)
+                self._load_config_file_dirs(config_dict)
 
                 # General options
-                self.__load_config_file_general(config_dict)
+                self._load_config_file_general(config_dict)
 
                 # Preprocessor options
-                self.__load_config_file_preproc(config_dict)
+                self._load_config_file_preproc(config_dict)
 
                 # Debug options
                 debugging: bool = config_dict.get("debug_log", self.debug_log)
@@ -1467,7 +1443,7 @@ class LangServer:
             self.post_messages.append([1, msg])
             log.error(msg)
 
-    def __load_config_file_dirs(self, config_dict: dict) -> None:
+    def _load_config_file_dirs(self, config_dict: dict) -> None:
         # Exclude paths (directories & files)
         # with glob resolution
         for path in config_dict.get("excl_paths", []):
@@ -1492,7 +1468,7 @@ class LangServer:
         self.FORTRAN_SRC_EXT_REGEX = src_file_exts(self.incl_suffixes)
         self.excl_suffixes = set(config_dict.get("excl_suffixes", []))
 
-    def __load_config_file_general(self, config_dict: dict) -> None:
+    def _load_config_file_general(self, config_dict: dict) -> None:
         # General options ------------------------------------------------------
         self.nthreads = config_dict.get("nthreads", self.nthreads)
         self.notify_init = config_dict.get("notify_init", self.notify_init)
@@ -1541,7 +1517,7 @@ class LangServer:
             "enable_code_actions", self.enable_code_actions
         )
 
-    def __load_config_file_preproc(self, config_dict: dict) -> None:
+    def _load_config_file_preproc(self, config_dict: dict) -> None:
         self.pp_suffixes = config_dict.get("pp_suffixes", None)  # TODO: set def
         self.pp_defs = config_dict.get("pp_defs", {})  # TODO: set other dif?
         if isinstance(self.pp_defs, list):
@@ -1552,7 +1528,7 @@ class LangServer:
                 only_dirs(resolve_globs(path, self.root_path), self.post_messages)
             )
 
-    def __add_source_dirs(self) -> None:
+    def _add_source_dirs(self) -> None:
         """Will recursively add all subdirectories that contain Fortran
         source files only if the option `source_dirs` has not been specified
         in the configuration file or no configuration file is present
@@ -1570,7 +1546,7 @@ class LangServer:
             if root not in self.source_dirs and root not in self.excl_paths:
                 self.source_dirs.add(str(Path(root).resolve()))
 
-    def __get_source_files(self) -> list[str]:
+    def _get_source_files(self) -> list[str]:
         """Get all the source files present in `self.source_dirs`,
         exclude any files found in `self.excl_paths`^ and ignore
         any files ending with `self.excl_suffixes`.
@@ -1603,7 +1579,7 @@ class LangServer:
                 file_list.append(p)
         return file_list
 
-    def __config_logger(self, request) -> None:
+    def _config_logger(self, request) -> None:
         """Configures the logger to save Language Server requests/responses to a file
         the logger will by default output to the main (stderr, stdout) channels.
         """
@@ -1619,7 +1595,7 @@ class LangServer:
         log.debug("REQUEST %s %s", request.get("id"), request.get("method"))
         self.post_messages.append([3, "FORTLS debugging enabled"])
 
-    def __load_intrinsics(self) -> None:
+    def _load_intrinsics(self) -> None:
         # Load intrinsics
         set_keyword_ordering(True)  # Always sort intrinsics
         if self.lowercase_intrinsics:
@@ -1634,6 +1610,20 @@ class LangServer:
             self.obj_tree[module.FQSN] = [module, None]
         # Set object settings
         set_keyword_ordering(self.sort_keywords)
+
+    def _create_ref_link(self, obj):
+        """Create a link reference to an object"""
+        obj_file = obj.file_ast.file
+        sline, schar, echar = obj_file.find_word_in_code_line(obj.sline - 1, obj.name)
+        if schar < 0:
+            schar = echar = 0
+        return {
+            "uri": path_to_uri(obj_file.path),
+            "range": {
+                "start": {"line": sline, "character": schar},
+                "end": {"line": sline, "character": echar},
+            },
+        }
 
 
 class JSONRPC2Error(Exception):

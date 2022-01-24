@@ -38,7 +38,7 @@ def expand_name(line: str, char_poss: int) -> str:
     regexs = [LOGICAL_REGEX, SQ_STRING_REGEX, DQ_STRING_REGEX, WORD_REGEX, NUMBER_REGEX]
     for r in regexs:
         for num_match in r.finditer(line):
-            if num_match.start(0) <= char_poss and num_match.end(0) >= char_poss:
+            if num_match.start(0) <= char_poss <= num_match.end(0):
                 return num_match.group(0)
     return ""
 
@@ -344,7 +344,7 @@ def get_keywords(keywords, keyword_info={}):
 def get_paren_substring(test_str):
     i1 = test_str.find("(")
     i2 = test_str.rfind(")")
-    if i1 > -1 and i2 > i1:
+    if -1 < i1 < i2:
         return test_str[i1 + 1 : i2]
     else:
         return None
