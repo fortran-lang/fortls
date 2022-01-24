@@ -6,6 +6,7 @@
 
 - Added coverage metric for Codecov
 - Added coverage for `WHERE`, `ENUM`, max line/comment diagnostics and multilines
+- Adds Windows CI
 
 ## 2.0.1
 
