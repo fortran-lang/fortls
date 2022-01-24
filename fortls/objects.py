@@ -697,9 +697,7 @@ class fortran_scope(fortran_obj):
             if use_stmnt.mod_name not in obj_tree:
                 new_diag = fortran_diagnostic(
                     use_stmnt.line_number - 1,
-                    message='Module "{0}" not found in project'.format(
-                        use_stmnt.mod_name
-                    ),
+                    message=f'Module "{use_stmnt.mod_name}" not found in project',
                     severity=3,
                     find_word=use_stmnt.mod_name,
                 )
@@ -924,7 +922,7 @@ class fortran_subroutine(fortran_scope):
             else:
                 self.arg_objs[ind] = child
                 if child.is_optional():
-                    arg_list[ind] = "{0}={0}".format(arg_list[ind])
+                    arg_list[ind] = f"{arg_list[ind]}={arg_list[ind]}"
         self.args_snip = ",".join(arg_list)
 
     def resolve_link(self, obj_tree):
@@ -990,7 +988,7 @@ class fortran_subroutine(fortran_scope):
                 arg_sigs.append({"label": arg_list[i]})
             else:
                 if arg_obj.is_optional():
-                    label = "{0}={0}".format(arg_obj.name.lower())
+                    label = f"{arg_obj.name.lower()}={arg_obj.name.lower()}"
                 else:
                     label = arg_obj.name.lower()
                 arg_sigs.append(
@@ -1025,7 +1023,7 @@ class fortran_subroutine(fortran_scope):
         name = self.name
         if name_replace is not None:
             name = name_replace
-        interface_array.append("END SUBROUTINE {0}".format(name))
+        interface_array.append(f"END SUBROUTINE {name}")
         return "\n".join(interface_array)
 
     def check_valid_parent(self):
@@ -1040,9 +1038,8 @@ class fortran_subroutine(fortran_scope):
         for missing_obj in self.missing_args:
             new_diag = fortran_diagnostic(
                 missing_obj.sline - 1,
-                'Variable "{0}" with INTENT keyword not found in argument list'.format(
-                    missing_obj.name
-                ),
+                f'Variable "{missing_obj.name}" with INTENT keyword not found in'
+                " argument list",
                 severity=1,
                 find_word=missing_obj.name,
             )
@@ -1056,7 +1053,7 @@ class fortran_subroutine(fortran_scope):
                 arg_name = arg_list[i].strip()
                 new_diag = fortran_diagnostic(
                     self.sline - 1,
-                    'No matching declaration found for argument "{0}"'.format(arg_name),
+                    f'No matching declaration found for argument "{arg_name}"',
                     severity=1,
                     find_word=arg_name,
                 )
@@ -1139,7 +1136,7 @@ class fortran_function(fortran_subroutine):
         if self.return_type is not None:
             keyword_list.append(self.return_type)
         if self.result_obj is not None:
-            fun_sig += " RESULT({0})".format(self.result_obj.name)
+            fun_sig += f" RESULT({self.result_obj.name})"
         keyword_list += get_keywords(self.keywords)
         keyword_list.append("FUNCTION ")
         interface_array = self.get_interface_array(
@@ -1147,11 +1144,11 @@ class fortran_function(fortran_subroutine):
         )
         if self.result_obj is not None:
             arg_doc, _ = self.result_obj.get_hover(include_doc=False)
-            interface_array.append("{0} :: {1}".format(arg_doc, self.result_obj.name))
+            interface_array.append(f"{arg_doc} :: {self.result_obj.name}")
         name = self.name
         if name_replace is not None:
             name = name_replace
-        interface_array.append("END FUNCTION {0}".format(name))
+        interface_array.append(f"END FUNCTION {name}")
         return "\n".join(interface_array)
 
 
@@ -1239,7 +1236,7 @@ class fortran_type(fortran_scope):
             ):
                 new_diag = fortran_diagnostic(
                     self.eline - 1,
-                    'Deferred procedure "{0}" not implemented'.format(in_child.name),
+                    f'Deferred procedure "{in_child.name}" not implemented',
                     severity=1,
                 )
                 new_diag.add_related(
@@ -1276,8 +1273,8 @@ class fortran_type(fortran_scope):
                 interface_string = in_child.get_interface(
                     name_replace=in_child.name,
                     change_strings=(
-                        "class({0})".format(in_child.parent.name),
-                        "CLASS({0})".format(self.name),
+                        f"class({in_child.parent.name})",
+                        f"CLASS({self.name})",
                     ),
                 )
                 if interface_string is None:
@@ -1299,7 +1296,7 @@ class fortran_type(fortran_scope):
                 edits += interface_edits
                 new_diag = fortran_diagnostic(
                     line_number,
-                    'Deferred procedure "{0}" not implemented'.format(in_child.name),
+                    f'Deferred procedure "{in_child.name}" not implemented',
                     severity=1,
                 )
                 new_diag.add_related(
@@ -1690,8 +1687,8 @@ class fortran_var(fortran_obj):
                     if interface:
                         out_diag = fortran_diagnostic(
                             self.sline - 1,
-                            message='Object "{0}" not imported in interface'.format(
-                                desc_obj_name
+                            message=(
+                                f'Object "{desc_obj_name}" not imported in interface'
                             ),
                             severity=1,
                             find_word=desc_obj_name,
@@ -1699,9 +1696,7 @@ class fortran_var(fortran_obj):
                     else:
                         out_diag = fortran_diagnostic(
                             self.sline - 1,
-                            message='Object "{0}" not found in scope'.format(
-                                desc_obj_name
-                            ),
+                            message=f'Object "{desc_obj_name}" not found in scope',
                             severity=1,
                             find_word=desc_obj_name,
                         )
@@ -1771,9 +1766,9 @@ class fortran_meth(fortran_var):
         if long:
             if self.link_obj is None:
                 sub_sig, _ = self.get_snippet()
-                hover_str = "{0} {1}".format(self.get_desc(), sub_sig)
+                hover_str = f"{self.get_desc()} {sub_sig}"
                 if include_doc and (doc_str is not None):
-                    hover_str += "\n{0}".format(doc_str)
+                    hover_str += f"\n{doc_str}"
             else:
                 link_hover, _ = self.link_obj.get_hover(
                     long=True, include_doc=include_doc, drop_arg=self.drop_arg
@@ -1803,7 +1798,7 @@ class fortran_meth(fortran_var):
         else:
             hover_str = ", ".join([self.desc] + get_keywords(self.keywords))
             if include_doc and (doc_str is not None):
-                hover_str += "\n{0}".format(doc_str)
+                hover_str += f"\n{doc_str}"
             return hover_str, True
 
     def get_signature(self, drop_arg=-1):
@@ -2119,7 +2114,7 @@ class fortran_ast:
             )
         for error in self.end_errors:
             if error[0] >= 0:
-                message = "Unexpected end of scope at line {0}".format(error[0])
+                message = f"Unexpected end of scope at line {error[0]}"
             else:
                 message = "Unexpected end statement: No open scopes"
             errors.append(fortran_diagnostic(error[1] - 1, message=message, severity=1))
@@ -2128,9 +2123,7 @@ class fortran_ast:
                 errors.append(
                     fortran_diagnostic(
                         scope.sline - 1,
-                        message='Invalid parent for "{0}" declaration'.format(
-                            scope.get_desc()
-                        ),
+                        message=f'Invalid parent for "{scope.get_desc()}" declaration',
                         severity=1,
                     )
                 )

@@ -1120,14 +1120,12 @@ class fortran_file:
     def check_file(self, obj_tree, max_line_length=-1, max_comment_line_length=-1):
         diagnostics = []
         if (max_line_length > 0) or (max_comment_line_length > 0):
-            line_message = 'Line length exceeds "max_line_length" ({0})'.format(
-                max_line_length
-            )
+            line_message = f'Line length exceeds "max_line_length" ({max_line_length})'
             comment_message = (
-                'Comment line length exceeds "max_comment_line_length" ({0})'.format(
-                    max_comment_line_length
-                )
+                'Comment line length exceeds "max_comment_line_length"'
+                f" ({max_comment_line_length})"
             )
+
             if self.fixed:
                 COMMENT_LINE_MATCH = FIXED_COMMENT_LINE_MATCH
             else:
@@ -1383,7 +1381,7 @@ def preprocess_file(
         for def_tmp, value in defs_tmp.items():
             def_regex = def_regexes.get(def_tmp)
             if def_regex is None:
-                def_regex = re.compile(r"\b{0}\b".format(def_tmp))
+                def_regex = re.compile(fr"\b{def_tmp}\b")
                 def_regexes[def_tmp] = def_regex
             line_new, nsubs = def_regex.subn(value, line)
             if nsubs > 0:

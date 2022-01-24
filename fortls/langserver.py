@@ -877,7 +877,7 @@ class LangServer:
         # Search through all files
         def_name = def_obj.name.lower()
         def_fqsn = def_obj.FQSN
-        NAME_REGEX = re.compile(r"(?:\W|^)({0})(?:\W|$)".format(def_name), re.I)
+        NAME_REGEX = re.compile(fr"(?:\W|^)({def_name})(?:\W|$)", re.I)
         if file_obj is None:
             file_set = self.workspace.items()
         else:
@@ -1142,12 +1142,12 @@ class LangServer:
                 full_line = curr_line + "".join(post_lines)
                 if full_line.find("=>") < 0:
                     bind_obj = def_obj
-                    bind_change = "{0} => {1}".format(new_name, def_obj.name)
+                    bind_change = f"{new_name} => {def_obj.name}"
         elif (len(ref_objs) > 0) and (
             ref_objs[0].get_type(no_link=True) == METH_TYPE_ID
         ):
             bind_obj = ref_objs[0]
-            bind_change = "{0} => {1}".format(ref_objs[0].name, new_name)
+            bind_change = f"{ref_objs[0].name} => {new_name}"
         # Replace definition statement with explicit implementation naming
         if bind_obj is not None:
             def_uri = path_to_uri(bind_obj.file_ast.file.path)
@@ -1395,7 +1395,7 @@ class LangServer:
     def serve_default(self, request):
         # Default handler (errors!)
         raise JSONRPC2Error(
-            code=-32601, message="method {} not found".format(request["method"])
+            code=-32601, message=f"method {request['method']} not found"
         )
 
     def _load_config_file(self) -> bool | None:
