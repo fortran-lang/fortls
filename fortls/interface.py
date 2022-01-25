@@ -4,7 +4,7 @@ import argparse
 import json
 import sys
 
-from ._version import __version__
+from .version import __version__
 
 
 class SetAction(argparse.Action):

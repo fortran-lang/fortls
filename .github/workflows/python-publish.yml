@@ -40,34 +40,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install build
 
-        # see: https://github.community/t/how-to-get-just-the-tag-name/16241/7
-      - name: Get the version
-        id: get_version
-        shell: bash
-        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
-
-      - name: Set global variables
-        shell: bash
-        run: |
-          echo "VERSION=${{ steps.get_version.outputs.VERSION }}" >> $GITHUB_ENV
-
-      - name: Set __version__
-        shell: bash
-        run: sed -i "s@\".*\"@\"${VERSION}\"@g" "fortls/_version.py"
-
-      - name: Commit the new version to dev
-        shell: bash
-        run: |
-          git config --global user.name 'gnikit'
-          git config --global user.email 'giannis.nikiteas@gmail.com'
-          git fetch origin
-          git switch dev
-          git commit -S fortls/_version.py -m "Auto-Update version" -v
-          git push
-          git tag -f "${VERSION}"
-          git push --delete origin "${VERSION}"
-          git push origin "${VERSION}"
-
       - name: Build package
         run: python -m build
 
