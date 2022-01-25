@@ -1,12 +1,10 @@
 import os
 import subprocess
 import sys
+from io import StringIO
+from pathlib import Path
 
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
-root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+root_dir = Path(__file__).parent.parent.resolve()
 sys.path.insert(0, root_dir)
 
 from fortls.jsonrpc import (  # noqa: E402, F401
@@ -19,7 +17,7 @@ from fortls.jsonrpc import (  # noqa: E402, F401
 run_command = os.path.join(
     root_dir, "fortls.py --incremental_sync --use_signature_help"
 )
-test_dir = os.path.join(root_dir, "test", "test_source")
+test_dir = root_dir / "test" / "test_source"
 
 
 def run_request(request, fortls_args=""):
