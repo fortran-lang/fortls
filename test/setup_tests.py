@@ -29,7 +29,7 @@ def run_request(request, fortls_args: list[str] = None):
     if fortls_args:
         # Input args might not be sanitised, fix that
         for i in fortls_args:
-            command.extend(shlex.split(i))
+            command.extend(shlex.split(i, posix=False))
 
     pid = subprocess.Popen(
         command,

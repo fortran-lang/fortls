@@ -35,7 +35,8 @@ def test_hover():
     string += hover_req(file_path, 9, 7)  # multiline function with if conditional
     file_path = root_dir / "preproc_keywords.F90"
     string += hover_req(file_path, 6, 2)  # ignores PP across Fortran line continuations
-    errcode, results = run_request(string, [f'--config={root_dir/".pp_conf.json"}'])
+    config = str(root_dir / ".pp_conf.json")
+    errcode, results = run_request(string, ["--config", config])
     assert errcode == 0
 
     # Reference solution
