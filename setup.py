@@ -3,4 +3,5 @@
 """Builds the Fortran Language Server - dev
 """
 import setuptools
+
 setuptools.setup()
