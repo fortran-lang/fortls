@@ -15,7 +15,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath(".."))
 
-from fortls._version import __version__  # noqa: E402
+from fortls import __version__  # noqa: E402
 
 # Generate the agglomerated changes (from the CHANGELOG) between fortls
 # and the fortran-language-server project
