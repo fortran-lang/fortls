@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 from setup_tests import (
     run_request,
     # path_to_uri,
@@ -16,7 +15,7 @@ def test_hover():
             1,
             "textDocument/hover",
             {
-                "textDocument": {"uri": file_path},
+                "textDocument": {"uri": str(file_path)},
                 "position": {"line": ln, "character": col},
             },
         )
@@ -26,17 +25,17 @@ def test_hover():
         for (i, check) in enumerate(checks):
             assert result_array[i]["contents"][0]["value"] == check
 
-    root_dir = Path(test_dir).resolve() / "pp"
+    root_dir = test_dir / "pp"
     string = write_rpc_request(1, "initialize", {"rootPath": str(root_dir)})
-    file_path = str(root_dir / "preproc.F90")
+    file_path = root_dir / "preproc.F90"
     string += hover_req(file_path, 5, 8)  # user defined type
     string += hover_req(file_path, 7, 30)  # variable
     string += hover_req(file_path, 7, 40)  # multi-lin variable
     string += hover_req(file_path, 8, 7)  # function with if conditional
     string += hover_req(file_path, 9, 7)  # multiline function with if conditional
-    file_path = str(root_dir / "preproc_keywords.F90")
+    file_path = root_dir / "preproc_keywords.F90"
     string += hover_req(file_path, 6, 2)  # ignores PP across Fortran line continuations
-    errcode, results = run_request(string, f' --config={root_dir/".pp_conf.json"}')
+    errcode, results = run_request(string, [f'--config={root_dir/".pp_conf.json"}'])
     assert errcode == 0
 
     # Reference solution

@@ -51,7 +51,7 @@ def test_init():
 def test_logger():
     """Test the logger"""
     string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
-    errcode, results = run_request(string, " --debug_log")
+    errcode, results = run_request(string, ["--debug_log"])
     assert errcode == 0
     assert results[1]["type"] == 3
     assert results[1]["message"] == "FORTLS debugging enabled"
@@ -63,7 +63,7 @@ def test_open():
     string += write_rpc_notification(
         "textDocument/didOpen", {"textDocument": {"uri": file_path}}
     )
-    errcode, results = run_request(string, fortls_args=" --disable_diagnostics")
+    errcode, results = run_request(string, fortls_args=["--disable_diagnostics"])
     #
     assert errcode == 0
     assert len(results) == 1
@@ -126,7 +126,7 @@ def test_change():
     string += write_rpc_request(
         3, "textDocument/documentSymbol", {"textDocument": {"uri": str(file_path)}}
     )
-    errcode, results = run_request(string, fortls_args=" --disable_diagnostics")
+    errcode, results = run_request(string, fortls_args=["--disable_diagnostics"])
     #
     assert errcode == 0
     assert len(results) == 3
@@ -551,7 +551,7 @@ def test_hover():
     file_path = test_dir / "hover" / "pointers.f90"
     string += hover_req(file_path, 1, 26)
     errcode, results = run_request(
-        string, fortls_args=" --variable_hover --sort_keywords"
+        string, fortls_args=["--variable_hover", "--sort_keywords"]
     )
     assert errcode == 0
     #
@@ -699,7 +699,7 @@ def test_diagnostics():
         "textDocument/didOpen", {"textDocument": {"uri": file_path}}
     )
     file_path = str(test_dir / "diag" / "conf_long_lines.json")
-    errcode, res = run_request(string, f" --config {file_path}")
+    errcode, res = run_request(string, [f"--config {file_path}"])
     assert errcode == 0
     results.extend(res[1:])
 

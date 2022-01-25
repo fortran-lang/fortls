@@ -1,4 +1,6 @@
-import os
+from __future__ import annotations
+
+import shlex
 import subprocess
 import sys
 from io import StringIO
@@ -14,16 +16,23 @@ from fortls.jsonrpc import (  # noqa: E402, F401
     write_rpc_request,
 )
 
-run_command = os.path.join(
-    root_dir, "fortls.py --incremental_sync --use_signature_help"
-)
 test_dir = root_dir / "test" / "test_source"
 
 
-def run_request(request, fortls_args=""):
+def run_request(request, fortls_args: list[str] = None):
+    command = [
+        sys.executable,
+        str(root_dir / "fortls.py"),
+        "--incremental_sync",
+        "--use_signature_help",
+    ]
+    if fortls_args:
+        # Input args might not be sanitised, fix that
+        for i in fortls_args:
+            command.extend(shlex.split(i))
+
     pid = subprocess.Popen(
-        run_command + fortls_args,
-        shell=True,
+        command,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
