@@ -703,7 +703,7 @@ def test_diagnostics():
     assert errcode == 0
     results.extend(res[1:])
 
-    root = Path(test_dir)
+    root = path_to_uri(str((test_dir / "diag" / "test_external.f90").resolve()))
     ref_results = [
         [],
         [],
@@ -720,7 +720,7 @@ def test_diagnostics():
                 "relatedInformation": [
                     {
                         "location": {
-                            "uri": f"file://{root/'diag'/'test_external.f90'}",
+                            "uri": str(root),
                             "range": {
                                 "start": {"line": 5, "character": 0},
                                 "end": {"line": 5, "character": 0},
@@ -740,7 +740,7 @@ def test_diagnostics():
                 "relatedInformation": [
                     {
                         "location": {
-                            "uri": f"file://{root/'diag'/'test_external.f90'}",
+                            "uri": str(root),
                             "range": {
                                 "start": {"line": 3, "character": 0},
                                 "end": {"line": 3, "character": 0},

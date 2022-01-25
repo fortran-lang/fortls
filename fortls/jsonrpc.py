@@ -1,19 +1,10 @@
 import json
-
-try:
-    import Queue
-except ImportError:
-    import queue as Queue
-
 import os
+import queue
 import threading
 from collections import deque
-
-try:
-    from urllib.parse import quote, unquote
-except ImportError:
-    from urllib2 import quote
-    from urlparse import unquote
+from pathlib import Path
+from urllib.parse import quote, unquote
 
 from fortls.constants import log
 
@@ -26,7 +17,7 @@ def path_from_uri(uri: str) -> str:
         _, path = uri.split("file:///", 1)
     else:
         _, path = uri.split("file://", 1)
-    return os.path.normpath(unquote(path))
+    return str(Path(unquote(path)).resolve())
 
 
 def path_to_uri(path: str) -> str:
@@ -185,7 +176,7 @@ class JSONRPC2Connection:
 
         # We communicate the request ids using a thread safe queue.
         # It also allows us to bound the number of concurrent requests.
-        q = Queue.Queue(100)
+        q = queue.Queue(100)
 
         def send():
             for method, params in requests:
