@@ -84,7 +84,9 @@ source_dirs
 
 .. code-block:: json
 
-   "source_dirs": ["./**", "/external/fortran/src"]
+   {
+      "source_dirs": ["./**", "/external/fortran/src"]
+   }
 
 By default all directories under the current project will be recursively parsed
 for Fortran sources. Alternatively, one can define a series of directories
@@ -97,7 +99,9 @@ incl_suffixes
 
 .. code-block:: json
 
-   "incl_suffixes": [".h", ".FYP"]
+   {
+      "incl_suffixes": [".h", ".FYP"]
+   }
 
 ``fortls`` will parse only files with ``incl_suffixes`` extensions found in
 ``source_dirs``. By default ``incl_suffixes`` are defined as
@@ -112,7 +116,9 @@ excl_suffixes
 
 .. code-block:: json
 
-   "excl_suffixes": ["_tmp.f90", "_hdf5.F90"]
+   {
+      "excl_suffixes": ["_tmp.f90", "_hdf5.F90"]
+   }
 
 If certain files or suffixes do not need to be parsed these can be excluded by
 deffining ``excl_suffixes``
@@ -130,8 +136,9 @@ its subdirectories from being parsed you should define it like so
 
 .. code-block:: json
 
-   "excl_paths": ["exclude_dir/**"]
-
+   {
+      "excl_paths": ["exclude_dir/**"]
+   }
 
 Preprocessor
 ############
@@ -141,7 +148,9 @@ pp_suffixes
 
 .. code-block:: json
 
-   "pp_suffixes" : [".h", ".F90", ".fpp"]
+   {
+      "pp_suffixes" : [".h", ".F90", ".fpp"]
+   }
 
 By default preprocessor definitions are parsed for all Fortran source files
 with uppercase extensions e.g. ``.F90``, ``.F``, ``.F08``, etc.. However, the
@@ -153,7 +162,9 @@ include_dirs
 
 .. code-block:: json
 
-   "include_dirs": ["include", "preprocessor", "/usr/include"]
+   {
+      "include_dirs": ["include", "preprocessor", "/usr/include"]
+   }
 
 By default ``fortls`` will scan the project's directories for files with extensions
 ``PP_SUFFIXES`` to parse for **preprocessor definitions**. However, if the preprocessor
@@ -169,9 +180,11 @@ pp_defs
 
 .. code-block:: json
 
-   "pp_defs": {
-      "HAVE_PETSC": ""
-      "Mat": "type(tMat)"
+   {
+      "pp_defs": {
+         "HAVE_PETSC": ""
+         "Mat": "type(tMat)"
+      }
    }
 
 Additional **preprocessor definitions** from what are specified in files found in 
