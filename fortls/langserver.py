@@ -68,13 +68,18 @@ END_REGEX = re.compile(
 )
 
 
-def init_file(filepath, pp_defs, pp_suffixes, include_dirs):
+def init_file(filepath, pp_defs, pp_suffixes, include_dirs, sort):
     #
     file_obj = fortran_file(filepath, pp_suffixes)
     err_str, _ = file_obj.load_from_disk()
     if err_str:
         return None, err_str
     try:
+        # On Windows multiprocess does not propage global variables through a shell.
+        # Windows uses 'spawn' while Unix uses 'fork' which propagates globals.
+        # This is a bypass.
+        # For more see on SO: shorturl.at/hwAG1
+        set_keyword_ordering(sort)
         file_ast = process_file(file_obj, pp_defs=pp_defs, include_dirs=include_dirs)
     except:
         log.error("Error while parsing file %s", filepath, exc_info=True)
@@ -1362,7 +1367,13 @@ class LangServer:
         for filepath in file_list:
             results[filepath] = pool.apply_async(
                 init_file,
-                args=(filepath, self.pp_defs, self.pp_suffixes, self.include_dirs),
+                args=(
+                    filepath,
+                    self.pp_defs,
+                    self.pp_suffixes,
+                    self.include_dirs,
+                    self.sort_keywords,
+                ),
             )
         pool.close()
         pool.join()

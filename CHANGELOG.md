@@ -8,6 +8,11 @@
 - Added coverage for `WHERE`, `ENUM`, max line/comment diagnostics and multilines
 - Adds Windows CI
 
+### Fixed
+
+- Fixed global `sort_keywords` option not propagating during parsing on Windows
+  ([gnikit/fortls#36](https://github.com/gnikit/fortls/issues/36))
+
 ## 2.0.1
 
 ### Added
