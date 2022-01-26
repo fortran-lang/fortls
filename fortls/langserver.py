@@ -220,7 +220,7 @@ class LangServer:
 
         # Initialize workspace
         self.workspace_init()
-        log.info(f"fortls - Fortran Language Server v{__version__} Initialized")
+        log.info(f"fortls - Fortran Language Server {__version__} Initialized")
         #
         server_capabilities = {
             "completionProvider": {
