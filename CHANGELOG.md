@@ -1,5 +1,11 @@
 # CHANGELONG
 
+## 2.1.1
+
+### Added
+
+- Added additional shields to REAMDE, including coverage and Python versions
+
 ## 2.1.0
 
 ### Added
