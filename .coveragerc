@@ -1,3 +1,10 @@
 [run]
 dynamic_context = test_function
 omit = fortls/__init__.py
+
+[report]
+exclude_lines =
+    if debug:
+    log.debug
+    except:
+    if not PY3K:

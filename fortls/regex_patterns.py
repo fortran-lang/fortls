@@ -95,17 +95,17 @@ DQ_STRING_REGEX = re.compile(r"\"[^\"]*\"", re.I)
 LINE_LABEL_REGEX = re.compile(r"[ ]*([0-9]+)[ ]+", re.I)
 NON_DEF_REGEX = re.compile(r"[ ]*(CALL[ ]+[a-z_]|[a-z_][a-z0-9_%]*[ ]*=)", re.I)
 # Fixed format matching rules
-FIXED_COMMENT_LINE_MATCH = re.compile(r"(!|c|d|\*)", re.I)
-FIXED_CONT_REGEX = re.compile(r"(     [\S])")
-FIXED_DOC_MATCH = re.compile(r"(?:!|c|d|\*)(<|>|!)", re.I)
-FIXED_OPENMP_MATCH = re.compile(r"[!|c|\*]\$OMP", re.I)
+FIXED_COMMENT_LINE_MATCH = re.compile(r"([!cd*])", re.I)
+FIXED_CONT_REGEX = re.compile(r"( {5}[\S])")
+FIXED_DOC_MATCH = re.compile(r"(?:[!cd\*])([<>!])", re.I)
+FIXED_OPENMP_MATCH = re.compile(r"[!c\*]\$OMP", re.I)
 # Free format matching rules
 FREE_COMMENT_LINE_MATCH = re.compile(r"([ ]*!)")
 FREE_CONT_REGEX = re.compile(r"([ ]*&)")
-FREE_DOC_MATCH = re.compile(r"[ ]*!(<|>|!)")
+FREE_DOC_MATCH = re.compile(r"[ ]*!([<>!])")
 FREE_OPENMP_MATCH = re.compile(r"[ ]*!\$OMP", re.I)
 FREE_FORMAT_TEST = re.compile(r"[ ]{1,4}[a-z]", re.I)
-# Preprocessor mathching rules
+# Preprocessor matching rules
 DEFINED_REGEX = re.compile(r"defined[ ]*\([ ]*([a-z_][a-z0-9_]*)[ ]*\)", re.I)
 PP_REGEX = re.compile(r"#(if |ifdef|ifndef|else|elif|endif)")
 PP_DEF_REGEX = re.compile(r"#(define|undef)[ ]*([\w]+)(\((\w+(,[ ]*)?)+\))?", re.I)

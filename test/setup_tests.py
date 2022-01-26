@@ -1,12 +1,12 @@
-import os
+from __future__ import annotations
+
+import shlex
 import subprocess
 import sys
+from io import StringIO
+from pathlib import Path
 
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
-root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+root_dir = Path(__file__).parent.parent.resolve()
 sys.path.insert(0, root_dir)
 
 from fortls.jsonrpc import (  # noqa: E402, F401
@@ -16,16 +16,23 @@ from fortls.jsonrpc import (  # noqa: E402, F401
     write_rpc_request,
 )
 
-run_command = os.path.join(
-    root_dir, "fortls.py --incremental_sync --use_signature_help"
-)
-test_dir = os.path.join(root_dir, "test", "test_source")
+test_dir = root_dir / "test" / "test_source"
 
 
-def run_request(request, fortls_args=""):
+def run_request(request, fortls_args: list[str] = None):
+    command = [
+        sys.executable,
+        str(root_dir / "fortls.py"),
+        "--incremental_sync",
+        "--use_signature_help",
+    ]
+    if fortls_args:
+        # Input args might not be sanitised, fix that
+        for i in fortls_args:
+            command.extend(shlex.split(i, posix=False))
+
     pid = subprocess.Popen(
-        run_command + fortls_args,
-        shell=True,
+        command,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,

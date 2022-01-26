@@ -17,8 +17,8 @@ from .version import __version__
 __all__ = ["__version__"]
 
 
-def error_exit(error_str):
-    print("ERROR: {0}".format(error_str))
+def error_exit(error_str: str):
+    print(f"ERROR: {error_str}")
     sys.exit(-1)
 
 
@@ -28,7 +28,7 @@ def main():
     args = commandline_args(__name__).parse_args()
 
     if args.version:
-        print("{0}".format(__version__))
+        print(__version__)
         sys.exit(0)
 
     debug_server = (
