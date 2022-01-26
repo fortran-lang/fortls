@@ -1,5 +1,6 @@
 import os
 import sys
+from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
@@ -85,7 +86,7 @@ def test_command_line_code_actions_options():
 def unittest_server_init():
     from fortls.langserver import LangServer
 
-    root = os.path.join(os.path.dirname(__file__), "test_source")
+    root = (Path(__file__).parent / "test_source").resolve()
     parser = commandline_args("fortls")
     args = parser.parse_args("-c f90_config.json".split())
 
@@ -105,14 +106,14 @@ def test_config_file_general_options():
 
 
 def test_config_file_dir_parsing_options():
-    server, root = unittest_server_init()
+    server, r = unittest_server_init()
     # File parsing
     assert server.source_dirs == set(
-        [f"{root}/subdir", f"{root}/pp", f"{root}/pp/include"]
+        [f'{r/"subdir"}', f'{r/"pp"}', f'{r/"pp"/"include"}']
     )
     assert server.incl_suffixes == [".FF", ".fpc", ".h", "f20"]
     assert server.excl_suffixes == set(["_tmp.f90", "_h5hut_tests.F90"])
-    assert server.excl_paths == set([f"{root}/excldir", f"{root}/hover"])
+    assert server.excl_paths == set([f'{r/"excldir"}', f'{r/"hover"}'])
 
 
 def test_config_file_autocomplete_options():
@@ -145,7 +146,7 @@ def test_config_file_preprocessor_options():
     server, root = unittest_server_init()
     # Preprocessor options
     assert server.pp_suffixes == [".h", ".fh"]
-    assert server.include_dirs == set([f"{root}/include"])
+    assert server.include_dirs == set([f'{root/"include"}'])
     assert server.pp_defs == {
         "HAVE_PETSC": "",
         "HAVE_ZOLTAN": "",

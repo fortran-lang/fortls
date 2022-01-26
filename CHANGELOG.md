@@ -1,10 +1,19 @@
 # CHANGELONG
 
-## Unreleased
+## 2.1.0
 
 ### Added
 
 - Added coverage metric for Codecov
+- Added coverage for `WHERE`, `ENUM`, max line/comment diagnostics and multilines
+- Adds Windows CI
+
+### Fixed
+
+- Fixed global `sort_keywords` option not propagating during parsing on Windows
+  ([gnikit/fortls#36](https://github.com/gnikit/fortls/issues/36))
+- Fixed unittests not propagating debugger state
+  ([gnikit/fortls#35](https://github.com/gnikit/fortls/issues/35))
 
 ## 2.0.1
 
