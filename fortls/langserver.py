@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Pattern
 
 # Local modules
-from .version import __version__
+from fortls.version import __version__
 from fortls.constants import (
     CLASS_TYPE_ID,
     FORTRAN_LITERAL,
