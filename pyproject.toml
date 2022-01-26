@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools >= 51",
+    "setuptools >= 45",
     "wheel",
     "setuptools_scm[toml] >= 6.2",
     "setuptools_scm_git_archive",
