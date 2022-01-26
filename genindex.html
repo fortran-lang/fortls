@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; fortls 2.0.0 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <title>Index &mdash; fortls v2.1.0 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -147,16 +147,10 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.objects.fortran_scope.base_setup">base_setup() (fortls.objects.fortran_scope method)</a>
-
-      <ul>
-        <li><a href="fortls.html#fortls.objects.fortran_var.base_setup">(fortls.objects.fortran_var method)</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="fortls.html#fortls.objects.SELECT_info.binding">binding (fortls.objects.SELECT_info attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="fortls.html#fortls.objects.GEN_info.bound_name">bound_name (fortls.objects.GEN_info attribute)</a>
 </li>
       <li><a href="fortls.html#fortls.objects.fortran_diagnostic.build">build() (fortls.objects.fortran_diagnostic method)</a>
@@ -391,8 +385,6 @@
       </ul></li>
       <li><a href="fortls.html#fortls.parse_fortran.fortran_file.get_code_line">get_code_line() (fortls.parse_fortran.fortran_file method)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.fortran_include.get_dec">get_dec() (fortls.objects.fortran_include method)</a>
-</li>
       <li><a href="fortls.html#fortls.langserver.LangServer.get_definition">get_definition() (fortls.langserver.LangServer method)</a>
 </li>
       <li><a href="fortls.html#fortls.intrinsics.fortran_intrinsic_obj.get_desc">get_desc() (fortls.intrinsics.fortran_intrinsic_obj method)</a>
@@ -409,6 +401,8 @@
         <li><a href="fortls.html#fortls.objects.fortran_function.get_desc">(fortls.objects.fortran_function method)</a>
 </li>
         <li><a href="fortls.html#fortls.objects.fortran_if.get_desc">(fortls.objects.fortran_if method)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.fortran_include.get_desc">(fortls.objects.fortran_include method)</a>
 </li>
         <li><a href="fortls.html#fortls.objects.fortran_int.get_desc">(fortls.objects.fortran_int method)</a>
 </li>
@@ -441,11 +435,11 @@
         <li><a href="fortls.html#fortls.objects.fortran_type.get_diagnostics">(fortls.objects.fortran_type method)</a>
 </li>
       </ul></li>
-      <li><a href="fortls.html#fortls.intrinsics.fortran_intrinsic_obj.get_documentation">get_documentation() (fortls.intrinsics.fortran_intrinsic_obj method)</a>
+      <li><a href="fortls.html#fortls.objects.fortran_subroutine.get_docs_full">get_docs_full() (fortls.objects.fortran_subroutine method)</a>
+</li>
+      <li><a href="fortls.html#fortls.objects.fortran_meth.get_documentation">get_documentation() (fortls.objects.fortran_meth method)</a>
 
       <ul>
-        <li><a href="fortls.html#fortls.objects.fortran_meth.get_documentation">(fortls.objects.fortran_meth method)</a>
-</li>
         <li><a href="fortls.html#fortls.objects.fortran_obj.get_documentation">(fortls.objects.fortran_obj method)</a>
 </li>
       </ul></li>
@@ -465,10 +459,10 @@
         <li><a href="fortls.html#fortls.objects.fortran_var.get_hover">(fortls.objects.fortran_var method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="fortls.html#fortls.objects.fortran_obj.get_implicit">get_implicit() (fortls.objects.fortran_obj method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="fortls.html#fortls.objects.fortran_ast.get_inner_scope">get_inner_scope() (fortls.objects.fortran_ast method)</a>
 </li>
       <li><a href="fortls.html#fortls.objects.fortran_function.get_interface">get_interface() (fortls.objects.fortran_function method)</a>
@@ -481,6 +475,8 @@
         <li><a href="fortls.html#fortls.objects.fortran_subroutine.get_interface">(fortls.objects.fortran_subroutine method)</a>
 </li>
       </ul></li>
+      <li><a href="fortls.html#fortls.objects.fortran_subroutine.get_interface_array">get_interface_array() (fortls.objects.fortran_subroutine method)</a>
+</li>
       <li><a href="fortls.html#fortls.intrinsics.get_intrinsic_keywords">get_intrinsic_keywords() (in module fortls.intrinsics)</a>
 </li>
       <li><a href="fortls.html#fortls.helper_functions.get_keywords">get_keywords() (in module fortls.helper_functions)</a>
@@ -493,11 +489,13 @@
 </li>
       <li><a href="fortls.html#fortls.objects.fortran_ast.get_object">get_object() (fortls.objects.fortran_ast method)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.fortran_type.get_overriden">get_overriden() (fortls.objects.fortran_type method)</a>
+      <li><a href="fortls.html#fortls.objects.fortran_type.get_overridden">get_overridden() (fortls.objects.fortran_type method)</a>
 </li>
       <li><a href="fortls.html#fortls.helper_functions.get_paren_level">get_paren_level() (in module fortls.helper_functions)</a>
 </li>
       <li><a href="fortls.html#fortls.helper_functions.get_paren_substring">get_paren_substring() (in module fortls.helper_functions)</a>
+</li>
+      <li><a href="fortls.html#fortls.objects.fortran_obj.get_placeholders">get_placeholders() (fortls.objects.fortran_obj static method)</a>
 </li>
       <li><a href="fortls.html#fortls.objects.fortran_ast.get_scopes">get_scopes() (fortls.objects.fortran_ast method)</a>
 </li>

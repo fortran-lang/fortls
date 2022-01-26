@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Configuration options &mdash; fortls 2.0.0 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <title>Configuration options &mdash; fortls v2.1.0 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -113,7 +113,7 @@ are identical and interchangeable.</p>
 <p>The following sections discuss the available settings in detail.</p>
 <div class="section" id="configuration-using-the-command-line">
 <span id="cmd-interface"></span><h2>Configuration using the command line<a class="headerlink" href="#configuration-using-the-command-line" title="Permalink to this headline">¶</a></h2>
-<p><p>fortls v2.0.1</p>
+<p><p>fortls v2.1.0</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">fortls</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="p">[</span><span class="n">debug</span> <span class="n">options</span><span class="p">]</span>
 </pre></div>
@@ -296,7 +296,9 @@ the ones available through the command line interface having removed the leading
 <h3>Sources file parsing<a class="headerlink" href="#sources-file-parsing" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="source-dirs">
 <h4>source_dirs<a class="headerlink" href="#source-dirs" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;source_dirs&quot;: [&quot;./**&quot;, &quot;/external/fortran/src&quot;]
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="nt">&quot;source_dirs&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;./**&quot;</span><span class="p">,</span> <span class="s2">&quot;/external/fortran/src&quot;</span><span class="p">]</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>By default all directories under the current project will be recursively parsed
@@ -309,7 +311,9 @@ for <code class="docutils literal notranslate"><span class="pre">fortls</span></
 </div>
 <div class="section" id="incl-suffixes">
 <h4>incl_suffixes<a class="headerlink" href="#incl-suffixes" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;incl_suffixes&quot;: [&quot;.h&quot;, &quot;.FYP&quot;]
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="nt">&quot;incl_suffixes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;.h&quot;</span><span class="p">,</span> <span class="s2">&quot;.FYP&quot;</span><span class="p">]</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">fortls</span></code> will parse only files with <code class="docutils literal notranslate"><span class="pre">incl_suffixes</span></code> extensions found in
@@ -323,7 +327,9 @@ Additional source file extensions can be defined in <code class="docutils litera
 </div>
 <div class="section" id="excl-suffixes">
 <h4>excl_suffixes<a class="headerlink" href="#excl-suffixes" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;excl_suffixes&quot;: [&quot;_tmp.f90&quot;, &quot;_hdf5.F90&quot;]
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="nt">&quot;excl_suffixes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;_tmp.f90&quot;</span><span class="p">,</span> <span class="s2">&quot;_hdf5.F90&quot;</span><span class="p">]</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>If certain files or suffixes do not need to be parsed these can be excluded by
@@ -338,7 +344,9 @@ deffining <code class="docutils literal notranslate"><span class="pre">excl_suff
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">excl_paths</span></code> uses glob patterns so if you want to exclude a directory and all
 its subdirectories from being parsed you should define it like so</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;excl_paths&quot;: [&quot;exclude_dir/**&quot;]
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="nt">&quot;excl_paths&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;exclude_dir/**&quot;</span><span class="p">]</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -347,7 +355,9 @@ its subdirectories from being parsed you should define it like so</p>
 <h3>Preprocessor<a class="headerlink" href="#preprocessor" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="pp-suffixes">
 <h4>pp_suffixes<a class="headerlink" href="#pp-suffixes" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;pp_suffixes&quot; : [&quot;.h&quot;, &quot;.F90&quot;, &quot;.fpp&quot;]
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="nt">&quot;pp_suffixes&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;.h&quot;</span><span class="p">,</span> <span class="s2">&quot;.F90&quot;</span><span class="p">,</span> <span class="s2">&quot;.fpp&quot;</span><span class="p">]</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>By default preprocessor definitions are parsed for all Fortran source files
@@ -356,7 +366,9 @@ default behaviour can be overriden by defining <code class="docutils literal not
 </div>
 <div class="section" id="include-dirs">
 <h4>include_dirs<a class="headerlink" href="#include-dirs" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;include_dirs&quot;: [&quot;include&quot;, &quot;preprocessor&quot;, &quot;/usr/include&quot;]
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="nt">&quot;include_dirs&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;include&quot;</span><span class="p">,</span> <span class="s2">&quot;preprocessor&quot;</span><span class="p">,</span> <span class="s2">&quot;/usr/include&quot;</span><span class="p">]</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>By default <code class="docutils literal notranslate"><span class="pre">fortls</span></code> will scan the project’s directories for files with extensions
@@ -374,10 +386,12 @@ files are external to the project, their locations can be specific via
 </div>
 <div class="section" id="pp-defs">
 <h4>pp_defs<a class="headerlink" href="#pp-defs" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;pp_defs&quot;: {
-   &quot;HAVE_PETSC&quot;: &quot;&quot;
-   &quot;Mat&quot;: &quot;type(tMat)&quot;
-}
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="nt">&quot;pp_defs&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;HAVE_PETSC&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+      <span class="s2">&quot;Mat&quot;</span><span class="p">:</span> <span class="s2">&quot;type(tMat)&quot;</span>
+   <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>Additional <strong>preprocessor definitions</strong> from what are specified in files found in

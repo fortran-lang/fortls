@@ -3,6 +3,8 @@
 ## Added
 
 - Added coverage metric for Codecov
+- Added coverage for `WHERE`, `ENUM`, max line/comment diagnostics and multilines
+- Adds Windows CI
 - Add support for absolute include, source and exclude paths
 - Adds support for including preprocessor definitions from files same as `pp_defs`
 - Adds hover support for preprocessor variables
@@ -35,6 +37,10 @@
 
 ## Fixed
 
+- Fixed global `sort_keywords` option not propagating during parsing on Windows
+  ([gnikit/fortls#36](https://github.com/gnikit/fortls/issues/36))
+- Fixed unittests not propagating debugger state
+  ([gnikit/fortls#35](https://github.com/gnikit/fortls/issues/35))
 - Fixed some mutable default argument warnings in methods and classes
 - Fixed private variables showing in autocomplete
   ([#191](https://github.com/hansec/fortran-language-server/issues/191))

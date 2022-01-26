@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Unique fortls features (not in fortran-language-server) &mdash; fortls 2.0.0 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <title>Unique fortls features (not in fortran-language-server) &mdash; fortls v2.1.0 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -80,6 +80,8 @@
 <h2>Added<a class="headerlink" href="#added" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added coverage metric for Codecov</p></li>
+<li><p>Added coverage for <code class="docutils literal notranslate"><span class="pre">WHERE</span></code>, <code class="docutils literal notranslate"><span class="pre">ENUM</span></code>, max line/comment diagnostics and multilines</p></li>
+<li><p>Adds Windows CI</p></li>
 <li><p>Add support for absolute include, source and exclude paths</p></li>
 <li><p>Adds support for including preprocessor definitions from files same as <code class="docutils literal notranslate"><span class="pre">pp_defs</span></code></p></li>
 <li><p>Adds hover support for preprocessor variables</p></li>
@@ -118,6 +120,10 @@
 <div class="section" id="fixed">
 <h2>Fixed<a class="headerlink" href="#fixed" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
+<li><p>Fixed global <code class="docutils literal notranslate"><span class="pre">sort_keywords</span></code> option not propagating during parsing on Windows
+(<a class="reference external" href="https://github.com/gnikit/fortls/issues/36">gnikit/fortls#36</a>)</p></li>
+<li><p>Fixed unittests not propagating debugger state
+(<a class="reference external" href="https://github.com/gnikit/fortls/issues/35">gnikit/fortls#35</a>)</p></li>
 <li><p>Fixed some mutable default argument warnings in methods and classes</p></li>
 <li><p>Fixed private variables showing in autocomplete
 (<a class="reference external" href="https://github.com/hansec/fortran-language-server/issues/191">#191</a>)
