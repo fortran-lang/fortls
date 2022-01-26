@@ -12,6 +12,8 @@
 
 - Fixed global `sort_keywords` option not propagating during parsing on Windows
   ([gnikit/fortls#36](https://github.com/gnikit/fortls/issues/36))
+- Fixed unittests not propagating debugger state
+  ([gnikit/fortls#35](https://github.com/gnikit/fortls/issues/35))
 
 ## 2.0.1
 
