@@ -3,7 +3,7 @@ try:
 except ModuleNotFoundError:
     from importlib_metadata import version, PackageNotFoundError
 try:
-    __version__ = version("fortls")
+    __version__ = version(__package__)
 except PackageNotFoundError:
     from setuptools_scm import get_version
 
