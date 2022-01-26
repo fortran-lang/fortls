@@ -1,9 +1,11 @@
 # fortls - the Fortran Language Server
 
-[![PyPI Latest Release](https://img.shields.io/pypi/v/fortls.svg)](https://pypi.org/project/fortls/)
+![PyPI](https://img.shields.io/pypi/v/fortls)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fortls)
 [![Tests](https://github.com/gnikit/fortls/actions/workflows/main.yml/badge.svg)](https://github.com/gnikit/fortls/actions/workflows/main.yml)
 [![Documentation](https://github.com/gnikit/fortls/actions/workflows/docs.yml/badge.svg)](https://github.com/gnikit/fortls/actions/workflows/docs.yml)
-[![image](https://img.shields.io/github/license/gnikit/fortls.svg)](https://github.com/gnikit/fortls/blob/dev/LICENSE)
+[![Codecov](https://img.shields.io/codecov/c/gh/gnikit/fortls)](https://app.codecov.io/gh/gnikit/fortls/)
+[![GitHub license](https://img.shields.io/github/license/gnikit/fortls)](https://github.com/gnikit/fortls/blob/dev/LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 `fortls` is an implementation of the [Language Server Protocol](https://github.com/Microsoft/language-server-protocol)
