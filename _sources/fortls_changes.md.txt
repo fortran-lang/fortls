@@ -2,6 +2,7 @@
 
 ## Added
 
+- Added additional shields to REAMDE, including coverage and Python versions
 - Added coverage metric for Codecov
 - Added coverage for `WHERE`, `ENUM`, max line/comment diagnostics and multilines
 - Adds Windows CI
