@@ -427,9 +427,9 @@ class fortran_obj:
         for i, arg in enumerate(arg_list):
             opt_split = arg.split("=")
             if len(opt_split) > 1:
-                place_holders.append(f"{opt_split[0]}=${{{i+1}}}:{{{opt_split[1]}}}")
+                place_holders.append(f"{opt_split[0]}=${{{i+1}:{opt_split[1]}}}")
             else:
-                place_holders.append(f"${{{i+1}}}:{{{arg}}}")
+                place_holders.append(f"${{{i+1}:{arg}}}")
         arg_str = f"({', '.join(arg_list)})"
         arg_snip = f"({', '.join(place_holders)})"
         return arg_str, arg_snip
