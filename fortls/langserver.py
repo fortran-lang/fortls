@@ -101,6 +101,9 @@ class LangServer:
         # class variable. This way the command line and the file interfaces
         # are always on sync, with the same default arguments
         for k, v in settings.items():
+            # Do not parse command line debug arguments
+            if k.startswith("debug_") and k != "debug_log":
+                continue
             setattr(self, k, v)
 
         self.sync_type: int = 2 if self.incremental_sync else 1
