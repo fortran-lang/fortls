@@ -882,7 +882,7 @@ class LangServer:
         # Search through all files
         def_name = def_obj.name.lower()
         def_fqsn = def_obj.FQSN
-        NAME_REGEX = re.compile(fr"(?:\W|^)({def_name})(?:\W|$)", re.I)
+        NAME_REGEX = re.compile(rf"(?:\W|^)({def_name})(?:\W|$)", re.I)
         if file_obj is None:
             file_set = self.workspace.items()
         else:
