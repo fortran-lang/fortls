@@ -1,5 +1,3 @@
-from pathlib import Path
-
 # from types import NoneType
 from setup_tests import (
     path_to_uri,
@@ -233,6 +231,10 @@ def test_comp():
         if checks[0] > 0:
             assert result_array[0]["label"] == checks[1]
             assert result_array[0]["detail"] == checks[2]
+            try:
+                assert result_array[0]["insertText"] == checks[3]
+            except KeyError:
+                pass
 
     def comp_request(file_path, line, char):
         return write_rpc_request(
@@ -296,15 +298,23 @@ def test_comp():
     file_path = test_dir / "completion" / "test_vis_mod_completion.f90"
     string += comp_request(file_path, 12, 16)
     string += comp_request(file_path, 12, 24)
-    errcode, results = run_request(string)
+    errcode, results = run_request(string, ["--use_signature_help"])
     assert errcode == 0
+
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    file_path = test_dir / "test_prog.f08"
+    string += comp_request(file_path, 12, 6)
+    errcode, res = run_request(string)
+    assert errcode == 0
+    results.extend(res[1:])
+
     #
     exp_results = (
         # test_prog.f08
-        [1, "myfun", "DOUBLE PRECISION FUNCTION myfun(n, xval)"],
-        [9, "glob_sub", "SUBROUTINE glob_sub(n, xval, yval)"],
-        [1, "bound_nopass", "SUBROUTINE bound_nopass(a, b)"],
-        [1, "bound_pass", "SUBROUTINE bound_pass(arg1)"],
+        [1, "myfun", "DOUBLE PRECISION FUNCTION myfun(n, xval)", "myfun"],
+        [9, "glob_sub", "SUBROUTINE glob_sub(n, xval, yval)", "glob_sub"],
+        [1, "bound_nopass", "SUBROUTINE bound_nopass(a, b)", "bound_nopass"],
+        [1, "bound_pass", "SUBROUTINE bound_pass(arg1)", "bound_pass"],
         [1, "stretch_vector", "TYPE(scaled_vector)"],
         [6, "scale", "TYPE(scale_type)"],
         [2, "n", "INTEGER(4)"],
@@ -337,7 +347,12 @@ def test_comp():
         [10, "READ", "STATEMENT"],
         [11, "READ", "STATEMENT"],
         # subdir/test_generic.f90
-        [4, "my_gen", "SUBROUTINE my_gen(self, a, b)"],
+        [
+            4,
+            "my_gen",
+            "SUBROUTINE my_gen(self, a, b)",
+            "my_gen(${1:self}, ${2:a}, ${3:b})",
+        ],
         # subdir/test_inherit.f90
         [1, "val", "REAL(8)"],
         # subdir/test_rename.F90
@@ -352,6 +367,14 @@ def test_comp():
         # completion/test_vis_mod_completion.f90
         [1, "some_var", "INTEGER"],
         [3, "length", "INTEGER"],
+        # test_prog.f08, completion without signature_help
+        # returns the entire completion as a snippet
+        [
+            1,
+            "myfun",
+            "DOUBLE PRECISION FUNCTION myfun(n, xval)",
+            "myfun(${1:n}, ${2:xval})",
+        ],
     )
     assert len(exp_results) + 1 == len(results)
     for i in range(len(exp_results)):

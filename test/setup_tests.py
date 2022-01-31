@@ -24,7 +24,6 @@ def run_request(request, fortls_args: list[str] = None):
         sys.executable,
         str(root_dir / "fortls.py"),
         "--incremental_sync",
-        "--use_signature_help",
     ]
     if fortls_args:
         # Input args might not be sanitised, fix that
