@@ -22,7 +22,7 @@ jobs:
           architecture: x64
 
       - name: Setup
-        run: pip install .[tests]
+        run: pip install .[dev]
 
       - name: Unittests
         run: pytest -v
@@ -41,7 +41,7 @@ jobs:
 
       - name: Coverage report
         run: |
-          pip install .[tests]
+          pip install .[dev]
           pytest --cov=fortls --cov-report=xml
 
       - name: Upload coverage to Codecov
