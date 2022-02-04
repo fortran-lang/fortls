@@ -3,8 +3,8 @@ from __future__ import annotations, print_function
 import copy
 import os
 import re
-from typing import Dict, NamedTuple, List, Set, Pattern
 from dataclasses import dataclass
+from typing import Dict, List, NamedTuple, Pattern, Set
 
 from fortls.constants import (
     ASSOC_TYPE_ID,
