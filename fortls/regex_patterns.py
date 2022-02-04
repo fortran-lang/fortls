@@ -157,4 +157,4 @@ def src_file_exts(input_exts: list[str] = []) -> Pattern[str]:
             FORTRAN_FILE_EXTS.append(e.replace(".", ""))
     # Cast into a set to ensure uniqueness of extensions & sort for consistency
     # Create a regular expression from this
-    return re.compile(fr"\.({'|'.join(sorted(set(FORTRAN_FILE_EXTS)))})?$")
+    return re.compile(rf"\.({'|'.join(sorted(set(FORTRAN_FILE_EXTS)))})?$")

@@ -101,6 +101,9 @@ class LangServer:
         # class variable. This way the command line and the file interfaces
         # are always on sync, with the same default arguments
         for k, v in settings.items():
+            # Do not parse command line debug arguments
+            if k.startswith("debug_") and k != "debug_log":
+                continue
             setattr(self, k, v)
 
         self.sync_type: int = 2 if self.incremental_sync else 1
@@ -882,7 +885,7 @@ class LangServer:
         # Search through all files
         def_name = def_obj.name.lower()
         def_fqsn = def_obj.FQSN
-        NAME_REGEX = re.compile(fr"(?:\W|^)({def_name})(?:\W|$)", re.I)
+        NAME_REGEX = re.compile(rf"(?:\W|^)({def_name})(?:\W|$)", re.I)
         if file_obj is None:
             file_set = self.workspace.items()
         else:

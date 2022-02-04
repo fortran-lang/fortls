@@ -1,5 +1,12 @@
 # CHANGELONG
 
+## 2.1.2
+
+### Fixed
+
+- Fixed code autocompletion bug with f-strings
+  ([#39](https://github.com/hansec/fortran-language-server/issues/39))
+
 ## 2.1.1
 
 ### Added

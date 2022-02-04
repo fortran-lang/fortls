@@ -152,7 +152,10 @@ def commandline_args(name: str = "fortls") -> argparse.ArgumentParser:
     group.add_argument(
         "--use_signature_help",
         action="store_true",
-        help="Use signature help instead of subroutine/function snippets",
+        help=(
+            "Use signature help instead of subroutine/function snippets. This"
+            " effectively sets --autocomplete_no_snippets"
+        ),
     )
 
     # Hover options ------------------------------------------------------------

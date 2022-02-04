@@ -1381,7 +1381,7 @@ def preprocess_file(
         for def_tmp, value in defs_tmp.items():
             def_regex = def_regexes.get(def_tmp)
             if def_regex is None:
-                def_regex = re.compile(fr"\b{def_tmp}\b")
+                def_regex = re.compile(rf"\b{def_tmp}\b")
                 def_regexes[def_tmp] = def_regex
             line_new, nsubs = def_regex.subn(value, line)
             if nsubs > 0:
