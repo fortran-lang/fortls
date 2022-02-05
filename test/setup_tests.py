@@ -9,12 +9,11 @@ from pathlib import Path
 root_dir = Path(__file__).parent.parent.resolve()
 sys.path.insert(0, root_dir)
 
-from fortls.jsonrpc import (  # noqa: E402, F401
-    path_to_uri,
-    read_rpc_messages,
-    write_rpc_notification,
-    write_rpc_request,
-)
+# Compromise since isort does not respect noqa
+from fortls.jsonrpc import path_to_uri  # noqa: E402, F401
+from fortls.jsonrpc import read_rpc_messages  # noqa: E402
+from fortls.jsonrpc import write_rpc_notification  # noqa: E402, F401
+from fortls.jsonrpc import write_rpc_request  # noqa: E402, F401
 
 test_dir = root_dir / "test" / "test_source"
 

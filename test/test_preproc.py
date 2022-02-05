@@ -1,12 +1,6 @@
 from __future__ import annotations
 
-from setup_tests import (
-    run_request,
-    # path_to_uri,
-    # write_rpc_notification,
-    write_rpc_request,
-    test_dir,
-)
+from setup_tests import run_request, test_dir, write_rpc_request
 
 
 def test_hover():

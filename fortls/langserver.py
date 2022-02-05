@@ -11,7 +11,6 @@ from pathlib import Path
 from typing import Pattern
 
 # Local modules
-from fortls._version import __version__
 from fortls.constants import (
     CLASS_TYPE_ID,
     FORTRAN_LITERAL,
@@ -56,6 +55,7 @@ from fortls.regex_patterns import (
     SQ_STRING_REGEX,
     src_file_exts,
 )
+from fortls.version import __version__
 
 # Global regexes
 # TODO: I think this can be replaced by fortls.regex_patterns type & class

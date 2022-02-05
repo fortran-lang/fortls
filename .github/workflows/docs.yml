@@ -5,9 +5,10 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: ammaraskar/sphinx-action@master
+      - uses: actions/checkout@v2
+      - uses: sphinx-toolbox/sphinx-action@master
         with:
+          pre-build-command: "pip install .[docs]"
           docs-folder: "docs/"
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3

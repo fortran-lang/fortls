@@ -2,8 +2,10 @@
 .vscode
 *.egg-info 
 dist/
+build/
 docs/_build/
 docs/fortls_changes.md
+fortls/_version.py
 
 .idea
 
