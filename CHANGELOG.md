@@ -1,5 +1,11 @@
 # CHANGELONG
 
+## 2.2.1
+
+### Changed
+
+- Changed default branch to master and updated Actions workflows
+
 ## 2.2.0
 
 ### Added
