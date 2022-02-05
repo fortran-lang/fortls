@@ -4,8 +4,6 @@ import argparse
 import json
 import sys
 
-from fortls.version import __version__
-
 
 class SetAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
@@ -22,10 +20,16 @@ def commandline_args(name: str = "fortls") -> argparse.ArgumentParser:
     """
 
     parser = argparse.ArgumentParser(
-        description=f"fortls {__version__}",
+        description="fortls - Fortran Language Server",
         prog=name,
         usage="%(prog)s [options] [debug options]",
         formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=60),
+        epilog=(
+            "All options starting with '--' can also be set in a configuration file, by"
+            " default named '.fortls' (other names/paths can specified via -c or"
+            " --config). For more details see our documentation:"
+            " https://gnikit.github.io/fortls/options.html#available-options"
+        ),
     )
 
     # General options ----------------------------------------------------------
