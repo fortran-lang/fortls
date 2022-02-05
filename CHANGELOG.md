@@ -1,5 +1,19 @@
 # CHANGELONG
 
+## 2.2.0
+
+### Added
+
+- Added semantic versioning with `setuptools_scm`
+  ([gnikit/fortls#34](https://github.com/gnikit/fortls/issues/34))
+
+### Changed
+
+- Changes from `setup.py` to `setup.toml` and `pyproject.toml`
+  ([gnikit/fortls#33](https://github.com/gnikit/fortls/issues/33))
+- Changed documentation CI to up to date action
+- Formatted Python imports with `isort`
+
 ## 2.1.2
 
 ### Fixed
