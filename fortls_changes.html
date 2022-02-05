@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Unique fortls features (not in fortran-language-server) &mdash; fortls v2.1.2 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <title>Unique fortls features (not in fortran-language-server) &mdash; fortls 0.1.dev1+g6306f43 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -74,11 +76,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="tex2jax_ignore mathjax_ignore section" id="unique-fortls-features-not-in-fortran-language-server">
-<h1>Unique fortls features (not in fortran-language-server)<a class="headerlink" href="#unique-fortls-features-not-in-fortran-language-server" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="added">
-<h2>Added<a class="headerlink" href="#added" title="Permalink to this headline">¶</a></h2>
+  <section class="tex2jax_ignore mathjax_ignore" id="unique-fortls-features-not-in-fortran-language-server">
+<h1>Unique fortls features (not in fortran-language-server)<a class="headerlink" href="#unique-fortls-features-not-in-fortran-language-server" title="Permalink to this headline"></a></h1>
+<section id="added">
+<h2>Added<a class="headerlink" href="#added" title="Permalink to this headline"></a></h2>
 <ul class="simple">
+<li><p>Added semantic versioning with <code class="docutils literal notranslate"><span class="pre">setuptools_scm</span></code>
+(<a class="reference external" href="https://github.com/gnikit/fortls/issues/34">gnikit/fortls#34</a>)</p></li>
 <li><p>Added additional shields to REAMDE, including coverage and Python versions</p></li>
 <li><p>Added coverage metric for Codecov</p></li>
 <li><p>Added coverage for <code class="docutils literal notranslate"><span class="pre">WHERE</span></code>, <code class="docutils literal notranslate"><span class="pre">ENUM</span></code>, max line/comment diagnostics and multilines</p></li>
@@ -97,10 +101,14 @@
 <li><p>Adds <code class="docutils literal notranslate"><span class="pre">--config</span></code> option which allows arbitrary named configuration files</p></li>
 <li><p>Adds Python glob support for <code class="docutils literal notranslate"><span class="pre">excl_paths</span></code>, <code class="docutils literal notranslate"><span class="pre">source_dirs</span></code>, <code class="docutils literal notranslate"><span class="pre">include_dirs</span></code></p></li>
 </ul>
-</div>
-<div class="section" id="changed">
-<h2>Changed<a class="headerlink" href="#changed" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="changed">
+<h2>Changed<a class="headerlink" href="#changed" title="Permalink to this headline"></a></h2>
 <ul class="simple">
+<li><p>Changes from <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> to <code class="docutils literal notranslate"><span class="pre">setup.toml</span></code> and <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>
+(<a class="reference external" href="https://github.com/gnikit/fortls/issues/33">gnikit/fortls#33</a>)</p></li>
+<li><p>Changed documentation CI to up to date action</p></li>
+<li><p>Formatted Python imports with <code class="docutils literal notranslate"><span class="pre">isort</span></code></p></li>
 <li><p>Changed <code class="docutils literal notranslate"><span class="pre">USE_info</span></code> named tuple to storing use modules as <code class="docutils literal notranslate"><span class="pre">sets</span></code> instead of <code class="docutils literal notranslate"><span class="pre">lists</span></code></p></li>
 <li><p>Changed <code class="docutils literal notranslate"><span class="pre">include_dirs</span></code> from a <code class="docutils literal notranslate"><span class="pre">list</span></code> to a <code class="docutils literal notranslate"><span class="pre">set</span></code></p></li>
 <li><p>Automates the versioning with GitHub releases</p></li>
@@ -111,15 +119,15 @@
 (<a class="reference external" href="https://github.com/gnikit/fortls/issues/17">gnikit/fortls#17</a>)</p></li>
 <li><p>Updated the documentation and simplified the README.md</p></li>
 </ul>
-</div>
-<div class="section" id="deprecated">
-<h2>Deprecated<a class="headerlink" href="#deprecated" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="deprecated">
+<h2>Deprecated<a class="headerlink" href="#deprecated" title="Permalink to this headline"></a></h2>
 <ul class="simple">
 <li><p>Option <code class="docutils literal notranslate"><span class="pre">--preserve_keyword_order</span></code> has been substituted with its opposite <code class="docutils literal notranslate"><span class="pre">--sort_keywords</span></code></p></li>
 </ul>
-</div>
-<div class="section" id="fixed">
-<h2>Fixed<a class="headerlink" href="#fixed" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="fixed">
+<h2>Fixed<a class="headerlink" href="#fixed" title="Permalink to this headline"></a></h2>
 <ul class="simple">
 <li><p>Fixed code autocompletion bug with f-strings
 (<a class="reference external" href="https://github.com/hansec/fortran-language-server/issues/39">#39</a>)</p></li>
@@ -163,8 +171,8 @@ multiline but the function body can.</p></li>
 <li><p>Fixes diagnostic error with interfaces as function arguments
 (<a class="reference external" href="https://github.com/hansec/fortran-language-server/issues/200">#200</a>)</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

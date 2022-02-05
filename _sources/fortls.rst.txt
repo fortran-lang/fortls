@@ -76,6 +76,14 @@ fortls.regex\_patterns module
    :undoc-members:
    :show-inheritance:
 
+fortls.version module
+---------------------
+
+.. automodule:: fortls.version
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

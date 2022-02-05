@@ -2,6 +2,8 @@
 
 ## Added
 
+- Added semantic versioning with `setuptools_scm`
+  ([gnikit/fortls#34](https://github.com/gnikit/fortls/issues/34))
 - Added additional shields to REAMDE, including coverage and Python versions
 - Added coverage metric for Codecov
 - Added coverage for `WHERE`, `ENUM`, max line/comment diagnostics and multilines
@@ -22,6 +24,10 @@
 
 ## Changed
 
+- Changes from `setup.py` to `setup.toml` and `pyproject.toml`
+  ([gnikit/fortls#33](https://github.com/gnikit/fortls/issues/33))
+- Changed documentation CI to up to date action
+- Formatted Python imports with `isort`
 - Changed `USE_info` named tuple to storing use modules as `sets` instead of `lists`
 - Changed `include_dirs` from a `list` to a `set`
 - Automates the versioning with GitHub releases

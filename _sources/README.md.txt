@@ -73,6 +73,16 @@ potentially subject to change.
 pip install fortls
 ```
 
+>**Warning**: it is not recommended having `fortls` and `fortran-language-server`
+>simultaneously installed, since they use the same binary name. If you are having trouble
+>getting `fortls` to work try uninstalling `fortran-language-server` and reinstalling `fortls`.
+>
+>```sh
+>pip uninstall fortran-language-server
+>pip install fortls --upgrade
+>```
+
+
 ## Settings
 
 `fortls` can be configured through both the command line e.g.
