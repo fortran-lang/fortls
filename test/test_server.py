@@ -573,6 +573,10 @@ def test_hover():
     string += hover_req(file_path, 7, 55)
     file_path = test_dir / "hover" / "pointers.f90"
     string += hover_req(file_path, 1, 26)
+    file_path = test_dir / "hover" / "functions.f90"
+    string += hover_req(file_path, 1, 11)
+    string += hover_req(file_path, 7, 19)
+
     errcode, results = run_request(
         string, fortls_args=["--variable_hover", "--sort_keywords"]
     )
@@ -590,6 +594,10 @@ def test_hover():
         "DOUBLE PRECISION, PARAMETER :: somevar = 23.12",
         "DOUBLE PRECISION, PARAMETER :: some = 1e-19",
         "INTEGER, POINTER",
+        """FUNCTION fun1(arg)
+ INTEGER, INTENT(IN) :: arg""",
+        """INTEGER FUNCTION fun2(arg)
+ INTEGER, INTENT(IN) :: arg""",
     )
     assert len(ref_results) == len(results) - 1
     check_return(results[1:], ref_results)

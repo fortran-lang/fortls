@@ -1,5 +1,12 @@
 # CHANGELONG
 
+## 2.2.2
+
+### Fixed
+
+- Fixed hovering over functions displaying as theire result types
+  ([gnikit/fortls#22](https://github.com/gnikit/fortls/issues/22))
+
 ## 2.2.1
 
 ### Changed

@@ -740,7 +740,9 @@ class LangServer:
                 )
             ):
                 curr_scope = curr_scope.parent
-            var_obj = find_in_scope(curr_scope, def_name, self.obj_tree)
+            var_obj = find_in_scope(
+                curr_scope, def_name, self.obj_tree, var_line_number=def_line + 1
+            )
         # Search in global scope
         if var_obj is None:
             if is_member:

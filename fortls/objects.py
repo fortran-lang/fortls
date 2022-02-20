@@ -165,9 +165,13 @@ def find_in_scope(
     obj_tree: dict,
     interface: bool = False,
     local_only: bool = False,
+    var_line_number: int = None,
 ):
     def check_scope(
-        local_scope: fortran_scope, var_name_lower: str, filter_public: bool = False
+        local_scope: fortran_scope,
+        var_name_lower: str,
+        filter_public: bool = False,
+        var_line_number: int = None,
     ):
         for child in local_scope.get_children():
             if child.name.startswith("#GEN_INT"):
@@ -178,6 +182,19 @@ def find_in_scope(
                 if (child.vis < 0) or ((local_scope.def_vis < 0) and (child.vis <= 0)):
                     continue
             if child.name.lower() == var_name_lower:
+                # For functions with an implicit result() variable the name
+                # of the function is used. If we are hovering over the function
+                # definition, we do not want the implicit result() to be returned.
+                # If scope is from a function and child's name is same as functions name
+                # and start of scope i.e. function definition is equal to the request ln
+                # then we are need to skip this child
+                if (
+                    isinstance(local_scope, fortran_function)
+                    and local_scope.name.lower() == child.name.lower()
+                    and local_scope.sline == var_line_number
+                ):
+                    return None
+
                 return child
         return None
 
@@ -186,7 +203,7 @@ def find_in_scope(
     # Check local scope
     if scope is None:
         return None
-    tmp_var = check_scope(scope, var_name_lower)
+    tmp_var = check_scope(scope, var_name_lower, var_line_number=var_line_number)
     if local_only or (tmp_var is not None):
         return tmp_var
     # Check INCLUDE statements
