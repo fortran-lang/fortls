@@ -314,8 +314,7 @@ def read_fun_def(
     # Get all the keyword modifier mathces
     keywords = re.findall(SUB_MOD_REGEX, line)
     # remove modifiers from line
-    for modifier in keywords:
-        line = line.replace(modifier, "")
+    line = re.sub(SUB_MOD_REGEX, "", line)
 
     # Try and get the result type
     # Recursively will call read_var_def which will then call read_fun_def
@@ -353,12 +352,10 @@ def read_fun_def(
 
 def read_sub_def(line: str, mod_flag: bool = False):
     """Attempt to read SUBROUTINE definition line"""
-    keywords: list[str] = []
-    mod_match = SUB_MOD_REGEX.match(line)
-    while mod_match is not None:
-        line = line[mod_match.end(0) :]
-        keywords.append(mod_match.group(1))
-        mod_match = SUB_MOD_REGEX.match(line)
+    # Get all the keyword modifier mathces
+    keywords = re.findall(SUB_MOD_REGEX, line)
+    # remove modifiers from line
+    line = re.sub(SUB_MOD_REGEX, "", line)
     sub_match = SUB_REGEX.match(line)
     if sub_match is None:
         return None

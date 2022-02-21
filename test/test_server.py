@@ -579,6 +579,8 @@ def test_hover():
     string += hover_req(file_path, 12, 12)
     string += hover_req(file_path, 18, 19)
     string += hover_req(file_path, 23, 34)
+    file_path = test_dir / "hover" / "recursive.f90"
+    string += hover_req(file_path, 9, 40)
     file_path = test_dir / "subdir" / "test_submod.F90"
     string += hover_req(file_path, 29, 24)
     string += hover_req(file_path, 34, 24)
@@ -615,6 +617,10 @@ def test_hover():
         # any modifiers before the type would be discarded
         """INTEGER PURE ELEMENTAL FUNCTION fun5(arg) RESULT(retval)
  INTEGER, INTENT(IN) :: arg""",
+        """RECURSIVE SUBROUTINE recursive_assign_descending(node, vector, current_loc)
+ TYPE(tree_inode), POINTER, INTENT(IN) :: node
+ INTEGER, DIMENSION(:), INTENT(INOUT) :: vector
+ INTEGER, INTENT(INOUT) :: current_loc""",
         # TODO: more tests to add from functions
         """REAL FUNCTION point_dist(a, b) RESULT(distance)
  TYPE(point), INTENT(IN) :: a
@@ -746,6 +752,11 @@ def test_diagnostics():
     string += write_rpc_notification(
         "textDocument/didOpen", {"textDocument": {"uri": file_path}}
     )
+    # Test module procedure in submodules importing scopes
+    file_path = str(test_dir / "subdir" / "test_submod.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
     errcode, results = run_request(string)
     assert errcode == 0
 
@@ -810,6 +821,7 @@ def test_diagnostics():
                 ],
             },
         ],
+        [],
         [],
         [],
         [],
