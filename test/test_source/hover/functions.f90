@@ -19,3 +19,9 @@ end function fun3
 integer function fun4(arg) result(retval)
     integer, intent(in) :: arg
 end function fun4
+
+! function with type on definition, return and keywords
+pure integer elemental function fun5(arg) result(retval)
+    integer, intent(in) :: arg
+end function fun5
+

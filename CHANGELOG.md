@@ -8,6 +8,8 @@
   ([gnikit/fortls#22](https://github.com/gnikit/fortls/issues/22))
 - Fixed function hovering signature now standardised
   ([#47](https://github.com/hansec/fortran-language-server/issues/47))
+- Fixed function modifiers not displaying upon hover
+  ([gnikit/fortls#48](https://github.com/gnikit/fortls/issues/48))
 
 ## 2.2.1
 

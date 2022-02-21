@@ -578,8 +578,10 @@ def test_hover():
     string += hover_req(file_path, 7, 19)
     string += hover_req(file_path, 12, 12)
     string += hover_req(file_path, 18, 19)
+    string += hover_req(file_path, 23, 34)
     file_path = test_dir / "subdir" / "test_submod.F90"
     string += hover_req(file_path, 29, 24)
+    string += hover_req(file_path, 34, 24)
     file_path = test_dir / "test_diagnostic_int.f90"
     string += hover_req(file_path, 19, 14)
 
@@ -608,7 +610,16 @@ def test_hover():
  INTEGER, INTENT(IN) :: arg""",
         """INTEGER FUNCTION fun4(arg) RESULT(retval)
  INTEGER, INTENT(IN) :: arg""",
+        # Notice that the order of the modifiers does not match the source code
+        # This is part of the test, ideally they would be identical but previously
+        # any modifiers before the type would be discarded
+        """INTEGER PURE ELEMENTAL FUNCTION fun5(arg) RESULT(retval)
+ INTEGER, INTENT(IN) :: arg""",
+        # TODO: more tests to add from functions
         """REAL FUNCTION point_dist(a, b) RESULT(distance)
+ TYPE(point), INTENT(IN) :: a
+ TYPE(point), INTENT(IN) :: b""",
+        """LOGICAL FUNCTION is_point_equal_a(a, b) RESULT(is_point_equal_a)
  TYPE(point), INTENT(IN) :: a
  TYPE(point), INTENT(IN) :: b""",
         """REAL FUNCTION foo2(f, g, h) RESULT(arg3)

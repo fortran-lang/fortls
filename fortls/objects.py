@@ -1087,7 +1087,7 @@ class fortran_function(fortran_subroutine):
         args: str = "",
         mod_flag: bool = False,
         keywords: list = None,
-        result_type: list[str] = None,  # TODO: make this a string
+        result_type: str = None,
         result_name: str = None,
     ):
         super().__init__(file_ast, line_number, name, args, mod_flag, keywords)
@@ -1098,10 +1098,8 @@ class fortran_function(fortran_subroutine):
         self.missing_args: list = []
         self.mod_scope: bool = mod_flag
         self.result_name: str = result_name
-        self.result_type: str = None
+        self.result_type: str = result_type
         self.result_obj: fortran_var = None
-        if result_type:
-            self.result_type = result_type[0]
         # Set the implicit result() name to be the function name
         if self.result_name is None:
             self.result_name = self.name
