@@ -1087,8 +1087,8 @@ class fortran_function(fortran_subroutine):
         args: str = "",
         mod_flag: bool = False,
         keywords: list = None,
-        return_type=None,
-        result_var=None,
+        result_type: list[str] = None,  # TODO: make this a string
+        result_name: str = None,
     ):
         super().__init__(file_ast, line_number, name, args, mod_flag, keywords)
         self.args: str = args.replace(" ", "").lower()
@@ -1097,17 +1097,21 @@ class fortran_function(fortran_subroutine):
         self.in_children: list = []
         self.missing_args: list = []
         self.mod_scope: bool = mod_flag
-        self.result_var = result_var
-        self.result_obj = None
-        self.return_type = None
-        if return_type is not None:
-            self.return_type = return_type[0]
+        self.result_name: str = result_name
+        self.result_type: str = None
+        self.result_obj: fortran_var = None
+        if result_type:
+            self.result_type = result_type[0]
+        # Set the implicit result() name to be the function name
+        if self.result_name is None:
+            self.result_name = self.name
 
     def copy_interface(self, copy_source: fortran_function):
         # Call the parent class method
         child_names = super().copy_interface(copy_source)
         # Return specific options
-        self.result_var = copy_source.result_var
+        self.result_name = copy_source.result_name
+        self.result_type = copy_source.result_type
         self.result_obj = copy_source.result_obj
         if copy_source.result_obj is not None:
             if copy_source.result_obj.name.lower() not in child_names:
@@ -1115,20 +1119,20 @@ class fortran_function(fortran_subroutine):
 
     def resolve_link(self, obj_tree):
         self.resolve_arg_link(obj_tree)
-        if self.result_var is not None:
-            result_var_lower = self.result_var.lower()
-            for child in self.children:
-                if child.name.lower() == result_var_lower:
-                    self.result_obj = child
+        result_var_lower = self.result_name.lower()
+        for child in self.children:
+            if child.name.lower() == result_var_lower:
+                self.result_obj = child
+                # Update result value and type
+                self.result_name = child.name
+                self.result_type = child.get_desc()
 
     def get_type(self, no_link=False):
         return FUNCTION_TYPE_ID
 
     def get_desc(self):
-        if self.result_obj is not None:
-            return self.result_obj.get_desc() + " FUNCTION"
-        if self.return_type is not None:
-            return self.return_type + " FUNCTION"
+        if self.result_type:
+            return self.result_type + " FUNCTION"
         return "FUNCTION"
 
     def is_callable(self):
@@ -1136,26 +1140,26 @@ class fortran_function(fortran_subroutine):
 
     def get_hover(self, long=False, include_doc=True, drop_arg=-1):
         fun_sig, _ = self.get_snippet(drop_arg=drop_arg)
-        fun_return = ""
-        if self.result_obj is not None:
-            fun_return, _ = self.result_obj.get_hover(include_doc=False)
-        if self.return_type is not None:
-            fun_return = self.return_type
-        keyword_list = get_keywords(self.keywords)
+        fun_sig += f" RESULT({self.result_name})"
+        keyword_list = []
+        if self.result_type:
+            keyword_list.append(self.result_type)
+        keyword_list += get_keywords(self.keywords)
         keyword_list.append("FUNCTION")
-        hover_array = [f"{fun_return} {' '.join(keyword_list)} {fun_sig}"]
+
+        hover_array = [f"{' '.join(keyword_list)} {fun_sig}"]
         self.get_docs_full(hover_array, long, include_doc, drop_arg)
         return "\n ".join(hover_array), long
 
     def get_interface(self, name_replace=None, change_arg=-1, change_strings=None):
         fun_sig, _ = self.get_snippet(name_replace=name_replace)
+        fun_sig += f" RESULT({self.result_name})"
         keyword_list = []
-        if self.return_type is not None:
-            keyword_list.append(self.return_type)
-        if self.result_obj is not None:
-            fun_sig += f" RESULT({self.result_obj.name})"
+        if self.result_type:
+            keyword_list.append(self.result_type)
         keyword_list += get_keywords(self.keywords)
         keyword_list.append("FUNCTION ")
+
         interface_array = self.get_interface_array(
             keyword_list, fun_sig, change_arg, change_strings
         )

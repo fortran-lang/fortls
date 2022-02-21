@@ -287,8 +287,23 @@ def read_var_def(line: str, type_word: str = None, fun_only: bool = False):
     return "var", VAR_info(type_word, keywords, var_words)
 
 
-def read_fun_def(line: str, return_type=None, mod_flag: bool = False):
-    """Attempt to read FUNCTION definition line"""
+def read_fun_def(line: str, result_type=None, mod_flag: bool = False):
+    """Attempt to read FUNCTION definition line
+
+    Parameters
+    ----------
+    line : str
+        file line
+    result_type : str, optional
+        type of function e.g. INTEGER, REAL, etc., by default None
+    mod_flag : bool, optional
+        flag for module and module procedure parsing, by default False
+
+    Returns
+    -------
+    tuple[Literal['fun'], FUN_info]
+        a named tuple
+    """
     mod_match = SUB_MOD_REGEX.match(line)
     mods_found = False
     keywords: list[str] = []
@@ -317,14 +332,14 @@ def read_fun_def(line: str, return_type=None, mod_flag: bool = False):
             word_match = [word for word in word_match]
             args = ",".join(word_match)
         trailing_line = trailing_line[paren_match.end(0) :]
-    #
-    return_var = None
-    if return_type is None:
-        trailing_line = trailing_line.strip()
-        results_match = RESULT_REGEX.match(trailing_line)
-        if results_match is not None:
-            return_var = results_match.group(1).strip().lower()
-    return "fun", FUN_info(name, args, return_type, return_var, mod_flag, keywords)
+
+    # Extract if possible the variable name of the result()
+    result_name = None
+    trailing_line = trailing_line.strip()
+    results_match = RESULT_REGEX.match(trailing_line)
+    if results_match:
+        result_name = results_match.group(1).strip().lower()
+    return "fun", FUN_info(name, args, result_type, result_name, mod_flag, keywords)
 
 
 def read_sub_def(line: str, mod_flag: bool = False):
@@ -1772,16 +1787,21 @@ def process_file(
                 args=obj_info.args,
                 mod_flag=obj_info.mod_flag,
                 keywords=keywords,
-                return_type=obj_info.return_type,
-                result_var=obj_info.return_var,
+                result_type=obj_info.return_type,
+                result_name=obj_info.return_var,
             )
             file_ast.add_scope(new_fun, END_FUN_REGEX)
-            if obj_info.return_type is not None:
+            # function type is present without result(), register the automatic
+            # result() variable that is the function name
+            if obj_info.return_type:
+                result_name = obj_info.name
+                if obj_info.return_var:
+                    result_name = obj_info.return_var
                 keywords, keyword_info = map_keywords(obj_info.return_type[1])
                 new_obj = fortran_var(
                     file_ast,
                     line_number,
-                    obj_info.name,
+                    result_name,
                     obj_info.return_type[0],
                     keywords,
                     keyword_info,

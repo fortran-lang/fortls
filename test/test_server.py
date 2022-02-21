@@ -576,6 +576,12 @@ def test_hover():
     file_path = test_dir / "hover" / "functions.f90"
     string += hover_req(file_path, 1, 11)
     string += hover_req(file_path, 7, 19)
+    string += hover_req(file_path, 12, 12)
+    string += hover_req(file_path, 18, 19)
+    file_path = test_dir / "subdir" / "test_submod.F90"
+    string += hover_req(file_path, 29, 24)
+    file_path = test_dir / "test_diagnostic_int.f90"
+    string += hover_req(file_path, 19, 14)
 
     errcode, results = run_request(
         string, fortls_args=["--variable_hover", "--sort_keywords"]
@@ -594,10 +600,21 @@ def test_hover():
         "DOUBLE PRECISION, PARAMETER :: somevar = 23.12",
         "DOUBLE PRECISION, PARAMETER :: some = 1e-19",
         "INTEGER, POINTER",
-        """FUNCTION fun1(arg)
+        """INTEGER FUNCTION fun1(arg) RESULT(fun1)
  INTEGER, INTENT(IN) :: arg""",
-        """INTEGER FUNCTION fun2(arg)
+        """INTEGER FUNCTION fun2(arg) RESULT(fun2)
  INTEGER, INTENT(IN) :: arg""",
+        """INTEGER FUNCTION fun3(arg) RESULT(retval)
+ INTEGER, INTENT(IN) :: arg""",
+        """INTEGER FUNCTION fun4(arg) RESULT(retval)
+ INTEGER, INTENT(IN) :: arg""",
+        """REAL FUNCTION point_dist(a, b) RESULT(distance)
+ TYPE(point), INTENT(IN) :: a
+ TYPE(point), INTENT(IN) :: b""",
+        """REAL FUNCTION foo2(f, g, h) RESULT(arg3)
+ REAL FUNCTION f(x) RESULT(z) :: f
+ REAL FUNCTION g(x) RESULT(z) :: g
+ REAL FUNCTION h(x) RESULT(z) :: h""",
     )
     assert len(ref_results) == len(results) - 1
     check_return(results[1:], ref_results)

@@ -117,7 +117,7 @@ def load_intrinsics():
                 0,
                 name,
                 args=args,
-                return_type=[json_obj["return"], keywords, keyword_info],
+                result_type=[json_obj["return"], keywords, keyword_info],
             )
         elif json_obj["type"] == 3:
             return fortran_var(
