@@ -191,7 +191,7 @@ def find_in_scope(
                 if (
                     isinstance(local_scope, fortran_function)
                     and local_scope.name.lower() == child.name.lower()
-                    and local_scope.sline == var_line_number
+                    and var_line_number in (local_scope.sline, local_scope.eline)
                 ):
                     return None
 
@@ -1649,6 +1649,7 @@ class fortran_var(fortran_obj):
         hover_str = ", ".join(
             [self.desc] + get_keywords(self.keywords, self.keyword_info)
         )
+        # TODO: at this stage we can mae this lowercase
         # Add parameter value in the output
         if self.is_parameter() and self.param_val:
             hover_str += f" :: {self.name} = {self.param_val}"
