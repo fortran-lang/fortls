@@ -782,7 +782,7 @@ def test_diagnostics():
         "textDocument/didOpen", {"textDocument": {"uri": file_path}}
     )
     # Test module procedure in submodules importing scopes
-    file_path = str(test_dir / "subdir" / "test_submod.f90")
+    file_path = str(test_dir / "subdir" / "test_submod.F90")
     string += write_rpc_notification(
         "textDocument/didOpen", {"textDocument": {"uri": file_path}}
     )
