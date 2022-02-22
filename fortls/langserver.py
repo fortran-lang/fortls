@@ -907,34 +907,31 @@ class LangServer:
                     continue
                 for match in NAME_REGEX.finditer(line):
                     var_def = self.get_definition(file_obj, i, match.start(1) + 1)
-                    if var_def is not None:
-                        ref_match = False
-                        if (def_fqsn == var_def.FQSN) or (
-                            var_def.FQSN in override_cache
+                    if var_def is None:
+                        continue
+                    ref_match = False
+                    if def_fqsn == var_def.FQSN or var_def.FQSN in override_cache:
+                        ref_match = True
+                    elif var_def.parent and var_def.parent.get_type() == CLASS_TYPE_ID:
+                        if type_mem:
+                            for inherit_def in var_def.parent.get_overridden(def_name):
+                                if def_fqsn == inherit_def.FQSN:
+                                    ref_match = True
+                                    override_cache.append(var_def.FQSN)
+                                    break
+                        if (
+                            (var_def.sline - 1 == i)
+                            and (var_def.file_ast.path == filename)
+                            and (line.count("=>") == 0)
                         ):
-                            ref_match = True
-                        elif var_def.parent.get_type() == CLASS_TYPE_ID:
-                            if type_mem:
-                                for inherit_def in var_def.parent.get_overridden(
-                                    def_name
-                                ):
-                                    if def_fqsn == inherit_def.FQSN:
-                                        ref_match = True
-                                        override_cache.append(var_def.FQSN)
-                                        break
-                            if (
-                                (var_def.sline - 1 == i)
-                                and (var_def.file_ast.path == filename)
-                                and (line.count("=>") == 0)
-                            ):
-                                try:
-                                    if var_def.link_obj is def_obj:
-                                        ref_objs.append(var_def)
-                                        ref_match = True
-                                except:
-                                    pass
-                        if ref_match:
-                            file_refs.append([i, match.start(1), match.end(1)])
+                            try:
+                                if var_def.link_obj is def_obj:
+                                    ref_objs.append(var_def)
+                                    ref_match = True
+                            except:
+                                pass
+                    if ref_match:
+                        file_refs.append([i, match.start(1), match.end(1)])
             if len(file_refs) > 0:
                 refs[filename] = file_refs
         return refs, ref_objs

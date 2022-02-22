@@ -463,6 +463,8 @@ def test_def():
     file_path = test_dir / "subdir" / "test_rename.F90"
     string += def_request(file_path, 13, 5)
     string += def_request(file_path, 14, 5)
+    file_path = test_dir / "hover" / "functions.f90"
+    string += def_request(file_path, 3, 17)
     errcode, results = run_request(string)
     assert errcode == 0
     #
@@ -488,6 +490,8 @@ def test_def():
         # subdir/test_rename.F90
         [6, 6, str(test_dir / "subdir" / "test_rename.F90")],
         [1, 1, str(test_dir / "subdir" / "test_rename.F90")],
+        # hover/functions.f90
+        [3, 3, str(test_dir / "hover" / "functions.f90")],
     )
     assert len(exp_results) + 1 == len(results)
     for i in range(len(exp_results)):
