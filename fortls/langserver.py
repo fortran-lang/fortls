@@ -883,16 +883,21 @@ class LangServer:
         req_dict = {"signatures": [signature], "activeParameter": param_num}
         return req_dict
 
-    def get_all_references(self, def_obj, type_mem, file_obj=None):
+    def get_all_references(
+        self,
+        def_obj,
+        type_mem: bool,
+        file_obj: fortran_file = None,
+    ):
         # Search through all files
-        def_name = def_obj.name.lower()
-        def_fqsn = def_obj.FQSN
+        def_name: str = def_obj.name.lower()
+        def_fqsn: str = def_obj.FQSN
         NAME_REGEX = re.compile(rf"(?:\W|^)({def_name})(?:\W|$)", re.I)
         if file_obj is None:
             file_set = self.workspace.items()
         else:
             file_set = ((file_obj.path, file_obj),)
-        override_cache = []
+        override_cache: list[str] = []
         refs = {}
         ref_objs = []
         for filename, file_obj in file_set:
