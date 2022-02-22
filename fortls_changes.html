@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Unique fortls features (not in fortran-language-server) &mdash; fortls 0.1.dev1+gb0987da documentation</title>
+  <title>Unique fortls features (not in fortran-language-server) &mdash; fortls 0.1.dev1+g914ff47 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -76,7 +76,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="unique-fortls-features-not-in-fortran-language-server">
+  <section id="unique-fortls-features-not-in-fortran-language-server">
 <h1>Unique fortls features (not in fortran-language-server)<a class="headerlink" href="#unique-fortls-features-not-in-fortran-language-server" title="Permalink to this headline"></a></h1>
 <section id="added">
 <h2>Added<a class="headerlink" href="#added" title="Permalink to this headline"></a></h2>
@@ -105,6 +105,8 @@
 <section id="changed">
 <h2>Changed<a class="headerlink" href="#changed" title="Permalink to this headline"></a></h2>
 <ul class="simple">
+<li><p>Changed the way function hover messages are displayed, now signatures are standardised
+(<a class="reference external" href="https://github.com/gnikit/fortls/issues/47">gnikit/fortls#47</a>)</p></li>
 <li><p>Changed default branch to master and updated Actions workflows</p></li>
 <li><p>Changes from <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> to <code class="docutils literal notranslate"><span class="pre">setup.toml</span></code> and <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>
 (<a class="reference external" href="https://github.com/gnikit/fortls/issues/33">gnikit/fortls#33</a>)</p></li>
@@ -130,6 +132,12 @@
 <section id="fixed">
 <h2>Fixed<a class="headerlink" href="#fixed" title="Permalink to this headline"></a></h2>
 <ul class="simple">
+<li><p>Fixed hovering over functions displaying as theire result types
+(<a class="reference external" href="https://github.com/gnikit/fortls/issues/22">gnikit/fortls#22</a>)</p></li>
+<li><p>Fixed function modifiers not displaying upon hover
+(<a class="reference external" href="https://github.com/gnikit/fortls/issues/48">gnikit/fortls#48</a>)</p></li>
+<li><p>Fixed function hover when returning arrays
+(<a class="reference external" href="https://github.com/gnikit/fortls/issues/50">gnikit/fortls#50</a>)</p></li>
 <li><p>Fixed code autocompletion bug with f-strings
 (<a class="reference external" href="https://github.com/hansec/fortran-language-server/issues/39">#39</a>)</p></li>
 <li><p>Fixed global <code class="docutils literal notranslate"><span class="pre">sort_keywords</span></code> option not propagating during parsing on Windows

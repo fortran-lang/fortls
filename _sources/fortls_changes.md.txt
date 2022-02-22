@@ -24,6 +24,8 @@
 
 ## Changed
 
+- Changed the way function hover messages are displayed, now signatures are standardised
+  ([gnikit/fortls#47](https://github.com/gnikit/fortls/issues/47))
 - Changed default branch to master and updated Actions workflows
 - Changes from `setup.py` to `setup.toml` and `pyproject.toml`
   ([gnikit/fortls#33](https://github.com/gnikit/fortls/issues/33))
@@ -45,6 +47,12 @@
 
 ## Fixed
 
+- Fixed hovering over functions displaying as theire result types
+  ([gnikit/fortls#22](https://github.com/gnikit/fortls/issues/22))
+- Fixed function modifiers not displaying upon hover
+  ([gnikit/fortls#48](https://github.com/gnikit/fortls/issues/48))
+- Fixed function hover when returning arrays
+  ([gnikit/fortls#50](https://github.com/gnikit/fortls/issues/50))
 - Fixed code autocompletion bug with f-strings
   ([#39](https://github.com/hansec/fortran-language-server/issues/39))
 - Fixed global `sort_keywords` option not propagating during parsing on Windows
