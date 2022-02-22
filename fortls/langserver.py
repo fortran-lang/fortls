@@ -740,7 +740,9 @@ class LangServer:
                 )
             ):
                 curr_scope = curr_scope.parent
-            var_obj = find_in_scope(curr_scope, def_name, self.obj_tree)
+            var_obj = find_in_scope(
+                curr_scope, def_name, self.obj_tree, var_line_number=def_line + 1
+            )
         # Search in global scope
         if var_obj is None:
             if is_member:
@@ -881,16 +883,21 @@ class LangServer:
         req_dict = {"signatures": [signature], "activeParameter": param_num}
         return req_dict
 
-    def get_all_references(self, def_obj, type_mem, file_obj=None):
+    def get_all_references(
+        self,
+        def_obj,
+        type_mem: bool,
+        file_obj: fortran_file = None,
+    ):
         # Search through all files
-        def_name = def_obj.name.lower()
-        def_fqsn = def_obj.FQSN
+        def_name: str = def_obj.name.lower()
+        def_fqsn: str = def_obj.FQSN
         NAME_REGEX = re.compile(rf"(?:\W|^)({def_name})(?:\W|$)", re.I)
         if file_obj is None:
             file_set = self.workspace.items()
         else:
             file_set = ((file_obj.path, file_obj),)
-        override_cache = []
+        override_cache: list[str] = []
         refs = {}
         ref_objs = []
         for filename, file_obj in file_set:
@@ -905,34 +912,31 @@ class LangServer:
                     continue
                 for match in NAME_REGEX.finditer(line):
                     var_def = self.get_definition(file_obj, i, match.start(1) + 1)
-                    if var_def is not None:
-                        ref_match = False
-                        if (def_fqsn == var_def.FQSN) or (
-                            var_def.FQSN in override_cache
+                    if var_def is None:
+                        continue
+                    ref_match = False
+                    if def_fqsn == var_def.FQSN or var_def.FQSN in override_cache:
+                        ref_match = True
+                    elif var_def.parent and var_def.parent.get_type() == CLASS_TYPE_ID:
+                        if type_mem:
+                            for inherit_def in var_def.parent.get_overridden(def_name):
+                                if def_fqsn == inherit_def.FQSN:
+                                    ref_match = True
+                                    override_cache.append(var_def.FQSN)
+                                    break
+                        if (
+                            (var_def.sline - 1 == i)
+                            and (var_def.file_ast.path == filename)
+                            and (line.count("=>") == 0)
                         ):
-                            ref_match = True
-                        elif var_def.parent.get_type() == CLASS_TYPE_ID:
-                            if type_mem:
-                                for inherit_def in var_def.parent.get_overridden(
-                                    def_name
-                                ):
-                                    if def_fqsn == inherit_def.FQSN:
-                                        ref_match = True
-                                        override_cache.append(var_def.FQSN)
-                                        break
-                            if (
-                                (var_def.sline - 1 == i)
-                                and (var_def.file_ast.path == filename)
-                                and (line.count("=>") == 0)
-                            ):
-                                try:
-                                    if var_def.link_obj is def_obj:
-                                        ref_objs.append(var_def)
-                                        ref_match = True
-                                except:
-                                    pass
-                        if ref_match:
-                            file_refs.append([i, match.start(1), match.end(1)])
+                            try:
+                                if var_def.link_obj is def_obj:
+                                    ref_objs.append(var_def)
+                                    ref_match = True
+                            except:
+                                pass
+                    if ref_match:
+                        file_refs.append([i, match.start(1), match.end(1)])
             if len(file_refs) > 0:
                 refs[filename] = file_refs
         return refs, ref_objs

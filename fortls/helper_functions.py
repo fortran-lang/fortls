@@ -311,7 +311,7 @@ def set_keyword_ordering(sorted):
     sort_keywords = sorted
 
 
-def map_keywords(keywords):
+def map_keywords(keywords: list[str]):
     mapped_keywords = []
     keyword_info = {}
     for keyword in keywords:

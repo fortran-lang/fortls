@@ -27,8 +27,8 @@ end module points
 #define __PARENT_MOD__ points
 submodule (__PARENT_MOD__) points_a
 contains
-  module function point_dist
-    type(point) :: c
+  module function point_dist(a, b)
+    type(point), intent(in) :: a, b
     distance = sqrt((a%x - b%x)**2 + (a%y - b%y)**2)
   end function point_dist
 
@@ -40,5 +40,5 @@ contains
   module procedure is_point_equal_sub
     type(point) :: c
     test = is_point_equal(a,b)
-  end module procedure is_point_equal_sub
+  end procedure is_point_equal_sub
 end submodule points_a

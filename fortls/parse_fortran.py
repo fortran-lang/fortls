@@ -6,12 +6,20 @@ import os
 import re
 import sys
 
+# Python < 3.8 does not have typing.Literals
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
+
 from fortls.constants import (
     DO_TYPE_ID,
     INTERFACE_TYPE_ID,
     PY3K,
     SELECT_TYPE_ID,
     SUBMODULE_TYPE_ID,
+    FUN_sig,
+    RESULT_sig,
     log,
 )
 from fortls.helper_functions import (
@@ -27,7 +35,6 @@ from fortls.helper_functions import (
 )
 from fortls.objects import (
     CLASS_info,
-    FUN_info,
     GEN_info,
     INT_info,
     SELECT_info,
@@ -266,8 +273,8 @@ def read_var_def(line: str, type_word: str = None, fun_only: bool = False):
             return None
     #
     keywords, trailing_line = parse_var_keywords(trailing_line)
-    # Check if function
-    fun_def = read_fun_def(trailing_line, [type_word, keywords])
+    # Check if this is a function definition
+    fun_def = read_fun_def(trailing_line, RESULT_sig(type=type_word, keywords=keywords))
     if (fun_def is not None) or fun_only:
         return fun_def
     #
@@ -287,19 +294,41 @@ def read_var_def(line: str, type_word: str = None, fun_only: bool = False):
     return "var", VAR_info(type_word, keywords, var_words)
 
 
-def read_fun_def(line: str, return_type=None, mod_flag: bool = False):
-    """Attempt to read FUNCTION definition line"""
-    mod_match = SUB_MOD_REGEX.match(line)
-    mods_found = False
-    keywords: list[str] = []
-    while mod_match is not None:
-        mods_found = True
-        line = line[mod_match.end(0) :]
-        keywords.append(mod_match.group(1))
-        mod_match = SUB_MOD_REGEX.match(line)
-    if mods_found:
+def read_fun_def(
+    line: str, result: RESULT_sig = None, mod_flag: bool = False
+) -> tuple[Literal["fun"], FUN_sig] | None:
+    """Attempt to read FUNCTION definition line
+
+    To infer the `result` `type` and `name` the variable definition is called
+    with the function only flag
+
+    Parameters
+    ----------
+    line : str
+        file line
+    result : RESULT_sig, optional
+        a dataclass containing the result signature of the function
+    mod_flag : bool, optional
+        flag for module and module procedure parsing, by default False
+
+    Returns
+    -------
+    tuple[Literal["fun"], FUN_sig] | None
+        a named tuple
+    """
+    # Get all the keyword modifier mathces
+    keywords = re.findall(SUB_MOD_REGEX, line)
+    # remove modifiers from line
+    line = re.sub(SUB_MOD_REGEX, "", line)
+
+    # Try and get the result type
+    # Recursively will call read_var_def which will then call read_fun_def
+    # with the variable result having been populated
+    if keywords:
         tmp_var = read_var_def(line, fun_only=True)
         if tmp_var is not None:
+            # Update keywords for function into dataclass
+            tmp_var[1].keywords = keywords
             return tmp_var
     fun_match = FUN_REGEX.match(line)
     if fun_match is None:
@@ -317,24 +346,23 @@ def read_fun_def(line: str, return_type=None, mod_flag: bool = False):
             word_match = [word for word in word_match]
             args = ",".join(word_match)
         trailing_line = trailing_line[paren_match.end(0) :]
-    #
-    return_var = None
-    if return_type is None:
-        trailing_line = trailing_line.strip()
-        results_match = RESULT_REGEX.match(trailing_line)
-        if results_match is not None:
-            return_var = results_match.group(1).strip().lower()
-    return "fun", FUN_info(name, args, return_type, return_var, mod_flag, keywords)
+
+    # Extract if possible the variable name of the result()
+    trailing_line = trailing_line.strip()
+    results_match = RESULT_REGEX.match(trailing_line)
+    if result is None:
+        result = RESULT_sig()
+    if results_match:
+        result.name = results_match.group(1).strip().lower()
+    return "fun", FUN_sig(name, args, keywords, mod_flag, result)
 
 
 def read_sub_def(line: str, mod_flag: bool = False):
     """Attempt to read SUBROUTINE definition line"""
-    keywords: list[str] = []
-    mod_match = SUB_MOD_REGEX.match(line)
-    while mod_match is not None:
-        line = line[mod_match.end(0) :]
-        keywords.append(mod_match.group(1))
-        mod_match = SUB_MOD_REGEX.match(line)
+    # Get all the keyword modifier mathces
+    keywords = re.findall(SUB_MOD_REGEX, line)
+    # remove modifiers from line
+    line = re.sub(SUB_MOD_REGEX, "", line)
     sub_match = SUB_REGEX.match(line)
     if sub_match is None:
         return None
@@ -533,7 +561,8 @@ def read_mod_def(line: str):
             return sub_res
         fun_res = read_var_def(trailing_line, fun_only=True)
         if fun_res is not None:
-            return fun_res[0], fun_res[1]._replace(mod_flag=True)
+            fun_res[1].mod_flag = True
+            return fun_res[0], fun_res[1]
         fun_res = read_fun_def(trailing_line, mod_flag=True)
         if fun_res is not None:
             return fun_res
@@ -1772,19 +1801,21 @@ def process_file(
                 args=obj_info.args,
                 mod_flag=obj_info.mod_flag,
                 keywords=keywords,
-                return_type=obj_info.return_type,
-                result_var=obj_info.return_var,
+                result_type=obj_info.result.type,
+                result_name=obj_info.result.name,
             )
             file_ast.add_scope(new_fun, END_FUN_REGEX)
-            if obj_info.return_type is not None:
-                keywords, keyword_info = map_keywords(obj_info.return_type[1])
+            # function type is present without result(), register the automatic
+            # result() variable that is the function name
+            if obj_info.result.type:
+                keywords, keyword_info = map_keywords(obj_info.result.keywords)
                 new_obj = fortran_var(
                     file_ast,
                     line_number,
-                    obj_info.name,
-                    obj_info.return_type[0],
-                    keywords,
-                    keyword_info,
+                    name=obj_info.result.name,
+                    var_desc=obj_info.result.type,
+                    keywords=keywords,
+                    keyword_info=keyword_info,
                 )
                 file_ast.add_variable(new_obj)
             parser_debug_msg("FUNCTION", line, line_number)

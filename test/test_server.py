@@ -463,6 +463,8 @@ def test_def():
     file_path = test_dir / "subdir" / "test_rename.F90"
     string += def_request(file_path, 13, 5)
     string += def_request(file_path, 14, 5)
+    file_path = test_dir / "hover" / "functions.f90"
+    string += def_request(file_path, 3, 17)
     errcode, results = run_request(string)
     assert errcode == 0
     #
@@ -488,6 +490,8 @@ def test_def():
         # subdir/test_rename.F90
         [6, 6, str(test_dir / "subdir" / "test_rename.F90")],
         [1, 1, str(test_dir / "subdir" / "test_rename.F90")],
+        # hover/functions.f90
+        [3, 3, str(test_dir / "hover" / "functions.f90")],
     )
     assert len(exp_results) + 1 == len(results)
     for i in range(len(exp_results)):
@@ -573,6 +577,25 @@ def test_hover():
     string += hover_req(file_path, 7, 55)
     file_path = test_dir / "hover" / "pointers.f90"
     string += hover_req(file_path, 1, 26)
+    file_path = test_dir / "hover" / "functions.f90"
+    string += hover_req(file_path, 1, 11)
+    string += hover_req(file_path, 7, 19)
+    string += hover_req(file_path, 12, 12)
+    string += hover_req(file_path, 18, 19)
+    string += hover_req(file_path, 23, 34)
+    string += hover_req(file_path, 28, 11)
+    string += hover_req(file_path, 34, 21)
+    string += hover_req(file_path, 46, 11)
+    string += hover_req(file_path, 51, 11)
+    string += hover_req(file_path, 55, 11)
+    file_path = test_dir / "hover" / "recursive.f90"
+    string += hover_req(file_path, 9, 40)
+    file_path = test_dir / "subdir" / "test_submod.F90"
+    string += hover_req(file_path, 29, 24)
+    string += hover_req(file_path, 34, 24)
+    file_path = test_dir / "test_diagnostic_int.f90"
+    string += hover_req(file_path, 19, 14)
+
     errcode, results = run_request(
         string, fortls_args=["--variable_hover", "--sort_keywords"]
     )
@@ -590,6 +613,54 @@ def test_hover():
         "DOUBLE PRECISION, PARAMETER :: somevar = 23.12",
         "DOUBLE PRECISION, PARAMETER :: some = 1e-19",
         "INTEGER, POINTER",
+        """FUNCTION fun1(arg) RESULT(fun1)
+ INTEGER, INTENT(IN) :: arg
+ INTEGER :: fun1""",
+        """FUNCTION fun2(arg) RESULT(fun2)
+ INTEGER, INTENT(IN) :: arg
+ INTEGER :: fun2""",
+        """FUNCTION fun3(arg) RESULT(retval)
+ INTEGER, INTENT(IN) :: arg
+ INTEGER :: retval""",
+        """FUNCTION fun4(arg) RESULT(retval)
+ INTEGER, INTENT(IN) :: arg
+ INTEGER :: retval""",
+        # Notice that the order of the modifiers does not match the source code
+        # This is part of the test, ideally they would be identical but previously
+        # any modifiers before the type would be discarded
+        """PURE ELEMENTAL FUNCTION fun5(arg) RESULT(retval)
+ INTEGER, INTENT(IN) :: arg
+ INTEGER :: retval""",
+        """FUNCTION fun6(arg) RESULT(retval)
+ INTEGER, INTENT(IN) :: arg
+ INTEGER, DIMENSION(10,10) :: retval""",
+        """PURE FUNCTION outer_product(x, y) RESULT(outer_product)
+ REAL, DIMENSION(:), INTENT(IN) :: x
+ REAL, DIMENSION(:), INTENT(IN) :: y
+ REAL, DIMENSION(SIZE(X), SIZE(Y)) :: outer_product""",
+        """FUNCTION dlamch(cmach) RESULT(dlamch)
+ CHARACTER :: CMACH""",
+        """FUNCTION fun7() RESULT(val)
+ TYPE(c_ptr) :: val""",
+        """TYPE(c_ptr) FUNCTION c_loc(x) RESULT(c_loc)""",
+        """RECURSIVE SUBROUTINE recursive_assign_descending(node, vector, current_loc)
+ TYPE(tree_inode), POINTER, INTENT(IN) :: node
+ INTEGER, DIMENSION(:), INTENT(INOUT) :: vector
+ INTEGER, INTENT(INOUT) :: current_loc""",
+        """FUNCTION point_dist(a, b) RESULT(distance)
+ TYPE(point), INTENT(IN) :: a
+ TYPE(point), INTENT(IN) :: b
+ REAL :: distance""",
+        """FUNCTION is_point_equal_a(a, b) RESULT(is_point_equal_a)
+ TYPE(point), INTENT(IN) :: a
+ TYPE(point), INTENT(IN) :: b
+ LOGICAL :: is_point_equal_a""",
+        # Could be subject to change
+        """FUNCTION foo2(f, g, h) RESULT(arg3)
+ FUNCTION f(x) :: f
+ FUNCTION g(x) :: g
+ FUNCTION h(x) :: h
+ REAL :: arg3""",
     )
     assert len(ref_results) == len(results) - 1
     check_return(results[1:], ref_results)
@@ -710,6 +781,11 @@ def test_diagnostics():
     string += write_rpc_notification(
         "textDocument/didOpen", {"textDocument": {"uri": file_path}}
     )
+    # Test module procedure in submodules importing scopes
+    file_path = str(test_dir / "subdir" / "test_submod.F90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
     errcode, results = run_request(string)
     assert errcode == 0
 
@@ -774,6 +850,7 @@ def test_diagnostics():
                 ],
             },
         ],
+        [],
         [],
         [],
         [],

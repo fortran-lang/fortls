@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import logging
 import sys
+from dataclasses import dataclass, field
 
 PY3K = sys.version_info >= (3, 0)
 
@@ -58,3 +61,23 @@ ENUM_TYPE_ID = 15
 # it cannot also be a comment that requires !, c, d
 # and ^= (xor_eq) operator is invalid in Fortran C++ preproc
 FORTRAN_LITERAL = "0^=__LITERAL_INTERNAL_DUMMY_VAR_"
+
+
+@dataclass
+class RESULT_sig:
+    name: str = field(default=None)
+    type: str = field(default=None)
+    keywords: list[str] = field(default_factory=list)
+
+
+@dataclass
+class FUN_sig:
+    name: str
+    args: str
+    keywords: list[str] = field(default_factory=list)
+    mod_flag: bool = field(default=False)
+    result: RESULT_sig = field(default_factory=RESULT_sig)
+
+    def __post_init__(self):
+        if not self.result.name:
+            self.result.name = self.name

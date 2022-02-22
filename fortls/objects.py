@@ -165,9 +165,13 @@ def find_in_scope(
     obj_tree: dict,
     interface: bool = False,
     local_only: bool = False,
+    var_line_number: int = None,
 ):
     def check_scope(
-        local_scope: fortran_scope, var_name_lower: str, filter_public: bool = False
+        local_scope: fortran_scope,
+        var_name_lower: str,
+        filter_public: bool = False,
+        var_line_number: int = None,
     ):
         for child in local_scope.get_children():
             if child.name.startswith("#GEN_INT"):
@@ -178,6 +182,19 @@ def find_in_scope(
                 if (child.vis < 0) or ((local_scope.def_vis < 0) and (child.vis <= 0)):
                     continue
             if child.name.lower() == var_name_lower:
+                # For functions with an implicit result() variable the name
+                # of the function is used. If we are hovering over the function
+                # definition, we do not want the implicit result() to be returned.
+                # If scope is from a function and child's name is same as functions name
+                # and start of scope i.e. function definition is equal to the request ln
+                # then we are need to skip this child
+                if (
+                    isinstance(local_scope, fortran_function)
+                    and local_scope.name.lower() == child.name.lower()
+                    and var_line_number in (local_scope.sline, local_scope.eline)
+                ):
+                    return None
+
                 return child
         return None
 
@@ -186,7 +203,7 @@ def find_in_scope(
     # Check local scope
     if scope is None:
         return None
-    tmp_var = check_scope(scope, var_name_lower)
+    tmp_var = check_scope(scope, var_name_lower, var_line_number=var_line_number)
     if local_only or (tmp_var is not None):
         return tmp_var
     # Check INCLUDE statements
@@ -959,7 +976,7 @@ class fortran_subroutine(fortran_scope):
         keyword_list = get_keywords(self.keywords)
         keyword_list.append(f"{self.get_desc()} ")
         hover_array = [" ".join(keyword_list) + sub_sig]
-        self.get_docs_full(hover_array, long, include_doc, drop_arg)
+        hover_array = self.get_docs_full(hover_array, long, include_doc, drop_arg)
         return "\n ".join(hover_array), long
 
     def get_docs_full(
@@ -977,6 +994,7 @@ class fortran_subroutine(fortran_scope):
                 doc_str = arg_obj.get_documentation()
                 if include_doc and (doc_str is not None):
                     hover_array += doc_str.splitlines()
+        return hover_array
 
     def get_signature(self, drop_arg=-1):
         arg_sigs = []
@@ -1070,8 +1088,8 @@ class fortran_function(fortran_subroutine):
         args: str = "",
         mod_flag: bool = False,
         keywords: list = None,
-        return_type=None,
-        result_var=None,
+        result_type: str = None,
+        result_name: str = None,
     ):
         super().__init__(file_ast, line_number, name, args, mod_flag, keywords)
         self.args: str = args.replace(" ", "").lower()
@@ -1080,17 +1098,19 @@ class fortran_function(fortran_subroutine):
         self.in_children: list = []
         self.missing_args: list = []
         self.mod_scope: bool = mod_flag
-        self.result_var = result_var
-        self.result_obj = None
-        self.return_type = None
-        if return_type is not None:
-            self.return_type = return_type[0]
+        self.result_name: str = result_name
+        self.result_type: str = result_type
+        self.result_obj: fortran_var = None
+        # Set the implicit result() name to be the function name
+        if self.result_name is None:
+            self.result_name = self.name
 
     def copy_interface(self, copy_source: fortran_function):
         # Call the parent class method
         child_names = super().copy_interface(copy_source)
         # Return specific options
-        self.result_var = copy_source.result_var
+        self.result_name = copy_source.result_name
+        self.result_type = copy_source.result_type
         self.result_obj = copy_source.result_obj
         if copy_source.result_obj is not None:
             if copy_source.result_obj.name.lower() not in child_names:
@@ -1098,47 +1118,88 @@ class fortran_function(fortran_subroutine):
 
     def resolve_link(self, obj_tree):
         self.resolve_arg_link(obj_tree)
-        if self.result_var is not None:
-            result_var_lower = self.result_var.lower()
-            for child in self.children:
-                if child.name.lower() == result_var_lower:
-                    self.result_obj = child
+        result_var_lower = self.result_name.lower()
+        for child in self.children:
+            if child.name.lower() == result_var_lower:
+                self.result_obj = child
+                # Update result value and type
+                self.result_name = child.name
+                self.result_type = child.get_desc()
 
     def get_type(self, no_link=False):
         return FUNCTION_TYPE_ID
 
     def get_desc(self):
-        if self.result_obj is not None:
-            return self.result_obj.get_desc() + " FUNCTION"
-        if self.return_type is not None:
-            return self.return_type + " FUNCTION"
+        if self.result_type:
+            return self.result_type + " FUNCTION"
         return "FUNCTION"
 
     def is_callable(self):
         return False
 
-    def get_hover(self, long=False, include_doc=True, drop_arg=-1):
+    def get_hover(
+        self, long: bool = False, include_doc: bool = True, drop_arg: int = -1
+    ) -> tuple[str, bool]:
+        """Construct the hover message for a FUNCTION.
+        Two forms are produced here the `long` i.e. the normal for hover requests
+
+        ```
+        [MODIFIERS] FUNCTION NAME([ARGS]) RESULT(RESULT_VAR)
+          TYPE, [ARG_MODIFIERS] :: [ARGS]
+          TYPE, [RESULT_MODIFIERS] :: RESULT_VAR
+        ```
+
+        note: intrinsic functions will display slightly different,
+        `RESULT_VAR` and its `TYPE` might not always be present
+
+        short form, used when functions are arguments in functions and subroutines:
+
+        ```
+        FUNCTION NAME([ARGS]) :: ARG_LIST_NAME
+        ```
+
+        Parameters
+        ----------
+        long : bool, optional
+            toggle between long and short hover results, by default False
+        include_doc : bool, optional
+            if to include any documentation, by default True
+        drop_arg : int, optional
+            Ignore argument at position `drop_arg` in the argument list, by default -1
+
+        Returns
+        -------
+        tuple[str, bool]
+            String representative of the hover message and the `long` flag used
+        """
         fun_sig, _ = self.get_snippet(drop_arg=drop_arg)
-        fun_return = ""
-        if self.result_obj is not None:
-            fun_return, _ = self.result_obj.get_hover(include_doc=False)
-        if self.return_type is not None:
-            fun_return = self.return_type
+        # short hover messages do not include the result()
+        fun_sig += f" RESULT({self.result_name})" if long else ""
         keyword_list = get_keywords(self.keywords)
         keyword_list.append("FUNCTION")
-        hover_array = [f"{fun_return} {' '.join(keyword_list)} {fun_sig}"]
-        self.get_docs_full(hover_array, long, include_doc, drop_arg)
+
+        hover_array = [f"{' '.join(keyword_list)} {fun_sig}"]
+        hover_array = self.get_docs_full(hover_array, long, include_doc, drop_arg)
+        # Only append the return value if using long form
+        if self.result_obj and long:
+            arg_doc, _ = self.result_obj.get_hover(include_doc=False)
+            hover_array.append(f"{arg_doc} :: {self.result_obj.name}")
+        # intrinsic functions, where the return type is missing but can be inferred
+        elif self.result_type and long:
+            # prepend type to function signature
+            hover_array[0] = f"{self.result_type} {hover_array[0]}"
         return "\n ".join(hover_array), long
 
     def get_interface(self, name_replace=None, change_arg=-1, change_strings=None):
         fun_sig, _ = self.get_snippet(name_replace=name_replace)
+        fun_sig += f" RESULT({self.result_name})"
+        # XXX:
         keyword_list = []
-        if self.return_type is not None:
-            keyword_list.append(self.return_type)
-        if self.result_obj is not None:
-            fun_sig += f" RESULT({self.result_obj.name})"
+        if self.result_type:
+            keyword_list.append(self.result_type)
         keyword_list += get_keywords(self.keywords)
         keyword_list.append("FUNCTION ")
+
         interface_array = self.get_interface_array(
             keyword_list, fun_sig, change_arg, change_strings
         )
@@ -1628,6 +1689,7 @@ class fortran_var(fortran_obj):
         hover_str = ", ".join(
             [self.desc] + get_keywords(self.keywords, self.keyword_info)
         )
+        # TODO: at this stage we can mae this lowercase
         # Add parameter value in the output
         if self.is_parameter() and self.param_val:
             hover_str += f" :: {self.name} = {self.param_val}"
