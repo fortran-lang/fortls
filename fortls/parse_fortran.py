@@ -5,7 +5,12 @@ import logging
 import os
 import re
 import sys
-from typing import Literal
+
+# Python < 3.8 does not have typing.Literals
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 from fortls.constants import (
     DO_TYPE_ID,
