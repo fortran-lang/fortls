@@ -2,14 +2,19 @@
 
 ## 2.2.2
 
+### Changed
+
+- Changed the way function hover messages are displayed, now signatures are standardised
+  ([gnikit/fortls#47](https://github.com/gnikit/fortls/issues/47))
+
 ### Fixed
 
 - Fixed hovering over functions displaying as theire result types
   ([gnikit/fortls#22](https://github.com/gnikit/fortls/issues/22))
-- Fixed function hovering signature now standardised
-  ([#47](https://github.com/hansec/fortran-language-server/issues/47))
 - Fixed function modifiers not displaying upon hover
   ([gnikit/fortls#48](https://github.com/gnikit/fortls/issues/48))
+- Fixed function hover when returning arrays
+  ([gnikit/fortls#50](https://github.com/gnikit/fortls/issues/50))
 
 ## 2.2.1
 

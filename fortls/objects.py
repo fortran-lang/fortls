@@ -976,7 +976,7 @@ class fortran_subroutine(fortran_scope):
         keyword_list = get_keywords(self.keywords)
         keyword_list.append(f"{self.get_desc()} ")
         hover_array = [" ".join(keyword_list) + sub_sig]
-        self.get_docs_full(hover_array, long, include_doc, drop_arg)
+        hover_array = self.get_docs_full(hover_array, long, include_doc, drop_arg)
         return "\n ".join(hover_array), long
 
     def get_docs_full(
@@ -994,6 +994,7 @@ class fortran_subroutine(fortran_scope):
                 doc_str = arg_obj.get_documentation()
                 if include_doc and (doc_str is not None):
                     hover_array += doc_str.splitlines()
+        return hover_array
 
     def get_signature(self, drop_arg=-1):
         arg_sigs = []
@@ -1136,22 +1137,63 @@ class fortran_function(fortran_subroutine):
     def is_callable(self):
         return False
 
-    def get_hover(self, long=False, include_doc=True, drop_arg=-1):
+    def get_hover(
+        self, long: bool = False, include_doc: bool = True, drop_arg: int = -1
+    ) -> tuple[str, bool]:
+        """Construct the hover message for a FUNCTION.
+        Two forms are produced here the `long` i.e. the normal for hover requests
+
+        ```
+        [MODIFIERS] FUNCTION NAME([ARGS]) RESULT(RESULT_VAR)
+          TYPE, [ARG_MODIFIERS] :: [ARGS]
+          TYPE, [RESULT_MODIFIERS] :: RESULT_VAR
+        ```
+
+        note: intrinsic functions will display slightly different,
+        `RESULT_VAR` and its `TYPE` might not always be present
+
+        short form, used when functions are arguments in functions and subroutines:
+
+        ```
+        FUNCTION NAME([ARGS]) :: ARG_LIST_NAME
+        ```
+
+        Parameters
+        ----------
+        long : bool, optional
+            toggle between long and short hover results, by default False
+        include_doc : bool, optional
+            if to include any documentation, by default True
+        drop_arg : int, optional
+            Ignore argument at position `drop_arg` in the argument list, by default -1
+
+        Returns
+        -------
+        tuple[str, bool]
+            String representative of the hover message and the `long` flag used
+        """
         fun_sig, _ = self.get_snippet(drop_arg=drop_arg)
-        fun_sig += f" RESULT({self.result_name})"
-        keyword_list = []
-        if self.result_type:
-            keyword_list.append(self.result_type)
-        keyword_list += get_keywords(self.keywords)
+        # short hover messages do not include the result()
+        fun_sig += f" RESULT({self.result_name})" if long else ""
+        keyword_list = get_keywords(self.keywords)
         keyword_list.append("FUNCTION")
 
         hover_array = [f"{' '.join(keyword_list)} {fun_sig}"]
-        self.get_docs_full(hover_array, long, include_doc, drop_arg)
+        hover_array = self.get_docs_full(hover_array, long, include_doc, drop_arg)
+        # Only append the return value if using long form
+        if self.result_obj and long:
+            arg_doc, _ = self.result_obj.get_hover(include_doc=False)
+            hover_array.append(f"{arg_doc} :: {self.result_obj.name}")
+        # intrinsic functions, where the return type is missing but can be inferred
+        elif self.result_type and long:
+            # prepend type to function signature
+            hover_array[0] = f"{self.result_type} {hover_array[0]}"
         return "\n ".join(hover_array), long
 
     def get_interface(self, name_replace=None, change_arg=-1, change_strings=None):
         fun_sig, _ = self.get_snippet(name_replace=name_replace)
         fun_sig += f" RESULT({self.result_name})"
+        # XXX:
         keyword_list = []
         if self.result_type:
             keyword_list.append(self.result_type)

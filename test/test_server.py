@@ -579,6 +579,11 @@ def test_hover():
     string += hover_req(file_path, 12, 12)
     string += hover_req(file_path, 18, 19)
     string += hover_req(file_path, 23, 34)
+    string += hover_req(file_path, 28, 11)
+    string += hover_req(file_path, 34, 21)
+    string += hover_req(file_path, 46, 11)
+    string += hover_req(file_path, 51, 11)
+    string += hover_req(file_path, 55, 11)
     file_path = test_dir / "hover" / "recursive.f90"
     string += hover_req(file_path, 9, 40)
     file_path = test_dir / "subdir" / "test_submod.F90"
@@ -604,34 +609,54 @@ def test_hover():
         "DOUBLE PRECISION, PARAMETER :: somevar = 23.12",
         "DOUBLE PRECISION, PARAMETER :: some = 1e-19",
         "INTEGER, POINTER",
-        """INTEGER FUNCTION fun1(arg) RESULT(fun1)
- INTEGER, INTENT(IN) :: arg""",
-        """INTEGER FUNCTION fun2(arg) RESULT(fun2)
- INTEGER, INTENT(IN) :: arg""",
-        """INTEGER FUNCTION fun3(arg) RESULT(retval)
- INTEGER, INTENT(IN) :: arg""",
-        """INTEGER FUNCTION fun4(arg) RESULT(retval)
- INTEGER, INTENT(IN) :: arg""",
+        """FUNCTION fun1(arg) RESULT(fun1)
+ INTEGER, INTENT(IN) :: arg
+ INTEGER :: fun1""",
+        """FUNCTION fun2(arg) RESULT(fun2)
+ INTEGER, INTENT(IN) :: arg
+ INTEGER :: fun2""",
+        """FUNCTION fun3(arg) RESULT(retval)
+ INTEGER, INTENT(IN) :: arg
+ INTEGER :: retval""",
+        """FUNCTION fun4(arg) RESULT(retval)
+ INTEGER, INTENT(IN) :: arg
+ INTEGER :: retval""",
         # Notice that the order of the modifiers does not match the source code
         # This is part of the test, ideally they would be identical but previously
         # any modifiers before the type would be discarded
-        """INTEGER PURE ELEMENTAL FUNCTION fun5(arg) RESULT(retval)
- INTEGER, INTENT(IN) :: arg""",
+        """PURE ELEMENTAL FUNCTION fun5(arg) RESULT(retval)
+ INTEGER, INTENT(IN) :: arg
+ INTEGER :: retval""",
+        """FUNCTION fun6(arg) RESULT(retval)
+ INTEGER, INTENT(IN) :: arg
+ INTEGER, DIMENSION(10,10) :: retval""",
+        """PURE FUNCTION outer_product(x, y) RESULT(outer_product)
+ REAL, DIMENSION(:), INTENT(IN) :: x
+ REAL, DIMENSION(:), INTENT(IN) :: y
+ REAL, DIMENSION(SIZE(X), SIZE(Y)) :: outer_product""",
+        """FUNCTION dlamch(cmach) RESULT(dlamch)
+ CHARACTER :: CMACH""",
+        """FUNCTION fun7() RESULT(val)
+ TYPE(c_ptr) :: val""",
+        """TYPE(c_ptr) FUNCTION c_loc(x) RESULT(c_loc)""",
         """RECURSIVE SUBROUTINE recursive_assign_descending(node, vector, current_loc)
  TYPE(tree_inode), POINTER, INTENT(IN) :: node
  INTEGER, DIMENSION(:), INTENT(INOUT) :: vector
  INTEGER, INTENT(INOUT) :: current_loc""",
-        # TODO: more tests to add from functions
-        """REAL FUNCTION point_dist(a, b) RESULT(distance)
+        """FUNCTION point_dist(a, b) RESULT(distance)
  TYPE(point), INTENT(IN) :: a
- TYPE(point), INTENT(IN) :: b""",
-        """LOGICAL FUNCTION is_point_equal_a(a, b) RESULT(is_point_equal_a)
+ TYPE(point), INTENT(IN) :: b
+ REAL :: distance""",
+        """FUNCTION is_point_equal_a(a, b) RESULT(is_point_equal_a)
  TYPE(point), INTENT(IN) :: a
- TYPE(point), INTENT(IN) :: b""",
-        """REAL FUNCTION foo2(f, g, h) RESULT(arg3)
- REAL FUNCTION f(x) RESULT(z) :: f
- REAL FUNCTION g(x) RESULT(z) :: g
- REAL FUNCTION h(x) RESULT(z) :: h""",
+ TYPE(point), INTENT(IN) :: b
+ LOGICAL :: is_point_equal_a""",
+        # Could be subject to change
+        """FUNCTION foo2(f, g, h) RESULT(arg3)
+ FUNCTION f(x) :: f
+ FUNCTION g(x) :: g
+ FUNCTION h(x) :: h
+ REAL :: arg3""",
     )
     assert len(ref_results) == len(results) - 1
     check_return(results[1:], ref_results)

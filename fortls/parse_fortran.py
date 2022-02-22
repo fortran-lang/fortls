@@ -290,7 +290,7 @@ def read_var_def(line: str, type_word: str = None, fun_only: bool = False):
 
 
 def read_fun_def(
-    line: str, result: RESULT_sig = RESULT_sig(), mod_flag: bool = False
+    line: str, result: RESULT_sig = None, mod_flag: bool = False
 ) -> tuple[Literal["fun"], FUN_sig] | None:
     """Attempt to read FUNCTION definition line
 
@@ -345,9 +345,11 @@ def read_fun_def(
     # Extract if possible the variable name of the result()
     trailing_line = trailing_line.strip()
     results_match = RESULT_REGEX.match(trailing_line)
+    if result is None:
+        result = RESULT_sig()
     if results_match:
         result.name = results_match.group(1).strip().lower()
-    return "fun", FUN_sig(name, args, keywords, mod_flag, result=result)
+    return "fun", FUN_sig(name, args, keywords, mod_flag, result)
 
 
 def read_sub_def(line: str, mod_flag: bool = False):
