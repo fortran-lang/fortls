@@ -1143,20 +1143,16 @@ class fortran_function(fortran_subroutine):
         """Construct the hover message for a FUNCTION.
         Two forms are produced here the `long` i.e. the normal for hover requests
 
-        ```
         [MODIFIERS] FUNCTION NAME([ARGS]) RESULT(RESULT_VAR)
           TYPE, [ARG_MODIFIERS] :: [ARGS]
           TYPE, [RESULT_MODIFIERS] :: RESULT_VAR
-        ```
 
         note: intrinsic functions will display slightly different,
         `RESULT_VAR` and its `TYPE` might not always be present
 
         short form, used when functions are arguments in functions and subroutines:
 
-        ```
         FUNCTION NAME([ARGS]) :: ARG_LIST_NAME
-        ```
 
         Parameters
         ----------
