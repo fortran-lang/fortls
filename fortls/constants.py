@@ -66,6 +66,75 @@ FORTRAN_LITERAL = "0^=__LITERAL_INTERNAL_DUMMY_VAR_"
 
 
 @dataclass
+class VAR_info:
+    type_word: str
+    keywords: list[str]
+    var_names: list[str]
+
+
+@dataclass
+class SUB_info:
+    name: str
+    args: str
+    mod_flag: bool
+    keywords: list[str]
+
+
+@dataclass
+class SELECT_info:
+    type: int
+    binding: str
+    desc: str
+
+
+@dataclass
+class CLASS_info:
+    name: str
+    parent: str
+    keywords: str
+
+
+@dataclass
+class USE_info:
+    mod_name: str
+    only_list: set[str]
+    rename_map: dict[str, str]
+
+
+@dataclass
+class GEN_info:
+    bound_name: str
+    pro_links: list[str]
+    vis_flag: int
+
+
+@dataclass
+class SMOD_info:
+    name: str
+    parent: str
+
+
+@dataclass
+class INT_info:
+    name: str
+    abstract: bool
+
+
+@dataclass
+class VIS_info:
+    type: int
+    obj_names: list[str]
+
+
+@dataclass
+class INCLUDE_info:
+    line_number: int
+    path: str
+    file: None  # fortran_file
+    scope_objs: list[str]
+
+
+@dataclass
 class RESULT_sig:
     name: str = field(default=None)
     type: str = field(default=None)
@@ -85,4 +154,5 @@ class FUN_sig:
             self.result.name = self.name
 
 
+# Fortran Regular Expressions dataclass variable, immutable
 FRegex = FortranRegularExpressions()

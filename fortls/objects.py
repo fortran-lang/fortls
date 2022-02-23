@@ -3,8 +3,8 @@ from __future__ import annotations, print_function
 import copy
 import os
 import re
-from dataclasses import dataclass
-from typing import Dict, List, NamedTuple, Pattern, Set
+from dataclasses import replace
+from typing import Pattern
 
 from fortls.constants import (
     ASSOC_TYPE_ID,
@@ -25,63 +25,20 @@ from fortls.constants import (
     VAR_TYPE_ID,
     WHERE_TYPE_ID,
     FRegex,
+    USE_info,
+    INCLUDE_info,
 )
 from fortls.helper_functions import get_keywords, get_paren_substring, get_var_stack
 from fortls.jsonrpc import path_to_uri
 
-# Helper types
-VAR_info = NamedTuple(
-    "VAR_info", [("type_word", str), ("keywords", List[str]), ("var_names", List[str])]
-)
-SUB_info = NamedTuple(
-    "SUB_info",
-    [("name", str), ("args", str), ("mod_flag", bool), ("keywords", List[str])],
-)
-FUN_info = NamedTuple(
-    "FUN_info",
-    [
-        ("name", str),
-        ("args", str),
-        ("return_type", None),
-        ("return_var", str),
-        ("mod_flag", bool),
-        ("keywords", List[str]),
-    ],
-)
-SELECT_info = NamedTuple(
-    "SELECT_info", [("type", int), ("binding", str), ("desc", str)]
-)
-CLASS_info = NamedTuple(
-    "CLASS_info", [("name", str), ("parent", str), ("keywords", List[str])]
-)
-USE_info = NamedTuple(
-    "USE_info",
-    [("mod_name", str), ("only_list", Set[str]), ("rename_map", Dict[str, str])],
-)
-GEN_info = NamedTuple(
-    "GEN_info",
-    [("bound_name", str), ("pro_links", List[str]), ("vis_flag", int)],
-)
-SMOD_info = NamedTuple("SMOD_info", [("name", str), ("parent", str)])
-INT_info = NamedTuple("INT_info", [("name", str), ("abstract", bool)])
-VIS_info = NamedTuple("VIS_info", [("type", int), ("obj_names", List[str])])
-
-
-@dataclass
-class INCLUDE_info:
-    line_number: int
-    path: str
-    file: None  # fortran_file
-    scope_objs: list[str]
-
 
 def get_use_tree(
     scope: fortran_scope,
-    use_dict: dict,
+    use_dict: dict[str, USE_info],
     obj_tree: dict,
-    only_list: list = None,
-    rename_map: dict = None,
-    curr_path: list = None,
+    only_list: list[str] = None,
+    rename_map: dict[str, str] = None,
+    curr_path: list[str] = None,
 ):
     def intersect_only(use_stmnt):
         tmp_list = []
@@ -135,8 +92,8 @@ def get_use_tree(
                         only_len = len(use_dict_mod.only_list)
                         new_rename = merged_rename.get(only_name, None)
                         if new_rename is not None:
-                            use_dict[use_stmnt.mod_name] = use_dict_mod._replace(
-                                rename_map=merged_rename
+                            use_dict[use_stmnt.mod_name] = replace(
+                                use_dict_mod, rename_map=merged_rename
                             )
             else:
                 use_dict[use_stmnt.mod_name] = USE_info(use_stmnt.mod_name, set(), {})

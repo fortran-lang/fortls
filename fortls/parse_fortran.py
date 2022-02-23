@@ -21,6 +21,15 @@ from fortls.constants import (
     FRegex,
     FUN_sig,
     RESULT_sig,
+    CLASS_info,
+    GEN_info,
+    INT_info,
+    SELECT_info,
+    SMOD_info,
+    SUB_info,
+    USE_info,
+    VAR_info,
+    VIS_info,
     log,
 )
 from fortls.helper_functions import (
@@ -35,15 +44,6 @@ from fortls.helper_functions import (
     strip_strings,
 )
 from fortls.objects import (
-    CLASS_info,
-    GEN_info,
-    INT_info,
-    SELECT_info,
-    SMOD_info,
-    SUB_info,
-    USE_info,
-    VAR_info,
-    VIS_info,
     fortran_associate,
     fortran_ast,
     fortran_block,
