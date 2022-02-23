@@ -21,6 +21,7 @@ from fortls.constants import (
     SELECT_TYPE_ID,
     SUBROUTINE_TYPE_ID,
     VAR_TYPE_ID,
+    FRegex,
     log,
 )
 from fortls.helper_functions import (
@@ -47,14 +48,7 @@ from fortls.objects import (
     get_use_tree,
 )
 from fortls.parse_fortran import fortran_file, get_line_context, process_file
-from fortls.regex_patterns import (
-    DQ_STRING_REGEX,
-    INT_STMNT_REGEX,
-    LOGICAL_REGEX,
-    NUMBER_REGEX,
-    SQ_STRING_REGEX,
-    src_file_exts,
-)
+from fortls.regex_patterns import src_file_exts
 from fortls.version import __version__
 
 # Global regexes
@@ -540,6 +534,7 @@ class LangServer:
         if self.autocomplete_no_prefix:
             var_prefix = ""
         # Suggestions for user-defined type members
+        scope_list = []
         if is_member:
             curr_scope = file_obj.ast.get_inner_scope(ac_line + 1)
             type_scope = climb_type_tree(var_stack, curr_scope, self.obj_tree)
@@ -758,14 +753,16 @@ class LangServer:
             # Return a dummy object with the correct type & position in the doc
             if hover_req and curr_scope:
                 var_type = None
-                if NUMBER_REGEX.match(def_name):
+                if FRegex.NUMBER.match(def_name):
                     if any(s in def_name for s in [".", "e", "d"]):
                         var_type = f"{FORTRAN_LITERAL}REAL"
                     else:
                         var_type = f"{FORTRAN_LITERAL}INTEGER"
-                elif LOGICAL_REGEX.match(def_name):
+                elif FRegex.LOGICAL.match(def_name):
                     var_type = f"{FORTRAN_LITERAL}LOGICAL"
-                elif SQ_STRING_REGEX.match(def_name) or DQ_STRING_REGEX.match(def_name):
+                elif FRegex.SQ_STRING.match(def_name) or FRegex.DQ_STRING.match(
+                    def_name
+                ):
                     var_type = f"{FORTRAN_LITERAL}STRING"
                 if var_type:
                     return fortran_var(
@@ -853,7 +850,7 @@ class LangServer:
                         break
         # Check keywords
         if (var_obj is None) and (
-            INT_STMNT_REGEX.match(line_prefix[:sub_end]) is not None
+            FRegex.INT_STMNT.match(line_prefix[:sub_end]) is not None
         ):
             key = sub_name.lower()
             for candidate in get_intrinsic_keywords(self.statements, self.keywords, 0):

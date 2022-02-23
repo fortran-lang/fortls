@@ -24,10 +24,10 @@ from fortls.constants import (
     SUBROUTINE_TYPE_ID,
     VAR_TYPE_ID,
     WHERE_TYPE_ID,
+    FRegex,
 )
 from fortls.helper_functions import get_keywords, get_paren_substring, get_var_stack
 from fortls.jsonrpc import path_to_uri
-from fortls.regex_patterns import CLASS_VAR_REGEX, DEF_KIND_REGEX
 
 # Helper types
 VAR_info = NamedTuple(
@@ -1595,7 +1595,7 @@ class fortran_var(fortran_obj):
         self.desc: str = var_desc
         self.keywords: list = keywords
         self.keyword_info: dict = keyword_info
-        self.callable: bool = CLASS_VAR_REGEX.match(var_desc) is not None
+        self.callable: bool = FRegex.CLASS_VAR.match(var_desc) is not None
         self.children: list = []
         self.use: list[USE_line] = []
         self.link_obj = None
@@ -1718,7 +1718,7 @@ class fortran_var(fortran_obj):
 
     def check_definition(self, obj_tree, known_types={}, interface=False):
         # Check for type definition in scope
-        type_match = DEF_KIND_REGEX.match(self.desc)
+        type_match = FRegex.DEF_KIND.match(self.desc)
         if type_match is not None:
             var_type = type_match.group(1).strip().lower()
             if var_type == "procedure":

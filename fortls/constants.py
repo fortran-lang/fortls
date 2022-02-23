@@ -4,6 +4,8 @@ import logging
 import sys
 from dataclasses import dataclass, field
 
+from fortls.regex_patterns import FortranRegularExpressions
+
 PY3K = sys.version_info >= (3, 0)
 
 log = logging.getLogger(__name__)
@@ -81,3 +83,6 @@ class FUN_sig:
     def __post_init__(self):
         if not self.result.name:
             self.result.name = self.name
+
+
+FRegex = FortranRegularExpressions()
