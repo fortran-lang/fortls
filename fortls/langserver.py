@@ -54,12 +54,6 @@ from fortls.version import __version__
 # Global regexes
 # TODO: I think this can be replaced by fortls.regex_patterns type & class
 TYPE_DEF_REGEX = re.compile(r"[ ]*(TYPE|CLASS)[ ]*\([a-z0-9_ ]*$", re.I)
-# TODO: I think this can be replaced by fortls.regex_patterns
-SCOPE_DEF_REGEX = re.compile(r"[ ]*(MODULE|PROGRAM|SUBROUTINE|FUNCTION)[ ]+", re.I)
-# TODO: I think this can be replaced by fortls.regex_patterns END_REGEx
-END_REGEX = re.compile(
-    r"[ ]*(END)( |MODULE|PROGRAM|SUBROUTINE|FUNCTION|TYPE|DO|IF|SELECT)?", re.I
-)
 
 
 def init_file(filepath, pp_defs, pp_suffixes, include_dirs, sort):
@@ -814,7 +808,7 @@ class LangServer:
         if line_prefix is None:
             return None
         # Test if scope declaration or end statement
-        if SCOPE_DEF_REGEX.match(curr_line) or END_REGEX.match(curr_line):
+        if FRegex.SCOPE_DEF.match(curr_line) or FRegex.END.match(curr_line):
             return None
         is_member = False
         try:
