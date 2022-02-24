@@ -1,5 +1,12 @@
 # CHANGELONG
 
+## 2.2.4
+
+### Fixed
+
+- Fixed hovering value of literal and constant strings not displaying
+  ([#54](https://github.com/gnikit/fortls/issues/54))
+
 ## 2.2.3
 
 ### Changed

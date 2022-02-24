@@ -612,6 +612,12 @@ def test_hover():
         "INTEGER, PARAMETER :: var4 = 123",
         "DOUBLE PRECISION, PARAMETER :: somevar = 23.12",
         "DOUBLE PRECISION, PARAMETER :: some = 1e-19",
+        "LOGICAL(kind=8), PARAMETER :: long_bool = .true.",
+        "LOGICAL",
+        "CHARACTER(len=5), PARAMETER :: sq_str = '12345'",
+        "CHARACTER(LEN=5)",
+        'CHARACTER(len=5), PARAMETER :: dq_str = "12345"',
+        "CHARACTER(LEN=5)",
         "INTEGER, POINTER",
         """FUNCTION fun1(arg) RESULT(fun1)
  INTEGER, INTENT(IN) :: arg
