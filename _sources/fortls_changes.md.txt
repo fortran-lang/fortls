@@ -24,6 +24,8 @@
 
 ## Changed
 
+- Changed reading in `json` files to be encoded as UTF-8
+  ([#51](https://github.com/gnikit/fortls/pull/51))
 - Changed the way function hover messages are displayed, now signatures are standardised
   ([gnikit/fortls#47](https://github.com/gnikit/fortls/issues/47))
 - Changed default branch to master and updated Actions workflows
