@@ -1055,7 +1055,7 @@ class LangServer:
             elif var_obj.desc.endswith("LOGICAL"):
                 hover_array.append(create_hover("LOGICAL", True))
             elif var_obj.desc.endswith("STRING"):
-                hover_str = f"CHARACTER(LEN={len(var_obj.name)})"
+                hover_str = f"CHARACTER(LEN={len(var_obj.name)-2})"
                 hover_array.append(create_hover(hover_str, True))
 
             # Include the signature if one is present e.g. if in an argument list

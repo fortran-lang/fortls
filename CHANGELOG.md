@@ -6,6 +6,8 @@
 
 - Fixed hovering value of literal and constant strings not displaying
   ([#54](https://github.com/gnikit/fortls/issues/54))
+- Fixed hovering string length size is now matching the string
+  ([#55](https://github.com/gnikit/fortls/issues/55))
 
 ## 2.2.3
 

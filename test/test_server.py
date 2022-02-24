@@ -575,6 +575,12 @@ def test_hover():
     string += hover_req(file_path, 6, 28)
     string += hover_req(file_path, 7, 38)
     string += hover_req(file_path, 7, 55)
+    string += hover_req(file_path, 8, 37)
+    string += hover_req(file_path, 8, 50)
+    string += hover_req(file_path, 9, 37)
+    string += hover_req(file_path, 9, 48)
+    string += hover_req(file_path, 10, 37)
+    string += hover_req(file_path, 10, 48)
     file_path = test_dir / "hover" / "pointers.f90"
     string += hover_req(file_path, 1, 26)
     file_path = test_dir / "hover" / "functions.f90"
