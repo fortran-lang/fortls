@@ -1,5 +1,12 @@
 # CHANGELONG
 
+## 2.2.3
+
+### Changed
+
+- Changed reading in `json` files to be encoded as UTF-8
+  ([#51](https://github.com/gnikit/fortls/pull/51))
+
 ## 2.2.2
 
 ### Changed
