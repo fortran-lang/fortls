@@ -575,6 +575,12 @@ def test_hover():
     string += hover_req(file_path, 6, 28)
     string += hover_req(file_path, 7, 38)
     string += hover_req(file_path, 7, 55)
+    string += hover_req(file_path, 8, 37)
+    string += hover_req(file_path, 8, 50)
+    string += hover_req(file_path, 9, 37)
+    string += hover_req(file_path, 9, 48)
+    string += hover_req(file_path, 10, 37)
+    string += hover_req(file_path, 10, 48)
     file_path = test_dir / "hover" / "pointers.f90"
     string += hover_req(file_path, 1, 26)
     file_path = test_dir / "hover" / "functions.f90"
@@ -612,6 +618,12 @@ def test_hover():
         "INTEGER, PARAMETER :: var4 = 123",
         "DOUBLE PRECISION, PARAMETER :: somevar = 23.12",
         "DOUBLE PRECISION, PARAMETER :: some = 1e-19",
+        "LOGICAL(kind=8), PARAMETER :: long_bool = .true.",
+        "LOGICAL",
+        "CHARACTER(len=5), PARAMETER :: sq_str = '12345'",
+        "CHARACTER(LEN=5)",
+        'CHARACTER(len=5), PARAMETER :: dq_str = "12345"',
+        "CHARACTER(LEN=5)",
         "INTEGER, POINTER",
         """FUNCTION fun1(arg) RESULT(fun1)
  INTEGER, INTENT(IN) :: arg

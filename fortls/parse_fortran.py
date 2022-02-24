@@ -18,8 +18,18 @@ from fortls.constants import (
     PY3K,
     SELECT_TYPE_ID,
     SUBMODULE_TYPE_ID,
+    FRegex,
     FUN_sig,
     RESULT_sig,
+    CLASS_info,
+    GEN_info,
+    INT_info,
+    SELECT_info,
+    SMOD_info,
+    SUB_info,
+    USE_info,
+    VAR_info,
+    VIS_info,
     log,
 )
 from fortls.helper_functions import (
@@ -34,15 +44,6 @@ from fortls.helper_functions import (
     strip_strings,
 )
 from fortls.objects import (
-    CLASS_info,
-    GEN_info,
-    INT_info,
-    SELECT_info,
-    SMOD_info,
-    SUB_info,
-    USE_info,
-    VAR_info,
-    VIS_info,
     fortran_associate,
     fortran_ast,
     fortran_block,
@@ -61,80 +62,6 @@ from fortls.objects import (
     fortran_type,
     fortran_var,
     fortran_where,
-)
-from fortls.regex_patterns import (
-    ASSOCIATE_REGEX,
-    BLOCK_REGEX,
-    CALL_REGEX,
-    CONTAINS_REGEX,
-    DEFINED_REGEX,
-    DO_REGEX,
-    END_ASSOCIATE_REGEX,
-    END_BLOCK_REGEX,
-    END_DO_REGEX,
-    END_ENUMD_REGEX,
-    END_FUN_REGEX,
-    END_IF_REGEX,
-    END_INT_REGEX,
-    END_MOD_REGEX,
-    END_PRO_REGEX,
-    END_PROG_REGEX,
-    END_REGEX,
-    END_SELECT_REGEX,
-    END_SMOD_REGEX,
-    END_SUB_REGEX,
-    END_TYPED_REGEX,
-    END_WHERE_REGEX,
-    END_WORD_REGEX,
-    ENUM_DEF_REGEX,
-    EXTENDS_REGEX,
-    FIXED_COMMENT_LINE_MATCH,
-    FIXED_CONT_REGEX,
-    FIXED_DOC_MATCH,
-    FIXED_OPENMP_MATCH,
-    FREE_COMMENT_LINE_MATCH,
-    FREE_CONT_REGEX,
-    FREE_DOC_MATCH,
-    FREE_OPENMP_MATCH,
-    FUN_REGEX,
-    GEN_ASSIGN_REGEX,
-    GENERIC_PRO_REGEX,
-    IF_REGEX,
-    IMPLICIT_REGEX,
-    IMPORT_REGEX,
-    INCLUDE_REGEX,
-    INT_REGEX,
-    INT_STMNT_REGEX,
-    KEYWORD_LIST_REGEX,
-    KIND_SPEC_REGEX,
-    MOD_REGEX,
-    NAT_VAR_REGEX,
-    NON_DEF_REGEX,
-    PARAMETER_VAL_REGEX,
-    PP_ANY_REGEX,
-    PP_DEF_REGEX,
-    PP_INCLUDE_REGEX,
-    PP_REGEX,
-    PRO_LINK_REGEX,
-    PROCEDURE_STMNT_REGEX,
-    PROG_REGEX,
-    RESULT_REGEX,
-    SCOPE_DEF_REGEX,
-    SELECT_DEFAULT_REGEX,
-    SELECT_REGEX,
-    SELECT_TYPE_REGEX,
-    SUB_MOD_REGEX,
-    SUB_PAREN_MATCH,
-    SUB_REGEX,
-    SUBMOD_REGEX,
-    TATTR_LIST_REGEX,
-    THEN_REGEX,
-    TYPE_DEF_REGEX,
-    TYPE_STMNT_REGEX,
-    USE_REGEX,
-    VIS_REGEX,
-    WHERE_REGEX,
-    WORD_REGEX,
 )
 
 if not PY3K:
@@ -176,37 +103,37 @@ def get_line_context(line: str) -> tuple[str, None] | tuple[str, str]:
         else:
             return "mod_only", None
     # Test for interface procedure link
-    if PRO_LINK_REGEX.match(line):
+    if FRegex.PRO_LINK.match(line):
         return "pro_link", None
     # Test if scope declaration or end statement (no completion provided)
-    if SCOPE_DEF_REGEX.match(line) or END_REGEX.match(line):
+    if FRegex.SCOPE_DEF.match(line) or FRegex.END.match(line):
         return "skip", None
     # Test if import statement
-    if IMPORT_REGEX.match(line):
+    if FRegex.IMPORT.match(line):
         return "import", None
     # Test if visibility statement
-    if VIS_REGEX.match(line):
+    if FRegex.VIS.match(line):
         return "vis", None
     # In type-def
     type_def = False
-    if TYPE_DEF_REGEX.match(line) is not None:
+    if FRegex.TYPE_DEF.match(line) is not None:
         type_def = True
     # Test if in call statement
     if lev1_end == len(line):
-        if CALL_REGEX.match(last_level) is not None:
+        if FRegex.CALL.match(last_level) is not None:
             return "call", None
     # Test if variable definition using type/class or procedure
     if (len(sections) == 1) and (sections[0][0] >= 1):
         # Get string one level up
         test_str, _ = get_paren_level(line[: sections[0][0] - 1])
-        if (TYPE_STMNT_REGEX.match(test_str) is not None) or (
-            type_def and EXTENDS_REGEX.search(test_str) is not None
+        if (FRegex.TYPE_STMNT.match(test_str) is not None) or (
+            type_def and FRegex.EXTENDS.search(test_str) is not None
         ):
             return "type_only", None
-        if PROCEDURE_STMNT_REGEX.match(test_str) is not None:
+        if FRegex.PROCEDURE_STMNT.match(test_str) is not None:
             return "int_only", None
     # Only thing on line?
-    if INT_STMNT_REGEX.match(line) is not None:
+    if FRegex.INT_STMNT.match(line) is not None:
         return "first", None
     # Default or skip context
     if type_def:
@@ -217,7 +144,7 @@ def get_line_context(line: str) -> tuple[str, None] | tuple[str, str]:
 
 def parse_var_keywords(test_str: str) -> tuple[list[str], str]:
     """Parse Fortran variable declaration keywords"""
-    keyword_match = KEYWORD_LIST_REGEX.match(test_str)
+    keyword_match = FRegex.KEYWORD_LIST.match(test_str)
     keywords = []
     while keyword_match is not None:
         tmp_str = re.sub(r"^[, ]*", "", keyword_match.group(0))
@@ -231,14 +158,14 @@ def parse_var_keywords(test_str: str) -> tuple[list[str], str]:
                 test_str = test_str[match_char + 1 :]
         tmp_str = re.sub(r"^[, ]*", "", tmp_str)
         keywords.append(tmp_str.strip().upper())
-        keyword_match = KEYWORD_LIST_REGEX.match(test_str)
+        keyword_match = FRegex.KEYWORD_LIST.match(test_str)
     return keywords, test_str
 
 
 def read_var_def(line: str, type_word: str = None, fun_only: bool = False):
     """Attempt to read variable definition line"""
     if type_word is None:
-        type_match = NAT_VAR_REGEX.match(line)
+        type_match = FRegex.VAR.match(line)
         if type_match is None:
             return None
         else:
@@ -251,7 +178,7 @@ def read_var_def(line: str, type_word: str = None, fun_only: bool = False):
     if len(trailing_line) == 0:
         return None
     #
-    kind_match = KIND_SPEC_REGEX.match(trailing_line)
+    kind_match = FRegex.KIND_SPEC.match(trailing_line)
     if kind_match is not None:
         kind_str = kind_match.group(1).replace(" ", "")
         type_word += kind_str
@@ -317,9 +244,9 @@ def read_fun_def(
         a named tuple
     """
     # Get all the keyword modifier mathces
-    keywords = re.findall(SUB_MOD_REGEX, line)
+    keywords = re.findall(FRegex.SUB_MOD, line)
     # remove modifiers from line
-    line = re.sub(SUB_MOD_REGEX, "", line)
+    line = re.sub(FRegex.SUB_MOD, "", line)
 
     # Try and get the result type
     # Recursively will call read_var_def which will then call read_fun_def
@@ -330,7 +257,7 @@ def read_fun_def(
             # Update keywords for function into dataclass
             tmp_var[1].keywords = keywords
             return tmp_var
-    fun_match = FUN_REGEX.match(line)
+    fun_match = FRegex.FUN.match(line)
     if fun_match is None:
         return None
     #
@@ -338,10 +265,10 @@ def read_fun_def(
     trailing_line = line[fun_match.end(0) :].split("!")[0]
     trailing_line = trailing_line.strip()
     #
-    paren_match = SUB_PAREN_MATCH.match(trailing_line)
+    paren_match = FRegex.SUB_PAREN.match(trailing_line)
     args = ""
     if paren_match is not None:
-        word_match = WORD_REGEX.findall(paren_match.group(0))
+        word_match = FRegex.WORD.findall(paren_match.group(0))
         if word_match is not None:
             word_match = [word for word in word_match]
             args = ",".join(word_match)
@@ -349,7 +276,7 @@ def read_fun_def(
 
     # Extract if possible the variable name of the result()
     trailing_line = trailing_line.strip()
-    results_match = RESULT_REGEX.match(trailing_line)
+    results_match = FRegex.RESULT.match(trailing_line)
     if result is None:
         result = RESULT_sig()
     if results_match:
@@ -360,10 +287,10 @@ def read_fun_def(
 def read_sub_def(line: str, mod_flag: bool = False):
     """Attempt to read SUBROUTINE definition line"""
     # Get all the keyword modifier mathces
-    keywords = re.findall(SUB_MOD_REGEX, line)
+    keywords = re.findall(FRegex.SUB_MOD, line)
     # remove modifiers from line
-    line = re.sub(SUB_MOD_REGEX, "", line)
-    sub_match = SUB_REGEX.match(line)
+    line = re.sub(FRegex.SUB_MOD, "", line)
+    sub_match = FRegex.SUB.match(line)
     if sub_match is None:
         return None
     #
@@ -371,10 +298,10 @@ def read_sub_def(line: str, mod_flag: bool = False):
     trailing_line = line[sub_match.end(0) :].split("!")[0]
     trailing_line = trailing_line.strip()
     #
-    paren_match = SUB_PAREN_MATCH.match(trailing_line)
+    paren_match = FRegex.SUB_PAREN.match(trailing_line)
     args = ""
     if paren_match is not None:
-        word_match = WORD_REGEX.findall(paren_match.group(0))
+        word_match = FRegex.WORD.findall(paren_match.group(0))
         if word_match is not None:
             word_match = [word for word in word_match]
             args = ",".join(word_match)
@@ -384,7 +311,7 @@ def read_sub_def(line: str, mod_flag: bool = False):
 
 def read_block_def(line: str):
     """Attempt to read BLOCK definition line"""
-    block_match = BLOCK_REGEX.match(line)
+    block_match = FRegex.BLOCK.match(line)
     if block_match is not None:
         name = block_match.group(1)
         if name is not None:
@@ -393,31 +320,31 @@ def read_block_def(line: str):
     #
     line_stripped = strip_strings(line, maintain_len=True)
     line_no_comment = line_stripped.split("!")[0].rstrip()
-    do_match = DO_REGEX.match(line_no_comment)
+    do_match = FRegex.DO.match(line_no_comment)
     if do_match is not None:
         return "do", do_match.group(1).strip()
     #
-    where_match = WHERE_REGEX.match(line_no_comment)
+    where_match = FRegex.WHERE.match(line_no_comment)
     if where_match is not None:
         trailing_line = line[where_match.end(0) :]
         close_paren = find_paren_match(trailing_line)
         if close_paren < 0:
             return "where", True
-        if WORD_REGEX.match(trailing_line[close_paren + 1 :].strip()):
+        if FRegex.WORD.match(trailing_line[close_paren + 1 :].strip()):
             return "where", True
         else:
             return "where", False
     #
-    if_match = IF_REGEX.match(line_no_comment)
+    if_match = FRegex.IF.match(line_no_comment)
     if if_match is not None:
-        then_match = THEN_REGEX.search(line_no_comment)
+        then_match = FRegex.THEN.search(line_no_comment)
         if then_match is not None:
             return "if", None
     return None
 
 
 def read_associate_def(line: str):
-    assoc_match = ASSOCIATE_REGEX.match(line)
+    assoc_match = FRegex.ASSOCIATE.match(line)
     if assoc_match is not None:
         trailing_line = line[assoc_match.end(0) :]
         match_char = find_paren_match(trailing_line)
@@ -429,13 +356,13 @@ def read_associate_def(line: str):
 
 def read_select_def(line: str):
     """Attempt to read SELECT definition line"""
-    select_match = SELECT_REGEX.match(line)
+    select_match = FRegex.SELECT.match(line)
     select_desc = None
     select_binding = None
     if select_match is None:
-        select_type_match = SELECT_TYPE_REGEX.match(line)
+        select_type_match = FRegex.SELECT_TYPE.match(line)
         if select_type_match is None:
-            select_default_match = SELECT_DEFAULT_REGEX.match(line)
+            select_default_match = FRegex.SELECT_DEFAULT.match(line)
             if select_default_match is None:
                 return None
             else:
@@ -456,25 +383,25 @@ def read_select_def(line: str):
 
 def read_type_def(line: str):
     """Attempt to read TYPE definition line"""
-    type_match = TYPE_DEF_REGEX.match(line)
+    type_match = FRegex.TYPE_DEF.match(line)
     if type_match is None:
         return None
     trailing_line = line[type_match.end(1) :].split("!")[0]
     trailing_line = trailing_line.strip()
     # Parse keywords
-    keyword_match = TATTR_LIST_REGEX.match(trailing_line)
+    keyword_match = FRegex.TATTR_LIST.match(trailing_line)
     keywords: list[str] = []
     parent = None
     while keyword_match is not None:
         keyword_strip = keyword_match.group(0).replace(",", " ").strip().upper()
-        extend_match = EXTENDS_REGEX.match(keyword_strip)
+        extend_match = FRegex.EXTENDS.match(keyword_strip)
         if extend_match is not None:
             parent = extend_match.group(1).lower()
         else:
             keywords.append(keyword_strip)
         #
         trailing_line = trailing_line[keyword_match.end(0) :]
-        keyword_match = TATTR_LIST_REGEX.match(trailing_line)
+        keyword_match = FRegex.TATTR_LIST.match(trailing_line)
     # Get name
     line_split = trailing_line.split("::")
     if len(line_split) == 1:
@@ -487,7 +414,7 @@ def read_type_def(line: str):
     else:
         trailing_line = line_split[1]
     #
-    word_match = WORD_REGEX.match(trailing_line.strip())
+    word_match = FRegex.WORD.match(trailing_line.strip())
     if word_match is not None:
         name = word_match.group(0)
     else:
@@ -498,7 +425,7 @@ def read_type_def(line: str):
 
 def read_enum_def(line: str):
     """Attempt to read ENUM definition line"""
-    enum_match = ENUM_DEF_REGEX.match(line)
+    enum_match = FRegex.ENUM_DEF.match(line)
     if enum_match is not None:
         return "enum", None
     return None
@@ -506,7 +433,7 @@ def read_enum_def(line: str):
 
 def read_generic_def(line: str):
     """Attempt to read generic procedure definition line"""
-    generic_match = GENERIC_PRO_REGEX.match(line)
+    generic_match = FRegex.GENERIC_PRO.match(line)
     if generic_match is None:
         return None
     #
@@ -526,7 +453,7 @@ def read_generic_def(line: str):
     if i1 < 0:
         return None
     bound_name: str = trailing_line[:i1].strip()
-    if GEN_ASSIGN_REGEX.match(bound_name):
+    if FRegex.GEN_ASSIGN.match(bound_name):
         return None
     pro_list = trailing_line[i1 + 2 :].split(",")
     #
@@ -542,7 +469,7 @@ def read_generic_def(line: str):
 
 def read_mod_def(line: str):
     """Attempt to read MODULE and MODULE PROCEDURE definition lines"""
-    mod_match = MOD_REGEX.match(line)
+    mod_match = FRegex.MOD.match(line)
     if mod_match is None:
         return None
     else:
@@ -571,7 +498,7 @@ def read_mod_def(line: str):
 
 def read_submod_def(line: str):
     """Attempt to read SUBMODULE definition line"""
-    submod_match = SUBMOD_REGEX.match(line)
+    submod_match = FRegex.SUBMOD.match(line)
     if submod_match is None:
         return None
     else:
@@ -579,7 +506,7 @@ def read_submod_def(line: str):
         name = None
         trailing_line = line[submod_match.end(0) :].split("!")[0]
         trailing_line = trailing_line.strip()
-        parent_match = WORD_REGEX.match(trailing_line)
+        parent_match = FRegex.WORD.match(trailing_line)
         if parent_match is not None:
             parent_name = parent_match.group(0).lower()
             if len(trailing_line) > parent_match.end(0) + 1:
@@ -587,7 +514,7 @@ def read_submod_def(line: str):
             else:
                 trailing_line = ""
         #
-        name_match = WORD_REGEX.search(trailing_line)
+        name_match = FRegex.WORD.search(trailing_line)
         if name_match is not None:
             name = name_match.group(0).lower()
         return "smod", SMOD_info(name, parent_name)
@@ -595,7 +522,7 @@ def read_submod_def(line: str):
 
 def read_prog_def(line: str):
     """Attempt to read PROGRAM definition line"""
-    prog_match = PROG_REGEX.match(line)
+    prog_match = FRegex.PROG.match(line)
     if prog_match is None:
         return None
     else:
@@ -604,7 +531,7 @@ def read_prog_def(line: str):
 
 def read_int_def(line: str):
     """Attempt to read INTERFACE definition line"""
-    int_match = INT_REGEX.match(line)
+    int_match = FRegex.INT.match(line)
     if int_match is None:
         return None
     else:
@@ -619,7 +546,7 @@ def read_int_def(line: str):
 
 def read_use_stmt(line: str):
     """Attempt to read USE statement"""
-    use_match = USE_REGEX.match(line)
+    use_match = FRegex.USE.match(line)
     if use_match is None:
         return None
 
@@ -639,7 +566,7 @@ def read_use_stmt(line: str):
 
 def read_imp_stmt(line: str):
     """Attempt to read IMPORT statement"""
-    import_match = IMPORT_REGEX.match(line)
+    import_match = FRegex.IMPORT.match(line)
     if import_match is None:
         return None
 
@@ -650,7 +577,7 @@ def read_imp_stmt(line: str):
 
 def read_inc_stmt(line: str):
     """Attempt to read INCLUDE statement"""
-    inc_match = INCLUDE_REGEX.match(line)
+    inc_match = FRegex.INCLUDE.match(line)
     if inc_match is None:
         return None
     else:
@@ -660,7 +587,7 @@ def read_inc_stmt(line: str):
 
 def read_vis_stmnt(line: str):
     """Attempt to read PUBLIC/PRIVATE statement"""
-    vis_match = VIS_REGEX.match(line)
+    vis_match = FRegex.VIS.match(line)
     if vis_match is None:
         return None
     else:
@@ -668,7 +595,7 @@ def read_vis_stmnt(line: str):
         if vis_match.group(1).lower() == "private":
             vis_type = 1
         trailing_line = line[vis_match.end(0) :].split("!")[0]
-        mod_words = WORD_REGEX.findall(trailing_line)
+        mod_words = FRegex.WORD.findall(trailing_line)
         return "vis", VIS_info(vis_type, mod_words)
 
 
@@ -867,10 +794,10 @@ class fortran_file:
             pre_lines, curr_line, _ = self.get_code_line(line_number, forward=False)
             # Skip comment lines
             if self.fixed:
-                if FIXED_COMMENT_LINE_MATCH.match(curr_line):
+                if FRegex.FIXED_COMMENT.match(curr_line):
                     return False
             else:
-                if FREE_COMMENT_LINE_MATCH.match(curr_line):
+                if FRegex.FREE_COMMENT.match(curr_line):
                     return False
             # Check for line labels and semicolons
             full_line = "".join(pre_lines) + curr_line
@@ -887,14 +814,14 @@ class fortran_file:
             else:
                 line_no_comment = full_line
             # Various single line tests
-            if END_WORD_REGEX.match(line_no_comment):
+            if FRegex.END_WORD.match(line_no_comment):
                 return True
-            if IMPLICIT_REGEX.match(line_no_comment):
+            if FRegex.IMPLICIT.match(line_no_comment):
                 return True
-            if CONTAINS_REGEX.match(line_no_comment):
+            if FRegex.CONTAINS.match(line_no_comment):
                 return True
             # Generic "non-definition" line
-            if NON_DEF_REGEX.match(line_no_comment):
+            if FRegex.NON_DEF.match(line_no_comment):
                 return False
             # Loop through tests
             for test in def_tests:
@@ -995,7 +922,7 @@ class fortran_file:
             if self.fixed:  # Fixed format file
                 tmp_line = curr_line
                 while line_ind > 0:
-                    if FIXED_CONT_REGEX.match(tmp_line):
+                    if FRegex.FIXED_CONT.match(tmp_line):
                         prev_line = tmp_line
                         tmp_line = self.get_line(line_ind, pp_content)
                         if line_ind == line_number - 1:
@@ -1007,7 +934,7 @@ class fortran_file:
                         break
                     line_ind -= 1
             else:  # Free format file
-                opt_cont_match = FREE_CONT_REGEX.match(curr_line)
+                opt_cont_match = FRegex.FREE_CONT.match(curr_line)
                 if opt_cont_match:
                     curr_line = (
                         " " * opt_cont_match.end(0) + curr_line[opt_cont_match.end(0) :]
@@ -1018,7 +945,7 @@ class fortran_file:
                     )
                     tmp_no_comm = tmp_line.split("!")[0]
                     cont_ind = tmp_no_comm.rfind("&")
-                    opt_cont_match = FREE_CONT_REGEX.match(tmp_no_comm)
+                    opt_cont_match = FRegex.FREE_CONT.match(tmp_no_comm)
                     if opt_cont_match:
                         if cont_ind == opt_cont_match.end(0) - 1:
                             break
@@ -1039,12 +966,12 @@ class fortran_file:
                 if line_ind < self.nLines:
                     next_line = self.get_line(line_ind, pp_content)
                     line_ind += 1
-                    cont_match = FIXED_CONT_REGEX.match(next_line)
+                    cont_match = FRegex.FIXED_CONT.match(next_line)
                     while (cont_match is not None) and (line_ind < self.nLines):
                         post_lines.append(" " * 6 + next_line[6:])
                         next_line = self.get_line(line_ind, pp_content)
                         line_ind += 1
-                        cont_match = FIXED_CONT_REGEX.match(next_line)
+                        cont_match = FRegex.FIXED_CONT.match(next_line)
             else:
                 line_stripped = strip_strings(curr_line, maintain_len=True)
                 iAmper = line_stripped.find("&")
@@ -1061,17 +988,17 @@ class fortran_file:
                     next_line = self.get_line(line_ind, pp_content)
                     line_ind += 1
                     # Skip any preprocessor statements when seeking the next line
-                    if PP_ANY_REGEX.match(next_line):
+                    if FRegex.PP_ANY.match(next_line):
                         next_line = ""
                         post_lines.append("")
                         continue
                     # Skip empty or comment lines
-                    match = FREE_COMMENT_LINE_MATCH.match(next_line)
+                    match = FRegex.FREE_COMMENT.match(next_line)
                     if next_line.rstrip() == "" or match:
                         next_line = ""
                         post_lines.append("")
                         continue
-                    opt_cont_match = FREE_CONT_REGEX.match(next_line)
+                    opt_cont_match = FRegex.FREE_CONT.match(next_line)
                     if opt_cont_match:
                         next_line = (
                             " " * opt_cont_match.end(0)
@@ -1092,10 +1019,10 @@ class fortran_file:
     def strip_comment(self, line: str) -> str:
         """Strip comment from line"""
         if self.fixed:
-            if FIXED_COMMENT_LINE_MATCH.match(line) and FIXED_OPENMP_MATCH.match(line):
+            if FRegex.FIXED_COMMENT.match(line) and FRegex.FIXED_OPENMP.match(line):
                 return ""
         else:
-            if FREE_OPENMP_MATCH.match(line) is None:
+            if FRegex.FREE_OPENMP.match(line) is None:
                 line = line.split("!")[0]
         return line
 
@@ -1156,9 +1083,9 @@ class fortran_file:
             )
 
             if self.fixed:
-                COMMENT_LINE_MATCH = FIXED_COMMENT_LINE_MATCH
+                COMMENT_LINE_MATCH = FRegex.FIXED_COMMENT
             else:
-                COMMENT_LINE_MATCH = FREE_COMMENT_LINE_MATCH
+                COMMENT_LINE_MATCH = FRegex.FREE_COMMENT
             for (i, line) in enumerate(self.contents_split):
                 if COMMENT_LINE_MATCH.match(line) is None:
                     if (max_line_length > 0) and (len(line) > max_line_length):
@@ -1219,7 +1146,7 @@ def preprocess_file(
         def replace_defined(line: str):
             i0 = 0
             out_line = ""
-            for match in DEFINED_REGEX.finditer(line):
+            for match in FRegex.DEFINED.finditer(line):
                 if match.group(1) in defs:
                     out_line += line[i0 : match.start(0)] + "($@)"
                 else:
@@ -1232,7 +1159,7 @@ def preprocess_file(
         def replace_vars(line: str):
             i0 = 0
             out_line = ""
-            for match in WORD_REGEX.finditer(line):
+            for match in FRegex.WORD.finditer(line):
                 if match.group(0) in defs:
                     out_line += line[i0 : match.start(0)] + defs[match.group(0)]
                 else:
@@ -1279,7 +1206,7 @@ def preprocess_file(
                 defs_tmp[def_cont_name] += line[0:-1].strip()
             continue
         # Handle conditional statements
-        match = PP_REGEX.match(line)
+        match = FRegex.PP_REGEX.match(line)
         if match:
             output_file.append(line)
             def_name = None
@@ -1340,7 +1267,7 @@ def preprocess_file(
                     log.debug(f"{line.strip()} !!! Conditional FALSE({i+1})")
             continue
         # Handle variable/macro definitions files
-        match = PP_DEF_REGEX.match(line)
+        match = FRegex.PP_DEF.match(line)
         if (match is not None) and ((len(pp_stack) == 0) or (pp_stack[-1][0] < 0)):
             output_file.append(line)
             pp_defines.append(i + 1)
@@ -1369,7 +1296,7 @@ def preprocess_file(
             log.debug(f"{line.strip()} !!! Define statement({i+1})")
             continue
         # Handle include files
-        match = PP_INCLUDE_REGEX.match(line)
+        match = FRegex.PP_INCLUDE.match(line)
         if (match is not None) and ((len(pp_stack) == 0) or (pp_stack[-1][0] < 0)):
             log.debug(f"{line.strip()} !!! Include statement({i+1})")
             include_filename = match.group(1).replace('"', "")
@@ -1468,11 +1395,11 @@ def process_file(
     semi_split = []
     doc_string: str = None
     if file_obj.fixed:
-        COMMENT_LINE_MATCH = FIXED_COMMENT_LINE_MATCH
-        DOC_COMMENT_MATCH = FIXED_DOC_MATCH
+        COMMENT_LINE_MATCH = FRegex.FIXED_COMMENT
+        DOC_COMMENT_MATCH = FRegex.FIXED_DOC
     else:
-        COMMENT_LINE_MATCH = FREE_COMMENT_LINE_MATCH
-        DOC_COMMENT_MATCH = FREE_DOC_MATCH
+        COMMENT_LINE_MATCH = FRegex.FREE_COMMENT
+        DOC_COMMENT_MATCH = FRegex.FREE_DOC
     while (next_line_ind < file_obj.nLines) or (len(semi_split) > 0):
         # Get next line
         if len(semi_split) > 0:
@@ -1578,7 +1505,7 @@ def process_file(
                 line_post_comment = None
         # Test for scope end
         if file_ast.END_SCOPE_REGEX is not None:
-            match = END_WORD_REGEX.match(line_no_comment)
+            match = FRegex.END_WORD.match(line_no_comment)
             # Handle end statement
             if match:
                 end_scope_word = None
@@ -1620,11 +1547,11 @@ def process_file(
                 if did_close:
                     continue
         # Skip if known generic code line
-        match = NON_DEF_REGEX.match(line_no_comment)
+        match = FRegex.NON_DEF.match(line_no_comment)
         if match:
             continue
         # Mark implicit statement
-        match = IMPLICIT_REGEX.match(line_no_comment)
+        match = FRegex.IMPLICIT.match(line_no_comment)
         if match:
             err_message = None
             if file_ast.current_scope is None:
@@ -1647,7 +1574,7 @@ def process_file(
             parser_debug_msg("IMPLICIT", line, line_number)
             continue
         # Mark contains statement
-        match = CONTAINS_REGEX.match(line_no_comment)
+        match = FRegex.CONTAINS.match(line_no_comment)
         if match:
             err_message = None
             try:
@@ -1671,7 +1598,7 @@ def process_file(
             continue
         # Look for trailing doc string
         if line_post_comment:
-            doc_match = FREE_DOC_MATCH.match(line_post_comment)
+            doc_match = FRegex.FREE_DOC.match(line_post_comment)
             if doc_match:
                 doc_string = line_post_comment[doc_match.end(0) :].strip()
         # Loop through tests
@@ -1749,7 +1676,7 @@ def process_file(
                     #  the value in hover
                     if new_var.is_parameter():
                         _, col = find_word_in_line(line, name_stripped)
-                        match = PARAMETER_VAL_REGEX.match(line[col:])
+                        match = FRegex.PARAMETER_VAL.match(line[col:])
                         if match:
                             var = match.group(1).strip()
                             new_var.set_parameter_val(var)
@@ -1764,19 +1691,19 @@ def process_file(
 
         elif obj_type == "mod":
             new_mod = fortran_module(file_ast, line_number, obj_info)
-            file_ast.add_scope(new_mod, END_MOD_REGEX)
+            file_ast.add_scope(new_mod, FRegex.END_MOD)
             parser_debug_msg("MODULE", line, line_number)
 
         elif obj_type == "smod":
             new_smod = fortran_submodule(
                 file_ast, line_number, obj_info.name, ancestor_name=obj_info.parent
             )
-            file_ast.add_scope(new_smod, END_SMOD_REGEX)
+            file_ast.add_scope(new_smod, FRegex.END_SMOD)
             parser_debug_msg("SUBMODULE", line, line_number)
 
         elif obj_type == "prog":
             new_prog = fortran_program(file_ast, line_number, obj_info)
-            file_ast.add_scope(new_prog, END_PROG_REGEX)
+            file_ast.add_scope(new_prog, FRegex.END_PROG)
             parser_debug_msg("PROGRAM", line, line_number)
 
         elif obj_type == "sub":
@@ -1789,7 +1716,7 @@ def process_file(
                 mod_flag=obj_info.mod_flag,
                 keywords=keywords,
             )
-            file_ast.add_scope(new_sub, END_SUB_REGEX)
+            file_ast.add_scope(new_sub, FRegex.END_SUB)
             parser_debug_msg("SUBROUTINE", line, line_number)
 
         elif obj_type == "fun":
@@ -1804,7 +1731,7 @@ def process_file(
                 result_type=obj_info.result.type,
                 result_name=obj_info.result.name,
             )
-            file_ast.add_scope(new_fun, END_FUN_REGEX)
+            file_ast.add_scope(new_fun, FRegex.END_FUN)
             # function type is present without result(), register the automatic
             # result() variable that is the function name
             if obj_info.result.type:
@@ -1826,7 +1753,7 @@ def process_file(
                 block_counter += 1
                 name = f"#BLOCK{block_counter}"
             new_block = fortran_block(file_ast, line_number, name)
-            file_ast.add_scope(new_block, END_BLOCK_REGEX, req_container=True)
+            file_ast.add_scope(new_block, FRegex.END_BLOCK, req_container=True)
             parser_debug_msg("BLOCK", line, line_number)
 
         elif obj_type == "do":
@@ -1835,7 +1762,7 @@ def process_file(
             if obj_info != "":
                 block_id_stack.append(obj_info)
             new_do = fortran_do(file_ast, line_number, name)
-            file_ast.add_scope(new_do, END_DO_REGEX, req_container=True)
+            file_ast.add_scope(new_do, FRegex.END_DO, req_container=True)
             parser_debug_msg("DO", line, line_number)
 
         elif obj_type == "where":
@@ -1844,14 +1771,14 @@ def process_file(
                 do_counter += 1
                 name = f"#WHERE{do_counter}"
                 new_do = fortran_where(file_ast, line_number, name)
-                file_ast.add_scope(new_do, END_WHERE_REGEX, req_container=True)
+                file_ast.add_scope(new_do, FRegex.END_WHERE, req_container=True)
             parser_debug_msg("WHERE", line, line_number)
 
         elif obj_type == "assoc":
             block_counter += 1
             name = f"#ASSOC{block_counter}"
             new_assoc = fortran_associate(file_ast, line_number, name)
-            file_ast.add_scope(new_assoc, END_ASSOCIATE_REGEX, req_container=True)
+            file_ast.add_scope(new_assoc, FRegex.END_ASSOCIATE, req_container=True)
             for bound_var in obj_info:
                 binding_split = bound_var.split("=>")
                 if len(binding_split) == 2:
@@ -1868,14 +1795,14 @@ def process_file(
             if_counter += 1
             name = f"#IF{if_counter}"
             new_if = fortran_if(file_ast, line_number, name)
-            file_ast.add_scope(new_if, END_IF_REGEX, req_container=True)
+            file_ast.add_scope(new_if, FRegex.END_IF, req_container=True)
             parser_debug_msg("IF", line, line_number)
 
         elif obj_type == "select":
             select_counter += 1
             name = f"#SELECT{select_counter}"
             new_select = fortran_select(file_ast, line_number, name, obj_info)
-            file_ast.add_scope(new_select, END_SELECT_REGEX, req_container=True)
+            file_ast.add_scope(new_select, FRegex.END_SELECT, req_container=True)
             new_var = new_select.create_binding_variable(
                 file_ast,
                 line_number,
@@ -1891,14 +1818,14 @@ def process_file(
             new_type = fortran_type(file_ast, line_number, obj_info.name, keywords)
             if obj_info.parent is not None:
                 new_type.set_inherit(obj_info.parent)
-            file_ast.add_scope(new_type, END_TYPED_REGEX, req_container=True)
+            file_ast.add_scope(new_type, FRegex.END_TYPED, req_container=True)
             parser_debug_msg("TYPE", line, line_number)
 
         elif obj_type == "enum":
             block_counter += 1
             name = f"#ENUM{block_counter}"
             new_enum = fortran_enum(file_ast, line_number, name)
-            file_ast.add_scope(new_enum, END_ENUMD_REGEX, req_container=True)
+            file_ast.add_scope(new_enum, FRegex.END_ENUMD, req_container=True)
             parser_debug_msg("ENUM", line, line_number)
 
         elif obj_type == "int":
@@ -1909,7 +1836,7 @@ def process_file(
             new_int = fortran_int(
                 file_ast, line_number, name, abstract=obj_info.abstract
             )
-            file_ast.add_scope(new_int, END_INT_REGEX, req_container=True)
+            file_ast.add_scope(new_int, FRegex.END_INT, req_container=True)
             parser_debug_msg("INTERFACE", line, line_number)
 
         elif obj_type == "gen":
@@ -1917,7 +1844,7 @@ def process_file(
                 file_ast, line_number, obj_info.bound_name, abstract=False
             )
             new_int.set_visibility(obj_info.vis_flag)
-            file_ast.add_scope(new_int, END_INT_REGEX, req_container=True)
+            file_ast.add_scope(new_int, FRegex.END_INT, req_container=True)
             for pro_link in obj_info.pro_links:
                 file_ast.add_int_member(pro_link)
             file_ast.end_scope(line_number)
@@ -1932,7 +1859,7 @@ def process_file(
 
                 elif file_ast.current_scope.get_type() == SUBMODULE_TYPE_ID:
                     new_impl = fortran_scope(file_ast, line_number, obj_info[0])
-                    file_ast.add_scope(new_impl, END_PRO_REGEX)
+                    file_ast.add_scope(new_impl, FRegex.END_PRO)
                     parser_debug_msg("INTERFACE_IMPL", line, line_number)
 
         elif obj_type == "use":

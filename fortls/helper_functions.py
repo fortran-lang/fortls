@@ -3,19 +3,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from fortls.constants import KEYWORD_ID_DICT, KEYWORD_LIST, log, sort_keywords
-from fortls.regex_patterns import (
-    DQ_STRING_REGEX,
-    FIXED_COMMENT_LINE_MATCH,
-    FREE_FORMAT_TEST,
-    LINE_LABEL_REGEX,
-    LOGICAL_REGEX,
-    NAT_VAR_REGEX,
-    NUMBER_REGEX,
-    OBJBREAK_REGEX,
-    SQ_STRING_REGEX,
-    WORD_REGEX,
-)
+from fortls.constants import KEYWORD_ID_DICT, KEYWORD_LIST, FRegex, log, sort_keywords
 
 
 def expand_name(line: str, char_poss: int) -> str:
@@ -35,7 +23,13 @@ def expand_name(line: str, char_poss: int) -> str:
     """
     # The order here is important.
     # WORD will capture substrings in logical and strings
-    regexs = [LOGICAL_REGEX, SQ_STRING_REGEX, DQ_STRING_REGEX, WORD_REGEX, NUMBER_REGEX]
+    regexs = [
+        FRegex.LOGICAL,
+        FRegex.SQ_STRING,
+        FRegex.DQ_STRING,
+        FRegex.WORD,
+        FRegex.NUMBER,
+    ]
     for r in regexs:
         for num_match in r.finditer(line):
             if num_match.start(0) <= char_poss <= num_match.end(0):
@@ -59,13 +53,13 @@ def detect_fixed_format(file_lines: list[str]) -> bool:
         True if file_lines are of Fixed Fortran style
     """
     for line in file_lines:
-        if FREE_FORMAT_TEST.match(line):
+        if FRegex.FREE_FORMAT_TEST.match(line):
             return False
-        tmp_match = NAT_VAR_REGEX.match(line)
+        tmp_match = FRegex.VAR.match(line)
         if tmp_match and tmp_match.start(1) < 6:
             return False
         # Trailing ampersand indicates free or intersection format
-        if not FIXED_COMMENT_LINE_MATCH.match(line):
+        if not FRegex.FIXED_COMMENT.match(line):
             line_end = line.split("!")[0].strip()
             if len(line_end) > 0 and line_end[-1] == "&":
                 return False
@@ -86,7 +80,7 @@ def strip_line_label(line: str) -> tuple[str, str | None]:
         Output string, Line label returns None if no line label present
     """
 
-    match = LINE_LABEL_REGEX.match(line)
+    match = FRegex.LINE_LABEL.match(line)
     if match is None:
         return line, None
     else:
@@ -118,11 +112,11 @@ def strip_strings(in_line: str, maintain_len: bool = False) -> str:
         return '"{0}"'.format(" " * (len(m.group()) - 2))
 
     if maintain_len:
-        out_line = SQ_STRING_REGEX.sub(repl_sq, in_line)
-        out_line = DQ_STRING_REGEX.sub(repl_dq, out_line)
+        out_line = FRegex.SQ_STRING.sub(repl_sq, in_line)
+        out_line = FRegex.DQ_STRING.sub(repl_dq, out_line)
     else:
-        out_line = SQ_STRING_REGEX.sub("", in_line)
-        out_line = DQ_STRING_REGEX.sub("", out_line)
+        out_line = FRegex.SQ_STRING.sub("", in_line)
+        out_line = FRegex.DQ_STRING.sub("", out_line)
     return out_line
 
 
@@ -183,7 +177,7 @@ def find_word_in_line(line: str, word: str) -> tuple[int, int]:
         start and end positions (indices) of the word if not found it returns
         -1, len(word) -1"""
     i0 = -1
-    for poss_name in WORD_REGEX.finditer(line):
+    for poss_name in FRegex.WORD.finditer(line):
         if poss_name.group() == word:
             i0 = poss_name.start()
             break
@@ -417,7 +411,7 @@ def get_var_stack(line):
         final_var += line[section[0] : section[1]]
     #
     if final_var is not None:
-        final_op_split = OBJBREAK_REGEX.split(final_var)
+        final_op_split = FRegex.OBJBREAK.split(final_var)
         return final_op_split[-1].split("%")
     else:
         return None
