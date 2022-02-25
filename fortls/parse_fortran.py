@@ -717,8 +717,24 @@ def find_external_type(
 def find_external_attr(
     file_ast: fortran_ast, name_stripped: str, new_var: fortran_var
 ) -> bool:
-    """Check if this NORMAL Fortran variable is in the
-    external_objs with only EXTERNAL as its type"""
+    """Check if this NORMAL Fortran variable is in the external_objs with only
+    ``EXTERNAL`` as its type. Used to detect seperated ``EXTERNAL`` declarations.
+
+    Parameters
+    ----------
+    file_ast : fortran_ast
+        AST file
+    name_stripped : str
+        Variable name, stripped
+    new_var : fortran_var
+        Fortran variable to check against
+
+    Returns
+    -------
+    bool
+        True if only a single ``EXTERNAL`` definition is encountered False
+        for everything else, which will cause a diagnostic error to be raised
+    """
     counter = 0
     for v in file_ast.external_objs:
         if v.name != name_stripped:
