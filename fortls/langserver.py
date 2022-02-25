@@ -47,7 +47,7 @@ from fortls.objects import (
     fortran_var,
     get_use_tree,
 )
-from fortls.parse_fortran import fortran_file, get_line_context, process_file
+from fortls.parse_fortran import fortran_file, get_line_context
 from fortls.regex_patterns import src_file_exts
 from fortls.version import __version__
 
@@ -1312,8 +1312,8 @@ class LangServer:
                     return False, err_string  # Error during file read
                 if not file_changed:
                     return False, None
-            ast_new = process_file(
-                file_obj, pp_defs=self.pp_defs, include_dirs=self.include_dirs
+            ast_new = file_obj.parse(
+                pp_defs=self.pp_defs, include_dirs=self.include_dirs
             )
             # Add the included read in pp_defs from to the ones specified in the
             # configuration file
@@ -1377,9 +1377,7 @@ class LangServer:
             # This is a bypass.
             # For more see on SO: shorturl.at/hwAG1
             set_keyword_ordering(sort)
-            file_ast = process_file(
-                file_obj, pp_defs=pp_defs, include_dirs=include_dirs
-            )
+            file_ast = file_obj.parse(pp_defs=pp_defs, include_dirs=include_dirs)
         except:
             log.error("Error while parsing file %s", filepath, exc_info=True)
             return "Error during parsing"

@@ -10,7 +10,7 @@ from .helper_functions import only_dirs, resolve_globs
 from .interface import commandline_args
 from .jsonrpc import JSONRPC2Connection, ReadWriter, path_from_uri
 from .langserver import LangServer
-from .parse_fortran import fortran_file, process_file
+from .parse_fortran import fortran_file
 from .version import __version__
 
 __all__ = ["__version__"]
@@ -492,18 +492,7 @@ def debug_server_parser(args):
         error_exit(f"Reading file failed: {err_str}")
     print(f"  Detected format: {'fixed' if file_obj.fixed else 'free'}")
     print("\n=========\nParser Output\n=========\n")
-    _, file_ext = os.path.splitext(os.path.basename(args.debug_filepath))
-    preproc_file = False
-    if pp_suffixes is not None:
-        preproc_file = file_ext in pp_suffixes
-    else:
-        preproc_file = file_ext == file_ext.upper()
-    if preproc_file:
-        file_ast = process_file(
-            file_obj, debug=True, pp_defs=pp_defs, include_dirs=include_dirs
-        )
-    else:
-        file_ast = process_file(file_obj, debug=True)
+    file_ast = file_obj.parse(debug=True, pp_defs=pp_defs, include_dirs=include_dirs)
     print("\n=========\nObject Tree\n=========\n")
     for obj in file_ast.get_scopes():
         print("{0}: {1}".format(obj.get_type(), obj.FQSN))
