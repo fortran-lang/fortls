@@ -754,7 +754,6 @@ def find_external(
     This method exists solely for ``EXTERNAL`` s that are defined across multiple
     lines e.g.
 
-    .. highlight:: fortran
     .. code-block:: fortran
 
             EXTERNAL VAR
@@ -762,7 +761,6 @@ def find_external(
 
     or
 
-    .. highlight:: fortran
     .. code-block:: fortran
 
             REAL VAR
