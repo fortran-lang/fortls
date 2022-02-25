@@ -271,6 +271,7 @@ def test_comp():
     string += comp_request(file_path, 7, 12)
     file_path = test_dir / "subdir" / "test_free.f90"
     string += comp_request(file_path, 10, 22)
+    string += comp_request(file_path, 14, 27)
     string += comp_request(file_path, 28, 14)
     file_path = test_dir / "subdir" / "test_fixed.f"
     string += comp_request(file_path, 15, 8)
@@ -333,6 +334,7 @@ def test_comp():
         [1, "abs_interface", "SUBROUTINE"],
         # subdir/test_free.f90
         [1, "DIMENSION(:)", "KEYWORD"],
+        [2, "vector_create", "SUBROUTINE"],
         [3, "INTENT(IN)", "KEYWORD"],
         # subdir/test_fixed.f90
         [1, "bob", "CHARACTER*(LEN=200)"],
