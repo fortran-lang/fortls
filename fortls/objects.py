@@ -25,9 +25,8 @@ from fortls.constants import (
     VAR_TYPE_ID,
     WHERE_TYPE_ID,
     FRegex,
-    USE_info,
-    INCLUDE_info,
 )
+from fortls.ftypes import INCLUDE_info, USE_info
 from fortls.helper_functions import get_keywords, get_paren_substring, get_var_stack
 from fortls.jsonrpc import path_to_uri
 
@@ -313,12 +312,12 @@ class fortran_diagnostic:
     def build(self, file_obj):
         schar = echar = 0
         if self.find_word is not None:
-            self.sline, found_schar, found_echar = file_obj.find_word_in_code_line(
+            self.sline, obj_range = file_obj.find_word_in_code_line(
                 self.sline, self.find_word
             )
-            if found_schar >= 0:
-                schar = found_schar
-                echar = found_echar
+            if obj_range.start >= 0:
+                schar = obj_range.start
+                echar = obj_range.end
         diag = {
             "range": {
                 "start": {"line": self.sline, "character": schar},

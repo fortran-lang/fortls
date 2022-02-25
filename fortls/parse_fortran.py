@@ -12,6 +12,8 @@ try:
 except ImportError:
     from typing_extensions import Literal
 
+from re import Pattern
+
 from fortls.constants import (
     DO_TYPE_ID,
     INTERFACE_TYPE_ID,
@@ -19,18 +21,21 @@ from fortls.constants import (
     SELECT_TYPE_ID,
     SUBMODULE_TYPE_ID,
     FRegex,
-    FUN_sig,
-    RESULT_sig,
+    log,
+)
+from fortls.ftypes import (
     CLASS_info,
+    FUN_sig,
     GEN_info,
     INT_info,
+    Range,
+    RESULT_sig,
     SELECT_info,
     SMOD_info,
     SUB_info,
     USE_info,
     VAR_info,
     VIS_info,
-    log,
 )
 from fortls.helper_functions import (
     detect_fixed_format,
@@ -84,7 +89,7 @@ def get_line_context(line: str) -> tuple[str, None] | tuple[str, str]:
         `skip`, `import`, `vis`, `call`, `type_only`, `int_only`, `first`, `default`
     """
     last_level, sections = get_paren_level(line)
-    lev1_end = sections[-1][1]
+    lev1_end = sections[-1].end
     # Test if variable definition statement
     test_match = read_var_def(line)
     if test_match is not None:
@@ -92,7 +97,7 @@ def get_line_context(line: str) -> tuple[str, None] | tuple[str, str]:
             if (test_match[1].var_names is None) and (lev1_end == len(line)):
                 return "var_key", None
             # Procedure link?
-            if (test_match[1].type_word == "PROCEDURE") and (line.find("=>") > 0):
+            if (test_match[1].var_type == "PROCEDURE") and (line.find("=>") > 0):
                 return "pro_link", None
             return "var_only", None
     # Test if in USE statement
@@ -116,24 +121,23 @@ def get_line_context(line: str) -> tuple[str, None] | tuple[str, str]:
         return "vis", None
     # In type-def
     type_def = False
-    if FRegex.TYPE_DEF.match(line) is not None:
+    if FRegex.TYPE_DEF.match(line):
         type_def = True
     # Test if in call statement
-    if lev1_end == len(line):
-        if FRegex.CALL.match(last_level) is not None:
-            return "call", None
+    if (lev1_end == len(line)) and FRegex.CALL.match(last_level):
+        return "call", None
     # Test if variable definition using type/class or procedure
-    if (len(sections) == 1) and (sections[0][0] >= 1):
+    if (len(sections) == 1) and (sections[0].start >= 1):
         # Get string one level up
-        test_str, _ = get_paren_level(line[: sections[0][0] - 1])
-        if (FRegex.TYPE_STMNT.match(test_str) is not None) or (
-            type_def and FRegex.EXTENDS.search(test_str) is not None
+        test_str, _ = get_paren_level(line[: sections[0].start - 1])
+        if FRegex.TYPE_STMNT.match(test_str) or (
+            type_def and FRegex.EXTENDS.search(test_str)
         ):
             return "type_only", None
-        if FRegex.PROCEDURE_STMNT.match(test_str) is not None:
+        if FRegex.PROCEDURE_STMNT.match(test_str):
             return "int_only", None
     # Only thing on line?
-    if FRegex.INT_STMNT.match(line) is not None:
+    if FRegex.INT_STMNT.match(line):
         return "first", None
     # Default or skip context
     if type_def:
@@ -164,26 +168,26 @@ def parse_var_keywords(test_str: str) -> tuple[list[str], str]:
     return keywords, test_str
 
 
-def read_var_def(line: str, type_word: str = None, fun_only: bool = False):
+def read_var_def(line: str, var_type: str = None, fun_only: bool = False):
     """Attempt to read variable definition line"""
-    if type_word is None:
+    if var_type is None:
         type_match = FRegex.VAR.match(line)
         if type_match is None:
             return None
         else:
-            type_word = type_match.group(0).strip()
+            var_type = type_match.group(0).strip()
             trailing_line = line[type_match.end(0) :]
     else:
-        trailing_line = line[len(type_word) :]
-    type_word = type_word.upper()
+        trailing_line = line[len(var_type) :]
+    var_type = var_type.upper()
     trailing_line = trailing_line.split("!")[0]
     if len(trailing_line) == 0:
         return None
     #
     kind_match = FRegex.KIND_SPEC.match(trailing_line)
-    if kind_match is not None:
+    if kind_match:
         kind_str = kind_match.group(1).replace(" ", "")
-        type_word += kind_str
+        var_type += kind_str
         trailing_line = trailing_line[kind_match.end(0) :]
         if kind_str.find("(") >= 0:
             match_char = find_paren_match(trailing_line)
@@ -191,11 +195,11 @@ def read_var_def(line: str, type_word: str = None, fun_only: bool = False):
                 return None  # Incomplete type spec
             else:
                 kind_word = trailing_line[: match_char + 1].strip()
-                type_word += kind_word
+                var_type += kind_word
                 trailing_line = trailing_line[match_char + 1 :]
     else:
         # Class and Type statements need a kind spec
-        if type_word in ("TYPE", "CLASS"):
+        if var_type in ("TYPE", "CLASS"):
             return None
         # Make sure next character is space or comma or colon
         if not trailing_line[0] in (" ", ",", ":"):
@@ -203,7 +207,7 @@ def read_var_def(line: str, type_word: str = None, fun_only: bool = False):
     #
     keywords, trailing_line = parse_var_keywords(trailing_line)
     # Check if this is a function definition
-    fun_def = read_fun_def(trailing_line, RESULT_sig(type=type_word, keywords=keywords))
+    fun_def = read_fun_def(trailing_line, RESULT_sig(type=var_type, keywords=keywords))
     if (fun_def is not None) or fun_only:
         return fun_def
     #
@@ -220,7 +224,44 @@ def read_var_def(line: str, type_word: str = None, fun_only: bool = False):
         if var_words is None:
             var_words = []
     #
-    return "var", VAR_info(type_word, keywords, var_words)
+    return "var", VAR_info(var_type, keywords, var_words)
+
+
+def get_procedure_modifiers(
+    line: str, regex: Pattern
+) -> tuple[str, str, str] | tuple[None, None, None]:
+    """Attempt to match procedure modifiers for FUNCTIONS and SUBROUTINES
+
+    Parameters
+    ----------
+    line : str
+        document line
+    regex : Pattern
+        regular expression to use e.g. Function or Subroutine sig
+
+    Returns
+    -------
+    tuple[str, str, str] | tuple[None, None, None]
+        procedure name, arguments, trailing line
+    """
+    match = regex.match(line)
+    if match is None:
+        return None, None, None
+
+    name: str = match.group(1)
+    trailing_line = line[match.end(0) :].split("!")[0]
+    trailing_line = trailing_line.strip()
+
+    paren_match = FRegex.SUB_PAREN.match(trailing_line)
+    args = ""
+    if paren_match is not None:
+        word_match = FRegex.WORD.findall(paren_match.group(0))
+        if word_match is not None:
+            word_match = [word for word in word_match]
+            args = ",".join(word_match)
+        trailing_line = trailing_line[paren_match.end(0) :]
+
+    return name, args, trailing_line
 
 
 def read_fun_def(
@@ -259,22 +300,10 @@ def read_fun_def(
             # Update keywords for function into dataclass
             tmp_var[1].keywords = keywords
             return tmp_var
-    fun_match = FRegex.FUN.match(line)
-    if fun_match is None:
+
+    name, args, trailing_line = get_procedure_modifiers(line, FRegex.FUN)
+    if name is None:
         return None
-    #
-    name = fun_match.group(1)
-    trailing_line = line[fun_match.end(0) :].split("!")[0]
-    trailing_line = trailing_line.strip()
-    #
-    paren_match = FRegex.SUB_PAREN.match(trailing_line)
-    args = ""
-    if paren_match is not None:
-        word_match = FRegex.WORD.findall(paren_match.group(0))
-        if word_match is not None:
-            word_match = [word for word in word_match]
-            args = ",".join(word_match)
-        trailing_line = trailing_line[paren_match.end(0) :]
 
     # Extract if possible the variable name of the result()
     trailing_line = trailing_line.strip()
@@ -286,48 +315,74 @@ def read_fun_def(
     return "fun", FUN_sig(name, args, keywords, mod_flag, result)
 
 
-def read_sub_def(line: str, mod_flag: bool = False):
-    """Attempt to read SUBROUTINE definition line"""
-    # Get all the keyword modifier mathces
+def read_sub_def(
+    line: str, mod_flag: bool = False
+) -> tuple[Literal["sub"], SUB_info] | None:
+    """Attempt to read a SUBROUTINE definition line
+
+    Parameters
+    ----------
+    line : str
+        document line
+    mod_flag : bool, optional
+        flag for module and module procedure parsing, by default False
+
+    Returns
+    -------
+    tuple[Literal["sub"], SUB_info] | None
+        a SUB_info dataclass object
+    """
+    # Get all the keyword modifier matches
     keywords = re.findall(FRegex.SUB_MOD, line)
     # remove modifiers from line
     line = re.sub(FRegex.SUB_MOD, "", line)
-    sub_match = FRegex.SUB.match(line)
-    if sub_match is None:
+    name, args, _ = get_procedure_modifiers(line, FRegex.SUB)
+    if name is None:
         return None
-    #
-    name = sub_match.group(1)
-    trailing_line = line[sub_match.end(0) :].split("!")[0]
-    trailing_line = trailing_line.strip()
-    #
-    paren_match = FRegex.SUB_PAREN.match(trailing_line)
-    args = ""
-    if paren_match is not None:
-        word_match = FRegex.WORD.findall(paren_match.group(0))
-        if word_match is not None:
-            word_match = [word for word in word_match]
-            args = ",".join(word_match)
-        trailing_line = trailing_line[paren_match.end(0) :]
-    return "sub", SUB_info(name, args, mod_flag, keywords)
+
+    return "sub", SUB_info(name, args, keywords, mod_flag)
 
 
-def read_block_def(line: str):
+def read_block_def(line: str) -> tuple[Literal["block"], str] | None:
     """Attempt to read BLOCK definition line"""
     block_match = FRegex.BLOCK.match(line)
-    if block_match is not None:
-        name = block_match.group(1)
-        if name is not None:
+    if block_match:
+        name: str = block_match.group(1)
+        if name:
             name = name.replace(":", " ").strip()
         return "block", name
-    #
+    return None
+
+
+def read_do_def(line: str) -> tuple[Literal["do"], str] | None:
+    """Attempt to read a DO loop
+
+    Returns
+    -------
+    tuple[Literal["do"], str] | None
+        Tuple with "do" and a fixed format tag if present
+    """
     line_stripped = strip_strings(line, maintain_len=True)
     line_no_comment = line_stripped.split("!")[0].rstrip()
     do_match = FRegex.DO.match(line_no_comment)
-    if do_match is not None:
+    if do_match:
         return "do", do_match.group(1).strip()
-    #
+    return None
+
+
+def read_where_def(line: str) -> tuple[Literal["where"], bool] | None:
+    """Attempt to read a WHERE block
+
+    Returns
+    -------
+    tuple[Literal["where"], bool] | None
+        Tuple with "where" and a boolean indicating if labelled on unlabelled
+    """
+    line_stripped = strip_strings(line, maintain_len=True)
+    line_no_comment = line_stripped.split("!")[0].rstrip()
+    # Match WHERE blocks
     where_match = FRegex.WHERE.match(line_no_comment)
-    if where_match is not None:
+    if where_match:
         trailing_line = line[where_match.end(0) :]
         close_paren = find_paren_match(trailing_line)
         if close_paren < 0:
@@ -336,12 +391,21 @@ def read_block_def(line: str):
             return "where", True
         else:
             return "where", False
-    #
-    if_match = FRegex.IF.match(line_no_comment)
-    if if_match is not None:
-        then_match = FRegex.THEN.search(line_no_comment)
-        if then_match is not None:
-            return "if", None
+    return None
+
+
+def read_if_def(line: str) -> tuple[Literal["if"], None] | None:
+    """Attempt to read an IF conditional
+
+    Returns
+    -------
+    tuple[Literal["if"], None] | None
+        A Literal "if" and None tuple
+    """
+    line_stripped = strip_strings(line, maintain_len=True)
+    line_no_comment = line_stripped.split("!")[0].rstrip()
+    if FRegex.IF.match(line_no_comment) and FRegex.THEN.search(line_no_comment):
+        return "if", None
     return None
 
 
@@ -394,14 +458,14 @@ def read_type_def(line: str):
     keyword_match = FRegex.TATTR_LIST.match(trailing_line)
     keywords: list[str] = []
     parent = None
-    while keyword_match is not None:
+    while keyword_match:
         keyword_strip = keyword_match.group(0).replace(",", " ").strip().upper()
         extend_match = FRegex.EXTENDS.match(keyword_strip)
-        if extend_match is not None:
+        if extend_match:
             parent = extend_match.group(1).lower()
         else:
             keywords.append(keyword_strip)
-        #
+        # Get visibility and/or extends/abstract modifiers
         trailing_line = trailing_line[keyword_match.end(0) :]
         keyword_match = FRegex.TATTR_LIST.match(trailing_line)
     # Get name
@@ -417,8 +481,8 @@ def read_type_def(line: str):
         trailing_line = line_split[1]
     #
     word_match = FRegex.WORD.match(trailing_line.strip())
-    if word_match is not None:
-        name = word_match.group(0)
+    if word_match:
+        name: str = word_match.group(0)
     else:
         return None
     #
@@ -427,8 +491,7 @@ def read_type_def(line: str):
 
 def read_enum_def(line: str):
     """Attempt to read ENUM definition line"""
-    enum_match = FRegex.ENUM_DEF.match(line)
-    if enum_match is not None:
+    if FRegex.ENUM_DEF.match(line):
         return "enum", None
     return None
 
@@ -474,28 +537,28 @@ def read_mod_def(line: str):
     mod_match = FRegex.MOD.match(line)
     if mod_match is None:
         return None
-    else:
-        name = mod_match.group(1)
-        if name.lower() == "procedure":
-            trailing_line = line[mod_match.end(1) :]
-            pro_names = []
-            line_split = trailing_line.split(",")
-            for name in line_split:
-                pro_names.append(name.strip().lower())
-            return "int_pro", pro_names
-        # Check for submodule definition
-        trailing_line = line[mod_match.start(1) :]
-        sub_res = read_sub_def(trailing_line, mod_flag=True)
-        if sub_res is not None:
-            return sub_res
-        fun_res = read_var_def(trailing_line, fun_only=True)
-        if fun_res is not None:
-            fun_res[1].mod_flag = True
-            return fun_res[0], fun_res[1]
-        fun_res = read_fun_def(trailing_line, mod_flag=True)
-        if fun_res is not None:
-            return fun_res
-        return "mod", name
+
+    name = mod_match.group(1)
+    if name.lower() == "procedure":
+        trailing_line = line[mod_match.end(1) :]
+        pro_names = []
+        line_split = trailing_line.split(",")
+        for name in line_split:
+            pro_names.append(name.strip().lower())
+        return "int_pro", pro_names
+    # Check for submodule definition
+    trailing_line = line[mod_match.start(1) :]
+    sub_res = read_sub_def(trailing_line, mod_flag=True)
+    if sub_res is not None:
+        return sub_res
+    fun_res = read_var_def(trailing_line, fun_only=True)
+    if fun_res is not None:
+        fun_res[1].mod_flag = True
+        return fun_res[0], fun_res[1]
+    fun_res = read_fun_def(trailing_line, mod_flag=True)
+    if fun_res is not None:
+        return fun_res
+    return "mod", name
 
 
 def read_submod_def(line: str):
@@ -503,50 +566,49 @@ def read_submod_def(line: str):
     submod_match = FRegex.SUBMOD.match(line)
     if submod_match is None:
         return None
-    else:
-        parent_name = None
-        name = None
-        trailing_line = line[submod_match.end(0) :].split("!")[0]
-        trailing_line = trailing_line.strip()
-        parent_match = FRegex.WORD.match(trailing_line)
-        if parent_match is not None:
-            parent_name = parent_match.group(0).lower()
-            if len(trailing_line) > parent_match.end(0) + 1:
-                trailing_line = trailing_line[parent_match.end(0) + 1 :].strip()
-            else:
-                trailing_line = ""
-        #
-        name_match = FRegex.WORD.search(trailing_line)
-        if name_match is not None:
-            name = name_match.group(0).lower()
-        return "smod", SMOD_info(name, parent_name)
+
+    parent_name: str = None
+    name: str = None
+    trailing_line = line[submod_match.end(0) :].split("!")[0]
+    trailing_line = trailing_line.strip()
+    parent_match = FRegex.WORD.match(trailing_line)
+    if parent_match:
+        parent_name = parent_match.group(0).lower()
+        if len(trailing_line) > parent_match.end(0) + 1:
+            trailing_line = trailing_line[parent_match.end(0) + 1 :].strip()
+        else:
+            trailing_line = ""
+
+    name_match = FRegex.WORD.search(trailing_line)
+    if name_match:
+        name = name_match.group(0).lower()
+    return "smod", SMOD_info(name, parent_name)
 
 
-def read_prog_def(line: str):
+def read_prog_def(line: str) -> tuple[Literal["prog"], str] | None:
     """Attempt to read PROGRAM definition line"""
     prog_match = FRegex.PROG.match(line)
     if prog_match is None:
         return None
-    else:
-        return "prog", prog_match.group(1)
+    return "prog", prog_match.group(1)
 
 
-def read_int_def(line: str):
+def read_int_def(line: str) -> tuple[Literal["int"], INT_info] | None:
     """Attempt to read INTERFACE definition line"""
     int_match = FRegex.INT.match(line)
     if int_match is None:
         return None
-    else:
-        int_name = int_match.group(2).lower()
-        is_abstract = int_match.group(1) is not None
-        if int_name == "":
-            return "int", INT_info(None, is_abstract)
-        if int_name == "assignment" or int_name == "operator":
-            return "int", INT_info(None, False)
-        return "int", INT_info(int_match.group(2), is_abstract)
+
+    int_name = int_match.group(2).lower()
+    is_abstract = int_match.group(1) is not None
+    if int_name == "":
+        return "int", INT_info(None, is_abstract)
+    if int_name == "assignment" or int_name == "operator":
+        return "int", INT_info(None, False)
+    return "int", INT_info(int_match.group(2), is_abstract)
 
 
-def read_use_stmt(line: str):
+def read_use_stmt(line: str) -> tuple[Literal["use"], USE_info] | None:
     """Attempt to read USE statement"""
     use_match = FRegex.USE.match(line)
     if use_match is None:
@@ -566,7 +628,7 @@ def read_use_stmt(line: str):
     return "use", USE_info(use_mod, only_list, rename_map)
 
 
-def read_imp_stmt(line: str):
+def read_imp_stmt(line: str) -> tuple[Literal["import"], list[str]] | None:
     """Attempt to read IMPORT statement"""
     import_match = FRegex.IMPORT.match(line)
     if import_match is None:
@@ -577,28 +639,28 @@ def read_imp_stmt(line: str):
     return "import", import_list
 
 
-def read_inc_stmt(line: str):
+def read_inc_stmt(line: str) -> tuple[Literal["inc"], str] | None:
     """Attempt to read INCLUDE statement"""
     inc_match = FRegex.INCLUDE.match(line)
     if inc_match is None:
         return None
-    else:
-        inc_path = inc_match.group(1)
-        return "inc", inc_path
+
+    inc_path: str = inc_match.group(1)
+    return "inc", inc_path
 
 
-def read_vis_stmnt(line: str):
+def read_vis_stmnt(line: str) -> tuple[Literal["vis"], VIS_info] | None:
     """Attempt to read PUBLIC/PRIVATE statement"""
     vis_match = FRegex.VIS.match(line)
     if vis_match is None:
         return None
-    else:
-        vis_type = 0
-        if vis_match.group(1).lower() == "private":
-            vis_type = 1
-        trailing_line = line[vis_match.end(0) :].split("!")[0]
-        mod_words = FRegex.WORD.findall(trailing_line)
-        return "vis", VIS_info(vis_type, mod_words)
+
+    vis_type = 0
+    if vis_match.group(1).lower() == "private":
+        vis_type = 1
+    trailing_line = line[vis_match.end(0) :].split("!")[0]
+    mod_words = FRegex.WORD.findall(trailing_line)
+    return "vis", VIS_info(vis_type, mod_words)
 
 
 def_tests = [
@@ -606,6 +668,9 @@ def_tests = [
     read_sub_def,
     read_fun_def,
     read_block_def,
+    read_where_def,
+    read_do_def,
+    read_if_def,
     read_associate_def,
     read_select_def,
     read_type_def,
@@ -683,18 +748,25 @@ def find_external(
     new_var: fortran_var,
 ) -> bool:
     """Find a procedure, function, subroutine, etc. that has been defined as
-    `EXTERNAL`. `EXTERNAL`s are parsed as `fortran_var`, since there is no
-    way of knowing if `real, external :: val` is a function or a subroutine.
+    ``EXTERNAL``. ``EXTERNAL``s are parsed as ``fortran_var``, since there is no
+    way of knowing if ``real, external :: val`` is a function or a subroutine.
 
-    This method exists solely for `EXTERNAL`s that are defined across multiple
+    This method exists solely for ``EXTERNAL`` s that are defined across multiple
     lines e.g.
-    `EXTERNAL VAR`
-    `REAL VAR`
+
+    .. highlight:: fortran
+    .. code-block:: fortran
+
+            EXTERNAL VAR
+            REAL VAR
 
     or
 
-    `REAL VAR`
-    `EXTERNAL VAR`
+    .. highlight:: fortran
+    .. code-block:: fortran
+
+            REAL VAR
+            EXTERNAL VAR
 
 
     Parameters
@@ -702,17 +774,17 @@ def find_external(
     file_ast : fortran_ast
         AST
     desc_string : str
-        Variable type e.g. `REAL`, `INTEGER`, `EXTERNAL`
+        Variable type e.g. ``REAL``, ``INTEGER``, ``EXTERNAL``
     name_stripped : str
         Variable name
     new_var : fortran_var
-        The line variable that we are attempting to match with an `EXTERNAL`
+        The line variable that we are attempting to match with an ``EXTERNAL``
         definition
 
     Returns
     -------
     bool
-        True if the variable is `EXTERNAL` and we manage to link it to the
+        True if the variable is ``EXTERNAL`` and we manage to link it to the
         rest of its components, else False
     """
     if find_external_type(file_ast, desc_string, name_stripped):
@@ -761,8 +833,8 @@ class fortran_file:
         Returns
         -------
         tuple[str|None, bool|None]
-            `str` : string containing IO error message else None
-            `bool`: boolean indicating if the file has changed
+            ``str`` : string containing IO error message else None
+            ``bool``: boolean indicating if the file has changed
         """
         contents: str
         try:
@@ -1035,28 +1107,28 @@ class fortran_file:
         forward: bool = True,
         backward: bool = False,
         pp_content: bool = False,
-    ) -> tuple[int, int, int]:
+    ) -> tuple[int, Range]:
         back_lines, curr_line, forward_lines = self.get_code_line(
             line_number, forward=forward, backward=backward, pp_content=pp_content
         )
-        i0 = i1 = -1
+        word_range = Range(-1, -1)
         if curr_line is not None:
             find_word_lower = word.lower()
-            i0, i1 = find_word_in_line(curr_line.lower(), find_word_lower)
-        if backward and (i0 < 0):
+            word_range = find_word_in_line(curr_line.lower(), find_word_lower)
+        if backward and (word_range.start < 0):
             back_lines.reverse()
             for (i, line) in enumerate(back_lines):
-                i0, i1 = find_word_in_line(line.lower(), find_word_lower)
-                if i0 >= 0:
+                word_range = find_word_in_line(line.lower(), find_word_lower)
+                if word_range.start >= 0:
                     line_number -= i + 1
-                    return line_number, i0, i1
-        if forward and (i0 < 0):
+                    return line_number, word_range
+        if forward and (word_range.start < 0):
             for (i, line) in enumerate(forward_lines):
-                i0, i1 = find_word_in_line(line.lower(), find_word_lower)
-                if i0 >= 0:
+                word_range = find_word_in_line(line.lower(), find_word_lower)
+                if word_range.start >= 0:
                     line_number += i + 1
-                    return line_number, i0, i1
-        return line_number, i0, i1
+                    return line_number, word_range
+        return line_number, word_range
 
     def preprocess(
         self, pp_defs: dict = None, include_dirs: set = None, debug: bool = False
@@ -1228,10 +1300,10 @@ def preprocess_file(
             if if_start:
                 if is_path:
                     pp_stack.append([-1, -1])
-                    log.debug(f"{line.strip()} !!! Conditional TRUE({i+1})")
+                    log.debug(f"{line.strip()} !!! Conditional TRUE({i + 1})")
                 else:
                     pp_stack.append([i + 1, -1])
-                    log.debug(f"{line.strip()} !!! Conditional FALSE({i+1})")
+                    log.debug(f"{line.strip()} !!! Conditional FALSE({i + 1})")
                 continue
             if len(pp_stack) == 0:
                 continue
@@ -1260,13 +1332,13 @@ def preprocess_file(
                     continue
                 if pp_stack[-1][1] < 0:
                     pp_stack[-1][1] = i + 1
-                    log.debug(f"{line.strip()} !!! Conditional FALSE/END({i+1})")
+                    log.debug(f"{line.strip()} !!! Conditional FALSE/END({i + 1})")
                 pp_skips.append(pp_stack.pop())
             if debug:
                 if inc_start:
-                    log.debug(f"{line.strip()} !!! Conditional TRUE({i+1})")
+                    log.debug(f"{line.strip()} !!! Conditional TRUE({i + 1})")
                 elif exc_start:
-                    log.debug(f"{line.strip()} !!! Conditional FALSE({i+1})")
+                    log.debug(f"{line.strip()} !!! Conditional FALSE({i + 1})")
             continue
         # Handle variable/macro definitions files
         match = FRegex.PP_DEF.match(line)
@@ -1295,12 +1367,12 @@ def preprocess_file(
                     defs_tmp[def_name] = "True"
             elif (match.group(1) == "undef") and (def_name in defs_tmp):
                 defs_tmp.pop(def_name, None)
-            log.debug(f"{line.strip()} !!! Define statement({i+1})")
+            log.debug(f"{line.strip()} !!! Define statement({i + 1})")
             continue
         # Handle include files
         match = FRegex.PP_INCLUDE.match(line)
         if (match is not None) and ((len(pp_stack) == 0) or (pp_stack[-1][0] < 0)):
-            log.debug(f"{line.strip()} !!! Include statement({i+1})")
+            log.debug(f"{line.strip()} !!! Include statement({i + 1})")
             include_filename = match.group(1).replace('"', "")
             include_path = None
             # Intentionally keep this as a list and not a set. There are cases
@@ -1333,7 +1405,7 @@ def preprocess_file(
                     log.debug("!!! Failed to parse include file: exception")
 
             else:
-                log.debug(f"{line.strip()} !!! Could not locate include file ({i+1})")
+                log.debug(f"{line.strip()} !!! Could not locate include file ({i + 1})")
 
         # Substitute (if any) read in preprocessor macros
         for def_tmp, value in defs_tmp.items():
@@ -1343,7 +1415,9 @@ def preprocess_file(
                 def_regexes[def_tmp] = def_regex
             line_new, nsubs = def_regex.subn(value, line)
             if nsubs > 0:
-                log.debug(f"{line.strip()} !!! Macro sub({i+1}) '{def_tmp}' -> {value}")
+                log.debug(
+                    f"{line.strip()} !!! Macro sub({i + 1}) '{def_tmp}' -> {value}"
+                )
                 line = line_new
         output_file.append(line)
     return output_file, pp_skips, pp_defines, defs_tmp
@@ -1354,7 +1428,7 @@ def process_file(
     debug: bool = False,
     pp_defs: dict = None,
     include_dirs: set = None,
-):
+) -> fortran_ast:
     """Build file AST by parsing file"""
 
     def parser_debug_msg(msg: str, line: str, ln: int):
@@ -1442,7 +1516,7 @@ def process_file(
                     next_line_ind -= 1
                 if debug:
                     for (i, doc_line) in enumerate(doc_lines):
-                        log.debug(f"{doc_line} !!! Doc string({line_number+i})")
+                        log.debug(f"{doc_line} !!! Doc string({line_number + i})")
                 line_sum = 0
                 for doc_line in doc_lines:
                     line_sum += len(doc_line)
@@ -1618,7 +1692,7 @@ def process_file(
         if obj_type == "var":
             if obj_info.var_names is None:
                 continue
-            desc_string = obj_info.type_word
+            desc_string = obj_info.var_type
             link_name: str = None
             procedure_def = False
             if desc_string[:3] == "PRO":

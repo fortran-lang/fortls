@@ -4,16 +4,17 @@ import os
 from pathlib import Path
 
 from fortls.constants import KEYWORD_ID_DICT, KEYWORD_LIST, FRegex, log, sort_keywords
+from fortls.ftypes import Range
 
 
-def expand_name(line: str, char_poss: int) -> str:
+def expand_name(line: str, char_pos: int) -> str:
     """Get full word containing given cursor position
 
     Parameters
     ----------
     line : str
         Text line
-    char_poss : int
+    char_pos : int
         Column position along the line
 
     Returns
@@ -32,7 +33,7 @@ def expand_name(line: str, char_poss: int) -> str:
     ]
     for r in regexs:
         for num_match in r.finditer(line):
-            if num_match.start(0) <= char_poss <= num_match.end(0):
+            if num_match.start(0) <= char_pos <= num_match.end(0):
                 return num_match.group(0)
     return ""
 
@@ -123,10 +124,6 @@ def strip_strings(in_line: str, maintain_len: bool = False) -> str:
 def separate_def_list(test_str: str) -> list[str] | None:
     """Separate definition lists, skipping parenthesis and bracket groups
 
-    Examples:
-      "var1, var2, var3" -> ["var1", "var2", "var3"]
-      "var, init_var(3) = [1,2,3], array(3,3)" -> ["var", "init_var", "array"]
-
     Parameters
     ----------
     test_str : str
@@ -136,6 +133,15 @@ def separate_def_list(test_str: str) -> list[str] | None:
     -------
     list[str] | None
         [description]
+
+    Examples
+    --------
+    >>> separate_def_list("var1, var2, var3")
+    ["var1", "var2", "var3"]
+
+
+    >>> separate_def_list("var, init_var(3) = [1,2,3], array(3,3)")
+    ["var", "init_var", "array"]
     """
     stripped_str = strip_strings(test_str)
     paren_count = 0
@@ -161,7 +167,7 @@ def separate_def_list(test_str: str) -> list[str] | None:
     return def_list
 
 
-def find_word_in_line(line: str, word: str) -> tuple[int, int]:
+def find_word_in_line(line: str, word: str) -> Range:
     """Find Fortran word in line
 
     Parameters
@@ -173,34 +179,51 @@ def find_word_in_line(line: str, word: str) -> tuple[int, int]:
 
     Returns
     -------
-    tuple[int, int]
+    Range
         start and end positions (indices) of the word if not found it returns
-        -1, len(word) -1"""
-    i0 = -1
+        -1, len(word) -1
+    """
+    i = -1
     for poss_name in FRegex.WORD.finditer(line):
         if poss_name.group() == word:
-            i0 = poss_name.start()
+            i = poss_name.start()
             break
-    return i0, i0 + len(word)
+    # TODO: if i == -1: return None makes more sense
+    return Range(i, i + len(word))
 
 
-def find_paren_match(test_str: str) -> int:
-    """Find matching closing parenthesis by searching forward,
-    returns -1 if no match is found
+def find_paren_match(string: str) -> int:
+    """Find matching closing parenthesis **from an already open parenthesis scope**
+    by forward search of the string, returns -1 if no match is found
 
     Parameters
     ----------
-    test_str : str
+    string : str
         Input string
 
     Returns
     -------
     int
-        The index of the matching `)` character in the string
+        The index of the matching ``)`` character in the string
+
+    Examples
+    --------
+    >>> find_paren_match("a, b)")
+    4
+
+    Multiple parenthesis that are closed
+
+    >>> find_paren_match("a, (b, c), d)")
+    12
+
+    If the outermost parenthesis is not closed function returns -1
+
+    >>> find_paren_match("a, (b, (c, d)")
+    -1
     """
     paren_count = 1
     ind = -1
-    for (i, char) in enumerate(test_str):
+    for (i, char) in enumerate(string):
         if char == "(":
             paren_count += 1
         elif char == ")":
@@ -222,13 +245,13 @@ def get_line_prefix(pre_lines: list, curr_line: str, col: int, qs: bool = True) 
     col : int
         column index of the current line
     qs : bool, optional
-        strip quotes i.e. string literals from `curr_line` and `pre_lines`.
+        strip quotes i.e. string literals from ``curr_line`` and ``pre_lines``.
         Need this disable when hovering over string literals, by default True
 
     Returns
     -------
     str
-        part of the line including any relevant line continuations before `col`
+        part of the line including any relevant line continuations before ``col``
     """
     if (curr_line is None) or (col > len(curr_line)) or (curr_line.startswith("#")):
         return None
@@ -258,7 +281,7 @@ def resolve_globs(glob_path: str, root_path: str = None) -> list[str]:
     ----------
     glob_path : str
         Path containing the glob pattern follows
-        `fnmatch` glob pattern, can include relative paths, etc.
+        ``fnmatch`` glob pattern, can include relative paths, etc.
         see fnmatch: https://docs.python.org/3/library/fnmatch.html#module-fnmatch
 
     root_path : str, optional
@@ -282,6 +305,20 @@ def resolve_globs(glob_path: str, root_path: str = None) -> list[str]:
 
 
 def only_dirs(paths: list[str], err_msg: list = []) -> list[str]:
+    """From a list of strings returns only paths that are directories
+
+    Parameters
+    ----------
+    paths : list[str]
+        A list containing the files and directories
+    err_msg : list, optional
+        A list to append error messages if any, else use log channel, by default []
+
+    Returns
+    -------
+    list[str]
+        A list containing only valid directories
+    """
     dirs: list[str] = []
     for p in paths:
         if os.path.isdir(p):
@@ -323,7 +360,7 @@ def map_keywords(keywords: list[str]):
     return mapped_keywords, keyword_info
 
 
-def get_keywords(keywords, keyword_info={}):
+def get_keywords(keywords: list, keyword_info: dict = {}):
     keyword_strings = []
     for keyword_id in keywords:
         string_rep = KEYWORD_LIST[keyword_id]
@@ -335,30 +372,70 @@ def get_keywords(keywords, keyword_info={}):
     return keyword_strings
 
 
-def get_paren_substring(test_str):
-    i1 = test_str.find("(")
-    i2 = test_str.rfind(")")
+def get_paren_substring(string: str) -> str | None:
+    """Get the contents enclosed by the first pair of parenthesis
+
+    Parameters
+    ----------
+    string : str
+        A string
+
+    Returns
+    -------
+    str | None
+        The part of the string enclosed in parenthesis e.g.  or None
+
+
+    Examples
+    --------
+    >>> get_paren_substring("some line(a, b, (c, d))")
+    "a, b, (c, d)"
+
+    If the line has incomplete parenthesis however, ``None`` is returned
+    >>> get_paren_substring("some line(a, b")
+    None
+    """
+    i1 = string.find("(")
+    i2 = string.rfind(")")
     if -1 < i1 < i2:
-        return test_str[i1 + 1 : i2]
+        return string[i1 + 1 : i2]
     else:
         return None
 
 
-def get_paren_level(line):
+def get_paren_level(line: str) -> tuple[str, list[Range]]:
     """Get sub-string corresponding to a single parenthesis level,
     via backward search up through the line.
 
-    Examples:
-      "CALL sub1(arg1,arg2" -> ("arg1,arg2", [[10, 19]])
-      "CALL sub1(arg1(i),arg2" -> ("arg1,arg2", [[10, 14], [17, 22]])
+    Parameters
+    ----------
+    line : str
+        Document line
+
+    Returns
+    -------
+    tuple[str, list[Range]]
+        Arguments as a string and a list of Ranges for the arguments against ``line``
+
+    Examples
+    --------
+    >>> get_paren_level("CALL sub1(arg1,arg2")
+    ('arg1,arg2', [Range(start=10, end=19)])
+
+    If the range is interrupted by parenthesis, another Range variable is used
+    to mark the ``start`` and ``end`` of the argument
+
+    >>> get_paren_level("CALL sub1(arg1(i),arg2")
+    ('arg1,arg2', [Range(start=10, end=14), Range(start=17, end=22)])
+
     """
     if line == "":
-        return "", [[0, 0]]
+        return "", [Range(0, 0)]
     level = 0
     in_string = False
     string_char = ""
     i1 = len(line)
-    sections = []
+    sections: list[Range] = []
     for i in range(len(line) - 1, -1, -1):
         char = line[i]
         if in_string:
@@ -370,31 +447,49 @@ def get_paren_level(line):
             if level == 0:
                 i1 = i
             elif level < 0:
-                sections.append([i + 1, i1])
+                sections.append(Range(i + 1, i1))
                 break
         elif (char == ")") or (char == "]"):
             level += 1
             if level == 1:
-                sections.append([i + 1, i1])
+                sections.append(Range(i + 1, i1))
         elif (char == "'") or (char == '"'):
             in_string = True
             string_char = char
     if level == 0:
-        sections.append([i, i1])
+        sections.append(Range(i, i1))
     sections.reverse()
     out_string = ""
     for section in sections:
-        out_string += line[section[0] : section[1]]
+        out_string += line[section.start : section.end]
     return out_string, sections
 
 
-def get_var_stack(line):
+def get_var_stack(line: str) -> list[str]:
     """Get user-defined type field sequence terminating the given line
 
-    Examples:
-      "myvar%foo%bar" -> ["myvar", "foo", "bar"]
-      "myarray(i)%foo%bar" -> ["myarray", "foo", "bar"]
-      "CALL self%method(this%foo" -> ["this", "foo"]
+    Parameters
+    ----------
+    line : str
+        Document line
+
+    Returns
+    -------
+    list[str]
+        list of objects split by ``%``
+
+    Examples
+    --------
+    >>> get_var_stack("myvar%foo%bar")
+    ["myvar", "foo", "bar"]
+
+    >>> get_var_stack("myarray(i)%foo%bar")
+    ["myarray", "foo", "bar"]
+
+    In this case it will operate at the end of the string i.e. ``"this%foo"``
+
+    >>> get_var_stack("CALL self%method(this%foo")
+    ["this", "foo"]
     """
     if len(line) == 0:
         return [""]
@@ -404,14 +499,14 @@ def get_var_stack(line):
     # Continuation of variable after paren requires '%' character
     iLast = 0
     for (i, section) in enumerate(sections):
-        if not line[section[0] : section[1]].startswith("%"):
+        if not line[section.start : section.end].startswith("%"):
             iLast = i
     final_var = ""
     for section in sections[iLast:]:
-        final_var += line[section[0] : section[1]]
-    #
+        final_var += line[section.start : section.end]
+
     if final_var is not None:
-        final_op_split = FRegex.OBJBREAK.split(final_var)
+        final_op_split: list[str] = FRegex.OBJBREAK.split(final_var)
         return final_op_split[-1].split("%")
     else:
         return None

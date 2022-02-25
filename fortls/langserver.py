@@ -38,7 +38,7 @@ from fortls.intrinsics import (
     load_intrinsics,
     set_lowercase_intrinsics,
 )
-from fortls.jsonrpc import path_from_uri, path_to_uri
+from fortls.jsonrpc import JSONRPC2Connection, path_from_uri, path_to_uri
 from fortls.objects import (
     climb_type_tree,
     find_in_scope,
@@ -56,33 +56,12 @@ from fortls.version import __version__
 TYPE_DEF_REGEX = re.compile(r"[ ]*(TYPE|CLASS)[ ]*\([a-z0-9_ ]*$", re.I)
 
 
-def init_file(filepath, pp_defs, pp_suffixes, include_dirs, sort):
-    #
-    file_obj = fortran_file(filepath, pp_suffixes)
-    err_str, _ = file_obj.load_from_disk()
-    if err_str:
-        return None, err_str
-    try:
-        # On Windows multiprocess does not propage global variables through a shell.
-        # Windows uses 'spawn' while Unix uses 'fork' which propagates globals.
-        # This is a bypass.
-        # For more see on SO: shorturl.at/hwAG1
-        set_keyword_ordering(sort)
-        file_ast = process_file(file_obj, pp_defs=pp_defs, include_dirs=include_dirs)
-    except:
-        log.error("Error while parsing file %s", filepath, exc_info=True)
-        return None, "Error during parsing"
-    file_obj.ast = file_ast
-    return file_obj, None
-
-
 class LangServer:
     def __init__(self, conn, settings: dict):
-        self.conn = conn
+        self.conn: JSONRPC2Connection = conn
         self.running: bool = True
         self.root_path: str = None
-        self.all_symbols = None
-        self.workspace: dict = {}
+        self.workspace: dict[str, fortran_file] = {}
         self.obj_tree: dict = {}
         self.link_version = 0
         # Parse a dictionary of the command line interface and make them into
@@ -108,7 +87,7 @@ class LangServer:
         # Set object settings
         set_keyword_ordering(self.sort_keywords)
 
-    def post_message(self, message, type=1):
+    def post_message(self, message: str, type: int = 1):
         self.conn.send_notification(
             "window/showMessage", {"type": type, "message": message}
         )
@@ -130,8 +109,8 @@ class LangServer:
                     self.post_message(message[1], message[0])
                 self.post_messages = []
 
-    def handle(self, request):
-        def noop(request):
+    def handle(self, request: dict):
+        def noop(request: dict):
             return None
 
         # Request handler
@@ -159,9 +138,7 @@ class LangServer:
             "shutdown": noop,
             "exit": self.serve_exit,
         }.get(request["method"], self.serve_default)
-        # handler = {
-        #     "workspace/symbol": self.serve_symbols,
-        # }.get(request["method"], self.serve_default)
+
         # We handle notifications differently since we can't respond
         if "id" not in request:
             try:
@@ -190,9 +167,9 @@ class LangServer:
         else:
             self.conn.write_response(request["id"], resp)
 
-    def serve_initialize(self, request):
+    def serve_initialize(self, request: dict):
         # Setup language server
-        params = request["params"]
+        params: dict = request["params"]
         self.root_path = path_from_uri(
             params.get("rootUri") or params.get("rootPath") or ""
         )
@@ -277,8 +254,8 @@ class LangServer:
             matching_symbols.append(tmp_out)
         return sorted(matching_symbols, key=lambda k: k["name"])
 
-    def serve_document_symbols(self, request):
-        def map_types(type, in_class=False):
+    def serve_document_symbols(self, request: dict):
+        def map_types(type, in_class: bool = False):
             if type == 1:
                 return 2
             elif type in (2, 3):
@@ -298,9 +275,9 @@ class LangServer:
                 return 1
 
         # Get parameters from request
-        params = request["params"]
-        uri = params["textDocument"]["uri"]
-        path = path_from_uri(uri)
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
+        path: str = path_from_uri(uri)
         file_obj = self.workspace.get(path)
         if file_obj is None:
             return []
@@ -350,9 +327,9 @@ class LangServer:
                     test_output.append(tmp_out)
         return test_output
 
-    def serve_autocomplete(self, request):
+    def serve_autocomplete(self, request: dict):
         #
-        def map_types(type):
+        def map_types(type: int):
             if type == 1:
                 return 9
             elif type == 2:
@@ -368,12 +345,12 @@ class LangServer:
             return [def_value if i < 8 else True for i in range(16)]
 
         def get_candidates(
-            scope_list,
-            var_prefix,
-            inc_globals=True,
-            public_only=False,
-            abstract_only=False,
-            no_use=False,
+            scope_list: list,
+            var_prefix: str,
+            inc_globals: bool = True,
+            public_only: bool = False,
+            abstract_only: bool = False,
+            no_use: bool = False,
         ):
             #
             def child_candidates(
@@ -458,10 +435,10 @@ class LangServer:
 
         def build_comp(
             candidate,
-            name_only=self.autocomplete_name_only,
-            name_replace=None,
-            is_interface=False,
-            is_member=False,
+            name_only: bool = self.autocomplete_name_only,
+            name_replace: str = None,
+            is_interface: bool = False,
+            is_member: bool = False,
         ):
             comp_obj = {}
             call_sig = None
@@ -493,15 +470,15 @@ class LangServer:
             return comp_obj
 
         # Get parameters from request
-        params = request["params"]
-        uri = params["textDocument"]["uri"]
-        path = path_from_uri(uri)
-        file_obj = self.workspace.get(path)
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
+        path: str = path_from_uri(uri)
+        file_obj: fortran_file = self.workspace.get(path)
         if file_obj is None:
             return None
         # Check line
-        ac_line = params["position"]["line"]
-        ac_char = params["position"]["character"]
+        ac_line: int = params["position"]["line"]
+        ac_char: int = params["position"]["character"]
         # Get full line (and possible continuations) from file
         pre_lines, curr_line, _ = file_obj.get_code_line(
             ac_line, forward=False, strip_comment=True
@@ -514,7 +491,7 @@ class LangServer:
             var_stack = get_var_stack(line_prefix)
             is_member = len(var_stack) > 1
             var_prefix = var_stack[-1].strip()
-        except:
+        except (TypeError, AttributeError):
             return None
         # print(var_stack)
         item_list = []
@@ -691,7 +668,7 @@ class LangServer:
             var_stack = get_var_stack(line_prefix)
             is_member = len(var_stack) > 1
             def_name = expand_name(curr_line, def_char)
-        except:
+        except (TypeError, AttributeError):
             return None
         if def_name == "":
             return None
@@ -771,16 +748,16 @@ class LangServer:
             return var_obj
         return None
 
-    def serve_signature(self, request):
-        def get_sub_name(line):
+    def serve_signature(self, request: dict):
+        def get_sub_name(line: str):
             _, sections = get_paren_level(line)
-            if sections[0][0] <= 1:
+            if sections[0].start <= 1:
                 return None, None, None
-            arg_string = line[sections[0][0] : sections[-1][1]]
-            sub_string, sections = get_paren_level(line[: sections[0][0] - 1])
-            return sub_string.strip(), arg_string.split(","), sections[-1][0]
+            arg_string = line[sections[0].start : sections[-1].end]
+            sub_string, sections = get_paren_level(line[: sections[0].start - 1])
+            return sub_string.strip(), arg_string.split(","), sections[-1].start
 
-        def check_optional(arg, params):
+        def check_optional(arg, params: dict):
             opt_split = arg.split("=")
             if len(opt_split) > 1:
                 opt_arg = opt_split[0].strip().lower()
@@ -791,15 +768,15 @@ class LangServer:
             return None
 
         # Get parameters from request
-        params = request["params"]
-        uri = params["textDocument"]["uri"]
-        path = path_from_uri(uri)
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
+        path: str = path_from_uri(uri)
         file_obj = self.workspace.get(path)
         if file_obj is None:
             return None
         # Check line
-        sig_line = params["position"]["line"]
-        sig_char = params["position"]["character"]
+        sig_line: int = params["position"]["line"]
+        sig_char: int = params["position"]["character"]
         # Get full line (and possible continuations) from file
         pre_lines, curr_line, _ = file_obj.get_code_line(
             sig_line, forward=False, strip_comment=True
@@ -815,7 +792,7 @@ class LangServer:
             sub_name, arg_strings, sub_end = get_sub_name(line_prefix)
             var_stack = get_var_stack(sub_name)
             is_member = len(var_stack) > 1
-        except:
+        except (TypeError, AttributeError):
             return None
         #
         curr_scope = file_obj.ast.get_inner_scope(sig_line + 1)
@@ -934,10 +911,10 @@ class LangServer:
 
     def serve_references(self, request):
         # Get parameters from request
-        params = request["params"]
-        uri = params["textDocument"]["uri"]
-        def_line = params["position"]["line"]
-        def_char = params["position"]["character"]
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
+        def_line: int = params["position"]["line"]
+        def_char: int = params["position"]["character"]
         path = path_from_uri(uri)
         # Find object
         file_obj = self.workspace.get(path)
@@ -971,12 +948,12 @@ class LangServer:
                 )
         return refs
 
-    def serve_definition(self, request):
+    def serve_definition(self, request: dict):
         # Get parameters from request
-        params = request["params"]
-        uri = params["textDocument"]["uri"]
-        def_line = params["position"]["line"]
-        def_char = params["position"]["character"]
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
+        def_line: int = params["position"]["line"]
+        def_char: int = params["position"]["character"]
         path = path_from_uri(uri)
         # Find object
         file_obj = self.workspace.get(path)
@@ -991,7 +968,7 @@ class LangServer:
         return None
 
     def serve_hover(self, request: dict):
-        def create_hover(string, highlight):
+        def create_hover(string: str, highlight: bool):
             if highlight:
                 return {"language": self.hover_language, "value": string}
             else:
@@ -1023,7 +1000,7 @@ class LangServer:
         def_line: int = params["position"]["line"]
         def_char: int = params["position"]["character"]
         path = path_from_uri(uri)
-        file_obj: fortran_file = self.workspace.get(path)
+        file_obj = self.workspace.get(path)
         if file_obj is None:
             return None
         # Find object
@@ -1068,12 +1045,12 @@ class LangServer:
             return {"contents": hover_array}
         return None
 
-    def serve_implementation(self, request):
+    def serve_implementation(self, request: dict):
         # Get parameters from request
-        params = request["params"]
-        uri = params["textDocument"]["uri"]
-        def_line = params["position"]["line"]
-        def_char = params["position"]["character"]
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
+        def_line: int = params["position"]["line"]
+        def_char: int = params["position"]["character"]
         path = path_from_uri(uri)
         file_obj = self.workspace.get(path)
         if file_obj is None:
@@ -1089,12 +1066,12 @@ class LangServer:
                 return self._create_ref_link(impl_obj)
         return None
 
-    def serve_rename(self, request):
+    def serve_rename(self, request: dict):
         # Get parameters from request
-        params = request["params"]
-        uri = params["textDocument"]["uri"]
-        def_line = params["position"]["line"]
-        def_char = params["position"]["character"]
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
+        def_line: int = params["position"]["line"]
+        def_char: int = params["position"]["character"]
         path = path_from_uri(uri)
         # Find object
         file_obj = self.workspace.get(path)
@@ -1159,11 +1136,11 @@ class LangServer:
                     change["newText"] = bind_change
         return {"changes": changes}
 
-    def serve_codeActions(self, request):
-        params = request["params"]
-        uri = params["textDocument"]["uri"]
-        sline = params["range"]["start"]["line"]
-        eline = params["range"]["end"]["line"]
+    def serve_codeActions(self, request: dict):
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
+        sline: int = params["range"]["start"]["line"]
+        eline: int = params["range"]["end"]["line"]
         path = path_from_uri(uri)
         file_obj = self.workspace.get(path)
         # Find object
@@ -1185,7 +1162,7 @@ class LangServer:
                 action["diagnostics"] = new_diags
         return action_list
 
-    def send_diagnostics(self, uri):
+    def send_diagnostics(self, uri: str):
         diag_results, diag_exp = self.get_diagnostics(uri)
         if diag_results is not None:
             self.conn.send_notification(
@@ -1202,7 +1179,7 @@ class LangServer:
                 },
             )
 
-    def get_diagnostics(self, uri):
+    def get_diagnostics(self, uri: str):
         filepath = path_from_uri(uri)
         file_obj = self.workspace.get(filepath)
         if file_obj is not None:
@@ -1218,10 +1195,10 @@ class LangServer:
                 return diags, None
         return None, None
 
-    def serve_onChange(self, request):
+    def serve_onChange(self, request: dict):
         # Update workspace from file sent by editor
-        params = request["params"]
-        uri = params["textDocument"]["uri"]
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
         path = path_from_uri(uri)
         file_obj = self.workspace.get(path)
         if file_obj is None:
@@ -1266,16 +1243,18 @@ class LangServer:
             file_obj.preprocess(pp_defs=self.pp_defs)
             self.pp_defs = {**self.pp_defs, **file_obj.pp_defs}
 
-    def serve_onOpen(self, request):
+    def serve_onOpen(self, request: dict):
         self.serve_onSave(request, did_open=True)
 
-    def serve_onClose(self, request):
+    def serve_onClose(self, request: dict):
         self.serve_onSave(request, did_close=True)
 
-    def serve_onSave(self, request, did_open=False, did_close=False):
+    def serve_onSave(
+        self, request: dict, did_open: bool = False, did_close: bool = False
+    ):
         # Update workspace from file on disk
-        params = request["params"]
-        uri = params["textDocument"]["uri"]
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
         filepath = path_from_uri(uri)
         # Skip update and remove objects if file is deleted
         if did_close and (not os.path.isfile(filepath)):
@@ -1307,7 +1286,11 @@ class LangServer:
             self.send_diagnostics(uri)
 
     def update_workspace_file(
-        self, filepath, read_file=False, allow_empty=False, update_links=False
+        self,
+        filepath: str,
+        read_file: bool = False,
+        allow_empty: bool = False,
+        update_links: bool = False,
     ):
         # Update workspace from file contents and path
         try:
@@ -1356,7 +1339,55 @@ class LangServer:
             ast_new.resolve_links(self.obj_tree, self.link_version)
         return True, None
 
+    @staticmethod
+    def file_init(
+        filepath: str,
+        pp_defs: dict,
+        pp_suffixes: list[str],
+        include_dirs: set[str],
+        sort: bool,
+    ):
+        """Initialise a Fortran file
+
+        Parameters
+        ----------
+        filepath : str
+            Path to file
+        pp_defs : dict
+            Preprocessor definitions
+        pp_suffixes : list[str]
+            Preprocessor file extension, additional to default
+        include_dirs : set[str]
+            Preprocessor only include directories, not used by normal parser
+        sort : bool
+            Whether or not keywords should be sorted
+
+        Returns
+        -------
+        fortran_file | str
+            A Fortran file object or a string containing the error message
+        """
+        file_obj = fortran_file(filepath, pp_suffixes)
+        err_str, _ = file_obj.load_from_disk()
+        if err_str:
+            return err_str
+        try:
+            # On Windows multiprocess does not propage global variables through a shell.
+            # Windows uses 'spawn' while Unix uses 'fork' which propagates globals.
+            # This is a bypass.
+            # For more see on SO: shorturl.at/hwAG1
+            set_keyword_ordering(sort)
+            file_ast = process_file(
+                file_obj, pp_defs=pp_defs, include_dirs=include_dirs
+            )
+        except:
+            log.error("Error while parsing file %s", filepath, exc_info=True)
+            return "Error during parsing"
+        file_obj.ast = file_ast
+        return file_obj
+
     def workspace_init(self):
+        """Initialise the workspace root across multiple threads"""
 
         file_list = self._get_source_files()
         # Process files
@@ -1364,7 +1395,7 @@ class LangServer:
         results = {}
         for filepath in file_list:
             results[filepath] = pool.apply_async(
-                init_file,
+                self.file_init,
                 args=(
                     filepath,
                     self.pp_defs,
@@ -1377,12 +1408,12 @@ class LangServer:
         pool.join()
         for path, result in results.items():
             result_obj = result.get()
-            if result_obj[0] is None:
+            if isinstance(result_obj, str):
                 self.post_messages.append(
-                    [1, f"Initialization failed for file '{path}': {result_obj[1]}"]
+                    [1, f"Initialization failed for file '{path}': {result_obj}"]
                 )
                 continue
-            self.workspace[path] = result_obj[0]
+            self.workspace[path] = result_obj
             # Add top-level objects to object tree
             ast_new = self.workspace[path].ast
             for key in ast_new.global_dict:
@@ -1395,13 +1426,25 @@ class LangServer:
         for _, file_obj in self.workspace.items():
             file_obj.ast.resolve_links(self.obj_tree, self.link_version)
 
-    def serve_exit(self, request):
+    def serve_exit(self, request: dict) -> None:
         # Exit server
         self.workspace = {}
         self.obj_tree = {}
         self.running = False
 
-    def serve_default(self, request):
+    def serve_default(self, request: dict):
+        """Raise an error in the Language Server
+
+        Parameters
+        ----------
+        request : dict
+            client dictionary with requests
+
+        Raises
+        ------
+        JSONRPC2Error
+            error with code -32601
+        """
         # Default handler (errors!)
         raise JSONRPC2Error(
             code=-32601, message=f"method {request['method']} not found"
@@ -1620,10 +1663,10 @@ class LangServer:
         # Set object settings
         set_keyword_ordering(self.sort_keywords)
 
-    def _create_ref_link(self, obj):
+    def _create_ref_link(self, obj) -> dict:
         """Create a link reference to an object"""
-        obj_file = obj.file_ast.file
-        sline, schar, echar = obj_file.find_word_in_code_line(obj.sline - 1, obj.name)
+        obj_file: fortran_file = obj.file_ast.file
+        sline, (schar, echar) = obj_file.find_word_in_code_line(obj.sline - 1, obj.name)
         if schar < 0:
             schar = echar = 0
         return {
