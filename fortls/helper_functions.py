@@ -309,7 +309,7 @@ def map_keywords(keywords: list[str]):
     mapped_keywords = []
     keyword_info = {}
     for keyword in keywords:
-        keyword_prefix = keyword.split("(")[0].lower()
+        keyword_prefix = keyword.split("(")[0].lower().strip()
         keyword_ind = KEYWORD_ID_DICT.get(keyword_prefix)
         # keyword_ind can be 0 which if 0: evaluates to False
         if keyword_ind is not None:

@@ -8,6 +8,8 @@
   ([#54](https://github.com/gnikit/fortls/issues/54))
 - Fixed hovering string length size is now matching the string
   ([#55](https://github.com/gnikit/fortls/issues/55))
+- Fixed space separated keywords not being displayed upon hover
+  ([#60](https://github.com/gnikit/fortls/issues/60))
 
 ## 2.2.3
 

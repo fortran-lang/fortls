@@ -594,6 +594,9 @@ def test_hover():
     string += hover_req(file_path, 46, 11)
     string += hover_req(file_path, 51, 11)
     string += hover_req(file_path, 55, 11)
+    file_path = test_dir / "hover" / "spaced_keywords.f90"
+    string += hover_req(file_path, 1, 45)
+    string += hover_req(file_path, 2, 99)
     file_path = test_dir / "hover" / "recursive.f90"
     string += hover_req(file_path, 9, 40)
     file_path = test_dir / "subdir" / "test_submod.F90"
@@ -655,6 +658,9 @@ def test_hover():
         """FUNCTION fun7() RESULT(val)
  TYPE(c_ptr) :: val""",
         """TYPE(c_ptr) FUNCTION c_loc(x) RESULT(c_loc)""",
+        """REAL, DIMENSION(:, :), INTENT(IN)""",
+        """REAL, DIMENSION( SIZE(ARG1, 1), MAXVAL([SIZE(ARG1, 2), """
+        """SIZE(ARG1, 1)]) ), INTENT(OUT)""",
         """RECURSIVE SUBROUTINE recursive_assign_descending(node, vector, current_loc)
  TYPE(tree_inode), POINTER, INTENT(IN) :: node
  INTEGER, DIMENSION(:), INTENT(INOUT) :: vector
