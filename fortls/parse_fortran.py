@@ -1264,20 +1264,19 @@ class fortran_file:
         line_ind = 0
         next_line_ind = 0
         line_number = 1
-        int_counter = 0
-        block_counter = 0
-        do_counter = 0
-        if_counter = 0
-        select_counter = 0
         block_id_stack = []
         semi_split = []
         doc_string: str = None
-        if self.fixed:
-            COMMENT_LINE_MATCH = FRegex.FIXED_COMMENT
-            DOC_COMMENT_MATCH = FRegex.FIXED_DOC
-        else:
-            COMMENT_LINE_MATCH = FRegex.FREE_COMMENT
-            DOC_COMMENT_MATCH = FRegex.FREE_DOC
+        counters = Counter(
+            # line_no=1,
+            # line_idx=0,
+            # next_line_idx=0,
+            do=0,
+            ifs=0,
+            block=0,
+            select=0,
+            interface=0,
+        )
         while (next_line_ind < self.nLines) or (len(semi_split) > 0):
             # Get next line
             if len(semi_split) > 0:
@@ -1632,15 +1631,15 @@ class fortran_file:
             elif obj_type == "block":
                 name = obj_info
                 if name is None:
-                    block_counter += 1
-                    name = f"#BLOCK{block_counter}"
+                    counters["block"] += 1
+                    name = f"#BLOCK{counters['block']}"
                 new_block = fortran_block(file_ast, line_number, name)
                 file_ast.add_scope(new_block, FRegex.END_BLOCK, req_container=True)
                 parser_debug_msg("BLOCK", line, line_number)
 
             elif obj_type == "do":
-                do_counter += 1
-                name = f"#DO{do_counter}"
+                counters["do"] += 1
+                name = f"#DO{counters['do']}"
                 if obj_info != "":
                     block_id_stack.append(obj_info)
                 new_do = fortran_do(file_ast, line_number, name)
@@ -1650,15 +1649,15 @@ class fortran_file:
             elif obj_type == "where":
                 # Add block if WHERE is not single line
                 if not obj_info:
-                    do_counter += 1
-                    name = f"#WHERE{do_counter}"
+                    counters["do"] += 1
+                    name = f"#WHERE{counters['do']}"
                     new_do = fortran_where(file_ast, line_number, name)
                     file_ast.add_scope(new_do, FRegex.END_WHERE, req_container=True)
                 parser_debug_msg("WHERE", line, line_number)
 
             elif obj_type == "assoc":
-                block_counter += 1
-                name = f"#ASSOC{block_counter}"
+                counters["block"] += 1
+                name = f"#ASSOC{counters['block']}"
                 new_assoc = fortran_associate(file_ast, line_number, name)
                 file_ast.add_scope(new_assoc, FRegex.END_ASSOCIATE, req_container=True)
                 for bound_var in obj_info:
@@ -1674,15 +1673,15 @@ class fortran_file:
                 parser_debug_msg("ASSOCIATE", line, line_number)
 
             elif obj_type == "if":
-                if_counter += 1
-                name = f"#IF{if_counter}"
+                counters["if"] += 1
+                name = f"#IF{counters['if']}"
                 new_if = fortran_if(file_ast, line_number, name)
                 file_ast.add_scope(new_if, FRegex.END_IF, req_container=True)
                 parser_debug_msg("IF", line, line_number)
 
             elif obj_type == "select":
-                select_counter += 1
-                name = f"#SELECT{select_counter}"
+                counters["select"] += 1
+                name = f"#SELECT{counters['select']}"
                 new_select = fortran_select(file_ast, line_number, name, obj_info)
                 file_ast.add_scope(new_select, FRegex.END_SELECT, req_container=True)
                 new_var = new_select.create_binding_variable(
@@ -1704,8 +1703,8 @@ class fortran_file:
                 parser_debug_msg("TYPE", line, line_number)
 
             elif obj_type == "enum":
-                block_counter += 1
-                name = f"#ENUM{block_counter}"
+                counters["block"] += 1
+                name = f"#ENUM{counters['block']}"
                 new_enum = fortran_enum(file_ast, line_number, name)
                 file_ast.add_scope(new_enum, FRegex.END_ENUMD, req_container=True)
                 parser_debug_msg("ENUM", line, line_number)
@@ -1713,8 +1712,8 @@ class fortran_file:
             elif obj_type == "int":
                 name = obj_info.name
                 if name is None:
-                    int_counter += 1
-                    name = f"#GEN_INT{int_counter}"
+                    counters["interface"] += 1
+                    name = f"#GEN_INT{counters['interface']}"
                 new_int = fortran_int(
                     file_ast, line_number, name, abstract=obj_info.abstract
                 )
