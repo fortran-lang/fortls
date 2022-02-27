@@ -144,9 +144,11 @@ def get_line_context(line: str) -> tuple[str, None] | tuple[str, str]:
 
 def parse_var_keywords(test_str: str) -> tuple[list[str], str]:
     """Parse Fortran variable declaration keywords"""
+    # Needs to be this way and not simply call finditer because no regex can
+    # capture nested parenthesis
     keyword_match = FRegex.KEYWORD_LIST.match(test_str)
     keywords = []
-    while keyword_match is not None:
+    while keyword_match:
         tmp_str = re.sub(r"^[, ]*", "", keyword_match.group(0))
         test_str = test_str[keyword_match.end(0) :]
         if tmp_str.lower().startswith("dimension"):

@@ -74,9 +74,9 @@ class FortranRegularExpressions:
     KIND_SPEC: Pattern = compile(r"[ ]*([*]?\([ ]*[a-z0-9_*:]|\*[ ]*[0-9:]*)", I)
     KEYWORD_LIST: Pattern = compile(
         r"[ ]*,[ ]*(PUBLIC|PRIVATE|ALLOCATABLE|"
-        r"POINTER|TARGET|DIMENSION\(|"
-        r"OPTIONAL|INTENT\([inout]*\)|DEFERRED|NOPASS|"
-        r"PASS\([a-z0-9_]*\)|SAVE|PARAMETER|EXTERNAL|"
+        r"POINTER|TARGET|DIMENSION[ ]*\(|"
+        r"OPTIONAL|INTENT[ ]*\([ ]*(?:IN|OUT|INOUT)[ ]*\)|DEFERRED|NOPASS|"
+        r"PASS[ ]*\(\w*\)|SAVE|PARAMETER|EXTERNAL|"
         r"CONTIGUOUS)",
         I,
     )
