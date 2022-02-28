@@ -1,5 +1,7 @@
 from __future__ import annotations, print_function
 
+from collections import Counter
+
 import hashlib
 import logging
 import os
@@ -1329,7 +1331,7 @@ class fortran_file:
             # Handle trailing doc strings
             if doc_string:
                 file_ast.add_doc("!! " + doc_string)
-                log.debug(f"{doc_string} !!! Doc string({line_number})")
+                self.parser_debug("Doc", doc_string, line_number)
                 doc_string = None
             # Handle preprocessing regions
             do_skip = False
@@ -1490,7 +1492,7 @@ class fortran_file:
             if obj_read is None:
                 continue
 
-            obj_type = obj_read[0]
+            obj_type: str = obj_read[0]
             obj_info = obj_read[1]
             if obj_type == "var":
                 if obj_info.var_names is None:
@@ -1502,7 +1504,7 @@ class fortran_file:
                     if file_ast.current_scope.get_type() == INTERFACE_TYPE_ID:
                         for var_name in obj_info.var_names:
                             file_ast.add_int_member(var_name)
-                        parser_debug_msg("INTERFACE-PRO", line, line_number)
+                        self.parser_debug("INTERFACE-PRO", line, line_number)
                         continue
                     procedure_def = True
                     link_name = get_paren_substring(desc_string)
@@ -1568,24 +1570,24 @@ class fortran_file:
 
                     # if not merge_external:
                     file_ast.add_variable(new_var)
-                parser_debug_msg("VARIABLE", line, line_number)
+                self.parser_debug("VARIABLE", line, line_number)
 
             elif obj_type == "mod":
                 new_mod = fortran_module(file_ast, line_number, obj_info)
                 file_ast.add_scope(new_mod, FRegex.END_MOD)
-                parser_debug_msg("MODULE", line, line_number)
+                self.parser_debug("MODULE", line, line_number)
 
             elif obj_type == "smod":
                 new_smod = fortran_submodule(
                     file_ast, line_number, obj_info.name, ancestor_name=obj_info.parent
                 )
                 file_ast.add_scope(new_smod, FRegex.END_SMOD)
-                parser_debug_msg("SUBMODULE", line, line_number)
+                self.parser_debug("SUBMODULE", line, line_number)
 
             elif obj_type == "prog":
                 new_prog = fortran_program(file_ast, line_number, obj_info)
                 file_ast.add_scope(new_prog, FRegex.END_PROG)
-                parser_debug_msg("PROGRAM", line, line_number)
+                self.parser_debug("PROGRAM", line, line_number)
 
             elif obj_type == "sub":
                 keywords, _ = map_keywords(obj_info.keywords)
@@ -1598,7 +1600,7 @@ class fortran_file:
                     keywords=keywords,
                 )
                 file_ast.add_scope(new_sub, FRegex.END_SUB)
-                parser_debug_msg("SUBROUTINE", line, line_number)
+                self.parser_debug("SUBROUTINE", line, line_number)
 
             elif obj_type == "fun":
                 keywords, _ = map_keywords(obj_info.keywords)
@@ -1626,7 +1628,7 @@ class fortran_file:
                         keyword_info=keyword_info,
                     )
                     file_ast.add_variable(new_obj)
-                parser_debug_msg("FUNCTION", line, line_number)
+                self.parser_debug("FUNCTION", line, line_number)
 
             elif obj_type == "block":
                 name = obj_info
@@ -1635,7 +1637,7 @@ class fortran_file:
                     name = f"#BLOCK{counters['block']}"
                 new_block = fortran_block(file_ast, line_number, name)
                 file_ast.add_scope(new_block, FRegex.END_BLOCK, req_container=True)
-                parser_debug_msg("BLOCK", line, line_number)
+                self.parser_debug("BLOCK", line, line_number)
 
             elif obj_type == "do":
                 counters["do"] += 1
@@ -1644,7 +1646,7 @@ class fortran_file:
                     block_id_stack.append(obj_info)
                 new_do = fortran_do(file_ast, line_number, name)
                 file_ast.add_scope(new_do, FRegex.END_DO, req_container=True)
-                parser_debug_msg("DO", line, line_number)
+                self.parser_debug("DO", line, line_number)
 
             elif obj_type == "where":
                 # Add block if WHERE is not single line
@@ -1653,7 +1655,7 @@ class fortran_file:
                     name = f"#WHERE{counters['do']}"
                     new_do = fortran_where(file_ast, line_number, name)
                     file_ast.add_scope(new_do, FRegex.END_WHERE, req_container=True)
-                parser_debug_msg("WHERE", line, line_number)
+                self.parser_debug("WHERE", line, line_number)
 
             elif obj_type == "assoc":
                 counters["block"] += 1
@@ -1670,14 +1672,14 @@ class fortran_file:
                                 file_ast, line_number, binding_name, link_name
                             )
                         )
-                parser_debug_msg("ASSOCIATE", line, line_number)
+                self.parser_debug("ASSOCIATE", line, line_number)
 
             elif obj_type == "if":
                 counters["if"] += 1
                 name = f"#IF{counters['if']}"
                 new_if = fortran_if(file_ast, line_number, name)
                 file_ast.add_scope(new_if, FRegex.END_IF, req_container=True)
-                parser_debug_msg("IF", line, line_number)
+                self.parser_debug("IF", line, line_number)
 
             elif obj_type == "select":
                 counters["select"] += 1
@@ -1692,7 +1694,7 @@ class fortran_file:
                 )
                 if new_var is not None:
                     file_ast.add_variable(new_var)
-                parser_debug_msg("SELECT", line, line_number)
+                self.parser_debug("SELECT", line, line_number)
 
             elif obj_type == "typ":
                 keywords, _ = map_keywords(obj_info.keywords)
@@ -1700,14 +1702,14 @@ class fortran_file:
                 if obj_info.parent is not None:
                     new_type.set_inherit(obj_info.parent)
                 file_ast.add_scope(new_type, FRegex.END_TYPED, req_container=True)
-                parser_debug_msg("TYPE", line, line_number)
+                self.parser_debug("TYPE", line, line_number)
 
             elif obj_type == "enum":
                 counters["block"] += 1
                 name = f"#ENUM{counters['block']}"
                 new_enum = fortran_enum(file_ast, line_number, name)
                 file_ast.add_scope(new_enum, FRegex.END_ENUMD, req_container=True)
-                parser_debug_msg("ENUM", line, line_number)
+                self.parser_debug("ENUM", line, line_number)
 
             elif obj_type == "int":
                 name = obj_info.name
@@ -1718,7 +1720,7 @@ class fortran_file:
                     file_ast, line_number, name, abstract=obj_info.abstract
                 )
                 file_ast.add_scope(new_int, FRegex.END_INT, req_container=True)
-                parser_debug_msg("INTERFACE", line, line_number)
+                self.parser_debug("INTERFACE", line, line_number)
 
             elif obj_type == "gen":
                 new_int = fortran_int(
@@ -1729,19 +1731,19 @@ class fortran_file:
                 for pro_link in obj_info.pro_links:
                     file_ast.add_int_member(pro_link)
                 file_ast.end_scope(line_number)
-                parser_debug_msg("GENERIC", line, line_number)
+                self.parser_debug("GENERIC", line, line_number)
 
             elif obj_type == "int_pro":
                 if file_ast.current_scope is not None:
                     if file_ast.current_scope.get_type() == INTERFACE_TYPE_ID:
                         for name in obj_info:
                             file_ast.add_int_member(name)
-                        parser_debug_msg("INTERFACE-PRO", line, line_number)
+                        self.parser_debug("INTERFACE-PRO", line, line_number)
 
                     elif file_ast.current_scope.get_type() == SUBMODULE_TYPE_ID:
                         new_impl = fortran_scope(file_ast, line_number, obj_info[0])
                         file_ast.add_scope(new_impl, FRegex.END_PRO)
-                        parser_debug_msg("INTERFACE_IMPL", line, line_number)
+                        self.parser_debug("INTERFACE_IMPL", line, line_number)
 
             elif obj_type == "use":
                 file_ast.add_use(
@@ -1750,15 +1752,15 @@ class fortran_file:
                     obj_info.only_list,
                     obj_info.rename_map,
                 )
-                parser_debug_msg("USE", line, line_number)
+                self.parser_debug("USE", line, line_number)
 
             elif obj_type == "import":
                 file_ast.add_use("#IMPORT", line_number, obj_info)
-                parser_debug_msg("IMPORT", line, line_number)
+                self.parser_debug("IMPORT", line, line_number)
 
             elif obj_type == "inc":
                 file_ast.add_include(obj_info, line_number)
-                parser_debug_msg("INCLUDE", line, line_number)
+                self.parser_debug("INCLUDE", line, line_number)
 
             elif obj_type == "vis":
                 if file_ast.current_scope is None:
@@ -1781,7 +1783,7 @@ class fortran_file:
                         else:
                             for word in obj_info.obj_names:
                                 file_ast.add_public(word)
-                parser_debug_msg("Visibility", line, line_number)
+                self.parser_debug("Visibility", line, line_number)
 
         file_ast.close_file(line_number)
         if debug:
