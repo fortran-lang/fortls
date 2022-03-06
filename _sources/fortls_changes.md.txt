@@ -24,6 +24,8 @@
 
 ## Changed
 
+- Updated `setup.cfg` in preparation of submitting package to `conda-forge`
+- Added `Editor Integration` section in documentation
 - Changed reading in `json` files to be encoded as UTF-8
   ([#51](https://github.com/gnikit/fortls/pull/51))
 - Changed the way function hover messages are displayed, now signatures are standardised

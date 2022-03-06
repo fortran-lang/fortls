@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Editor Integration &mdash; fortls 0.1.dev1+g085092c documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Unique fortls features (not in fortran-language-server)" href="fortls_changes.html" />
+    <link rel="prev" title="Configuration options" href="options.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> fortls
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">fortls - Fortran Language Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="options.html">Configuration options</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Editor Integration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#visual-studio-code">Visual Studio Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#atom">Atom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sublime-text">Sublime Text</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#vim-neovim-gvim">Vim, Neovim, GVim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#emacs">EMACS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visual-studio-2017">Visual Studio 2017</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="fortls_changes.html">Unique fortls features (not in fortran-language-server)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Developers’ documentations</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">fortls</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Editor Integration</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/editor_integration.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="editor-integration">
+<h1>Editor Integration<a class="headerlink" href="#editor-integration" title="Permalink to this headline"></a></h1>
+<section id="visual-studio-code">
+<h2>Visual Studio Code<a class="headerlink" href="#visual-studio-code" title="Permalink to this headline"></a></h2>
+<p>The Language Server is natively supported through the <a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=krvajalm.linter-gfortran">Modern Fortran</a> extension.
+Install <code class="docutils literal notranslate"><span class="pre">fortls</span></code> then install the extension and all of the server’s features should be instantly available.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Make sure that <code class="docutils literal notranslate"><span class="pre">fortls</span></code> is reachable in your <code class="docutils literal notranslate"><span class="pre">$PATH</span></code>. If not you can specify the option
+<code class="docutils literal notranslate"><span class="pre">&quot;fortran.fortls.path&quot;:</span> <span class="pre">&quot;/custom/path/to/fortls&quot;</span></code></p>
+</div>
+</section>
+<section id="atom">
+<h2>Atom<a class="headerlink" href="#atom" title="Permalink to this headline"></a></h2>
+<p>Firstly <code class="docutils literal notranslate"><span class="pre">fortls</span></code> then install the <a class="reference external" href="https://atom.io/packages/language-fortran">language-fortran</a> plugin by <a class="reference external" href="https://github.com/dparkins">&#64;dparkins</a> to get Fortran syntax highlighting.
+Finally, install either <a class="reference external" href="https://atom.io/packages/fortran-lsp">fortran-lsp</a> by <a class="reference external" href="https://github.com/gnikit">&#64;gnikit</a> or <a class="reference external" href="https://atom.io/packages/ide-fortran">ide-fortran</a> by <a class="reference external" href="https://github.com/hansec">&#64;hansec</a></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><a class="reference external" href="https://atom.io/packages/fortran-lsp">fortran-lsp</a> has been created solely for the <code class="docutils literal notranslate"><span class="pre">fortls</span></code> Language Server, hence it natively interfaces with <code class="docutils literal notranslate"><span class="pre">fortls</span></code>.
+<a class="reference external" href="https://atom.io/packages/ide-fortran">ide-fortran</a> was created for an older, now deprecated, Fortran Language Server hence the options
+available through the extension are not representative of <code class="docutils literal notranslate"><span class="pre">fortls</span></code>’s interface.</p>
+</div>
+</section>
+<section id="sublime-text">
+<h2>Sublime Text<a class="headerlink" href="#sublime-text" title="Permalink to this headline"></a></h2>
+<p>Firstly, install <code class="docutils literal notranslate"><span class="pre">fortls</span></code> then install the <a class="reference external" href="https://github.com/sublimelsp/LSP">LSP</a> package from package control.
+Finally, install the <a class="reference external" href="https://packagecontrol.io/packages/Fortran">Fortran</a> package and add the following in your configuration</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;clients&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;fortls&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;fortls&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--notify_init&quot;</span><span class="p">],</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;selector&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;source.modern-fortran | source.fixedform-fortran&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>For more details see the LSP <a class="reference external" href="https://lsp.sublimetext.io/language_servers/#fortran">documentation</a>.</p>
+</section>
+<section id="vim-neovim-gvim">
+<h2>Vim, Neovim, GVim<a class="headerlink" href="#vim-neovim-gvim" title="Permalink to this headline"></a></h2>
+<p>Firstly install the plugin <a class="reference external" href="https://github.com/autozimu/LanguageClient-neovim">LanguageClient-neovim</a>. Then edit your <code class="docutils literal notranslate"><span class="pre">~/.vimrc</span></code> settings file
+to set <code class="docutils literal notranslate"><span class="pre">fortls</span></code> for Fortran files</p>
+<div class="highlight-vim notranslate"><div class="highlight"><pre><span></span><span class="c">&quot; Required for operations modifying multiple buffers like rename. set hidden</span>
+<span class="k">let</span> <span class="k">g</span>:LanguageClient_serverCommands <span class="p">=</span> {
+<span class="c">    &quot; Add any default arguments you want fortls to have inside []</span>
+    \ <span class="s1">&#39;fortls&#39;</span>: [<span class="s1">&#39;--hover_signature&#39;</span><span class="p">,</span> <span class="s1">&#39;--use_signature_help&#39;</span>]<span class="p">,</span>
+    \ }
+
+<span class="c">&quot; note that if you are using Plug mapping you should not use `noremap` mappings.</span>
+nmap <span class="p">&lt;</span>F5<span class="p">&gt;</span> <span class="p">&lt;</span>Plug<span class="p">&gt;(</span>lcn<span class="p">-</span>menu<span class="p">)</span>
+<span class="c">&quot; Or map each action separately</span>
+nmap <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt;</span>K <span class="p">&lt;</span>Plug<span class="p">&gt;(</span>lcn<span class="p">-</span>hover<span class="p">)</span>
+nmap <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt;</span> <span class="nb">gd</span> <span class="p">&lt;</span>Plug<span class="p">&gt;(</span>lcn<span class="p">-</span>definition<span class="p">)</span>
+nmap <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt;</span> <span class="p">&lt;</span>F2<span class="p">&gt;</span> <span class="p">&lt;</span>Plug<span class="p">&gt;(</span>lcn<span class="p">-</span>rename<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="emacs">
+<h2>EMACS<a class="headerlink" href="#emacs" title="Permalink to this headline"></a></h2>
+<p>Install the <a class="reference external" href="https://emacs-lsp.github.io/lsp-mode/page/installation">lsp-mode</a> plugin. This should then allow for the variables
+<a class="reference external" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-fortran/#lsp-clients-fortls-args">lsp-clients-fortls-args</a> and <a class="reference external" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-fortran/#lsp-clients-fortls-executable">lsp-clients-fortls-executable</a> to be defined in the <code class="docutils literal notranslate"><span class="pre">~/.emacs</span></code> configuration file.</p>
+</section>
+<section id="visual-studio-2017">
+<h2>Visual Studio 2017<a class="headerlink" href="#visual-studio-2017" title="Permalink to this headline"></a></h2>
+<p>Installing this <a class="reference external" href="https://github.com/michaelkonecny/vs-fortran-ls-client">VS17 extension</a> should enable <code class="docutils literal notranslate"><span class="pre">fortls</span></code> features in Visual Studio</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="options.html" class="btn btn-neutral float-left" title="Configuration options" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="fortls_changes.html" class="btn btn-neutral float-right" title="Unique fortls features (not in fortran-language-server)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Giannis Nikiteas.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

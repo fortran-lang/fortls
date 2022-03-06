@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fortls - the Fortran Language Server &mdash; fortls 0.1.dev1+gabd7f39 documentation</title>
+  <title>fortls - Fortran Language Server &mdash; fortls 0.1.dev1+g085092c documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -38,10 +38,10 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">fortls - the Fortran Language Server</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#fortls-vs-fortran-language-server">fortls vs fortran-language-server</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">fortls - Fortran Language Server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#fortls-vs-fortran-language-server"><code class="docutils literal notranslate"><span class="pre">fortls</span></code> vs <code class="docutils literal notranslate"><span class="pre">fortran-language-server</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#features">Features</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#notes-limitations">Notes/Limitations</a></li>
 </ul>
@@ -56,6 +56,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="options.html">Configuration options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="editor_integration.html">Editor Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fortls_changes.html">Unique fortls features (not in fortran-language-server)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Developers’ documentations</a></li>
 </ul>
@@ -74,7 +75,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>fortls - the Fortran Language Server</li>
+      <li>fortls - Fortran Language Server</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/README.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -84,8 +85,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="fortls-the-fortran-language-server">
-<h1>fortls - the Fortran Language Server<a class="headerlink" href="#fortls-the-fortran-language-server" title="Permalink to this headline"></a></h1>
+  <section id="fortls-fortran-language-server">
+<h1>fortls - Fortran Language Server<a class="headerlink" href="#fortls-fortran-language-server" title="Permalink to this headline"></a></h1>
 <p><img alt="PyPI" src="https://img.shields.io/pypi/v/fortls" />
 <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/fortls" />
 <a class="reference external" href="https://github.com/gnikit/fortls/actions/workflows/main.yml"><img alt="Tests" src="https://github.com/gnikit/fortls/actions/workflows/main.yml/badge.svg" /></a>
@@ -95,15 +96,17 @@
 <a class="reference external" href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a></p>
 <p><code class="docutils literal notranslate"><span class="pre">fortls</span></code> is an implementation of the <a class="reference external" href="https://github.com/Microsoft/language-server-protocol">Language Server Protocol</a>
 (LSP) for Fortran using Python (3.7+).</p>
-<p>Editor extensions that can integrate with <code class="docutils literal notranslate"><span class="pre">fortls</span></code> to provide autocomplete and
-other IDE-like functionality are available for
-<a class="reference external" href="https://github.com/krvajal/vscode-fortran-support">Visual Studio Code</a>,
-<a class="reference external" href="https://atom.io/packages/ide-fortran">Atom</a>,
-<a class="reference external" href="https://github.com/michaelkonecny/vs-fortran-ls-client">Visual Studio</a>,
-<a class="reference external" href="https://github.com/hansec/fortran-language-server/wiki/Using-forts-with-vim">(Neo)vim</a>,
-and <a class="reference external" href="https://github.com/emacs-lsp/lsp-mode">Emacs</a>.</p>
+<p>All code editors that support LSP can integrate with <code class="docutils literal notranslate"><span class="pre">fortls</span></code> see the section
+<a class="reference external" href="https://gnikit.github.io/fortls/editor_integration.html#editor-integration">Editor Integration</a> in the documentation.
+Some supported code editors include:
+<a class="reference external" href="https://gnikit.github.io/fortls/editor_integration.html#visual-studio-code">Visual Studio Code</a>,
+<a class="reference external" href="https://gnikit.github.io/fortls/editor_integration.html#atom">Atom</a>,
+<a class="reference external" href="https://gnikit.github.io/fortls/editor_integration.html#sublime-text">Sublime Text</a>
+<a class="reference external" href="https://gnikit.github.io/fortls/editor_integration.html#vim-neovim-gvim">(Neo)Vim</a>,
+<a class="reference external" href="https://gnikit.github.io/fortls/editor_integration.html#visual-studio-2017">Visual Studio</a>,
+and <a class="reference external" href="https://gnikit.github.io/fortls/editor_integration.html#emacs">Emacs</a>.</p>
 <section id="fortls-vs-fortran-language-server">
-<h2>fortls vs fortran-language-server<a class="headerlink" href="#fortls-vs-fortran-language-server" title="Permalink to this headline"></a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">fortls</span></code> vs <code class="docutils literal notranslate"><span class="pre">fortran-language-server</span></code><a class="headerlink" href="#fortls-vs-fortran-language-server" title="Permalink to this headline"></a></h2>
 <p>This project is based on &#64;hansec’s original Language Server implementation but the two projects have since diverged.
 <code class="docutils literal notranslate"><span class="pre">fortls</span></code> (this project) is now developed independently of the upstream <code class="docutils literal notranslate"><span class="pre">hansec/fortran-language-server</span></code> project and contains numerous bug fixes and new features
 the original <code class="docutils literal notranslate"><span class="pre">fortran-language-server</span></code> does not.</p>
@@ -142,11 +145,11 @@ potentially subject to change.</p>
 <li><p>Invalid scope nesting</p></li>
 <li><p>Unknown modules in <code class="docutils literal notranslate"><span class="pre">USE</span></code> statement</p></li>
 <li><p>Unimplemented deferred type-bound procedures</p></li>
-<li><p>Use of unimported variables/objects in interface blocks</p></li>
+<li><p>Use of non-imported variables/objects in interface blocks</p></li>
 <li><p>Statement placement errors (<code class="docutils literal notranslate"><span class="pre">CONTAINS</span></code>, <code class="docutils literal notranslate"><span class="pre">IMPLICIT</span></code>, <code class="docutils literal notranslate"><span class="pre">IMPORT</span></code>)</p></li>
 </ul>
 </li>
-<li><p>Code actions (<code class="docutils literal notranslate"><span class="pre">textDocument/codeAction</span></code>) [Experimental]</p>
+<li><p>Code actions</p>
 <ul>
 <li><p>Generate type-bound procedures and implementation templates for
 deferred procedures</p></li>
@@ -156,8 +159,7 @@ deferred procedures</p></li>
 <section id="notes-limitations">
 <h3>Notes/Limitations<a class="headerlink" href="#notes-limitations" title="Permalink to this headline"></a></h3>
 <ul class="simple">
-<li><p>Signature help is not available for overloaded subroutines/functions</p></li>
-<li><p>Diagnostics are only updated when files are saved or opened/closed</p></li>
+<li><p>Signature help and hover does not handle elegantly overloaded functions i.e. interfaces</p></li>
 </ul>
 </section>
 </section>
@@ -220,13 +222,31 @@ or through <code class="docutils literal notranslate"><span class="pre">fortls</
 <td><p>Get signature information at a given cursor position</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">textDocument/definition</span></code></p></td>
-<td><p>GoTo implementation/Peek implementation</p></td>
+<td><p>GoTo definition/Peek definition</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">textDocument/references</span></code></p></td>
 <td><p>Find all/Peek references</p></td>
 </tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">textDocument/hover</span></code></p></td>
+<td><p>Show messages and signatures upon hover</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">textDocument/implementation</span></code></p></td>
+<td><p>GoTo implementation/Peek implementation</p></td>
+</tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">textDocument/rename</span></code></p></td>
 <td><p>Rename a symbol across the workspace</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">textDocument/didOpen</span></code></p></td>
+<td><p>Document synchronisation upon opening</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">textDocument/didSave</span></code></p></td>
+<td><p>Document synchronisation upon saving</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">textDocument/didClose</span></code></p></td>
+<td><p>Document synchronisation upon closing</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">textDocument/didChange</span></code></p></td>
+<td><p>Document synchronisation upon changes to the document</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">textDocument/codeAction</span></code></p></td>
 <td><p><strong>Experimental</strong> Generate code</p></td>
