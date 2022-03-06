@@ -110,7 +110,7 @@ class FortranRegularExpressions:
     FREE_OPENMP: Pattern = compile(r"[ ]*!\$OMP", I)
     FREE_FORMAT_TEST: Pattern = compile(r"[ ]{1,4}[a-z]", I)
     # Preprocessor matching rules
-    DEFINED: Pattern = compile(r"defined[ ]*\([ ]*([a-z_][a-z0-9_]*)[ ]*\)", I)
+    DEFINED: Pattern = compile(r"defined[ ]*\(?[ ]*([a-z_][a-z0-9_]*)[ ]*\)?", I)
     PP_REGEX: Pattern = compile(r"#(if |ifdef|ifndef|else|elif|endif)")
     PP_DEF: Pattern = compile(r"#(define|undef)[ ]*([\w]+)(\((\w+(,[ ]*)?)+\))?", I)
     PP_DEF_TEST: Pattern = compile(r"(![ ]*)?defined[ ]*\([ ]*([a-z0-9_]*)[ ]*\)$", I)

@@ -7,6 +7,11 @@
 - Updated `setup.cfg` in preparation of submitting package to `conda-forge`
 - Added `Editor Integration` section in documentation
 
+### Fixed
+
+- Fixed parsing of `defined` without by parenthesis surrounding the definition
+  ([#67](https://github.com/gnikit/fortls/pull/67))
+
 ## 2.2.4
 
 ### Fixed
