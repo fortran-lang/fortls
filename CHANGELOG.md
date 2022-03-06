@@ -1,5 +1,12 @@
 # CHANGELONG
 
+## 2.2.5
+
+### Changed
+
+- Updated `setup.cfg` in preparation of submitting package to `conda-forge`
+- Added `Editor Integration` section in documentation
+
 ## 2.2.4
 
 ### Fixed

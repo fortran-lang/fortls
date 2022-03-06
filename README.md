@@ -1,4 +1,4 @@
-# fortls - the Fortran Language Server
+# fortls - Fortran Language Server
 
 ![PyPI](https://img.shields.io/pypi/v/fortls)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fortls)
@@ -11,15 +11,17 @@
 `fortls` is an implementation of the [Language Server Protocol](https://github.com/Microsoft/language-server-protocol)
 (LSP) for Fortran using Python (3.7+).
 
-Editor extensions that can integrate with `fortls` to provide autocomplete and
-other IDE-like functionality are available for
-[Visual Studio Code](https://github.com/krvajal/vscode-fortran-support),
-[Atom](https://atom.io/packages/ide-fortran),
-[Visual Studio](https://github.com/michaelkonecny/vs-fortran-ls-client),
-[(Neo)vim](https://github.com/hansec/fortran-language-server/wiki/Using-forts-with-vim),
-and [Emacs](https://github.com/emacs-lsp/lsp-mode).
+All code editors that support LSP can integrate with `fortls` see the section
+[Editor Integration](https://gnikit.github.io/fortls/editor_integration.html#editor-integration) in the documentation.
+Some supported code editors include:
+[Visual Studio Code](https://gnikit.github.io/fortls/editor_integration.html#visual-studio-code),
+[Atom](https://gnikit.github.io/fortls/editor_integration.html#atom),
+[Sublime Text](https://gnikit.github.io/fortls/editor_integration.html#sublime-text)
+[(Neo)Vim](https://gnikit.github.io/fortls/editor_integration.html#vim-neovim-gvim),
+[Visual Studio](https://gnikit.github.io/fortls/editor_integration.html#visual-studio-2017),
+and [Emacs](https://gnikit.github.io/fortls/editor_integration.html#emacs).
 
-## fortls vs fortran-language-server
+## `fortls` vs `fortran-language-server`
 
 This project is based on @hansec's original Language Server implementation but the two projects have since diverged.
 `fortls` (this project) is now developed independently of the upstream `hansec/fortran-language-server` project and contains numerous bug fixes and new features
@@ -56,16 +58,15 @@ potentially subject to change.
   - Invalid scope nesting
   - Unknown modules in `USE` statement
   - Unimplemented deferred type-bound procedures
-  - Use of unimported variables/objects in interface blocks
+  - Use of non-imported variables/objects in interface blocks
   - Statement placement errors (`CONTAINS`, `IMPLICIT`, `IMPORT`)
-- Code actions (`textDocument/codeAction`) \[Experimental\]
+- Code actions
   - Generate type-bound procedures and implementation templates for
     deferred procedures
 
 ### Notes/Limitations
 
-- Signature help is not available for overloaded subroutines/functions
-- Diagnostics are only updated when files are saved or opened/closed
+- Signature help and hover does not handle elegantly overloaded functions i.e. interfaces
 
 ## Installation
 
@@ -73,15 +74,14 @@ potentially subject to change.
 pip install fortls
 ```
 
->**Warning**: it is not recommended having `fortls` and `fortran-language-server`
->simultaneously installed, since they use the same binary name. If you are having trouble
->getting `fortls` to work try uninstalling `fortran-language-server` and reinstalling `fortls`.
+> **Warning**: it is not recommended having `fortls` and `fortran-language-server`
+> simultaneously installed, since they use the same binary name. If you are having trouble
+> getting `fortls` to work try uninstalling `fortran-language-server` and reinstalling `fortls`.
 >
->```sh
->pip uninstall fortran-language-server
->pip install fortls --upgrade
->```
-
+> ```sh
+> pip uninstall fortran-language-server
+> pip install fortls --upgrade
+> ```
 
 ## Settings
 
@@ -115,9 +115,15 @@ An example for a Configuration file is given below
 | `textDocument/documentSymbol` | Get document symbols e.g. functions, subroutines, etc. |
 | `textDocument/completion`     | Suggested tab-completion when typing                   |
 | `textDocument/signatureHelp`  | Get signature information at a given cursor position   |
-| `textDocument/definition`     | GoTo implementation/Peek implementation                |
+| `textDocument/definition`     | GoTo definition/Peek definition                        |
 | `textDocument/references`     | Find all/Peek references                               |
+| `textDocument/hover`          | Show messages and signatures upon hover                |
+| `textDocument/implementation` | GoTo implementation/Peek implementation                |
 | `textDocument/rename`         | Rename a symbol across the workspace                   |
+| `textDocument/didOpen`        | Document synchronisation upon opening                  |
+| `textDocument/didSave`        | Document synchronisation upon saving                   |
+| `textDocument/didClose`       | Document synchronisation upon closing                  |
+| `textDocument/didChange`      | Document synchronisation upon changes to the document  |
 | `textDocument/codeAction`     | **Experimental** Generate code                         |
 
 ## Acknowledgements
