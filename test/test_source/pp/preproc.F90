@@ -8,6 +8,7 @@ program preprocessor
     print*, PETSC_ERR_INT_OVERFLOW, varVar
     ewrite(1,*) 'Assemble EP P1 matrix and rhs sytem'
     ewrite2(1,*) 'Assemble EP P1 matrix and rhs sytem'
+    print*, SUCCESS
 
 #endif
 end program preprocessor
