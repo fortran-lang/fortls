@@ -76,6 +76,14 @@ def commandline_args(name: str = "fortls") -> argparse.ArgumentParser:
             " as is)"
         ),
     )
+    parser.add_argument(
+        "--disable_autoupdate",
+        action="store_true",
+        help=(
+            "fortls automatically checks PyPi for newer version and installs them."
+            "Use this option to disable the autoupdate feature."
+        ),
+    )
     # XXX: Deprecated, argument not attached to anything. Remove
     parser.add_argument(
         "--preserve_keyword_order",
