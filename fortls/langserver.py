@@ -1660,7 +1660,9 @@ class LangServer:
         if v.is_prerelease and not test:
             return False
         try:
-            with urllib.request.urlopen("https://pypi.org/pypi/fortls/json") as resp:
+            # For security reasons register as Request before opening
+            request = urllib.request.Request("https://pypi.org/pypi/fortls/json")
+            with urllib.request.urlopen(request) as resp:
                 info = json.loads(resp.read().decode("utf-8"))
                 # This is the only reliable way to compare version semantics
                 if version.parse(info["info"]["version"]) > v or test:
