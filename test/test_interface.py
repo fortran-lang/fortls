@@ -48,9 +48,8 @@ def test_command_line_autocomplete_options():
 
 def test_command_line_hover_options():
     args = parser.parse_args(
-        "--variable_hover --hover_signature --hover_language FortranFreeForm".split()
+        "--hover_signature --hover_language FortranFreeForm".split()
     )
-    assert args.variable_hover
     assert args.hover_signature
     assert args.hover_language == "FortranFreeForm"
 
@@ -131,7 +130,6 @@ def test_config_file_autocomplete_options():
 def test_config_file_hover_options():
     server, root = unittest_server_init()
     # Hover options
-    assert server.variable_hover
     assert server.hover_signature
     assert server.hover_language == "FortranFreeForm"
 

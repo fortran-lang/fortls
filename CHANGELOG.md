@@ -7,6 +7,11 @@
 - Added the capability for `fortls` to auto-update use `--disable_autoupdate` to disable
   ([#76](https://github.com/gnikit/fortls/issues/76))
 
+## Deprecated
+
+- Deprecated `--variable_hover` option and now is always enabled
+  ([#46](https://github.com/gnikit/fortls/issues/46))
+
 ## 2.2.5
 
 ### Changed

@@ -176,16 +176,13 @@ def commandline_args(name: str = "fortls") -> argparse.ArgumentParser:
         "--variable_hover",
         action="store_true",
         help=(
-            "Show hover information for variables (default: subroutines/functions only)"
+            "DEPRECATED: This option is always on. Show hover information for variables"
         ),
     )
     group.add_argument(
         "--hover_signature",
         action="store_true",
-        help=(
-            "Show signature information in hover for arguments "
-            "(also enables '--variable_hover')"
-        ),
+        help="Show signature information in hover for arguments ",
     )
     group.add_argument(
         "--hover_language",
