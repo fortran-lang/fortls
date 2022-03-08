@@ -2,6 +2,8 @@
 
 ## Added
 
+- Added the capability for `fortls` to auto-update use `--disable_autoupdate` to disable
+  ([#76](https://github.com/gnikit/fortls/issues/76))
 - Added semantic versioning with `setuptools_scm`
   ([gnikit/fortls#34](https://github.com/gnikit/fortls/issues/34))
 - Added additional shields to REAMDE, including coverage and Python versions
