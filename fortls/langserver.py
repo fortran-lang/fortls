@@ -101,7 +101,6 @@ class LangServer:
             setattr(self, k, v)
 
         self.sync_type: int = 2 if self.incremental_sync else 1
-        self.variable_hover: bool = self.variable_hover or self.hover_signature
         self.post_messages = []
         self.FORTRAN_SRC_EXT_REGEX: Pattern[str] = src_file_exts()
         # Intrinsic (re-loaded during initialize)
@@ -1049,7 +1048,7 @@ class LangServer:
                 hover_str, highlight = member.get_hover(long=True)
                 if hover_str is not None:
                     hover_array.append(create_hover(hover_str, highlight))
-        elif self.variable_hover and (var_type == VAR_TYPE_ID):
+        elif var_type == VAR_TYPE_ID:
             # Unless we have a Fortran literal include the desc in the hover msg
             # See get_definition for an explanation about this default name
             if not var_obj.desc.startswith(FORTRAN_LITERAL):
@@ -1516,7 +1515,6 @@ class LangServer:
         )
 
         # Hover options --------------------------------------------------------
-        self.variable_hover = config_dict.get("variable_hover", self.variable_hover)
         self.hover_signature = config_dict.get("hover_signature", self.hover_signature)
         self.hover_language = config_dict.get("hover_language", self.hover_language)
 
