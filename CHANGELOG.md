@@ -1,5 +1,12 @@
 # CHANGELONG
 
+## 2.2.6
+
+### Added
+
+- Added the capability for `fortls` to auto-update use `--disable_autoupdate` to disable
+  ([#76](https://github.com/gnikit/fortls/issues/76))
+
 ## 2.2.5
 
 ### Changed
