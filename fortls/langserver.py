@@ -5,10 +5,16 @@ import json
 import logging
 import os
 import re
+import subprocess
+import sys
 import traceback
+import urllib.request
 from multiprocessing import Pool
 from pathlib import Path
 from typing import Pattern
+from urllib.error import URLError
+
+from packaging import version
 
 # Local modules
 from fortls.constants import (
@@ -208,6 +214,8 @@ class LangServer:
             self._config_logger(request)
         self._load_intrinsics()
         self._add_source_dirs()
+        if self._update_version_pypi():
+            log.log("Please restart the server for new version to activate")
 
         # Initialize workspace
         self.workspace_init()
@@ -1486,6 +1494,9 @@ class LangServer:
         )
         self.sync_type: int = 2 if self.incremental_sync else 1
         self.sort_keywords = config_dict.get("sort_keywords", self.sort_keywords)
+        self.disable_autoupdate = config_dict.get(
+            "disable_autoupdate", self.disable_autoupdate
+        )
 
         # Autocomplete options -------------------------------------------------
         self.autocomplete_no_prefix = config_dict.get(
@@ -1633,6 +1644,55 @@ class LangServer:
                 "end": {"line": sline, "character": echar},
             },
         }
+
+    def _update_version_pypi(self, test: bool = False):
+        """Fetch updates from PyPi for fortls
+
+        Parameters
+        ----------
+        test : bool, optional
+            flag used to override exit checks, only for unittesting, by default False
+        """
+        if self.disable_autoupdate:
+            return False
+        v = version.parse(__version__)
+        # Do not run for prerelease and dev release
+        if v.is_prerelease and not test:
+            return False
+        try:
+            # For security reasons register as Request before opening
+            request = urllib.request.Request("https://pypi.org/pypi/fortls/json")
+            with urllib.request.urlopen(request) as resp:
+                info = json.loads(resp.read().decode("utf-8"))
+                # This is the only reliable way to compare version semantics
+                if version.parse(info["info"]["version"]) > v or test:
+                    self.post_message(
+                        f"Using fortls {__version__}. A newer version of is"
+                        " available through PyPi. An attempt will be made to update"
+                        " the server",
+                        3,
+                    )
+                    # Run pip
+                    result = subprocess.run(
+                        [
+                            sys.executable,
+                            "-m",
+                            "pip",
+                            "install",
+                            "fortls",
+                            "--upgrade",
+                        ],
+                        capture_output=True,
+                    )
+                    if result.stdout:
+                        log.info(result.stdout)
+                    if result.stderr:
+                        log.error(result.stderr)
+                    return True
+        # No internet connection exceptions
+        except (URLError, KeyError):
+            log.warning("Failed to update the fortls Language Server")
+        return False
 
 
 class JSONRPC2Error(Exception):
