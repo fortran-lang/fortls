@@ -96,3 +96,29 @@ Installing this `VS17 extension`_ should enable ``fortls`` features in Visual St
 
 .. _VS17 extension: https://github.com/michaelkonecny/vs-fortran-ls-client
 
+Kakoune
+-------
+
+Install `kak-lsp <https://github.com/kak-lsp/>`_.
+
+Edit the kak-lsp.toml config file to include:
+
+.. code-block:: sh
+
+  [language.fortran]
+  filetypes = ["fortran"]
+  roots = [".git", ".fortl
+  command = "fortls"
+  args = ["--symbol_skip_mem", "--incremental_sync", "--autocomplete_no_prefix", "--lowercase_intrisics"]
+
+Edit your kakrc config to enable kak-lsp, adding fortran as a filetype:
+
+.. code-block:: sh
+
+   eval %sh{kak-lsp --kakoune -s $kak_session}
+   # lsp-enable
+   hook global WinSetOption filetype=(fortran) %{
+     lsp-enable-window
+   }
+
+
