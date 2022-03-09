@@ -107,7 +107,7 @@ Edit the kak-lsp.toml config file to include:
 
   [language.fortran]
   filetypes = ["fortran"]
-  roots = [".git", ".fortl
+  roots = [".git", ".fortls"]
   command = "fortls"
   args = ["--symbol_skip_mem", "--incremental_sync", "--autocomplete_no_prefix", "--lowercase_intrisics"]
 
