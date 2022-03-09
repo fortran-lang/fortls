@@ -55,6 +55,9 @@
 
 ## Fixed
 
+- Fixed missing dependency from `setup.cfg`
+  ([#78](https://github.com/gnikit/fortls/issues/78))
+- Updated configuration file variables in documentation
 - Fixed parsing of `defined` without by parenthesis surrounding the definition
   ([#67](https://github.com/gnikit/fortls/pull/67))
 - Fixed hovering value of literal and constant strings not displaying
