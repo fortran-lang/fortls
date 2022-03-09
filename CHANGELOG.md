@@ -1,5 +1,13 @@
 # CHANGELONG
 
+## 2.2.7
+
+### Fixed
+
+- Fixed missing dependency from `setup.cfg`
+  ([#78](https://github.com/gnikit/fortls/issues/78))
+- Updated configuration file variables in documentation
+
 ## 2.2.6
 
 ### Added
