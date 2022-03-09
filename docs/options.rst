@@ -46,6 +46,7 @@ All the ``fortls`` settings with their default arguments can be found below
       "notify_init": false,
       "incremental_sync": false,
       "sort_keywords": false,
+      "disable_autoupdate": false,
       "debug_log": false,
 
       "source_dirs": ["./**"],
@@ -59,7 +60,6 @@ All the ``fortls`` settings with their default arguments can be found below
       "lowercase_intrinsics": false,
       "use_signature_help": false,
 
-      "variable_hover": false,
       "hover_signature": false,
       "hover_language": "fortran90",
 
