@@ -214,7 +214,9 @@ class LangServer:
         self._load_intrinsics()
         self._add_source_dirs()
         if self._update_version_pypi():
-            log.log("Please restart the server for new version to activate")
+            self.post_message(
+                "Please restart the server for the new version to activate", 3
+            )
 
         # Initialize workspace
         self.workspace_init()
@@ -1665,10 +1667,13 @@ class LangServer:
                 # This is the only reliable way to compare version semantics
                 if version.parse(info["info"]["version"]) > v or test:
                     self.post_message(
-                        f"Using fortls {__version__}. A newer version of is"
-                        " available through PyPi. An attempt will be made to update"
-                        " the server",
-                        3,
+                        "A newer version of fortls is available for download", 3
+                    )
+                    # Anaconda environments should handle their updates through conda
+                    if os.path.exists(os.path.join(sys.prefix, "conda-meta")):
+                        return False
+                    self.post_message(
+                        f"Downloading from PyPi fortls {info['info']['version']}", 3
                     )
                     # Run pip
                     result = subprocess.run(

@@ -2,6 +2,11 @@
 
 ## 2.2.7
 
+### Changed
+
+- Changed the auto-update feature to skip `anaconda` environments since they
+  handle their dependencies through `conda` and not `pip`
+
 ### Fixed
 
 - Fixed missing dependency from `setup.cfg`
