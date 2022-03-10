@@ -1688,9 +1688,9 @@ class LangServer:
                         capture_output=True,
                     )
                     if result.stdout:
-                        log.info(result.stdout)
+                        log.info(result.stdout.decode("utf-8"))
                     if result.stderr:
-                        log.error(result.stderr)
+                        log.error(result.stderr.decode("utf-8"))
                     return True
         # No internet connection exceptions
         except (URLError, KeyError):
