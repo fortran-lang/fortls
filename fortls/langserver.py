@@ -214,7 +214,9 @@ class LangServer:
         self._load_intrinsics()
         self._add_source_dirs()
         if self._update_version_pypi():
-            log.log("Please restart the server for new version to activate")
+            self.post_message(
+                "Please restart the server for the new version to activate", 3
+            )
 
         # Initialize workspace
         self.workspace_init()
