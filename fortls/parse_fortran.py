@@ -22,7 +22,6 @@ from fortls.constants import (
     PY3K,
     SELECT_TYPE_ID,
     SUBMODULE_TYPE_ID,
-    CLASS_info,
     FRegex,
     log,
 )
@@ -823,12 +822,14 @@ class fortran_file:
         self.preproc: bool = False
         self.ast: fortran_ast = None
         self.hash: str = None
+        self.line = None
         if path:
             _, file_ext = os.path.splitext(os.path.basename(path))
             if pp_suffixes:
                 self.preproc = file_ext in pp_suffixes
             else:
                 self.preproc = file_ext == file_ext.upper()
+        self.COMMENT_LINE_MATCH, self.DOC_COMMENT_MATCH = self.get_comment_regexs()
 
     def copy(self) -> fortran_file:
         """Copy content to new file object (does not copy objects)"""
@@ -1235,9 +1236,6 @@ class fortran_file:
             An Abstract Syntax Tree
         """
 
-        def parser_debug_msg(msg: str, line: str, ln: int):
-            log.debug(f"{line.strip()} !!! {msg} statement({ln})")
-
         if pp_defs is None:
             pp_defs = {}
         if include_dirs is None:
@@ -1263,7 +1261,7 @@ class fortran_file:
             log.debug("=== No PreProc ===\n")
             pp_skips = []
             pp_defines = []
-        #
+
         line_ind = 0
         next_line_ind = 0
         line_number = 1
@@ -1280,6 +1278,7 @@ class fortran_file:
             select=0,
             interface=0,
         )
+        self.COMMENT_LINE_MATCH, self.DOC_COMMENT_MATCH = self.get_comment_regexs()
         while (next_line_ind < self.nLines) or (len(semi_split) > 0):
             # Get next line
             if len(semi_split) > 0:
@@ -1294,40 +1293,14 @@ class fortran_file:
                 get_full = True
             if line == "":
                 continue  # Skip empty lines
-            # Skip comment lines
-            match = COMMENT_LINE_MATCH.match(line)
-            if match:
-                # Check for documentation
-                doc_match = DOC_COMMENT_MATCH.match(line)
-                if doc_match:
-                    doc_lines = [line[doc_match.end(0) :].strip()]
-                    if doc_match.group(1) == ">":
-                        doc_forward = True
-                    else:
-                        if doc_string:
-                            doc_lines = [doc_string] + doc_lines
-                            doc_string = None
-                        doc_forward = False
-                    if next_line_ind < self.nLines:
-                        next_line = self.get_line(next_line_ind, pp_content=True)
-                        next_line_ind += 1
-                        doc_match = DOC_COMMENT_MATCH.match(next_line)
-                        while (doc_match is not None) and (next_line_ind < self.nLines):
-                            doc_lines.append(next_line[doc_match.end(0) :].strip())
-                            next_line = self.get_line(next_line_ind, pp_content=True)
-                            next_line_ind += 1
-                            doc_match = DOC_COMMENT_MATCH.match(next_line)
-                        next_line_ind -= 1
-                    if debug:
-                        for (i, doc_line) in enumerate(doc_lines):
-                            log.debug(f"{doc_line} !!! Doc string({line_number + i})")
-                    line_sum = 0
-                    for doc_line in doc_lines:
-                        line_sum += len(doc_line)
-                    if line_sum > 0:
-                        file_ast.add_doc(
-                            "!! " + "\n!! ".join(doc_lines), forward=doc_forward
-                        )
+            # Parse Documentation comments and skip all other comments
+            # this function should also nullify doc_string
+            idx = self._parse_documentation(
+                line, line_number, file_ast, doc_string, next_line_ind
+            )
+            if idx:
+                next_line_ind = idx[0]
+                doc_string = idx[1]
                 continue
             # Handle trailing doc strings
             if doc_string:
@@ -1383,100 +1356,29 @@ class fortran_file:
                     line_stripped = strip_strings(line, maintain_len=True)
                     line_no_comment = line
                     line_post_comment = None
+            self.line = line
             # Test for scope end
             if file_ast.END_SCOPE_REGEX is not None:
                 match = FRegex.END_WORD.match(line_no_comment)
                 # Handle end statement
-                if match:
-                    end_scope_word = None
-                    if match.group(1) is None:
-                        end_scope_word = ""
-                        if file_ast.current_scope.req_named_end() and (
-                            file_ast.current_scope is not file_ast.none_scope
-                        ):
-                            file_ast.end_errors.append(
-                                [line_number, file_ast.current_scope.sline]
-                            )
-                    else:
-                        scope_match = file_ast.END_SCOPE_REGEX.match(
-                            line_no_comment[match.start(1) :]
-                        )
-                        if scope_match is not None:
-                            end_scope_word = scope_match.group(0)
-                    if end_scope_word is not None:
-                        if (file_ast.current_scope.get_type() == SELECT_TYPE_ID) and (
-                            file_ast.current_scope.is_type_region()
-                        ):
-                            file_ast.end_scope(line_number)
-                        file_ast.end_scope(line_number)
-                        log.debug(
-                            f'{line.strip()} !!! END "{end_scope_word}"'
-                            f" scope({line_number})"
-                        )
-                        continue
-                # Look for old-style end of DO loops with line labels
-                if (file_ast.current_scope.get_type() == DO_TYPE_ID) and (
-                    line_label is not None
+                if self._parse_end_scope_word(
+                    line_no_comment, line_number, file_ast, match
                 ):
-                    did_close = False
-                    while (len(block_id_stack) > 0) and (
-                        line_label == block_id_stack[-1]
-                    ):
-                        file_ast.end_scope(line_number)
-                        block_id_stack.pop()
-                        did_close = True
-                        log.debug(f'{line.strip()} !!! END "DO" scope({line_number})')
-                    if did_close:
-                        continue
+                    continue
+                # Look for old-style end of DO loops with line labels
+                if self._parse_do_fixed_format(
+                    line, line_number, file_ast, line_label, block_id_stack
+                ):
+                    continue
+
             # Skip if known generic code line
-            match = FRegex.NON_DEF.match(line_no_comment)
-            if match:
+            if FRegex.NON_DEF.match(line_no_comment):
                 continue
             # Mark implicit statement
-            match = FRegex.IMPLICIT.match(line_no_comment)
-            if match:
-                err_message = None
-                if file_ast.current_scope is None:
-                    err_message = "IMPLICIT statement without enclosing scope"
-                else:
-                    if match.group(1).lower() == "none":
-                        file_ast.current_scope.set_implicit(False, line_number)
-                    else:
-                        file_ast.current_scope.set_implicit(True, line_number)
-                if err_message:
-                    file_ast.parse_errors.append(
-                        {
-                            "line": line_number,
-                            "schar": match.start(1),
-                            "echar": match.end(1),
-                            "mess": err_message,
-                            "sev": 1,
-                        }
-                    )
-                parser_debug_msg("IMPLICIT", line, line_number)
+            if self._parse_implicit(line_no_comment, line_number, file_ast):
                 continue
             # Mark contains statement
-            match = FRegex.CONTAINS.match(line_no_comment)
-            if match:
-                err_message = None
-                try:
-                    if file_ast.current_scope is None:
-                        err_message = "CONTAINS statement without enclosing scope"
-                    else:
-                        file_ast.current_scope.mark_contains(line_number)
-                except ValueError:
-                    err_message = "Multiple CONTAINS statements in scope"
-                if err_message:
-                    file_ast.parse_errors.append(
-                        {
-                            "line": line_number,
-                            "schar": match.start(1),
-                            "echar": match.end(1),
-                            "mess": err_message,
-                            "sev": 1,
-                        }
-                    )
-                parser_debug_msg("CONTAINS", line, line_number)
+            if self._parse_contains(line_no_comment, line_number, file_ast):
                 continue
             # Look for trailing doc string
             if line_post_comment:
@@ -1484,11 +1386,7 @@ class fortran_file:
                 if doc_match:
                     doc_string = line_post_comment[doc_match.end(0) :].strip()
             # Loop through tests
-            obj_read = None
-            for test in def_tests:
-                obj_read = test(line_no_comment)
-                if obj_read is not None:
-                    break
+            obj_read = self.get_fortran_definition(line)
             # Move to next line if nothing in the definition tests matches
             if obj_read is None:
                 continue
@@ -1801,6 +1699,169 @@ class fortran_file:
                 for error in file_ast.parse_errors:
                     log.debug(f"{error['line']}: {error['mess']}")
         return file_ast
+
+    def _parse_end_scope_word(
+        self, line: str, ln: int, file_ast: fortran_ast, match: re.Match
+    ):
+        # TODO: line.strip() is the normal line, make it self.line
+        if match is None:
+            return False
+
+        end_scope_word: str = None
+        if match.group(1) is None:
+            end_scope_word = ""
+            if file_ast.current_scope.req_named_end() and (
+                file_ast.current_scope is not file_ast.none_scope
+            ):
+                file_ast.end_errors.append([ln, file_ast.current_scope.sline])
+        else:
+            scope_match = file_ast.END_SCOPE_REGEX.match(line[match.start(1) :])
+            if scope_match is not None:
+                end_scope_word = scope_match.group(0)
+        if end_scope_word is not None:
+            if (file_ast.current_scope.get_type() == SELECT_TYPE_ID) and (
+                file_ast.current_scope.is_type_region()
+            ):
+                file_ast.end_scope(ln)
+            file_ast.end_scope(ln)
+            log.debug(f'{line} !!! END "{end_scope_word}" scope({ln})')
+            return True
+        return False
+
+    def _parse_do_fixed_format(
+        self,
+        line: str,
+        ln: int,
+        file_ast: fortran_ast,
+        line_label: str,
+        block_id_stack: list[str],
+    ):
+        if (file_ast.current_scope.get_type() == DO_TYPE_ID) and (
+            line_label is not None
+        ):
+            # TODO: try and move to end_scope pattern
+            did_close = False
+            while (len(block_id_stack) > 0) and (line_label == block_id_stack[-1]):
+                file_ast.end_scope(ln)
+                block_id_stack.pop()
+                did_close = True
+                self.parser_debug("DO", self.line, ln, scope=True)
+            if did_close:
+                return True
+        return False
+
+    def _parse_implicit(self, line: str, ln: int, file_ast: fortran_ast):
+        match = FRegex.IMPLICIT.match(line)
+        if match is None:
+            return False
+        err_message = None
+        if file_ast.current_scope is None:
+            err_message = "IMPLICIT statement without enclosing scope"
+        else:
+            if match.group(1).lower() == "none":
+                file_ast.current_scope.set_implicit(False, ln)
+            else:
+                file_ast.current_scope.set_implicit(True, ln)
+        if err_message:
+            file_ast.parse_errors.append(
+                {
+                    "line": ln,
+                    "schar": match.start(1),
+                    "echar": match.end(1),
+                    "mess": err_message,
+                    "sev": 1,
+                }
+            )
+        self.parser_debug("IMPLICIT", self.line, ln)
+        return True
+
+    def _parse_contains(self, line: str, ln: int, file_ast: fortran_ast):
+        match = FRegex.CONTAINS.match(line)
+        if match is None:
+            return False
+        err_message: str = None
+        try:
+            if file_ast.current_scope is None:
+                err_message = "CONTAINS statement without enclosing scope"
+            else:
+                file_ast.current_scope.mark_contains(ln)
+        except ValueError:
+            err_message = "Multiple CONTAINS statements in scope"
+        if err_message:
+            file_ast.parse_errors.append(
+                {
+                    "line": ln,
+                    "schar": match.start(1),
+                    "echar": match.end(1),
+                    "mess": err_message,
+                    "sev": 1,
+                }
+            )
+        self.parser_debug("CONTAINS", self.line, ln)
+        return True
+
+    def _parse_documentation(
+        self,
+        line: str,
+        ln: int,
+        file_ast: fortran_ast,
+        doc_string: str,
+        next_ln_idx: int,
+    ):
+        match = self.COMMENT_LINE_MATCH.match(line)
+        if not match:
+            return False
+        # Check for documentation
+        doc_match = self.DOC_COMMENT_MATCH.match(line)
+        if not doc_match:
+            return next_ln_idx, doc_string
+        doc_lines = [line[doc_match.end(0) :].strip()]
+        if doc_match.group(1) == ">":
+            doc_forward = True
+        else:
+            if doc_string:
+                doc_lines = [doc_string] + doc_lines
+                doc_string = None
+            doc_forward = False
+        if next_ln_idx < self.nLines:
+            next_line = self.get_line(next_ln_idx, pp_content=True)
+            next_ln_idx += 1
+            doc_match = self.DOC_COMMENT_MATCH.match(next_line)
+            while doc_match and (next_ln_idx < self.nLines):
+                doc_lines.append(next_line[doc_match.end(0) :].strip())
+                next_line = self.get_line(next_ln_idx, pp_content=True)
+                next_ln_idx += 1
+                doc_match = self.DOC_COMMENT_MATCH.match(next_line)
+            next_ln_idx -= 1
+        # Count the total length of all the stings in doc_lines
+        # most efficient implementation, see: shorturl.at/dfmyV
+        if len("".join(doc_lines)) > 0:
+            file_ast.add_doc("!! " + "\n!! ".join(doc_lines), forward=doc_forward)
+        # if debug:
+        for (i, doc_line) in enumerate(doc_lines):
+            log.debug(f"{doc_line} !!! Doc string({ln + i})")
+            # self.parser_debug("Doc", doc_line, line_number + i)
+        return next_ln_idx, doc_string
+
+    @staticmethod
+    def parser_debug(msg: str, line: str, ln: int, scope: bool = False):
+        if scope:
+            log.debug(f'{line.strip()} !!! END "{msg}" scope({ln})')
+        else:
+            log.debug(f"{line.strip()} !!! {msg} statement({ln})")
+
+    def get_comment_regexs(self):
+        if self.fixed:
+            return FRegex.FIXED_COMMENT, FRegex.FIXED_DOC
+        else:
+            return FRegex.FREE_COMMENT, FRegex.FREE_DOC
+
+    def get_fortran_definition(self, line: str):
+        for fortran_def in def_tests:
+            obj = fortran_def(line)
+            if obj is not None:
+                return obj
+        return None
 
 
 def preprocess_file(
