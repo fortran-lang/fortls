@@ -22,7 +22,7 @@ def commandline_args(name: str = "fortls") -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="fortls - Fortran Language Server",
         prog=name,
-        usage="%(prog)s [options] [debug options]",
+        usage="fortls [options] [debug options]",
         formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=60),
         epilog=(
             "All options starting with '--' can also be set in a configuration file, by"
