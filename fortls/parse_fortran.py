@@ -822,7 +822,7 @@ class fortran_file:
         self.preproc: bool = False
         self.ast: fortran_ast = None
         self.hash: str = None
-        self.line = None
+        self.line: str = None
         if path:
             _, file_ext = os.path.splitext(os.path.basename(path))
             if pp_suffixes:
@@ -1562,15 +1562,18 @@ class fortran_file:
                 new_assoc = fortran_associate(file_ast, line_number, name)
                 file_ast.add_scope(new_assoc, FRegex.END_ASSOCIATE, req_container=True)
                 for bound_var in obj_info:
-                    binding_split = bound_var.split("=>")
-                    if len(binding_split) == 2:
-                        binding_name = binding_split[0].strip()
-                        link_name = binding_split[1].strip()
+                    try:
+                        bind_name, link_name = bound_var.split("=>")
                         file_ast.add_variable(
                             new_assoc.create_binding_variable(
-                                file_ast, line_number, binding_name, link_name
+                                file_ast,
+                                line_number,
+                                bind_name.strip(),
+                                link_name.strip(),
                             )
                         )
+                    except ValueError:
+                        pass
                 self.parser_debug("ASSOCIATE", line, line_number)
 
             elif obj_type == "if":

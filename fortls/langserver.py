@@ -92,9 +92,9 @@ class LangServer:
         # Set object settings
         set_keyword_ordering(self.sort_keywords)
 
-    def post_message(self, message: str, type: int = 1):
+    def post_message(self, message: str, severity: int = 1):
         self.conn.send_notification(
-            "window/showMessage", {"type": type, "message": message}
+            "window/showMessage", {"type": severity, "message": message}
         )
 
     def run(self):
@@ -1103,7 +1103,7 @@ class LangServer:
             def_obj, type_mem, file_obj=restrict_file
         )
         if len(all_refs) == 0:
-            self.post_message("Rename failed: No usages found to rename", type=2)
+            self.post_message("Rename failed: No usages found to rename", 2)
             return None
         # Create rename changes
         new_name = params["newName"]
@@ -1381,7 +1381,7 @@ class LangServer:
         if err_str:
             return err_str
         try:
-            # On Windows multiprocess does not propage global variables through a shell.
+            # On Windows multiprocess does not propagate global variables in a shell.
             # Windows uses 'spawn' while Unix uses 'fork' which propagates globals.
             # This is a bypass.
             # For more see on SO: shorturl.at/hwAG1
