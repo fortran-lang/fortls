@@ -978,8 +978,7 @@ class fortran_file:
         try:
             if pp_content:
                 return self.contents_pp[line_number]
-            else:
-                return self.contents_split[line_number]
+            return self.contents_split[line_number]
         except (TypeError, IndexError):
             return None
 
@@ -1846,7 +1845,6 @@ class fortran_file:
     def get_comment_regexs(self):
         if self.fixed:
             return FRegex.FIXED_COMMENT, FRegex.FIXED_DOC
-        else:
             return FRegex.FREE_COMMENT, FRegex.FREE_DOC
 
     def get_fortran_definition(self, line: str):
