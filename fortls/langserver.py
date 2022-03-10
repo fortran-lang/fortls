@@ -664,6 +664,25 @@ class LangServer:
         def_char: int,
         hover_req: bool = False,
     ):
+        """Return the Fortran object for the definition that matches the
+        Fortran file, line number, column number
+
+        Parameters
+        ----------
+        def_file : fortran_file
+            File to query
+        def_line : int
+            Line position in the file
+        def_char : int
+            Column position in the file
+        hover_req : bool, optional
+            Flag to enable if calling from a hover request, by default False
+
+        Returns
+        -------
+        fortran_var | fortran_include | None
+            Fortran object
+        """
         # Get full line (and possible continuations) from file
         pre_lines, curr_line, _ = def_file.get_code_line(
             def_line, forward=False, strip_comment=True
