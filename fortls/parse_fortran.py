@@ -19,7 +19,6 @@ from re import Pattern
 from fortls.constants import (
     DO_TYPE_ID,
     INTERFACE_TYPE_ID,
-    PY3K,
     SELECT_TYPE_ID,
     SUBMODULE_TYPE_ID,
     FRegex,
@@ -70,9 +69,6 @@ from fortls.objects import (
     fortran_var,
     fortran_where,
 )
-
-if not PY3K:
-    import io
 
 
 def get_line_context(line: str) -> tuple[str, None] | tuple[str, str]:
@@ -854,11 +850,7 @@ class fortran_file:
         """
         contents: str
         try:
-            if PY3K:
                 with open(self.path, "r", encoding="utf-8", errors="replace") as f:
-                    contents = re.sub(r"\t", r" ", f.read())
-            else:
-                with io.open(self.path, "r", encoding="utf-8", errors="replace") as f:
                     contents = re.sub(r"\t", r" ", f.read())
         except OSError:
             return "Could not read/decode file", None
@@ -922,8 +914,6 @@ class fortran_file:
         self.hash = None
         text = change.get("text", "")
         change_range = change.get("range")
-        if not PY3K:
-            text = text.encode("utf-8")
         if len(text) == 0:
             text_split = [""]
         else:

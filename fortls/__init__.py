@@ -52,7 +52,7 @@ def main():
         debug_server_general(args, vars(args))
 
     else:
-        stdin, stdout = _binary_stdio()
+        stdin, stdout = sys.stdin.buffer, sys.stdout.buffer
         LangServer(
             conn=JSONRPC2Connection(ReadWriter(stdin, stdout)),
             settings=vars(args),
@@ -522,26 +522,3 @@ def print_children(obj, indent=""):
     for child in obj.get_children():
         print("  {0}{1}: {2}".format(indent, child.get_type(), child.FQSN))
         print_children(child, indent + "  ")
-
-
-def _binary_stdio():
-    """Construct binary stdio streams (not text mode).
-    This seems to be different for Window/Unix Python2/3, so going by:
-        https://stackoverflow.com/questions/2850893/reading-binary-data-from-stdin
-    """
-    PY3K = sys.version_info >= (3, 0)
-
-    if PY3K:
-        stdin, stdout = sys.stdin.buffer, sys.stdout.buffer
-    else:
-        # Python 2 on Windows opens sys.stdin in text mode, and
-        # binary data that read from it becomes corrupted on \r\n
-        if sys.platform == "win32":
-            # set sys.stdin to binary mode
-            import msvcrt
-
-            msvcrt.setmode(sys.stdin.fileno(), os.O_BINARY)
-            msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
-        stdin, stdout = sys.stdin, sys.stdout
-
-    return stdin, stdout

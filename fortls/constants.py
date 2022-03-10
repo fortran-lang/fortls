@@ -1,11 +1,8 @@
 from __future__ import annotations
 
 import logging
-import sys
 
 from fortls.regex_patterns import FortranRegularExpressions
-
-PY3K = sys.version_info >= (3, 0)
 
 log = logging.getLogger(__name__)
 
