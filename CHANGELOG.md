@@ -1,5 +1,42 @@
 # CHANGELONG
 
+## 2.2.7
+
+### Changed
+
+- Changed the auto-update feature to skip `anaconda` environments since they
+  handle their dependencies through `conda` and not `pip`
+
+### Fixed
+
+- Fixed missing dependency from `setup.cfg`
+  ([#78](https://github.com/gnikit/fortls/issues/78))
+- Updated configuration file variables in documentation
+
+## 2.2.6
+
+### Added
+
+- Added the capability for `fortls` to auto-update use `--disable_autoupdate` to disable
+  ([#76](https://github.com/gnikit/fortls/issues/76))
+
+## Deprecated
+
+- Deprecated `--variable_hover` option and now is always enabled
+  ([#46](https://github.com/gnikit/fortls/issues/46))
+
+## 2.2.5
+
+### Changed
+
+- Updated `setup.cfg` in preparation of submitting package to `conda-forge`
+- Added `Editor Integration` section in documentation
+
+### Fixed
+
+- Fixed parsing of `defined` without by parenthesis surrounding the definition
+  ([#67](https://github.com/gnikit/fortls/pull/67))
+
 ## 2.2.4
 
 ### Fixed

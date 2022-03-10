@@ -12,6 +12,7 @@ fortls -- Fortran Language Server
 
    README.md
    options.rst
+   editor_integration.rst
    fortls_changes.md
    modules.rst
 

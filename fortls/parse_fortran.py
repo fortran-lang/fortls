@@ -22,6 +22,7 @@ from fortls.constants import (
     PY3K,
     SELECT_TYPE_ID,
     SUBMODULE_TYPE_ID,
+    CLASS_info,
     FRegex,
     log,
 )

@@ -22,7 +22,7 @@ def commandline_args(name: str = "fortls") -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="fortls - Fortran Language Server",
         prog=name,
-        usage="%(prog)s [options] [debug options]",
+        usage="fortls [options] [debug options]",
         formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=60),
         epilog=(
             "All options starting with '--' can also be set in a configuration file, by"
@@ -74,6 +74,14 @@ def commandline_args(name: str = "fortls") -> argparse.ArgumentParser:
             "Display variable keywords information, function/subroutine definitions,"
             " etc. in a consistent (sorted) manner default: no sorting, display code"
             " as is)"
+        ),
+    )
+    parser.add_argument(
+        "--disable_autoupdate",
+        action="store_true",
+        help=(
+            "fortls automatically checks PyPi for newer version and installs them."
+            "Use this option to disable the autoupdate feature."
         ),
     )
     # XXX: Deprecated, argument not attached to anything. Remove
@@ -168,16 +176,13 @@ def commandline_args(name: str = "fortls") -> argparse.ArgumentParser:
         "--variable_hover",
         action="store_true",
         help=(
-            "Show hover information for variables (default: subroutines/functions only)"
+            "DEPRECATED: This option is always on. Show hover information for variables"
         ),
     )
     group.add_argument(
         "--hover_signature",
         action="store_true",
-        help=(
-            "Show signature information in hover for arguments "
-            "(also enables '--variable_hover')"
-        ),
+        help="Show signature information in hover for arguments ",
     )
     group.add_argument(
         "--hover_language",

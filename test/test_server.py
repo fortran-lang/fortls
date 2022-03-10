@@ -607,9 +607,7 @@ def test_hover():
     file_path = test_dir / "test_diagnostic_int.f90"
     string += hover_req(file_path, 19, 14)
 
-    errcode, results = run_request(
-        string, fortls_args=["--variable_hover", "--sort_keywords"]
-    )
+    errcode, results = run_request(string, fortls_args=["--sort_keywords"])
     assert errcode == 0
     #
     ref_results = (
