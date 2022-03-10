@@ -28,6 +28,8 @@
 
 ## Changed
 
+- Changed the auto-update feature to skip `anaconda` environments since they
+  handle their dependencies through `conda` and not `pip`
 - Updated `setup.cfg` in preparation of submitting package to `conda-forge`
 - Added `Editor Integration` section in documentation
 - Changed reading in `json` files to be encoded as UTF-8
