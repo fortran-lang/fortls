@@ -1170,31 +1170,23 @@ class fortran_file:
                 if COMMENT_LINE_MATCH.match(line) is None:
                     if (max_line_length > 0) and (len(line) > max_line_length):
                         diagnostics.append(
-                            {
-                                "range": {
-                                    "start": {"line": i, "character": max_line_length},
-                                    "end": {"line": i, "character": len(line)},
-                                },
-                                "message": line_message,
-                                "severity": 2,
-                            }
+                            diagnostic_json(
+                                i, max_line_length, i, len(line), line_message, 2
+                            )
                         )
                 else:
                     if (max_comment_line_length > 0) and (
                         len(line) > max_comment_line_length
                     ):
                         diagnostics.append(
-                            {
-                                "range": {
-                                    "start": {
-                                        "line": i,
-                                        "character": max_comment_line_length,
-                                    },
-                                    "end": {"line": i, "character": len(line)},
-                                },
-                                "message": comment_message,
-                                "severity": 2,
-                            }
+                            diagnostic_json(
+                                i,
+                                max_comment_line_length,
+                                i,
+                                len(line),
+                                comment_message,
+                                2,
+                            )
                         )
         errors, diags_ast = self.ast.check_file(obj_tree)
         diagnostics += diags_ast
