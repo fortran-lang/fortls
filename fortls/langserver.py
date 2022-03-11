@@ -44,6 +44,7 @@ from fortls.intrinsics import (
     load_intrinsics,
     set_lowercase_intrinsics,
 )
+from fortls.json_templates import change_json, symbol_json, uri_json
 from fortls.jsonrpc import JSONRPC2Connection, path_from_uri, path_to_uri
 from fortls.objects import (
     climb_type_tree,
@@ -303,37 +304,47 @@ class LangServer:
                     continue
             else:
                 scope_type = map_types(scope.get_type())
-            tmp_out = {"name": scope.name, "kind": scope_type}
-            sline = scope.sline - 1
-            eline = scope.eline - 1
-            tmp_out["location"] = {
-                "uri": uri,
-                "range": {
-                    "start": {"line": sline, "character": 0},
-                    "end": {"line": eline, "character": 0},
-                },
-            }
+
             # Set containing scope
             if scope.FQSN.find("::") > 0:
                 tmp_list = scope.FQSN.split("::")
-                tmp_out["containerName"] = tmp_list[0]
-            test_output.append(tmp_out)
+                test_output.append(
+                    symbol_json(
+                        scope.name,
+                        scope_type,
+                        uri,
+                        scope.sline - 1,
+                        0,
+                        scope.eline - 1,
+                        0,
+                        tmp_list[0],
+                    )
+                )
+            else:
+                test_output.append(
+                    symbol_json(
+                        scope.name,
+                        scope_type,
+                        uri,
+                        scope.sline - 1,
+                        0,
+                        scope.eline - 1,
+                        0,
+                    )
+                )
             # If class add members
             if scope.get_type() == CLASS_TYPE_ID and not self.symbol_skip_mem:
                 for child in scope.children:
-                    tmp_out = {
-                        "name": child.name,
-                        "kind": map_types(child.get_type(), True),
-                        "location": {
-                            "uri": uri,
-                            "range": {
-                                "start": {"line": child.sline - 1, "character": 0},
-                                "end": {"line": child.sline - 1, "character": 0},
-                            },
-                        },
-                        "containerName": scope.name,
-                    }
-                    test_output.append(tmp_out)
+                    test_output.append(
+                        symbol_json(
+                            child.name,
+                            map_types(child.get_type(), True),
+                            uri,
+                            child.sline - 1,
+                            0,
+                            container_name=scope.name,
+                        )
+                    )
         return test_output
 
     def serve_autocomplete(self, request: dict):
@@ -966,13 +977,7 @@ class LangServer:
         for (filename, file_refs) in all_refs.items():
             for ref in file_refs:
                 refs.append(
-                    {
-                        "uri": path_to_uri(filename),
-                        "range": {
-                            "start": {"line": ref[0], "character": ref[1]},
-                            "end": {"line": ref[0], "character": ref[2]},
-                        },
-                    }
+                    uri_json(path_to_uri((filename)), ref[0], ref[1], ref[0], ref[2])
                 )
         return refs
 
@@ -1132,13 +1137,7 @@ class LangServer:
             changes[file_uri] = []
             for ref in file_refs:
                 changes[file_uri].append(
-                    {
-                        "range": {
-                            "start": {"line": ref[0], "character": ref[1]},
-                            "end": {"line": ref[0], "character": ref[2]},
-                        },
-                        "newText": new_name,
-                    }
+                    change_json(new_name, ref[0], ref[1], ref[0], ref[2])
                 )
         # Check for implicit procedure implementation naming
         bind_obj = None

@@ -1,4 +1,4 @@
-from __future__ import annotations, print_function
+from __future__ import annotations
 
 import copy
 import os
@@ -29,19 +29,7 @@ from fortls.constants import (
 from fortls.ftypes import INCLUDE_info, USE_info
 from fortls.helper_functions import get_keywords, get_paren_substring, get_var_stack
 from fortls.jsonrpc import path_to_uri
-
-
-def range_json(sln: int, sch: int, eln: int, ech: int):
-    return {
-        "range": {
-            "start": {"line": sln, "character": sch},
-            "end": {"line": eln, "character": ech},
-        }
-    }
-
-
-def diagnostic_json(sln: int, sch: int, eln: int, ech: int, msg: str, sev: str):
-    return {**range_json(sln, sch, eln, ech), **{"message": msg, "severity": sev}}
+from fortls.json_templates import range_json, diagnostic_json
 
 
 def get_use_tree(

@@ -68,8 +68,8 @@ from fortls.objects import (
     fortran_type,
     fortran_var,
     fortran_where,
-    diagnostic_json,
 )
+from fortls.json_templates import diagnostic_json
 
 
 def get_line_context(line: str) -> tuple[str, None] | tuple[str, str]:
