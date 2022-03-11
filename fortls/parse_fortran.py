@@ -1168,16 +1168,14 @@ class fortran_file:
                 COMMENT_LINE_MATCH = FRegex.FREE_COMMENT
             for (i, line) in enumerate(self.contents_split):
                 if COMMENT_LINE_MATCH.match(line) is None:
-                    if (max_line_length > 0) and (len(line) > max_line_length):
+                    if 0 < max_line_length < len(line):
                         diagnostics.append(
                             diagnostic_json(
                                 i, max_line_length, i, len(line), line_message, 2
                             )
                         )
                 else:
-                    if (max_comment_line_length > 0) and (
-                        len(line) > max_comment_line_length
-                    ):
+                    if 0 < max_comment_line_length < len(line):
                         diagnostics.append(
                             diagnostic_json(
                                 i,
