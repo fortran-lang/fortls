@@ -29,6 +29,7 @@ from fortls.constants import (
     VAR_TYPE_ID,
     FRegex,
     log,
+    Severity,
 )
 from fortls.helper_functions import (
     expand_name,
@@ -93,10 +94,16 @@ class LangServer:
         # Set object settings
         set_keyword_ordering(self.sort_keywords)
 
-    def post_message(self, message: str, severity: int = 1):
+    def post_message(self, msg: str, severity: int = Severity.error, exc_info=False):
         self.conn.send_notification(
-            "window/showMessage", {"type": severity, "message": message}
+            "window/showMessage", {"type": severity, "message": msg}
         )
+        if severity == 1:
+            log.error(msg, exc_info=exc_info)
+        elif severity == 2:
+            log.warning(msg, exc_info=exc_info)
+        elif severity == 3:
+            log.info(msg, exc_info=exc_info)
 
     def run(self):
         # Run server
@@ -107,8 +114,7 @@ class LangServer:
             except EOFError:
                 break
             except Exception as e:
-                self.post_messages.append([1, f"Unexpected error: {e}"])
-                log.error("Unexpected error: %s", e, exc_info=True)
+                self.post_message(f"Unexpected error: {e}", exc_info=True)
                 break
             else:
                 for message in self.post_messages:
@@ -193,7 +199,8 @@ class LangServer:
         self._add_source_dirs()
         if self._update_version_pypi():
             self.post_message(
-                "Please restart the server for the new version to activate", 3
+                "Please restart the server for the new version to activate",
+                Severity.info,
             )
 
         # Initialize workspace
@@ -221,7 +228,7 @@ class LangServer:
         if self.enable_code_actions:
             server_capabilities["codeActionProvider"] = True
         if self.notify_init:
-            self.post_messages.append([3, "fortls initialization complete"])
+            self.post_message("fortls initialization complete", Severity.info)
         return {"capabilities": server_capabilities}
 
     def serve_workspace_symbol(self, request):
@@ -1127,7 +1134,7 @@ class LangServer:
             def_obj, type_mem, file_obj=restrict_file
         )
         if len(all_refs) == 0:
-            self.post_message("Rename failed: No usages found to rename", 2)
+            self.post_message("Rename failed: No usages found to rename", Severity.warn)
             return None
         # Create rename changes
         new_name = params["newName"]
@@ -1230,7 +1237,6 @@ class LangServer:
         file_obj = self.workspace.get(path)
         if file_obj is None:
             self.post_message(f"Change request failed for unknown file '{path}'")
-            log.error("Change request failed for unknown file '%s'", path)
             return
         else:
             # Update file contents with changes
@@ -1246,11 +1252,8 @@ class LangServer:
                 except:
                     self.post_message(
                         f"Change request failed for file '{path}': Could not apply"
-                        " change"
-                    )
-                    log.error(
-                        "Change request failed for file '%s': Could not apply change",
-                        path,
+                        " change",
+                        Severity.error,
                         exc_info=True,
                     )
                     return
@@ -1434,8 +1437,8 @@ class LangServer:
         for path, result in results.items():
             result_obj = result.get()
             if isinstance(result_obj, str):
-                self.post_messages.append(
-                    [1, f"Initialization failed for file '{path}': {result_obj}"]
+                self.post_message(
+                    f"Initialization failed for file '{path}': {result_obj}"
                 )
                 continue
             self.workspace[path] = result_obj
@@ -1511,14 +1514,10 @@ class LangServer:
                 return False
 
         except FileNotFoundError:
-            msg = f"Error settings file '{self.config}' not found"
-            self.post_messages.append([1, msg])
-            log.error(msg)
+            self.post_message(f"Error settings file '{self.config}' not found")
 
         except ValueError:
-            msg = f"Error while parsing '{self.config}' settings file"
-            self.post_messages.append([1, msg])
-            log.error(msg)
+            self.post_message(f"Error while parsing '{self.config}' settings file")
 
     def _load_config_file_dirs(self, config_dict: dict) -> None:
         # Exclude paths (directories & files)
@@ -1672,7 +1671,7 @@ class LangServer:
         fname = os.path.join(self.root_path, fname)
         logging.basicConfig(filename=fname, level=logging.DEBUG, filemode="w")
         log.debug("REQUEST %s %s", request.get("id"), request.get("method"))
-        self.post_messages.append([3, "FORTLS debugging enabled"])
+        self.post_messages.append([Severity.info, "fortls debugging enabled"])
 
     def _load_intrinsics(self) -> None:
         # Load intrinsics
@@ -1726,13 +1725,15 @@ class LangServer:
                 # This is the only reliable way to compare version semantics
                 if version.parse(info["info"]["version"]) > v or test:
                     self.post_message(
-                        "A newer version of fortls is available for download", 3
+                        "A newer version of fortls is available for download",
+                        Severity.info,
                     )
                     # Anaconda environments should handle their updates through conda
                     if os.path.exists(os.path.join(sys.prefix, "conda-meta")):
                         return False
                     self.post_message(
-                        f"Downloading from PyPi fortls {info['info']['version']}", 3
+                        f"Downloading from PyPi fortls {info['info']['version']}",
+                        Severity.info,
                     )
                     # Run pip
                     result = subprocess.run(
@@ -1753,7 +1754,7 @@ class LangServer:
                     return True
         # No internet connection exceptions
         except (URLError, KeyError):
-            log.warning("Failed to update the fortls Language Server")
+            self.post_message("Failed to update the fortls", Severity.warn)
         return False
 
 

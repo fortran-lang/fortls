@@ -52,6 +52,13 @@ IF_TYPE_ID = 13
 ASSOC_TYPE_ID = 14
 ENUM_TYPE_ID = 15
 
+
+class Severity:
+    error = 1
+    warn = 2
+    info = 3
+
+
 #: A string used to mark literals e.g. 10, 3.14, "words", etc.
 #: The description name chosen is non-ambiguous and cannot naturally
 #: occur in Fortran (with/out C preproc) code

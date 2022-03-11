@@ -52,7 +52,7 @@ def test_logger():
     errcode, results = run_request(string, ["--debug_log"])
     assert errcode == 0
     assert results[1]["type"] == 3
-    assert results[1]["message"] == "FORTLS debugging enabled"
+    assert results[1]["message"] == "fortls debugging enabled"
 
 
 def test_open():
