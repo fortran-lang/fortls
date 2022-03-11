@@ -984,7 +984,7 @@ class LangServer:
         for (filename, file_refs) in all_refs.items():
             for ref in file_refs:
                 refs.append(
-                    uri_json(path_to_uri((filename)), ref[0], ref[1], ref[0], ref[2])
+                    uri_json(path_to_uri(filename), ref[0], ref[1], ref[0], ref[2])
                 )
         return refs
 
@@ -1695,13 +1695,7 @@ class LangServer:
         sline, (schar, echar) = obj_file.find_word_in_code_line(obj.sline - 1, obj.name)
         if schar < 0:
             schar = echar = 0
-        return {
-            "uri": path_to_uri(obj_file.path),
-            "range": {
-                "start": {"line": sline, "character": schar},
-                "end": {"line": sline, "character": echar},
-            },
-        }
+        return uri_json(path_to_uri(obj_file.path), sline, schar, sline, echar)
 
     def _update_version_pypi(self, test: bool = False):
         """Fetch updates from PyPi for fortls
