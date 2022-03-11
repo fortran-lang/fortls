@@ -68,6 +68,7 @@ from fortls.objects import (
     fortran_type,
     fortran_var,
     fortran_where,
+    diagnostic_json,
 )
 
 
@@ -850,8 +851,8 @@ class fortran_file:
         """
         contents: str
         try:
-                with open(self.path, "r", encoding="utf-8", errors="replace") as f:
-                    contents = re.sub(r"\t", r" ", f.read())
+            with open(self.path, "r", encoding="utf-8", errors="replace") as f:
+                contents = re.sub(r"\t", r" ", f.read())
         except OSError:
             return "Could not read/decode file", None
         else:
@@ -1656,13 +1657,14 @@ class fortran_file:
             elif obj_type == "vis":
                 if file_ast.current_scope is None:
                     file_ast.parse_errors.append(
-                        {
-                            "line": line_number,
-                            "schar": 0,
-                            "echar": 0,
-                            "mess": "Visibility statement without enclosing scope",
-                            "sev": 1,
-                        }
+                        diagnostic_json(
+                            line_number,
+                            0,
+                            line_number,
+                            0,
+                            "Visibility statement without enclosing scope",
+                            1,
+                        )
                     )
                 else:
                     if (len(obj_info.obj_names) == 0) and (obj_info.type == 1):
@@ -1689,7 +1691,7 @@ class fortran_file:
             if len(file_ast.parse_errors) > 0:
                 log.debug("\n=== Parsing Errors ===\n")
                 for error in file_ast.parse_errors:
-                    log.debug(f"{error['line']}: {error['mess']}")
+                    log.debug(f"{error['range']}: {error['message']}")
         return file_ast
 
     def _parse_end_scope_word(
@@ -1756,13 +1758,7 @@ class fortran_file:
                 file_ast.current_scope.set_implicit(True, ln)
         if err_message:
             file_ast.parse_errors.append(
-                {
-                    "line": ln,
-                    "schar": match.start(1),
-                    "echar": match.end(1),
-                    "mess": err_message,
-                    "sev": 1,
-                }
+                diagnostic_json(ln, match.start(1), ln, match.end(1), err_message, 1)
             )
         self.parser_debug("IMPLICIT", self.line, ln)
         return True
@@ -1781,13 +1777,7 @@ class fortran_file:
             err_message = "Multiple CONTAINS statements in scope"
         if err_message:
             file_ast.parse_errors.append(
-                {
-                    "line": ln,
-                    "schar": match.start(1),
-                    "echar": match.end(1),
-                    "mess": err_message,
-                    "sev": 1,
-                }
+                diagnostic_json(ln, match.start(1), ln, match.end(1), err_message, 1)
             )
         self.parser_debug("CONTAINS", self.line, ln)
         return True
@@ -1845,7 +1835,7 @@ class fortran_file:
     def get_comment_regexs(self):
         if self.fixed:
             return FRegex.FIXED_COMMENT, FRegex.FIXED_DOC
-            return FRegex.FREE_COMMENT, FRegex.FREE_DOC
+        return FRegex.FREE_COMMENT, FRegex.FREE_DOC
 
     def get_fortran_definition(self, line: str):
         for fortran_def in def_tests:
