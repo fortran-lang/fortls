@@ -184,15 +184,11 @@ def test_workspace_symbols():
         objs = (
             ["test", 6, 7],
             ["test_abstract", 2, 0],
-            ["test_enum", 2, 0],
-            ["test_external", 2, 0],
-            ["test_forall", 2, 0],
             ["test_free", 2, 0],
             ["test_gen_type", 5, 1],
             ["test_generic", 2, 0],
             ["test_inherit", 2, 0],
             ["test_int", 2, 0],
-            ["test_lines", 2, 0],
             ["test_mod", 2, 0],
             ["test_nonint_mod", 2, 0],
             ["test_preproc_keywords", 2, 0],
@@ -201,14 +197,11 @@ def test_workspace_symbols():
             ["test_rename_sub", 6, 9],
             ["test_select", 2, 0],
             ["test_select_sub", 6, 16],
-            ["test_semicolon", 2, 0],
             ["test_sig_Sub", 6, 67],
             ["test_str1", 13, 5],
             ["test_str2", 13, 5],
             ["test_sub", 6, 8],
-            ["test_use_ordering", 2, 9],
             ["test_vis_mod", 2, 0],
-            ["test_where", 2, 0],
         )
         assert len(result_array) == len(objs)
         for i, obj in enumerate(objs):
