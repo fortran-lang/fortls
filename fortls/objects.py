@@ -29,7 +29,7 @@ from fortls.constants import (
 from fortls.ftypes import INCLUDE_info, USE_info
 from fortls.helper_functions import get_keywords, get_paren_substring, get_var_stack
 from fortls.jsonrpc import path_to_uri
-from fortls.json_templates import range_json, diagnostic_json
+from fortls.json_templates import range_json, diagnostic_json, location_json
 
 
 def get_use_tree(
@@ -325,10 +325,9 @@ class fortran_diagnostic:
         if self.has_related:
             diag["relatedInformation"] = [
                 {
-                    "location": {
-                        "uri": path_to_uri(self.related_path),
-                        **range_json(self.related_line, 0, self.related_line, 0),
-                    },
+                    **location_json(
+                        path_to_uri(self.related_path), self.related_line, 0
+                    ),
                     "message": self.related_message,
                 }
             ]
@@ -1974,6 +1973,26 @@ class fortran_ast:
         else:
             if self.last_obj is not None:
                 self.last_obj.add_doc(doc_string)
+
+    def add_error(self, msg: str, sev: int, ln: int, sch: int, ech: int = None):
+        """Add a Diagnostic error, encountered during parsing, for a range
+        in the document.
+
+        Parameters
+        ----------
+        msg : str
+            Error message
+        sev : int
+            Severity, Error, Warning, Notification
+        ln : int
+            Line number
+        sch : int
+            Start character
+        ech : int
+            End character
+        """
+        # Convert from Editor line numbers 1-base index to LSP index which is 0-based
+        self.parse_errors.append(diagnostic_json(ln - 1, sch, ln - 1, ech, msg, sev))
 
     def start_ppif(self, line_number: int):
         self.pp_if.append([line_number - 1, -1])

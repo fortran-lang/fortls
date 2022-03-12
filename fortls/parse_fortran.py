@@ -22,6 +22,7 @@ from fortls.constants import (
     SELECT_TYPE_ID,
     SUBMODULE_TYPE_ID,
     FRegex,
+    Severity,
     log,
 )
 from fortls.ftypes import (
@@ -69,7 +70,6 @@ from fortls.objects import (
     fortran_var,
     fortran_where,
 )
-from fortls.json_templates import diagnostic_json
 
 
 def get_line_context(line: str) -> tuple[str, None] | tuple[str, str]:
@@ -1156,8 +1156,8 @@ class fortran_file:
     def check_file(self, obj_tree, max_line_length=-1, max_comment_line_length=-1):
         diagnostics = []
         if (max_line_length > 0) or (max_comment_line_length > 0):
-            line_message = f'Line length exceeds "max_line_length" ({max_line_length})'
-            comment_message = (
+            msg_line = f'Line length exceeds "max_line_length" ({max_line_length})'
+            msg_comment = (
                 'Comment line length exceeds "max_comment_line_length"'
                 f" ({max_comment_line_length})"
             )
@@ -1169,22 +1169,17 @@ class fortran_file:
             for (i, line) in enumerate(self.contents_split):
                 if COMMENT_LINE_MATCH.match(line) is None:
                     if 0 < max_line_length < len(line):
-                        diagnostics.append(
-                            diagnostic_json(
-                                i, max_line_length, i, len(line), line_message, 2
-                            )
+                        self.ast.add_error(
+                            msg_line, Severity.warn, i + 1, max_line_length, len(line)
                         )
                 else:
                     if 0 < max_comment_line_length < len(line):
-                        diagnostics.append(
-                            diagnostic_json(
-                                i,
-                                max_comment_line_length,
-                                i,
-                                len(line),
-                                comment_message,
-                                2,
-                            )
+                        self.ast.add_error(
+                            msg_comment,
+                            Severity.warn,
+                            i + 1,
+                            max_comment_line_length,
+                            len(line),
                         )
         errors, diags_ast = self.ast.check_file(obj_tree)
         diagnostics += diags_ast
@@ -1646,16 +1641,8 @@ class fortran_file:
 
             elif obj_type == "vis":
                 if file_ast.current_scope is None:
-                    file_ast.parse_errors.append(
-                        diagnostic_json(
-                            line_number,
-                            0,
-                            line_number,
-                            0,
-                            "Visibility statement without enclosing scope",
-                            1,
-                        )
-                    )
+                    msg = "Visibility statement without enclosing scope"
+                    file_ast.add_error(msg, Severity.error, line_number, 0)
                 else:
                     if (len(obj_info.obj_names) == 0) and (obj_info.type == 1):
                         file_ast.current_scope.set_default_vis(-1)
@@ -1738,18 +1725,15 @@ class fortran_file:
         match = FRegex.IMPLICIT.match(line)
         if match is None:
             return False
-        err_message = None
         if file_ast.current_scope is None:
-            err_message = "IMPLICIT statement without enclosing scope"
+            msg = "IMPLICIT statement without enclosing scope"
+            file_ast.add_error(msg, Severity.error, ln, match.start(1), match.end(1))
         else:
             if match.group(1).lower() == "none":
                 file_ast.current_scope.set_implicit(False, ln)
             else:
                 file_ast.current_scope.set_implicit(True, ln)
-        if err_message:
-            file_ast.parse_errors.append(
-                diagnostic_json(ln, match.start(1), ln, match.end(1), err_message, 1)
-            )
+
         self.parser_debug("IMPLICIT", self.line, ln)
         return True
 
@@ -1757,18 +1741,16 @@ class fortran_file:
         match = FRegex.CONTAINS.match(line)
         if match is None:
             return False
-        err_message: str = None
+        msg: str = None
         try:
             if file_ast.current_scope is None:
-                err_message = "CONTAINS statement without enclosing scope"
+                msg = "CONTAINS statement without enclosing scope"
             else:
                 file_ast.current_scope.mark_contains(ln)
         except ValueError:
-            err_message = "Multiple CONTAINS statements in scope"
-        if err_message:
-            file_ast.parse_errors.append(
-                diagnostic_json(ln, match.start(1), ln, match.end(1), err_message, 1)
-            )
+            msg = "Multiple CONTAINS statements in scope"
+        if msg:
+            file_ast.add_error(msg, Severity.error, ln, match.start(1), match.end(1))
         self.parser_debug("CONTAINS", self.line, ln)
         return True
 
