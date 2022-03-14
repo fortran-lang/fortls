@@ -136,7 +136,7 @@ def test_symbols():
     def check_return(result_array):
         # Expected objects
         objs = (
-            ["test_free", 2, 0, 79],
+            ["test_free", 2, 0, 81],
             ["scale_type", 5, 4, 6],
             ["val", 13, 5, 5],
             ["vector", 5, 8, 16],
@@ -157,7 +157,7 @@ def test_symbols():
             ["scaled_vector_norm", 12, 55, 59],
             ["unscaled_norm", 12, 61, 65],
             ["test_sig_Sub", 12, 67, 70],
-            ["bound_pass", 12, 72, 78],
+            ["bound_pass", 12, 72, 80],
         )
         assert len(result_array) == len(objs)
         for i, obj in enumerate(objs):
@@ -537,7 +537,7 @@ def test_refs():
             [free_path, 36, 6, 12],
             [free_path, 44, 6, 12],
             [free_path, 50, 6, 12],
-            [free_path, 76, 6, 12],
+            [free_path, 78, 6, 12],
         ),
     )
 
@@ -713,7 +713,7 @@ def test_docs():
     string += hover_request(file_path, 22, 32)
     string += hover_request(file_path, 15, 32)
     string += hover_request(file_path, 15, 47)
-    errcode, results = run_request(string)
+    errcode, results = run_request(string, ["-n", "1"])
     assert errcode == 0
     #
     check_return(results[1], ((1, "!! Doc 1"), (3, " !! Doc 5")))
@@ -724,5 +724,8 @@ def test_docs():
     check_return(results[6], ((1, "!! Doc 7"), (4, " !! Doc 8")))
     check_return(results[7], ((1, "!! Doc 3"),))
     check_return(results[8], ())
-    check_return(results[9], ())
-    check_return(results[10], ((3, " !! Doc 9"), (4, " !! Doc 10")))
+    check_return(results[9], ((2, " !! Doc 9"), (3, " !! Doc 10")))
+    check_return(
+        results[10],
+        ((2, " !! Doc 9"), (3, " !! Doc 10"), (5, " !! Doc 11"), (6, " !! Doc 12")),
+    )
