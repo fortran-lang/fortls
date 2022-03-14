@@ -28,8 +28,8 @@ from fortls.constants import (
 )
 from fortls.ftypes import INCLUDE_info, USE_info
 from fortls.helper_functions import get_keywords, get_paren_substring, get_var_stack
+from fortls.json_templates import diagnostic_json, location_json, range_json
 from fortls.jsonrpc import path_to_uri
-from fortls.json_templates import range_json, diagnostic_json, location_json
 
 
 def get_use_tree(

@@ -28,8 +28,8 @@ from fortls.constants import (
     SUBROUTINE_TYPE_ID,
     VAR_TYPE_ID,
     FRegex,
-    log,
     Severity,
+    log,
 )
 from fortls.helper_functions import (
     expand_name,

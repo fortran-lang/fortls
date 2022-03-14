@@ -1,12 +1,11 @@
-from __future__ import annotations, print_function
-
-from collections import Counter, deque
+from __future__ import annotations
 
 import hashlib
 import logging
 import os
 import re
 import sys
+from collections import Counter, deque
 
 # Python < 3.8 does not have typing.Literals
 try:
