@@ -1237,47 +1237,40 @@ class fortran_file:
             pp_skips = []
             pp_defines = []
 
-        line_ind = 0
-        next_line_ind = 0
-        line_number = 1
+        line_number = 0
         block_id_stack = []
-        semi_split = []
         doc_string: str = None
         counters = Counter(
-            # line_no=1,
-            # line_idx=0,
-            # next_line_idx=0,
             do=0,
             ifs=0,
             block=0,
             select=0,
             interface=0,
         )
+        multi_lines = deque()
         self.COMMENT_LINE_MATCH, self.DOC_COMMENT_MATCH = self.get_comment_regexs()
-        while (next_line_ind < self.nLines) or (len(semi_split) > 0):
+        while (line_number < self.nLines) or multi_lines:
             # Get next line
-            if len(semi_split) > 0:
-                line = semi_split[0]
-                semi_split = semi_split[1:]
-                get_full = False
-            else:
-                line_ind = next_line_ind
-                line_number = line_ind + 1
-                line = self.get_line(line_ind, pp_content=True)
-                next_line_ind = line_ind + 1
+            # Get a normal line, i.e. the stack is empty
+            if not multi_lines:
+                # get_line has a 0-based index
+                line = self.get_line(line_number, pp_content=True)
+                line_number += 1
                 get_full = True
+            # Line is part of a multi-line construct, i.e. contained ';'
+            else:
+                line = multi_lines.pop()
+                get_full = False
+
             if line == "":
                 continue  # Skip empty lines
             # Parse Documentation comments and skip all other comments
             # this function should also nullify doc_string
-            idx = self._parse_documentation(
-                line, line_number, file_ast, doc_string, next_line_ind
-            )
+            idx = self._parse_docs(line, line_number, file_ast, doc_string)
             if idx:
-                next_line_ind = idx[0]
+                line_number = idx[0]
                 doc_string = idx[1]
                 continue
-            # Handle trailing doc strings
             if doc_string:
                 file_ast.add_doc("!! " + doc_string)
                 self.parser_debug("Doc", doc_string, line_number)
@@ -1292,14 +1285,14 @@ class fortran_file:
                 do_skip = True
             if do_skip:
                 continue
-            # Get full line
+            # Get full line, seek forward for code lines
+            # @note line_number-1 refers to the array index for the current line
             if get_full:
                 _, line, post_lines = self.get_code_line(
-                    line_ind, backward=False, pp_content=True
+                    line_number - 1, backward=False, pp_content=True
                 )
-                next_line_ind += len(post_lines)
+                line_number += len(post_lines)
                 line = "".join([line] + post_lines)
-            # print(line)
             line, line_label = strip_line_label(line)
             line_stripped = strip_strings(line, maintain_len=True)
             # Find trailing comments
@@ -1308,29 +1301,17 @@ class fortran_file:
                 line_no_comment = line[:comm_ind]
                 line_post_comment = line[comm_ind:]
                 line_stripped = line_stripped[:comm_ind]
+                # Look for trailing doc string
+                doc_match = FRegex.FREE_DOC.match(line_post_comment)
+                if doc_match:
+                    doc_string = line_post_comment[doc_match.end(0) :].strip()
             else:
                 line_no_comment = line
-                line_post_comment = None
-            # Split lines with semicolons
-            semi_colon_ind = line_stripped.find(";")
-            if semi_colon_ind > 0:
-                semi_inds = []
-                tmp_line = line_stripped
-                while semi_colon_ind >= 0:
-                    semi_inds.append(semi_colon_ind)
-                    tmp_line = tmp_line[semi_colon_ind + 1 :]
-                    semi_colon_ind = tmp_line.find(";")
-                i0 = 0
-                for semi_colon_ind in semi_inds:
-                    semi_split.append(line[i0 : i0 + semi_colon_ind])
-                    i0 += semi_colon_ind + 1
-                if len(semi_split) > 0:
-                    semi_split.append(line[i0:])
-                    line = semi_split[0]
-                    semi_split = semi_split[1:]
-                    line_stripped = strip_strings(line, maintain_len=True)
-                    line_no_comment = line
-                    line_post_comment = None
+            # Split lines with semicolons, place the multiple lines into a stack
+            if line_stripped.find(";") >= 0:
+                multi_lines.extendleft(line_stripped.split(";"))
+                line = multi_lines.pop()
+                line_stripped = line
             self.line = line
             # Test for scope end
             if file_ast.END_SCOPE_REGEX is not None:
@@ -1355,11 +1336,6 @@ class fortran_file:
             # Mark contains statement
             if self._parse_contains(line_no_comment, line_number, file_ast):
                 continue
-            # Look for trailing doc string
-            if line_post_comment:
-                doc_match = FRegex.FREE_DOC.match(line_post_comment)
-                if doc_match:
-                    doc_string = line_post_comment[doc_match.end(0) :].strip()
             # Loop through tests
             obj_read = self.get_fortran_definition(line)
             # Move to next line if nothing in the definition tests matches
@@ -1754,13 +1730,12 @@ class fortran_file:
         self.parser_debug("CONTAINS", self.line, ln)
         return True
 
-    def _parse_documentation(
+    def _parse_docs(
         self,
         line: str,
         ln: int,
         file_ast: fortran_ast,
         doc_string: str,
-        next_ln_idx: int,
     ):
         match = self.COMMENT_LINE_MATCH.match(line)
         if not match:
@@ -1768,7 +1743,7 @@ class fortran_file:
         # Check for documentation
         doc_match = self.DOC_COMMENT_MATCH.match(line)
         if not doc_match:
-            return next_ln_idx, doc_string
+            return ln, doc_string
         doc_lines = [line[doc_match.end(0) :].strip()]
         if doc_match.group(1) == ">":
             doc_forward = True
@@ -1777,25 +1752,26 @@ class fortran_file:
                 doc_lines = [doc_string] + doc_lines
                 doc_string = None
             doc_forward = False
-        if next_ln_idx < self.nLines:
-            next_line = self.get_line(next_ln_idx, pp_content=True)
-            next_ln_idx += 1
-            doc_match = self.DOC_COMMENT_MATCH.match(next_line)
-            while doc_match and (next_ln_idx < self.nLines):
-                doc_lines.append(next_line[doc_match.end(0) :].strip())
-                next_line = self.get_line(next_ln_idx, pp_content=True)
-                next_ln_idx += 1
-                doc_match = self.DOC_COMMENT_MATCH.match(next_line)
-            next_ln_idx -= 1
+        _ln = ln
+        if ln < self.nLines:
+            for i in range(ln, self.nLines):
+                # @note this gets the next line, index is 0-based
+                next_line = self.get_line(i, pp_content=True)
+                match = self.DOC_COMMENT_MATCH.match(next_line)
+                if not match:
+                    ln = i  # move the line number at the end of the docstring
+                    break
+                doc_lines.append(next_line[match.end(0) :].strip())
+
         # Count the total length of all the stings in doc_lines
         # most efficient implementation, see: shorturl.at/dfmyV
         if len("".join(doc_lines)) > 0:
             file_ast.add_doc("!! " + "\n!! ".join(doc_lines), forward=doc_forward)
         # if debug:
         for (i, doc_line) in enumerate(doc_lines):
-            log.debug(f"{doc_line} !!! Doc string({ln + i})")
+            log.debug(f"{doc_line} !!! Doc string({_ln + i})")
             # self.parser_debug("Doc", doc_line, line_number + i)
-        return next_ln_idx, doc_string
+        return ln, doc_string
 
     @staticmethod
     def parser_debug(msg: str, line: str, ln: int, scope: bool = False):
