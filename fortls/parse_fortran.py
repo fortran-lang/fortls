@@ -1,6 +1,6 @@
 from __future__ import annotations, print_function
 
-from collections import Counter
+from collections import Counter, deque
 
 import hashlib
 import logging
