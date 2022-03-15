@@ -1859,7 +1859,7 @@ class fortran_ast:
         self.END_SCOPE_REGEX: Pattern = None
         self.enc_scope_name: str = None
         self.last_obj = None
-        self.pending_doc = None
+        self.pending_doc: str = None
 
     def create_none_scope(self):
         """Create empty scope to hold non-module contained items"""

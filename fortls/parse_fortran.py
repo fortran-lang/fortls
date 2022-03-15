@@ -1238,7 +1238,7 @@ class fortran_file:
 
         line_number = 0
         block_id_stack = []
-        doc_string: str = None
+        docs: list[str] = []  # list used to temporarily store docstrings
         counters = Counter(
             do=0,
             ifs=0,
@@ -1263,17 +1263,13 @@ class fortran_file:
 
             if line == "":
                 continue  # Skip empty lines
-            # Parse Documentation comments and skip all other comments
-            # this function should also nullify doc_string
-            idx = self._parse_docs(line, line_number, file_ast, doc_string)
+
+            # Parse documentation strings to AST nodes, this implicitly operates
+            # on docs, i.e. appends or nullifies it
+            idx = self.parse_docs(line, line_number, file_ast, docs)
             if idx:
-                line_number = idx[0]
-                doc_string = idx[1]
+                line_number = idx
                 continue
-            if doc_string:
-                file_ast.add_doc("!! " + doc_string)
-                self.parser_debug("Doc", doc_string, line_number)
-                doc_string = None
             # Handle preprocessing regions
             do_skip = False
             for pp_reg in pp_skips:
@@ -1298,12 +1294,8 @@ class fortran_file:
             comm_ind = line_stripped.find("!")
             if comm_ind >= 0:
                 line_no_comment = line[:comm_ind]
-                line_post_comment = line[comm_ind:]
                 line_stripped = line_stripped[:comm_ind]
-                # Look for trailing doc string
-                doc_match = FRegex.FREE_DOC.match(line_post_comment)
-                if doc_match:
-                    doc_string = line_post_comment[doc_match.end(0) :].strip()
+                docs = self.get_single_line_docstring(line[comm_ind:])
             else:
                 line_no_comment = line
             # Split lines with semicolons, place the multiple lines into a stack
@@ -1729,48 +1721,119 @@ class fortran_file:
         self.parser_debug("CONTAINS", self.line, ln)
         return True
 
-    def _parse_docs(
-        self,
-        line: str,
-        ln: int,
-        file_ast: fortran_ast,
-        doc_string: str,
-    ):
-        match = self.COMMENT_LINE_MATCH.match(line)
-        if not match:
+    def parse_docs(self, line: str, ln: int, file_ast: fortran_ast, docs: list[str]):
+        """Parse documentation stings of style Doxygen or FORD.
+        Multiline docstrings are detected if the first comment starts with `!>`
+        docstring continuations are detected with either `!>`, `!<` or `!!`
+
+        Parameters
+        ----------
+        line : str
+            Document line
+        ln : int
+            Line number
+        file_ast : fortran_ast
+            AST object
+        docs : list[str]
+            Docstrings that are pending processing e.g. single line docstrings
+        """
+
+        def format(docs: list[str]) -> str:
+            if len(docs) == 1:
+                return f"!! {docs[0]}"
+            return "!! " + "\n!! ".join(docs)
+
+        def add_line_comment(file_ast: fortran_ast, docs: list[str]):
+            # Handle dangling comments from previous line
+            if docs:
+                file_ast.add_doc(format(docs))
+                log.debug(f"{format(docs)} !!! Doc string({ln})")
+                docs[:] = []  # empty the documentation stack
+
+        # Check for comments in line
+        if not self.COMMENT_LINE_MATCH.match(line):
+            add_line_comment(file_ast, docs)
             return False
         # Check for documentation
         doc_match = self.DOC_COMMENT_MATCH.match(line)
         if not doc_match:
-            return ln, doc_string
-        doc_lines = [line[doc_match.end(0) :].strip()]
-        if doc_match.group(1) == ">":
-            doc_forward = True
-        else:
-            if doc_string:
-                doc_lines = [doc_string] + doc_lines
-                doc_string = None
-            doc_forward = False
-        _ln = ln
-        if ln < self.nLines:
-            for i in range(ln, self.nLines):
-                # @note this gets the next line, index is 0-based
-                next_line = self.get_line(i, pp_content=True)
-                match = self.DOC_COMMENT_MATCH.match(next_line)
-                if not match:
-                    ln = i  # move the line number at the end of the docstring
-                    break
-                doc_lines.append(next_line[match.end(0) :].strip())
+            add_line_comment(file_ast, docs)
+            return False
 
-        # Count the total length of all the stings in doc_lines
+        _ln = ln
+        ln, docs[:], predocmark = self.get_docstring(ln, line, doc_match, docs)
+
+        # Count the total length of all the stings in docs
         # most efficient implementation, see: shorturl.at/dfmyV
-        if len("".join(doc_lines)) > 0:
-            file_ast.add_doc("!! " + "\n!! ".join(doc_lines), forward=doc_forward)
-        # if debug:
-        for (i, doc_line) in enumerate(doc_lines):
+        if len("".join(docs)) > 0:
+            file_ast.add_doc(format(docs), forward=predocmark)
+        for (i, doc_line) in enumerate(docs):
             log.debug(f"{doc_line} !!! Doc string({_ln + i})")
-            # self.parser_debug("Doc", doc_line, line_number + i)
-        return ln, doc_string
+        docs[:] = []
+        return ln
+
+    def get_docstring(
+        self, ln: int, line: str, match: Pattern, docs: list[str]
+    ) -> tuple[int, list[str], bool]:
+        """Extract entire documentation strings from the current file position
+
+        Parameters
+        ----------
+        ln : int
+            Line number
+        line : str
+            Document line, not necessarily produced by `get_line()`
+        match : Pattern
+            Regular expression DOC match
+        docs : list[str]
+            Docstrings that are pending processing e.g. single line docstrings
+
+        Returns
+        -------
+        tuple[int, list[str], bool]
+            The new line number at the end of the docstring, the docstring and
+            a boolean flag indicating whether the docstring precedes the AST node
+            (Doxygen style) or succeeds it (traditional FORD style)
+        """
+        docstring: list[str] = docs
+        docstring.append(line[match.end(0) :].strip())
+        predocmark = True if match.group(1) == ">" else False
+
+        if ln >= self.nLines:
+            return ln, docstring, predocmark
+
+        # @note line index is 0-based
+        # Start from the current line until EOF and check for docs
+        for i in range(ln, self.nLines):
+            next_line = self.get_line(i, pp_content=True)
+            match = self.DOC_COMMENT_MATCH.match(next_line)
+            if not match:
+                ln = i
+                break
+            docstring.append(next_line[match.end(0) :].strip())
+        return ln, docstring, predocmark
+
+    def get_single_line_docstring(self, line: str) -> list[str]:
+        """Get a docstring of a single line. This is the same for both Legacy
+        and Modern Fortran
+
+        Parameters
+        ----------
+        line : str
+            Line of code
+
+        Returns
+        -------
+        list[str]
+            A list containing the docstring. List will be empty if there is no
+            match or the match is an empty string itself
+        """
+        match = FRegex.FREE_DOC.match(line)
+        if not match:
+            return []
+        # if the string is empty return an empty list instead
+        doc = line[match.end(0) :].strip()
+        return [doc] if doc else []
 
     @staticmethod
     def parser_debug(msg: str, line: str, ln: int, scope: bool = False):
@@ -1779,7 +1842,7 @@ class fortran_file:
         else:
             log.debug(f"{line.strip()} !!! {msg} statement({ln})")
 
-    def get_comment_regexs(self):
+    def get_comment_regexs(self) -> tuple[Pattern, Pattern]:
         if self.fixed:
             return FRegex.FIXED_COMMENT, FRegex.FIXED_DOC
         return FRegex.FREE_COMMENT, FRegex.FREE_DOC
