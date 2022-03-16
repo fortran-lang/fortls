@@ -1306,9 +1306,7 @@ class fortran_file:
             if file_ast.END_SCOPE_REGEX is not None:
                 match = FRegex.END_WORD.match(line_no_comment)
                 # Handle end statement
-                if self.parse_end_scope_word(
-                    line_no_comment, line_no, file_ast, match
-                ):
+                if self.parse_end_scope_word(line_no_comment, line_no, file_ast, match):
                     continue
                 # Look for old-style end of DO loops with line labels
                 if self.parse_do_fixed_format(
@@ -1323,7 +1321,7 @@ class fortran_file:
             if self._parse_implicit(line_no_comment, line_no, file_ast):
                 continue
             # Mark contains statement
-            if self._parse_contains(line_no_comment, line_no, file_ast):
+            if self.parse_contains(line_no_comment, line_no, file_ast):
                 continue
             # Loop through tests
             obj_read = self.get_fortran_definition(line)
@@ -1343,7 +1341,7 @@ class fortran_file:
                     if file_ast.current_scope.get_type() == INTERFACE_TYPE_ID:
                         for var_name in obj_info.var_names:
                             file_ast.add_int_member(var_name)
-                        log.debug('%s !!! INTERFACE-PRO - Ln:%d', line.strip(), line_no)
+                        log.debug("%s !!! INTERFACE-PRO - Ln:%d", line.strip(), line_no)
                         continue
                     procedure_def = True
                     link_name = get_paren_substring(desc_string)
@@ -1409,24 +1407,24 @@ class fortran_file:
 
                     # if not merge_external:
                     file_ast.add_variable(new_var)
-                log.debug('%s !!! VARIABLE - Ln:%d', line, line_no)
+                log.debug("%s !!! VARIABLE - Ln:%d", line, line_no)
 
             elif obj_type == "mod":
                 new_mod = fortran_module(file_ast, line_no, obj_info)
                 file_ast.add_scope(new_mod, FRegex.END_MOD)
-                log.debug('%s !!! MODULE - Ln:%d', line, line_no)
+                log.debug("%s !!! MODULE - Ln:%d", line, line_no)
 
             elif obj_type == "smod":
                 new_smod = fortran_submodule(
                     file_ast, line_no, obj_info.name, ancestor_name=obj_info.parent
                 )
                 file_ast.add_scope(new_smod, FRegex.END_SMOD)
-                log.debug('%s !!! SUBMODULE - Ln:%d', line, line_no)
+                log.debug("%s !!! SUBMODULE - Ln:%d", line, line_no)
 
             elif obj_type == "prog":
                 new_prog = fortran_program(file_ast, line_no, obj_info)
                 file_ast.add_scope(new_prog, FRegex.END_PROG)
-                log.debug('%s !!! PROGRAM - Ln:%d', line, line_no)
+                log.debug("%s !!! PROGRAM - Ln:%d", line, line_no)
 
             elif obj_type == "sub":
                 keywords, _ = map_keywords(obj_info.keywords)
@@ -1439,7 +1437,7 @@ class fortran_file:
                     keywords=keywords,
                 )
                 file_ast.add_scope(new_sub, FRegex.END_SUB)
-                log.debug('%s !!! SUBROUTINE - Ln:%d', line, line_no)
+                log.debug("%s !!! SUBROUTINE - Ln:%d", line, line_no)
 
             elif obj_type == "fun":
                 keywords, _ = map_keywords(obj_info.keywords)
@@ -1467,7 +1465,7 @@ class fortran_file:
                         keyword_info=keyword_info,
                     )
                     file_ast.add_variable(new_obj)
-                log.debug('%s !!! FUNCTION - Ln:%d', line, line_no)
+                log.debug("%s !!! FUNCTION - Ln:%d", line, line_no)
 
             elif obj_type == "block":
                 name = obj_info
@@ -1476,7 +1474,7 @@ class fortran_file:
                     name = f"#BLOCK{counters['block']}"
                 new_block = fortran_block(file_ast, line_no, name)
                 file_ast.add_scope(new_block, FRegex.END_BLOCK, req_container=True)
-                log.debug('%s !!! BLOCK - Ln:%d', line, line_no)
+                log.debug("%s !!! BLOCK - Ln:%d", line, line_no)
 
             elif obj_type == "do":
                 counters["do"] += 1
@@ -1485,7 +1483,7 @@ class fortran_file:
                     block_id_stack.append(obj_info)
                 new_do = fortran_do(file_ast, line_no, name)
                 file_ast.add_scope(new_do, FRegex.END_DO, req_container=True)
-                log.debug('%s !!! DO - Ln:%d', line, line_no)
+                log.debug("%s !!! DO - Ln:%d", line, line_no)
 
             elif obj_type == "where":
                 # Add block if WHERE is not single line
@@ -1494,7 +1492,7 @@ class fortran_file:
                     name = f"#WHERE{counters['do']}"
                     new_do = fortran_where(file_ast, line_no, name)
                     file_ast.add_scope(new_do, FRegex.END_WHERE, req_container=True)
-                log.debug('%s !!! WHERE - Ln:%d', line, line_no)
+                log.debug("%s !!! WHERE - Ln:%d", line, line_no)
 
             elif obj_type == "assoc":
                 counters["block"] += 1
@@ -1514,14 +1512,14 @@ class fortran_file:
                         )
                     except ValueError:
                         pass
-                log.debug('%s !!! ASSOCIATE - Ln:%d', line, line_no)
+                log.debug("%s !!! ASSOCIATE - Ln:%d", line, line_no)
 
             elif obj_type == "if":
                 counters["if"] += 1
                 name = f"#IF{counters['if']}"
                 new_if = fortran_if(file_ast, line_no, name)
                 file_ast.add_scope(new_if, FRegex.END_IF, req_container=True)
-                log.debug('%s !!! IF - Ln:%d', line, line_no)
+                log.debug("%s !!! IF - Ln:%d", line, line_no)
 
             elif obj_type == "select":
                 counters["select"] += 1
@@ -1536,7 +1534,7 @@ class fortran_file:
                 )
                 if new_var is not None:
                     file_ast.add_variable(new_var)
-                log.debug('%s !!! SELECT - Ln:%d', line, line_no)
+                log.debug("%s !!! SELECT - Ln:%d", line, line_no)
 
             elif obj_type == "typ":
                 keywords, _ = map_keywords(obj_info.keywords)
@@ -1544,14 +1542,14 @@ class fortran_file:
                 if obj_info.parent is not None:
                     new_type.set_inherit(obj_info.parent)
                 file_ast.add_scope(new_type, FRegex.END_TYPED, req_container=True)
-                log.debug('%s !!! TYPE - Ln:%d', line, line_no)
+                log.debug("%s !!! TYPE - Ln:%d", line, line_no)
 
             elif obj_type == "enum":
                 counters["block"] += 1
                 name = f"#ENUM{counters['block']}"
                 new_enum = fortran_enum(file_ast, line_no, name)
                 file_ast.add_scope(new_enum, FRegex.END_ENUMD, req_container=True)
-                log.debug('%s !!! ENUM - Ln:%d', line, line_no)
+                log.debug("%s !!! ENUM - Ln:%d", line, line_no)
 
             elif obj_type == "int":
                 name = obj_info.name
@@ -1562,7 +1560,7 @@ class fortran_file:
                     file_ast, line_no, name, abstract=obj_info.abstract
                 )
                 file_ast.add_scope(new_int, FRegex.END_INT, req_container=True)
-                log.debug('%s !!! INTERFACE - Ln:%d', line, line_no)
+                log.debug("%s !!! INTERFACE - Ln:%d", line, line_no)
 
             elif obj_type == "gen":
                 new_int = fortran_int(
@@ -1573,19 +1571,19 @@ class fortran_file:
                 for pro_link in obj_info.pro_links:
                     file_ast.add_int_member(pro_link)
                 file_ast.end_scope(line_no)
-                log.debug('%s !!! GENERIC - Ln:%d', line, line_no)
+                log.debug("%s !!! GENERIC - Ln:%d", line, line_no)
 
             elif obj_type == "int_pro":
                 if file_ast.current_scope is not None:
                     if file_ast.current_scope.get_type() == INTERFACE_TYPE_ID:
                         for name in obj_info:
                             file_ast.add_int_member(name)
-                        log.debug('%s !!! INTERFACE-PRO - Ln:%d', line, line_no)
+                        log.debug("%s !!! INTERFACE-PRO - Ln:%d", line, line_no)
 
                     elif file_ast.current_scope.get_type() == SUBMODULE_TYPE_ID:
                         new_impl = fortran_scope(file_ast, line_no, obj_info[0])
                         file_ast.add_scope(new_impl, FRegex.END_PRO)
-                        log.debug('%s !!! INTERFACE-IMPL - Ln:%d', line, line_no)
+                        log.debug("%s !!! INTERFACE-IMPL - Ln:%d", line, line_no)
 
             elif obj_type == "use":
                 file_ast.add_use(
@@ -1594,15 +1592,15 @@ class fortran_file:
                     obj_info.only_list,
                     obj_info.rename_map,
                 )
-                log.debug('%s !!! USE - Ln:%d', line, line_no)
+                log.debug("%s !!! USE - Ln:%d", line, line_no)
 
             elif obj_type == "import":
                 file_ast.add_use("#IMPORT", line_no, obj_info)
-                log.debug('%s !!! IMPORT - Ln:%d', line, line_no)
+                log.debug("%s !!! IMPORT - Ln:%d", line, line_no)
 
             elif obj_type == "inc":
                 file_ast.add_include(obj_info, line_no)
-                log.debug('%s !!! INCLUDE - Ln:%d', line, line_no)
+                log.debug("%s !!! INCLUDE - Ln:%d", line, line_no)
 
             elif obj_type == "vis":
                 if file_ast.current_scope is None:
@@ -1618,7 +1616,7 @@ class fortran_file:
                         else:
                             for word in obj_info.obj_names:
                                 file_ast.add_public(word)
-                log.debug('%s !!! VISIBILITY - Ln:%d', line, line_no)
+                log.debug("%s !!! VISIBILITY - Ln:%d", line, line_no)
 
         file_ast.close_file(line_no)
         if debug:
@@ -1698,7 +1696,7 @@ class fortran_file:
                 file_ast.end_scope(ln)
                 block_id_stack.pop()
                 did_close = True
-                log.debug('%s !!! END DO-LABELLED - Ln:%d', line, ln)
+                log.debug("%s !!! END DO-LABELLED - Ln:%d", line, ln)
             if did_close:
                 return True
         return False
@@ -1716,10 +1714,26 @@ class fortran_file:
             else:
                 file_ast.current_scope.set_implicit(True, ln)
 
-        log.debug('%s !!! IMPLICIT - Ln:%d', line, ln)
+        log.debug("%s !!! IMPLICIT - Ln:%d", line, ln)
         return True
 
-    def _parse_contains(self, line: str, ln: int, file_ast: fortran_ast):
+    def parse_contains(self, line: str, ln: int, file_ast: fortran_ast) -> bool:
+        """Parse contain statements
+
+        Parameters
+        ----------
+        line : str
+            Document line
+        ln : int
+            Line number
+        file_ast : fortran_ast
+            AST object
+
+        Returns
+        -------
+        bool
+            True if a contains is present, False otherwise
+        """
         match = FRegex.CONTAINS.match(line)
         if match is None:
             return False
@@ -1733,7 +1747,7 @@ class fortran_file:
             msg = "Multiple CONTAINS statements in scope"
         if msg:
             file_ast.add_error(msg, Severity.error, ln, match.start(1), match.end(1))
-        log.debug('%s !!! CONTAINS - Ln:%d', line, ln)
+        log.debug("%s !!! CONTAINS - Ln:%d", line, ln)
         return True
 
     def parse_docs(self, line: str, ln: int, file_ast: fortran_ast, docs: list[str]):
