@@ -818,7 +818,6 @@ class fortran_file:
         self.preproc: bool = False
         self.ast: fortran_ast = None
         self.hash: str = None
-        self.line: str = None
         if path:
             _, file_ext = os.path.splitext(os.path.basename(path))
             if pp_suffixes:
@@ -1303,17 +1302,16 @@ class fortran_file:
                 multi_lines.extendleft(line_stripped.split(";"))
                 line = multi_lines.pop()
                 line_stripped = line
-            self.line = line
             # Test for scope end
             if file_ast.END_SCOPE_REGEX is not None:
                 match = FRegex.END_WORD.match(line_no_comment)
                 # Handle end statement
-                if self._parse_end_scope_word(
+                if self.parse_end_scope_word(
                     line_no_comment, line_number, file_ast, match
                 ):
                     continue
                 # Look for old-style end of DO loops with line labels
-                if self._parse_do_fixed_format(
+                if self.parse_do_fixed_format(
                     line, line_number, file_ast, line_label, block_id_stack
                 ):
                     continue
@@ -1638,10 +1636,27 @@ class fortran_file:
                     log.debug(f"{error['range']}: {error['message']}")
         return file_ast
 
-    def _parse_end_scope_word(
+    def parse_end_scope_word(
         self, line: str, ln: int, file_ast: fortran_ast, match: re.Match
-    ):
-        # TODO: line.strip() is the normal line, make it self.line
+    ) -> bool:
+        """Parses END keyword marking the end of scopes
+
+        Parameters
+        ----------
+        line : str
+            Document line
+        ln : int
+            Line number
+        file_ast : fortran_ast
+            AST object
+        match : re.Match
+            END word regular expression match
+
+        Returns
+        -------
+        bool
+            True if a AST scope is closed, False otherwise
+        """
         if match is None:
             return False
 
@@ -1666,7 +1681,7 @@ class fortran_file:
             return True
         return False
 
-    def _parse_do_fixed_format(
+    def parse_do_fixed_format(
         self,
         line: str,
         ln: int,
@@ -1683,7 +1698,7 @@ class fortran_file:
                 file_ast.end_scope(ln)
                 block_id_stack.pop()
                 did_close = True
-                self.parser_debug("DO", self.line, ln, scope=True)
+                self.parser_debug("DO", line, ln, scope=True)
             if did_close:
                 return True
         return False
@@ -1701,7 +1716,7 @@ class fortran_file:
             else:
                 file_ast.current_scope.set_implicit(True, ln)
 
-        self.parser_debug("IMPLICIT", self.line, ln)
+        self.parser_debug("IMPLICIT", line, ln)
         return True
 
     def _parse_contains(self, line: str, ln: int, file_ast: fortran_ast):
@@ -1718,7 +1733,7 @@ class fortran_file:
             msg = "Multiple CONTAINS statements in scope"
         if msg:
             file_ast.add_error(msg, Severity.error, ln, match.start(1), match.end(1))
-        self.parser_debug("CONTAINS", self.line, ln)
+        self.parser_debug("CONTAINS", line, ln)
         return True
 
     def parse_docs(self, line: str, ln: int, file_ast: fortran_ast, docs: list[str]):
