@@ -1675,7 +1675,7 @@ class fortran_file:
             ):
                 file_ast.end_scope(ln)
             file_ast.end_scope(ln)
-            log.debug('%s !!! END "%s" Scope - Ln:%d', line, end_scope_word, ln)
+            log.debug('%s !!! END %s Scope - Ln:%d', line, end_scope_word.upper(), ln)
             return True
         return False
 
@@ -1863,13 +1863,6 @@ class fortran_file:
         # if the string is empty return an empty list instead
         doc = line[match.end(0) :].strip()
         return [doc] if doc else []
-
-    @staticmethod
-    def parser_debug(msg: str, line: str, ln: int, scope: bool = False):
-        if scope:
-            log.debug('%s !!! END "%s" scope - Line:%d', line.strip(), msg, ln)
-        else:
-            log.debug(f"{line.strip()} !!! {msg} - Line:{ln}")
 
     def get_comment_regexs(self) -> tuple[Pattern, Pattern]:
         if self.fixed:
