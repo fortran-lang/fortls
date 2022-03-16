@@ -869,10 +869,10 @@ class fortran_file:
     def apply_change(self, change: dict) -> bool:
         """Apply a change to the file."""
 
-        def check_change_reparse(line_number: int) -> bool:
-            if (line_number < 0) or (line_number > self.nLines - 1):
+        def check_change_reparse(line_no: int) -> bool:
+            if (line_no < 0) or (line_no > self.nLines - 1):
                 return True
-            pre_lines, curr_line, _ = self.get_code_line(line_number, forward=False)
+            pre_lines, curr_line, _ = self.get_code_line(line_no, forward=False)
             # Skip comment lines
             if self.fixed:
                 if FRegex.FIXED_COMMENT.match(curr_line):
@@ -972,29 +972,29 @@ class fortran_file:
         if detect_format:
             self.fixed = detect_fixed_format(self.contents_split)
 
-    def get_line(self, line_number: int, pp_content: bool = False) -> str:
+    def get_line(self, line_no: int, pp_content: bool = False) -> str:
         """Get single line from file"""
         try:
             if pp_content:
-                return self.contents_pp[line_number]
-            return self.contents_split[line_number]
+                return self.contents_pp[line_no]
+            return self.contents_split[line_no]
         except (TypeError, IndexError):
             return None
 
     def get_code_line(
         self,
-        line_number: int,
+        line_no: int,
         forward: bool = True,
         backward: bool = True,
         pp_content: bool = False,
         strip_comment: bool = False,
     ) -> tuple[list[str], str, list[str]]:
         """Get full code line from file including any adjacent continuations"""
-        curr_line = self.get_line(line_number, pp_content)
+        curr_line = self.get_line(line_no, pp_content)
         if curr_line is None:
             return [], None, []
         # Search backward for prefix lines
-        line_ind = line_number - 1
+        line_ind = line_no - 1
         pre_lines = []
         if backward:
             if self.fixed:  # Fixed format file
@@ -1003,7 +1003,7 @@ class fortran_file:
                     if FRegex.FIXED_CONT.match(tmp_line):
                         prev_line = tmp_line
                         tmp_line = self.get_line(line_ind, pp_content)
-                        if line_ind == line_number - 1:
+                        if line_ind == line_no - 1:
                             curr_line = " " * 6 + curr_line[6:]
                         else:
                             pre_lines[-1] = " " * 6 + prev_line[6:]
@@ -1037,7 +1037,7 @@ class fortran_file:
                         break
                     line_ind -= 1
         # Search forward for trailing lines with continuations
-        line_ind = line_number + 1
+        line_ind = line_no + 1
         post_lines = []
         if forward:
             if self.fixed:
@@ -1059,7 +1059,7 @@ class fortran_file:
                 next_line = ""
                 # Read the next line if needed
                 while (iAmper >= 0) and (iAmper < iComm):
-                    if line_ind == line_number + 1:
+                    if line_ind == line_no + 1:
                         curr_line = curr_line[:iAmper]
                     elif next_line != "":
                         post_lines[-1] = next_line[:iAmper]
@@ -1106,14 +1106,14 @@ class fortran_file:
 
     def find_word_in_code_line(
         self,
-        line_number: int,
+        line_no: int,
         word: str,
         forward: bool = True,
         backward: bool = False,
         pp_content: bool = False,
     ) -> tuple[int, Range]:
         back_lines, curr_line, forward_lines = self.get_code_line(
-            line_number, forward=forward, backward=backward, pp_content=pp_content
+            line_no, forward=forward, backward=backward, pp_content=pp_content
         )
         word_range = Range(-1, -1)
         if curr_line is not None:
@@ -1124,15 +1124,15 @@ class fortran_file:
             for (i, line) in enumerate(back_lines):
                 word_range = find_word_in_line(line.lower(), find_word_lower)
                 if word_range.start >= 0:
-                    line_number -= i + 1
-                    return line_number, word_range
+                    line_no -= i + 1
+                    return line_no, word_range
         if forward and (word_range.start < 0):
             for (i, line) in enumerate(forward_lines):
                 word_range = find_word_in_line(line.lower(), find_word_lower)
                 if word_range.start >= 0:
-                    line_number += i + 1
-                    return line_number, word_range
-        return line_number, word_range
+                    line_no += i + 1
+                    return line_no, word_range
+        return line_no, word_range
 
     def preprocess(
         self, pp_defs: dict = None, include_dirs: set = None, debug: bool = False
@@ -1235,7 +1235,7 @@ class fortran_file:
             pp_skips = []
             pp_defines = []
 
-        line_number = 0
+        line_no = 0
         block_id_stack = []
         docs: list[str] = []  # list used to temporarily store docstrings
         counters = Counter(
@@ -1247,13 +1247,13 @@ class fortran_file:
         )
         multi_lines = deque()
         self.COMMENT_LINE_MATCH, self.DOC_COMMENT_MATCH = self.get_comment_regexs()
-        while (line_number < self.nLines) or multi_lines:
+        while (line_no < self.nLines) or multi_lines:
             # Get next line
             # Get a normal line, i.e. the stack is empty
             if not multi_lines:
                 # get_line has a 0-based index
-                line = self.get_line(line_number, pp_content=True)
-                line_number += 1
+                line = self.get_line(line_no, pp_content=True)
+                line_no += 1
                 get_full = True
             # Line is part of a multi-line construct, i.e. contained ';'
             else:
@@ -1265,27 +1265,27 @@ class fortran_file:
 
             # Parse documentation strings to AST nodes, this implicitly operates
             # on docs, i.e. appends or nullifies it
-            idx = self.parse_docs(line, line_number, file_ast, docs)
+            idx = self.parse_docs(line, line_no, file_ast, docs)
             if idx:
-                line_number = idx
+                line_no = idx
                 continue
             # Handle preprocessing regions
             do_skip = False
             for pp_reg in pp_skips:
-                if (line_number >= pp_reg[0]) and (line_number <= pp_reg[1]):
+                if (line_no >= pp_reg[0]) and (line_no <= pp_reg[1]):
                     do_skip = True
                     break
-            if line_number in pp_defines:
+            if line_no in pp_defines:
                 do_skip = True
             if do_skip:
                 continue
             # Get full line, seek forward for code lines
-            # @note line_number-1 refers to the array index for the current line
+            # @note line_no-1 refers to the array index for the current line
             if get_full:
                 _, line, post_lines = self.get_code_line(
-                    line_number - 1, backward=False, pp_content=True
+                    line_no - 1, backward=False, pp_content=True
                 )
-                line_number += len(post_lines)
+                line_no += len(post_lines)
                 line = "".join([line] + post_lines)
             line, line_label = strip_line_label(line)
             line_stripped = strip_strings(line, maintain_len=True)
@@ -1307,12 +1307,12 @@ class fortran_file:
                 match = FRegex.END_WORD.match(line_no_comment)
                 # Handle end statement
                 if self.parse_end_scope_word(
-                    line_no_comment, line_number, file_ast, match
+                    line_no_comment, line_no, file_ast, match
                 ):
                     continue
                 # Look for old-style end of DO loops with line labels
                 if self.parse_do_fixed_format(
-                    line, line_number, file_ast, line_label, block_id_stack
+                    line, line_no, file_ast, line_label, block_id_stack
                 ):
                     continue
 
@@ -1320,10 +1320,10 @@ class fortran_file:
             if FRegex.NON_DEF.match(line_no_comment):
                 continue
             # Mark implicit statement
-            if self._parse_implicit(line_no_comment, line_number, file_ast):
+            if self._parse_implicit(line_no_comment, line_no, file_ast):
                 continue
             # Mark contains statement
-            if self._parse_contains(line_no_comment, line_number, file_ast):
+            if self._parse_contains(line_no_comment, line_no, file_ast):
                 continue
             # Loop through tests
             obj_read = self.get_fortran_definition(line)
@@ -1343,7 +1343,7 @@ class fortran_file:
                     if file_ast.current_scope.get_type() == INTERFACE_TYPE_ID:
                         for var_name in obj_info.var_names:
                             file_ast.add_int_member(var_name)
-                        self.parser_debug("INTERFACE-PRO", line, line_number)
+                        log.debug('%s !!! INTERFACE-PRO - Ln:%d', line.strip(), line_no)
                         continue
                     procedure_def = True
                     link_name = get_paren_substring(desc_string)
@@ -1377,7 +1377,7 @@ class fortran_file:
                     if procedure_def:
                         new_var = fortran_meth(
                             file_ast,
-                            line_number,
+                            line_no,
                             name_stripped,
                             desc_string,
                             keywords,
@@ -1387,7 +1387,7 @@ class fortran_file:
                     else:
                         new_var = fortran_var(
                             file_ast,
-                            line_number,
+                            line_no,
                             name_stripped,
                             desc_string,
                             keywords,
@@ -1409,43 +1409,43 @@ class fortran_file:
 
                     # if not merge_external:
                     file_ast.add_variable(new_var)
-                self.parser_debug("VARIABLE", line, line_number)
+                log.debug('%s !!! VARIABLE - Ln:%d', line, line_no)
 
             elif obj_type == "mod":
-                new_mod = fortran_module(file_ast, line_number, obj_info)
+                new_mod = fortran_module(file_ast, line_no, obj_info)
                 file_ast.add_scope(new_mod, FRegex.END_MOD)
-                self.parser_debug("MODULE", line, line_number)
+                log.debug('%s !!! MODULE - Ln:%d', line, line_no)
 
             elif obj_type == "smod":
                 new_smod = fortran_submodule(
-                    file_ast, line_number, obj_info.name, ancestor_name=obj_info.parent
+                    file_ast, line_no, obj_info.name, ancestor_name=obj_info.parent
                 )
                 file_ast.add_scope(new_smod, FRegex.END_SMOD)
-                self.parser_debug("SUBMODULE", line, line_number)
+                log.debug('%s !!! SUBMODULE - Ln:%d', line, line_no)
 
             elif obj_type == "prog":
-                new_prog = fortran_program(file_ast, line_number, obj_info)
+                new_prog = fortran_program(file_ast, line_no, obj_info)
                 file_ast.add_scope(new_prog, FRegex.END_PROG)
-                self.parser_debug("PROGRAM", line, line_number)
+                log.debug('%s !!! PROGRAM - Ln:%d', line, line_no)
 
             elif obj_type == "sub":
                 keywords, _ = map_keywords(obj_info.keywords)
                 new_sub = fortran_subroutine(
                     file_ast,
-                    line_number,
+                    line_no,
                     obj_info.name,
                     args=obj_info.args,
                     mod_flag=obj_info.mod_flag,
                     keywords=keywords,
                 )
                 file_ast.add_scope(new_sub, FRegex.END_SUB)
-                self.parser_debug("SUBROUTINE", line, line_number)
+                log.debug('%s !!! SUBROUTINE - Ln:%d', line, line_no)
 
             elif obj_type == "fun":
                 keywords, _ = map_keywords(obj_info.keywords)
                 new_fun = fortran_function(
                     file_ast,
-                    line_number,
+                    line_no,
                     obj_info.name,
                     args=obj_info.args,
                     mod_flag=obj_info.mod_flag,
@@ -1460,46 +1460,46 @@ class fortran_file:
                     keywords, keyword_info = map_keywords(obj_info.result.keywords)
                     new_obj = fortran_var(
                         file_ast,
-                        line_number,
+                        line_no,
                         name=obj_info.result.name,
                         var_desc=obj_info.result.type,
                         keywords=keywords,
                         keyword_info=keyword_info,
                     )
                     file_ast.add_variable(new_obj)
-                self.parser_debug("FUNCTION", line, line_number)
+                log.debug('%s !!! FUNCTION - Ln:%d', line, line_no)
 
             elif obj_type == "block":
                 name = obj_info
                 if name is None:
                     counters["block"] += 1
                     name = f"#BLOCK{counters['block']}"
-                new_block = fortran_block(file_ast, line_number, name)
+                new_block = fortran_block(file_ast, line_no, name)
                 file_ast.add_scope(new_block, FRegex.END_BLOCK, req_container=True)
-                self.parser_debug("BLOCK", line, line_number)
+                log.debug('%s !!! BLOCK - Ln:%d', line, line_no)
 
             elif obj_type == "do":
                 counters["do"] += 1
                 name = f"#DO{counters['do']}"
                 if obj_info != "":
                     block_id_stack.append(obj_info)
-                new_do = fortran_do(file_ast, line_number, name)
+                new_do = fortran_do(file_ast, line_no, name)
                 file_ast.add_scope(new_do, FRegex.END_DO, req_container=True)
-                self.parser_debug("DO", line, line_number)
+                log.debug('%s !!! DO - Ln:%d', line, line_no)
 
             elif obj_type == "where":
                 # Add block if WHERE is not single line
                 if not obj_info:
                     counters["do"] += 1
                     name = f"#WHERE{counters['do']}"
-                    new_do = fortran_where(file_ast, line_number, name)
+                    new_do = fortran_where(file_ast, line_no, name)
                     file_ast.add_scope(new_do, FRegex.END_WHERE, req_container=True)
-                self.parser_debug("WHERE", line, line_number)
+                log.debug('%s !!! WHERE - Ln:%d', line, line_no)
 
             elif obj_type == "assoc":
                 counters["block"] += 1
                 name = f"#ASSOC{counters['block']}"
-                new_assoc = fortran_associate(file_ast, line_number, name)
+                new_assoc = fortran_associate(file_ast, line_no, name)
                 file_ast.add_scope(new_assoc, FRegex.END_ASSOCIATE, req_container=True)
                 for bound_var in obj_info:
                     try:
@@ -1507,51 +1507,51 @@ class fortran_file:
                         file_ast.add_variable(
                             new_assoc.create_binding_variable(
                                 file_ast,
-                                line_number,
+                                line_no,
                                 bind_name.strip(),
                                 link_name.strip(),
                             )
                         )
                     except ValueError:
                         pass
-                self.parser_debug("ASSOCIATE", line, line_number)
+                log.debug('%s !!! ASSOCIATE - Ln:%d', line, line_no)
 
             elif obj_type == "if":
                 counters["if"] += 1
                 name = f"#IF{counters['if']}"
-                new_if = fortran_if(file_ast, line_number, name)
+                new_if = fortran_if(file_ast, line_no, name)
                 file_ast.add_scope(new_if, FRegex.END_IF, req_container=True)
-                self.parser_debug("IF", line, line_number)
+                log.debug('%s !!! IF - Ln:%d', line, line_no)
 
             elif obj_type == "select":
                 counters["select"] += 1
                 name = f"#SELECT{counters['select']}"
-                new_select = fortran_select(file_ast, line_number, name, obj_info)
+                new_select = fortran_select(file_ast, line_no, name, obj_info)
                 file_ast.add_scope(new_select, FRegex.END_SELECT, req_container=True)
                 new_var = new_select.create_binding_variable(
                     file_ast,
-                    line_number,
+                    line_no,
                     f"{obj_info.desc}({obj_info.binding})",
                     obj_info.type,
                 )
                 if new_var is not None:
                     file_ast.add_variable(new_var)
-                self.parser_debug("SELECT", line, line_number)
+                log.debug('%s !!! SELECT - Ln:%d', line, line_no)
 
             elif obj_type == "typ":
                 keywords, _ = map_keywords(obj_info.keywords)
-                new_type = fortran_type(file_ast, line_number, obj_info.name, keywords)
+                new_type = fortran_type(file_ast, line_no, obj_info.name, keywords)
                 if obj_info.parent is not None:
                     new_type.set_inherit(obj_info.parent)
                 file_ast.add_scope(new_type, FRegex.END_TYPED, req_container=True)
-                self.parser_debug("TYPE", line, line_number)
+                log.debug('%s !!! TYPE - Ln:%d', line, line_no)
 
             elif obj_type == "enum":
                 counters["block"] += 1
                 name = f"#ENUM{counters['block']}"
-                new_enum = fortran_enum(file_ast, line_number, name)
+                new_enum = fortran_enum(file_ast, line_no, name)
                 file_ast.add_scope(new_enum, FRegex.END_ENUMD, req_container=True)
-                self.parser_debug("ENUM", line, line_number)
+                log.debug('%s !!! ENUM - Ln:%d', line, line_no)
 
             elif obj_type == "int":
                 name = obj_info.name
@@ -1559,55 +1559,55 @@ class fortran_file:
                     counters["interface"] += 1
                     name = f"#GEN_INT{counters['interface']}"
                 new_int = fortran_int(
-                    file_ast, line_number, name, abstract=obj_info.abstract
+                    file_ast, line_no, name, abstract=obj_info.abstract
                 )
                 file_ast.add_scope(new_int, FRegex.END_INT, req_container=True)
-                self.parser_debug("INTERFACE", line, line_number)
+                log.debug('%s !!! INTERFACE - Ln:%d', line, line_no)
 
             elif obj_type == "gen":
                 new_int = fortran_int(
-                    file_ast, line_number, obj_info.bound_name, abstract=False
+                    file_ast, line_no, obj_info.bound_name, abstract=False
                 )
                 new_int.set_visibility(obj_info.vis_flag)
                 file_ast.add_scope(new_int, FRegex.END_INT, req_container=True)
                 for pro_link in obj_info.pro_links:
                     file_ast.add_int_member(pro_link)
-                file_ast.end_scope(line_number)
-                self.parser_debug("GENERIC", line, line_number)
+                file_ast.end_scope(line_no)
+                log.debug('%s !!! GENERIC - Ln:%d', line, line_no)
 
             elif obj_type == "int_pro":
                 if file_ast.current_scope is not None:
                     if file_ast.current_scope.get_type() == INTERFACE_TYPE_ID:
                         for name in obj_info:
                             file_ast.add_int_member(name)
-                        self.parser_debug("INTERFACE-PRO", line, line_number)
+                        log.debug('%s !!! INTERFACE-PRO - Ln:%d', line, line_no)
 
                     elif file_ast.current_scope.get_type() == SUBMODULE_TYPE_ID:
-                        new_impl = fortran_scope(file_ast, line_number, obj_info[0])
+                        new_impl = fortran_scope(file_ast, line_no, obj_info[0])
                         file_ast.add_scope(new_impl, FRegex.END_PRO)
-                        self.parser_debug("INTERFACE_IMPL", line, line_number)
+                        log.debug('%s !!! INTERFACE-IMPL - Ln:%d', line, line_no)
 
             elif obj_type == "use":
                 file_ast.add_use(
                     obj_info.mod_name,
-                    line_number,
+                    line_no,
                     obj_info.only_list,
                     obj_info.rename_map,
                 )
-                self.parser_debug("USE", line, line_number)
+                log.debug('%s !!! USE - Ln:%d', line, line_no)
 
             elif obj_type == "import":
-                file_ast.add_use("#IMPORT", line_number, obj_info)
-                self.parser_debug("IMPORT", line, line_number)
+                file_ast.add_use("#IMPORT", line_no, obj_info)
+                log.debug('%s !!! IMPORT - Ln:%d', line, line_no)
 
             elif obj_type == "inc":
-                file_ast.add_include(obj_info, line_number)
-                self.parser_debug("INCLUDE", line, line_number)
+                file_ast.add_include(obj_info, line_no)
+                log.debug('%s !!! INCLUDE - Ln:%d', line, line_no)
 
             elif obj_type == "vis":
                 if file_ast.current_scope is None:
                     msg = "Visibility statement without enclosing scope"
-                    file_ast.add_error(msg, Severity.error, line_number, 0)
+                    file_ast.add_error(msg, Severity.error, line_no, 0)
                 else:
                     if (len(obj_info.obj_names) == 0) and (obj_info.type == 1):
                         file_ast.current_scope.set_default_vis(-1)
@@ -1618,9 +1618,9 @@ class fortran_file:
                         else:
                             for word in obj_info.obj_names:
                                 file_ast.add_public(word)
-                self.parser_debug("Visibility", line, line_number)
+                log.debug('%s !!! VISIBILITY - Ln:%d', line, line_no)
 
-        file_ast.close_file(line_number)
+        file_ast.close_file(line_no)
         if debug:
             if len(file_ast.end_errors) > 0:
                 log.debug("\n=== Scope Errors ===\n")
@@ -1677,7 +1677,7 @@ class fortran_file:
             ):
                 file_ast.end_scope(ln)
             file_ast.end_scope(ln)
-            log.debug(f'{line} !!! END "{end_scope_word}" scope({ln})')
+            log.debug('%s !!! END "%s" Scope - Ln:%d', line, end_scope_word, ln)
             return True
         return False
 
@@ -1698,7 +1698,7 @@ class fortran_file:
                 file_ast.end_scope(ln)
                 block_id_stack.pop()
                 did_close = True
-                self.parser_debug("DO", line, ln, scope=True)
+                log.debug('%s !!! END DO-LABELLED - Ln:%d', line, ln)
             if did_close:
                 return True
         return False
@@ -1716,7 +1716,7 @@ class fortran_file:
             else:
                 file_ast.current_scope.set_implicit(True, ln)
 
-        self.parser_debug("IMPLICIT", line, ln)
+        log.debug('%s !!! IMPLICIT - Ln:%d', line, ln)
         return True
 
     def _parse_contains(self, line: str, ln: int, file_ast: fortran_ast):
@@ -1733,7 +1733,7 @@ class fortran_file:
             msg = "Multiple CONTAINS statements in scope"
         if msg:
             file_ast.add_error(msg, Severity.error, ln, match.start(1), match.end(1))
-        self.parser_debug("CONTAINS", line, ln)
+        log.debug('%s !!! CONTAINS - Ln:%d', line, ln)
         return True
 
     def parse_docs(self, line: str, ln: int, file_ast: fortran_ast, docs: list[str]):
@@ -1762,7 +1762,7 @@ class fortran_file:
             # Handle dangling comments from previous line
             if docs:
                 file_ast.add_doc(format(docs))
-                log.debug(f"{format(docs)} !!! Doc string({ln})")
+                log.debug(f"{format(docs)} !!! Doc string - Line:{ln}")
                 docs[:] = []  # empty the documentation stack
 
         # Check for comments in line
@@ -1783,7 +1783,7 @@ class fortran_file:
         if len("".join(docs)) > 0:
             file_ast.add_doc(format(docs), forward=predocmark)
         for (i, doc_line) in enumerate(docs):
-            log.debug(f"{doc_line} !!! Doc string({_ln + i})")
+            log.debug(f"{doc_line} !!! Doc string - Line:{_ln + i}")
         docs[:] = []
         return ln
 
@@ -1853,9 +1853,9 @@ class fortran_file:
     @staticmethod
     def parser_debug(msg: str, line: str, ln: int, scope: bool = False):
         if scope:
-            log.debug(f'{line.strip()} !!! END "{msg}" scope({ln})')
+            log.debug('%s !!! END "%s" scope - Line:%d', line.strip(), msg, ln)
         else:
-            log.debug(f"{line.strip()} !!! {msg} statement({ln})")
+            log.debug(f"{line.strip()} !!! {msg} - Line:{ln}")
 
     def get_comment_regexs(self) -> tuple[Pattern, Pattern]:
         if self.fixed:
