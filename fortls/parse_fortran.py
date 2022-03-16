@@ -1675,7 +1675,7 @@ class fortran_file:
             ):
                 file_ast.end_scope(ln)
             file_ast.end_scope(ln)
-            log.debug('%s !!! END %s Scope - Ln:%d', line, end_scope_word.upper(), ln)
+            log.debug("%s !!! END %s Scope - Ln:%d", line, end_scope_word.upper(), ln)
             return True
         return False
 
