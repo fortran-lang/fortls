@@ -1318,7 +1318,7 @@ class fortran_file:
             if FRegex.NON_DEF.match(line_no_comment):
                 continue
             # Mark implicit statement
-            if self._parse_implicit(line_no_comment, line_no, file_ast):
+            if self.parse_implicit(line_no_comment, line_no, file_ast):
                 continue
             # Mark contains statement
             if self.parse_contains(line_no_comment, line_no, file_ast):
@@ -1701,7 +1701,23 @@ class fortran_file:
                 return True
         return False
 
-    def _parse_implicit(self, line: str, ln: int, file_ast: fortran_ast):
+    def parse_implicit(self, line: str, ln: int, file_ast: fortran_ast) -> bool:
+        """Parse implicit statements from a line
+
+        Parameters
+        ----------
+        line : str
+            Document line
+        ln : int
+            Line number
+        file_ast : fortran_ast
+            AST object
+
+        Returns
+        -------
+        bool
+            True if an IMPLICIT statements present, False otherwise
+        """
         match = FRegex.IMPLICIT.match(line)
         if match is None:
             return False
