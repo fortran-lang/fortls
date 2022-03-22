@@ -186,14 +186,8 @@ class LangServer:
             params.get("rootUri") or params.get("rootPath") or ""
         )
         self.source_dirs.add(self.root_path)
-        logging.basicConfig(
-            format="[%(levelname)-.4s - %(asctime)s] %(message)s",
-            datefmt="%H:%M:%S",
-            level=logging.INFO,
-        )
-        self._config_logger(request)
-        init_debug_log = self._load_config_file()
-        if init_debug_log:
+
+        self._load_config_file()
             self._config_logger(request)
         self._load_intrinsics()
         self._add_source_dirs()
@@ -1478,7 +1472,7 @@ class LangServer:
             code=-32601, message=f"method {request['method']} not found"
         )
 
-    def _load_config_file(self) -> bool | None:
+    def _load_config_file(self) -> None:
         """Loads the configuration file for the Language Server"""
 
         # Check for config file
@@ -1510,14 +1504,16 @@ class LangServer:
                 # command line argument return True so that debug log is setup
                 if debugging != self.debug_log and not self.debug_log:
                     self.debug_log = True
-                    return True
-                return False
 
         except FileNotFoundError:
-            self.post_message(f"Error settings file '{self.config}' not found")
+            self.post_messages(
+                [Severity.error, f"Error settings file '{self.config}' not found"]
+            )
 
         except ValueError:
-            self.post_message(f"Error while parsing '{self.config}' settings file")
+            self.post_messages(
+                [Severity.error, f"Error while parsing '{self.config}' settings file"]
+            )
 
     def _load_config_file_dirs(self, config_dict: dict) -> None:
         # Exclude paths (directories & files)
@@ -1662,16 +1658,19 @@ class LangServer:
         the logger will by default output to the main (stderr, stdout) channels.
         """
 
-        if not self.debug_log:
-            return None
-        if not self.root_path:
-            return None
-
+        file_log = True if self.debug_log and self.root_path else False
+        fmt = "[%(levelname)-.4s - %(asctime)s] %(message)s"
+        if file_log:
         fname = "fortls_debug.log"
         fname = os.path.join(self.root_path, fname)
         logging.basicConfig(filename=fname, level=logging.DEBUG, filemode="w")
+            # Also forward logs to the console
+            consoleHandler = logging.StreamHandler()
+            log.addHandler(consoleHandler)
         log.debug("REQUEST %s %s", request.get("id"), request.get("method"))
         self.post_messages.append([Severity.info, "fortls debugging enabled"])
+        else:
+            logging.basicConfig(format=fmt, datefmt="%H:%M:%S", level=logging.INFO)
 
     def _load_intrinsics(self) -> None:
         # Load intrinsics
