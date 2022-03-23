@@ -188,7 +188,7 @@ class LangServer:
         self.source_dirs.add(self.root_path)
 
         self._load_config_file()
-            self._config_logger(request)
+        self._config_logger(request)
         self._load_intrinsics()
         self._add_source_dirs()
         if self._update_version_pypi():
@@ -1661,14 +1661,14 @@ class LangServer:
         file_log = True if self.debug_log and self.root_path else False
         fmt = "[%(levelname)-.4s - %(asctime)s] %(message)s"
         if file_log:
-        fname = "fortls_debug.log"
-        fname = os.path.join(self.root_path, fname)
-        logging.basicConfig(filename=fname, level=logging.DEBUG, filemode="w")
+            fname = "fortls_debug.log"
+            fname = os.path.join(self.root_path, fname)
+            logging.basicConfig(filename=fname, level=logging.DEBUG, filemode="w")
             # Also forward logs to the console
             consoleHandler = logging.StreamHandler()
             log.addHandler(consoleHandler)
-        log.debug("REQUEST %s %s", request.get("id"), request.get("method"))
-        self.post_messages.append([Severity.info, "fortls debugging enabled"])
+            log.debug("REQUEST %s %s", request.get("id"), request.get("method"))
+            self.post_messages.append([Severity.info, "fortls debugging enabled"])
         else:
             logging.basicConfig(format=fmt, datefmt="%H:%M:%S", level=logging.INFO)
 
