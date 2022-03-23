@@ -5,7 +5,8 @@
   "excl_paths": [
     "excldir/**",
     "./diag/",
-    "docs"
+    "docs",
+    "rename"
   ]
 
 }

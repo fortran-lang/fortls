@@ -41,6 +41,7 @@ from fortls.helper_functions import (
     set_keyword_ordering,
 )
 from fortls.intrinsics import (
+    fortran_intrinsic_obj,
     get_intrinsic_keywords,
     load_intrinsics,
     set_lowercase_intrinsics,
@@ -905,6 +906,8 @@ class LangServer:
             file_set = self.workspace.items()
         else:
             file_set = ((file_obj.path, file_obj),)
+        # A container that includes all the FQSN signatures for objects that
+        # are linked to the rename request and that should also be replaced
         override_cache: list[str] = []
         refs = {}
         ref_objs = []
@@ -923,26 +926,52 @@ class LangServer:
                     if var_def is None:
                         continue
                     ref_match = False
-                    if def_fqsn == var_def.FQSN or var_def.FQSN in override_cache:
-                        ref_match = True
-                    elif var_def.parent and var_def.parent.get_type() == CLASS_TYPE_ID:
-                        if type_mem:
-                            for inherit_def in var_def.parent.get_overridden(def_name):
-                                if def_fqsn == inherit_def.FQSN:
-                                    ref_match = True
-                                    override_cache.append(var_def.FQSN)
-                                    break
-                        if (
-                            (var_def.sline - 1 == i)
-                            and (var_def.file_ast.path == filename)
-                            and (line.count("=>") == 0)
+                    try:
+                        # NOTE: throws AttributeError if object is intrinsic since
+                        # it will not have a FQSN
+                        # BUG: intrinsic objects should be excluded, but get_definition
+                        # does not recognise the arguments
+                        if def_fqsn == var_def.FQSN or var_def.FQSN in override_cache:
+                            ref_match = True
+                        # NOTE: throws AttributeError if object is None
+                        elif var_def.parent.get_type() == CLASS_TYPE_ID:
+                            if type_mem:
+                                for inherit_def in var_def.parent.get_overridden(
+                                    def_name
+                                ):
+                                    if def_fqsn == inherit_def.FQSN:
+                                        ref_match = True
+                                        override_cache.append(var_def.FQSN)
+                                        break
+
+                            # Standalone definition of a type-bound procedure,
+                            # no pointer replace all its instances in the current scope
+                            # NOTE: throws AttributeError if object has no link_obj
+                            if (
+                                var_def.sline - 1 == i
+                                and var_def.file_ast.path == filename
+                                and line.count("=>") == 0
+                                and var_def.link_obj is def_obj
+                            ):
+                                ref_objs.append(var_def)
+                                override_cache.append(var_def.FQSN)
+                                ref_match = True
+
+                        # Object is a Method and the linked object i.e. the
+                        # implementation
+                        # shares the same parent signature as the current variable
+                        # NOTE:: throws and AttributeError if the link_object or
+                        # parent are not present OR they are set to None
+                        # hence not having a FQSN
+                        elif (
+                            def_obj.get_type(True) == METH_TYPE_ID
+                            and def_obj.link_obj.parent.FQSN == var_def.parent.FQSN
                         ):
-                            try:
-                                if var_def.link_obj is def_obj:
-                                    ref_objs.append(var_def)
-                                    ref_match = True
-                            except:
-                                pass
+                            ref_match = True
+                            override_cache.append(var_def.FQSN)
+                    except AttributeError:
+                        ref_match = False
+
                     if ref_match:
                         file_refs.append([i, match.start(1), match.end(1)])
             if len(file_refs) > 0:
@@ -1114,6 +1143,9 @@ class LangServer:
         def_obj = self.get_definition(file_obj, def_line, def_char)
         if def_obj is None:
             return None
+        if isinstance(def_obj, fortran_intrinsic_obj):
+            self.post_message("Rename failed: Cannot rename intrinsics", Severity.warn)
+            return None
         # Determine global accesibility and type membership
         restrict_file = None
         type_mem = False
@@ -1132,36 +1164,14 @@ class LangServer:
             return None
         # Create rename changes
         new_name = params["newName"]
-        changes = {}
-        for (filename, file_refs) in all_refs.items():
+        changes: dict[str, list[dict]] = {}
+        for filename, file_refs in all_refs.items():
             file_uri = path_to_uri(filename)
             changes[file_uri] = []
             for ref in file_refs:
                 changes[file_uri].append(
                     change_json(new_name, ref[0], ref[1], ref[0], ref[2])
                 )
-        # Check for implicit procedure implementation naming
-        bind_obj = None
-        if def_obj.get_type(no_link=True) == METH_TYPE_ID:
-            _, curr_line, post_lines = def_obj.file_ast.file.get_code_line(
-                def_obj.sline - 1, backward=False, strip_comment=True
-            )
-            if curr_line is not None:
-                full_line = curr_line + "".join(post_lines)
-                if full_line.find("=>") < 0:
-                    bind_obj = def_obj
-                    bind_change = f"{new_name} => {def_obj.name}"
-        elif (len(ref_objs) > 0) and (
-            ref_objs[0].get_type(no_link=True) == METH_TYPE_ID
-        ):
-            bind_obj = ref_objs[0]
-            bind_change = f"{ref_objs[0].name} => {new_name}"
-        # Replace definition statement with explicit implementation naming
-        if bind_obj is not None:
-            def_uri = path_to_uri(bind_obj.file_ast.file.path)
-            for change in changes[def_uri]:
-                if change["range"]["start"]["line"] == bind_obj.sline - 1:
-                    change["newText"] = bind_change
         return {"changes": changes}
 
     def serve_codeActions(self, request: dict):

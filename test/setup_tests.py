@@ -18,6 +18,11 @@ from fortls.jsonrpc import write_rpc_request  # noqa: E402, F401
 test_dir = root_dir / "test" / "test_source"
 
 
+def check_post_msg(result: dict, msg: str, severity: int):
+    assert result["type"] == severity
+    assert result["message"] == msg
+
+
 def run_request(request, fortls_args: list[str] = None):
     command = [
         sys.executable,
