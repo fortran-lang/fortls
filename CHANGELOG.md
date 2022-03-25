@@ -1,5 +1,11 @@
 # CHANGELONG
 
+## 2.2.8
+
+### Changed
+
+- Disable PyPi autoupdating for pre-releases and dev versions
+
 ## 2.2.7
 
 ### Changed
