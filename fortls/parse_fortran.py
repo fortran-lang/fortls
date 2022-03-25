@@ -18,6 +18,7 @@ from re import Pattern
 from fortls.constants import (
     DO_TYPE_ID,
     INTERFACE_TYPE_ID,
+    MODULE_TYPE_ID,
     SELECT_TYPE_ID,
     SUBMODULE_TYPE_ID,
     FRegex,
@@ -1610,7 +1611,7 @@ class fortran_file:
                     if (len(obj_info.obj_names) == 0) and (obj_info.type == 1):
                         file_ast.current_scope.set_default_vis(-1)
                     else:
-                        if obj_info.type == 1:
+                        if obj_info.type == MODULE_TYPE_ID:
                             for word in obj_info.obj_names:
                                 file_ast.add_private(word)
                         else:
