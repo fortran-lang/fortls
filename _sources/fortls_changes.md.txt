@@ -28,6 +28,7 @@
 
 ## Changed
 
+- Disable PyPi autoupdating for pre-releases and dev versions
 - Changed the auto-update feature to skip `anaconda` environments since they
   handle their dependencies through `conda` and not `pip`
 - Updated `setup.cfg` in preparation of submitting package to `conda-forge`
