@@ -1,5 +1,12 @@
 # CHANGELONG
 
+## 2.2.10
+
+### Fixed
+
+- Fixes GoTo Implementation error for intrinsics
+  ([#80](https://github.com/gnikit/fortls/issues/80))
+
 ## 2.2.9
 
 ### Changed

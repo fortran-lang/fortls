@@ -35,3 +35,13 @@ def test_implementation_type_bound():
     errcode, results = run_request(string, ["-n", "1"])
     assert errcode == 0
     assert results[1] == create(test_dir / "subdir" / "test_free.f90", 49, 11, 28)
+
+
+def test_implementation_intrinsics():
+    """Go to implementation of implicit methods is handled gracefully"""
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "rename")})
+    file_path = test_dir / "rename" / "test_rename_intrinsic.f90"
+    string += imp_request(file_path, 11, 18)
+    errcode, results = run_request(string, ["-n", "1"])
+    assert errcode == 0
+    assert results[1] is None
