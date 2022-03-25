@@ -1,6 +1,6 @@
 # CHANGELONG
 
-## Unreleased
+## 2.2.9
 
 ### Changed
 
