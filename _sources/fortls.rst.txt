@@ -12,6 +12,14 @@ fortls.constants module
    :undoc-members:
    :show-inheritance:
 
+fortls.ftypes module
+--------------------
+
+.. automodule:: fortls.ftypes
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 fortls.helper\_functions module
 -------------------------------
 
@@ -32,6 +40,14 @@ fortls.intrinsics module
 ------------------------
 
 .. automodule:: fortls.intrinsics
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+fortls.json\_templates module
+-----------------------------
+
+.. automodule:: fortls.json_templates
    :members:
    :undoc-members:
    :show-inheritance:

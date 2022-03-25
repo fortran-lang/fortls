@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fortls package &mdash; fortls 0.1.dev1+g4e0bb5d documentation</title>
+  <title>fortls package &mdash; fortls 0.1.dev1+gb80a396 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -47,9 +47,11 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">fortls package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-fortls.constants">fortls.constants module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-fortls.ftypes">fortls.ftypes module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-fortls.helper_functions">fortls.helper_functions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-fortls.interface">fortls.interface module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-fortls.intrinsics">fortls.intrinsics module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-fortls.json_templates">fortls.json_templates module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-fortls.jsonrpc">fortls.jsonrpc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-fortls.langserver">fortls.langserver module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-fortls.objects">fortls.objects module</a></li>
@@ -95,260 +97,346 @@
 </section>
 <section id="module-fortls.constants">
 <span id="fortls-constants-module"></span><h2>fortls.constants module<a class="headerlink" href="#module-fortls.constants" title="Permalink to this headline"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="fortls.constants.FORTRAN_LITERAL">
+<span class="sig-prename descclassname"><span class="pre">fortls.constants.</span></span><span class="sig-name descname"><span class="pre">FORTRAN_LITERAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'0^=__LITERAL_INTERNAL_DUMMY_VAR_'</span></em><a class="headerlink" href="#fortls.constants.FORTRAN_LITERAL" title="Permalink to this definition"></a></dt>
+<dd><p>A string used to mark literals e.g. 10, 3.14, “words”, etc.
+The description name chosen is non-ambiguous and cannot naturally
+occur in Fortran (with/out C preproc) code
+It is invalid syntax to define a type starting with numerics
+it cannot also be a comment that requires !, c, d
+and ^= (xor_eq) operator is invalid in Fortran C++ preproc</p>
+</dd></dl>
+
 <dl class="py class">
-<dt class="sig sig-object py" id="fortls.constants.CLASS_info">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.constants.</span></span><span class="sig-name descname"><span class="pre">CLASS_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keywords</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.constants.CLASS_info" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="fortls.constants.Severity">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.constants.</span></span><span class="sig-name descname"><span class="pre">Severity</span></span><a class="headerlink" href="#fortls.constants.Severity" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.CLASS_info.keywords">
-<span class="sig-name descname"><span class="pre">keywords</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.constants.CLASS_info.keywords" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="fortls.constants.Severity.error">
+<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#fortls.constants.Severity.error" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.CLASS_info.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.constants.CLASS_info.name" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="fortls.constants.Severity.info">
+<span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#fortls.constants.Severity.info" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.CLASS_info.parent">
-<span class="sig-name descname"><span class="pre">parent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.constants.CLASS_info.parent" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="fortls.constants.Severity.warn">
+<span class="sig-name descname"><span class="pre">warn</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#fortls.constants.Severity.warn" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
+</section>
+<section id="module-fortls.ftypes">
+<span id="fortls-ftypes-module"></span><h2>fortls.ftypes module<a class="headerlink" href="#module-fortls.ftypes" title="Permalink to this headline"></a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="fortls.constants.FUN_sig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.constants.</span></span><span class="sig-name descname"><span class="pre">FUN_sig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keywords=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mod_flag=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.constants.FUN_sig" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="fortls.ftypes.CLASS_info">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.ftypes.</span></span><span class="sig-name descname"><span class="pre">CLASS_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keywords</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.ftypes.CLASS_info" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Holds information about a Fortran CLASS</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.FUN_sig.args">
-<span class="sig-name descname"><span class="pre">args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.constants.FUN_sig.args" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.CLASS_info.keywords">
+<span class="sig-name descname"><span class="pre">keywords</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.ftypes.CLASS_info.keywords" title="Permalink to this definition"></a></dt>
+<dd><p>Keywords associated with the class</p>
+</dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.FUN_sig.keywords">
-<span class="sig-name descname"><span class="pre">keywords</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fortls.constants.FUN_sig.keywords" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.CLASS_info.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.ftypes.CLASS_info.name" title="Permalink to this definition"></a></dt>
+<dd><p>Class name</p>
+</dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.FUN_sig.mod_flag">
-<span class="sig-name descname"><span class="pre">mod_flag</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#fortls.constants.FUN_sig.mod_flag" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.FUN_sig.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.constants.FUN_sig.name" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.FUN_sig.result">
-<span class="sig-name descname"><span class="pre">result</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#fortls.constants.RESULT_sig" title="fortls.constants.RESULT_sig"><span class="pre">RESULT_sig</span></a></em><a class="headerlink" href="#fortls.constants.FUN_sig.result" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.CLASS_info.parent">
+<span class="sig-name descname"><span class="pre">parent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.ftypes.CLASS_info.parent" title="Permalink to this definition"></a></dt>
+<dd><p>Parent object of class e.g. <code class="docutils literal notranslate"><span class="pre">TYPE,</span> <span class="pre">EXTENDS(scaled_vector)</span> <span class="pre">::</span> <span class="pre">a</span></code></p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="fortls.constants.GEN_info">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.constants.</span></span><span class="sig-name descname"><span class="pre">GEN_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bound_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pro_links</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vis_flag</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.constants.GEN_info" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dt class="sig sig-object py" id="fortls.ftypes.FUN_sig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.ftypes.</span></span><span class="sig-name descname"><span class="pre">FUN_sig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keywords=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mod_flag=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.ftypes.FUN_sig" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#fortls.ftypes.SUB_info" title="fortls.ftypes.SUB_info"><code class="xref py py-class docutils literal notranslate"><span class="pre">fortls.ftypes.SUB_info</span></code></a></p>
+<p>Holds information about a Fortran FUNCTION</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.GEN_info.bound_name">
-<span class="sig-name descname"><span class="pre">bound_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.constants.GEN_info.bound_name" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.GEN_info.pro_links">
-<span class="sig-name descname"><span class="pre">pro_links</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fortls.constants.GEN_info.pro_links" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.GEN_info.vis_flag">
-<span class="sig-name descname"><span class="pre">vis_flag</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></em><a class="headerlink" href="#fortls.constants.GEN_info.vis_flag" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.FUN_sig.result">
+<span class="sig-name descname"><span class="pre">result</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#fortls.ftypes.RESULT_sig" title="fortls.ftypes.RESULT_sig"><span class="pre">RESULT_sig</span></a></em><a class="headerlink" href="#fortls.ftypes.FUN_sig.result" title="Permalink to this definition"></a></dt>
+<dd><p>Function’s result with default <code class="docutils literal notranslate"><span class="pre">result.name</span> <span class="pre">=</span> <span class="pre">name</span></code></p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="fortls.constants.INCLUDE_info">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.constants.</span></span><span class="sig-name descname"><span class="pre">INCLUDE_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope_objs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.constants.INCLUDE_info" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="fortls.ftypes.GEN_info">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.ftypes.</span></span><span class="sig-name descname"><span class="pre">GEN_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bound_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pro_links</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vis_flag</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.ftypes.GEN_info" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Holds information about a GENERIC PROCEDURE DEFINITION</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.INCLUDE_info.file">
-<span class="sig-name descname"><span class="pre">file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></em><a class="headerlink" href="#fortls.constants.INCLUDE_info.file" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.GEN_info.bound_name">
+<span class="sig-name descname"><span class="pre">bound_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.ftypes.GEN_info.bound_name" title="Permalink to this definition"></a></dt>
+<dd><p>Procedure name</p>
+</dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.INCLUDE_info.line_number">
-<span class="sig-name descname"><span class="pre">line_number</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></em><a class="headerlink" href="#fortls.constants.INCLUDE_info.line_number" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.GEN_info.pro_links">
+<span class="sig-name descname"><span class="pre">pro_links</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fortls.ftypes.GEN_info.pro_links" title="Permalink to this definition"></a></dt>
+<dd><p>Procedure links</p>
+</dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.INCLUDE_info.path">
-<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.constants.INCLUDE_info.path" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.INCLUDE_info.scope_objs">
-<span class="sig-name descname"><span class="pre">scope_objs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fortls.constants.INCLUDE_info.scope_objs" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.GEN_info.vis_flag">
+<span class="sig-name descname"><span class="pre">vis_flag</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></em><a class="headerlink" href="#fortls.ftypes.GEN_info.vis_flag" title="Permalink to this definition"></a></dt>
+<dd><p>Visibility flag, public or private</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="fortls.constants.INT_info">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.constants.</span></span><span class="sig-name descname"><span class="pre">INT_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abstract</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.constants.INT_info" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="fortls.ftypes.INCLUDE_info">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.ftypes.</span></span><span class="sig-name descname"><span class="pre">INCLUDE_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope_objs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.ftypes.INCLUDE_info" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Holds information about a Fortran INCLUDE statement</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.INT_info.abstract">
-<span class="sig-name descname"><span class="pre">abstract</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></em><a class="headerlink" href="#fortls.constants.INT_info.abstract" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="fortls.ftypes.INCLUDE_info.file">
+<span class="sig-name descname"><span class="pre">file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></em><a class="headerlink" href="#fortls.ftypes.INCLUDE_info.file" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.INT_info.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.constants.INT_info.name" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.INCLUDE_info.line_number">
+<span class="sig-name descname"><span class="pre">line_number</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></em><a class="headerlink" href="#fortls.ftypes.INCLUDE_info.line_number" title="Permalink to this definition"></a></dt>
+<dd><p>Line number of include</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fortls.ftypes.INCLUDE_info.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.ftypes.INCLUDE_info.path" title="Permalink to this definition"></a></dt>
+<dd><p>File path to include</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fortls.ftypes.INCLUDE_info.scope_objs">
+<span class="sig-name descname"><span class="pre">scope_objs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fortls.ftypes.INCLUDE_info.scope_objs" title="Permalink to this definition"></a></dt>
+<dd><p>A list of available scopes</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="fortls.constants.RESULT_sig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.constants.</span></span><span class="sig-name descname"><span class="pre">RESULT_sig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keywords=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.constants.RESULT_sig" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="fortls.ftypes.INT_info">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.ftypes.</span></span><span class="sig-name descname"><span class="pre">INT_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abstract</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.ftypes.INT_info" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Holds information about a Fortran INTERFACE</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.RESULT_sig.keywords">
-<span class="sig-name descname"><span class="pre">keywords</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fortls.constants.RESULT_sig.keywords" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.INT_info.abstract">
+<span class="sig-name descname"><span class="pre">abstract</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></em><a class="headerlink" href="#fortls.ftypes.INT_info.abstract" title="Permalink to this definition"></a></dt>
+<dd><p>Whether or not the interface is abstract</p>
+</dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.RESULT_sig.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#fortls.constants.RESULT_sig.name" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.RESULT_sig.type">
-<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#fortls.constants.RESULT_sig.type" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.INT_info.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.ftypes.INT_info.name" title="Permalink to this definition"></a></dt>
+<dd><p>Interface name</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="fortls.constants.SELECT_info">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.constants.</span></span><span class="sig-name descname"><span class="pre">SELECT_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binding</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.constants.SELECT_info" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="fortls.ftypes.RESULT_sig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.ftypes.</span></span><span class="sig-name descname"><span class="pre">RESULT_sig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keywords=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.ftypes.RESULT_sig" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Holds information about the RESULT section of a Fortran FUNCTION</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.SELECT_info.binding">
-<span class="sig-name descname"><span class="pre">binding</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.constants.SELECT_info.binding" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.RESULT_sig.keywords">
+<span class="sig-name descname"><span class="pre">keywords</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fortls.ftypes.RESULT_sig.keywords" title="Permalink to this definition"></a></dt>
+<dd><p>Keywords associated with the result variable, can append without init</p>
+</dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.SELECT_info.desc">
-<span class="sig-name descname"><span class="pre">desc</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.constants.SELECT_info.desc" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.RESULT_sig.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#fortls.ftypes.RESULT_sig.name" title="Permalink to this definition"></a></dt>
+<dd><p>Variable name of result</p>
+</dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.SELECT_info.type">
-<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></em><a class="headerlink" href="#fortls.constants.SELECT_info.type" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.RESULT_sig.type">
+<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#fortls.ftypes.RESULT_sig.type" title="Permalink to this definition"></a></dt>
+<dd><p>Variable type of result</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="fortls.constants.SMOD_info">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.constants.</span></span><span class="sig-name descname"><span class="pre">SMOD_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.constants.SMOD_info" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dt class="sig sig-object py" id="fortls.ftypes.Range">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.ftypes.</span></span><span class="sig-name descname"><span class="pre">Range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.ftypes.Range" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></p>
+<p>A single line range tuple</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.SMOD_info.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.constants.SMOD_info.name" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.Range.end">
+<span class="sig-name descname"><span class="pre">end</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></em><a class="headerlink" href="#fortls.ftypes.Range.end" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.SMOD_info.parent">
-<span class="sig-name descname"><span class="pre">parent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.constants.SMOD_info.parent" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.Range.start">
+<span class="sig-name descname"><span class="pre">start</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></em><a class="headerlink" href="#fortls.ftypes.Range.start" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="fortls.constants.SUB_info">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.constants.</span></span><span class="sig-name descname"><span class="pre">SUB_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mod_flag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keywords</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.constants.SUB_info" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="fortls.ftypes.SELECT_info">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.ftypes.</span></span><span class="sig-name descname"><span class="pre">SELECT_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binding</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.ftypes.SELECT_info" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Holds information about a SELECT construct</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.SUB_info.args">
-<span class="sig-name descname"><span class="pre">args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.constants.SUB_info.args" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.SELECT_info.binding">
+<span class="sig-name descname"><span class="pre">binding</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.ftypes.SELECT_info.binding" title="Permalink to this definition"></a></dt>
+<dd><p>Variable/Object being selected upon</p>
+</dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.SUB_info.keywords">
-<span class="sig-name descname"><span class="pre">keywords</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fortls.constants.SUB_info.keywords" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.SELECT_info.desc">
+<span class="sig-name descname"><span class="pre">desc</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.ftypes.SELECT_info.desc" title="Permalink to this definition"></a></dt>
+<dd><p>Description of select e.g. “TYPE”, “CLASS”, None</p>
+</dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.SUB_info.mod_flag">
-<span class="sig-name descname"><span class="pre">mod_flag</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></em><a class="headerlink" href="#fortls.constants.SUB_info.mod_flag" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.SUB_info.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.constants.SUB_info.name" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.SELECT_info.type">
+<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></em><a class="headerlink" href="#fortls.ftypes.SELECT_info.type" title="Permalink to this definition"></a></dt>
+<dd><p>Type of SELECT e.g. normal, select type, select kind, select rank</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="fortls.constants.USE_info">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.constants.</span></span><span class="sig-name descname"><span class="pre">USE_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mod_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rename_map</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.constants.USE_info" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="fortls.ftypes.SMOD_info">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.ftypes.</span></span><span class="sig-name descname"><span class="pre">SMOD_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.ftypes.SMOD_info" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Holds information about Fortran SUBMODULES</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.USE_info.mod_name">
-<span class="sig-name descname"><span class="pre">mod_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.constants.USE_info.mod_name" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.SMOD_info.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.ftypes.SMOD_info.name" title="Permalink to this definition"></a></dt>
+<dd><p>Submodule name</p>
+</dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.USE_info.only_list">
-<span class="sig-name descname"><span class="pre">only_list</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#set" title="(in Python v3.10)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fortls.constants.USE_info.only_list" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.USE_info.rename_map">
-<span class="sig-name descname"><span class="pre">rename_map</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#dict" title="(in Python v3.10)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fortls.constants.USE_info.rename_map" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.SMOD_info.parent">
+<span class="sig-name descname"><span class="pre">parent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.ftypes.SMOD_info.parent" title="Permalink to this definition"></a></dt>
+<dd><p>Submodule i.e. module, parent</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="fortls.constants.VAR_info">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.constants.</span></span><span class="sig-name descname"><span class="pre">VAR_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_word</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keywords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_names</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.constants.VAR_info" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="fortls.ftypes.SUB_info">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.ftypes.</span></span><span class="sig-name descname"><span class="pre">SUB_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keywords=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mod_flag=False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.ftypes.SUB_info" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Holds information about a Fortran SUBROUTINE</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.VAR_info.keywords">
-<span class="sig-name descname"><span class="pre">keywords</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fortls.constants.VAR_info.keywords" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.SUB_info.args">
+<span class="sig-name descname"><span class="pre">args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.ftypes.SUB_info.args" title="Permalink to this definition"></a></dt>
+<dd><p>Argument list</p>
+</dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.VAR_info.type_word">
-<span class="sig-name descname"><span class="pre">type_word</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.constants.VAR_info.type_word" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.SUB_info.keywords">
+<span class="sig-name descname"><span class="pre">keywords</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fortls.ftypes.SUB_info.keywords" title="Permalink to this definition"></a></dt>
+<dd><p>Keywords associated with procedure</p>
+</dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.VAR_info.var_names">
-<span class="sig-name descname"><span class="pre">var_names</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fortls.constants.VAR_info.var_names" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.SUB_info.mod_flag">
+<span class="sig-name descname"><span class="pre">mod_flag</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#fortls.ftypes.SUB_info.mod_flag" title="Permalink to this definition"></a></dt>
+<dd><p>Whether or not this is a <code class="docutils literal notranslate"><span class="pre">MODULE</span> <span class="pre">PROCEDURE</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fortls.ftypes.SUB_info.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.ftypes.SUB_info.name" title="Permalink to this definition"></a></dt>
+<dd><p>Procedure name</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="fortls.constants.VIS_info">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.constants.</span></span><span class="sig-name descname"><span class="pre">VIS_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj_names</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.constants.VIS_info" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="fortls.ftypes.USE_info">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.ftypes.</span></span><span class="sig-name descname"><span class="pre">USE_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mod_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rename_map</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.ftypes.USE_info" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Holds information about a Fortran USE statement</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.VIS_info.obj_names">
-<span class="sig-name descname"><span class="pre">obj_names</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fortls.constants.VIS_info.obj_names" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.USE_info.mod_name">
+<span class="sig-name descname"><span class="pre">mod_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.ftypes.USE_info.mod_name" title="Permalink to this definition"></a></dt>
+<dd><p>Module name</p>
+</dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fortls.constants.VIS_info.type">
-<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></em><a class="headerlink" href="#fortls.constants.VIS_info.type" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fortls.ftypes.USE_info.only_list">
+<span class="sig-name descname"><span class="pre">only_list</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#set" title="(in Python v3.10)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fortls.ftypes.USE_info.only_list" title="Permalink to this definition"></a></dt>
+<dd><p>List of procedures, variables, interfaces, etc. imported via only</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fortls.ftypes.USE_info.rename_map">
+<span class="sig-name descname"><span class="pre">rename_map</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#dict" title="(in Python v3.10)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fortls.ftypes.USE_info.rename_map" title="Permalink to this definition"></a></dt>
+<dd><p>A dictionary holding the new names after a rename operation</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="fortls.ftypes.VAR_info">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.ftypes.</span></span><span class="sig-name descname"><span class="pre">VAR_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keywords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_names</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.ftypes.VAR_info" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Holds information about a Fortran VARIABLE</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fortls.ftypes.VAR_info.keywords">
+<span class="sig-name descname"><span class="pre">keywords</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fortls.ftypes.VAR_info.keywords" title="Permalink to this definition"></a></dt>
+<dd><p>Keywords associated with variable</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fortls.ftypes.VAR_info.var_names">
+<span class="sig-name descname"><span class="pre">var_names</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fortls.ftypes.VAR_info.var_names" title="Permalink to this definition"></a></dt>
+<dd><p>Variable names</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fortls.ftypes.VAR_info.var_type">
+<span class="sig-name descname"><span class="pre">var_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.ftypes.VAR_info.var_type" title="Permalink to this definition"></a></dt>
+<dd><p>Type of variable e.g. <code class="docutils literal notranslate"><span class="pre">INTEGER</span></code>, <code class="docutils literal notranslate"><span class="pre">REAL</span></code>, etc.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="fortls.ftypes.VIS_info">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.ftypes.</span></span><span class="sig-name descname"><span class="pre">VIS_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj_names</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.ftypes.VIS_info" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Holds information about the VISIBILITY of a module’s contents</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fortls.ftypes.VIS_info.obj_names">
+<span class="sig-name descname"><span class="pre">obj_names</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fortls.ftypes.VIS_info.obj_names" title="Permalink to this definition"></a></dt>
+<dd><p>Module variables, procedures, etc. with that visibility</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fortls.ftypes.VIS_info.type">
+<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></em><a class="headerlink" href="#fortls.ftypes.VIS_info.type" title="Permalink to this definition"></a></dt>
+<dd><p>PRIVATE TODO: convert to boolean</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Visibility type 0</p>
+</dd>
+<dt class="field-even">Type</dt>
+<dd class="field-even"><p>PUBLIC 1</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -376,13 +464,13 @@ files as free format.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.helper_functions.expand_name">
-<span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">expand_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">char_poss</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.expand_name" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">expand_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">char_pos</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.expand_name" title="Permalink to this definition"></a></dt>
 <dd><p>Get full word containing given cursor position</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Text line</p></li>
-<li><p><strong>char_poss</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Column position along the line</p></li>
+<li><p><strong>char_pos</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Column position along the line</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -396,20 +484,35 @@ files as free format.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.helper_functions.find_paren_match">
-<span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">find_paren_match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.find_paren_match" title="Permalink to this definition"></a></dt>
-<dd><p>Find matching closing parenthesis by searching forward,
-returns -1 if no match is found</p>
+<span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">find_paren_match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.find_paren_match" title="Permalink to this definition"></a></dt>
+<dd><p>Find matching closing parenthesis <strong>from an already open parenthesis scope</strong>
+by forward search of the string, returns -1 if no match is found</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>test_str</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Input string</p>
+<dd class="field-odd"><p><strong>string</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Input string</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The index of the matching <cite>)</cite> character in the string</p>
+<dd class="field-even"><p>The index of the matching <code class="docutils literal notranslate"><span class="pre">)</span></code> character in the string</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)">int</a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_paren_match</span><span class="p">(</span><span class="s2">&quot;a, b)&quot;</span><span class="p">)</span>
+<span class="go">4</span>
+</pre></div>
+</div>
+<p>Multiple parenthesis that are closed</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_paren_match</span><span class="p">(</span><span class="s2">&quot;a, (b, c), d)&quot;</span><span class="p">)</span>
+<span class="go">12</span>
+</pre></div>
+</div>
+<p>If the outermost parenthesis is not closed function returns -1</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_paren_match</span><span class="p">(</span><span class="s2">&quot;a, (b, (c, d)&quot;</span><span class="p">)</span>
+<span class="go">-1</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -428,7 +531,7 @@ returns -1 if no match is found</p>
 -1, len(word) -1</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)">int</a>, <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)">int</a>]</p>
+<dd class="field-odd"><p><a class="reference internal" href="#fortls.ftypes.Range" title="fortls.ftypes.Range">Range</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -448,12 +551,12 @@ returns -1 if no match is found</p>
 <li><p><strong>pre_lines</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a>) – for multiline cases get all the previous, relevant lines</p></li>
 <li><p><strong>curr_line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – the current line</p></li>
 <li><p><strong>col</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – column index of the current line</p></li>
-<li><p><strong>qs</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – strip quotes i.e. string literals from <cite>curr_line</cite> and <cite>pre_lines</cite>.
+<li><p><strong>qs</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – strip quotes i.e. string literals from <code class="docutils literal notranslate"><span class="pre">curr_line</span></code> and <code class="docutils literal notranslate"><span class="pre">pre_lines</span></code>.
 Need this disable when hovering over string literals, by default True</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>part of the line including any relevant line continuations before <cite>col</cite></p>
+<dd class="field-even"><p>part of the line including any relevant line continuations before <code class="docutils literal notranslate"><span class="pre">col</span></code></p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a></p>
@@ -466,24 +569,84 @@ Need this disable when hovering over string literals, by default True</p></li>
 <span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">get_paren_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.get_paren_level" title="Permalink to this definition"></a></dt>
 <dd><p>Get sub-string corresponding to a single parenthesis level,
 via backward search up through the line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Document line</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Arguments as a string and a list of Ranges for the arguments against <code class="docutils literal notranslate"><span class="pre">line</span></code></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)">list</a>[<a class="reference internal" href="#fortls.ftypes.Range" title="fortls.ftypes.Range">Range</a>]]</p>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<p>“CALL sub1(arg1,arg2” -&gt; (“arg1,arg2”, [[10, 19]])
-“CALL sub1(arg1(i),arg2” -&gt; (“arg1,arg2”, [[10, 14], [17, 22]])</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_paren_level</span><span class="p">(</span><span class="s2">&quot;CALL sub1(arg1,arg2&quot;</span><span class="p">)</span>
+<span class="go">(&#39;arg1,arg2&#39;, [Range(start=10, end=19)])</span>
+</pre></div>
+</div>
+<p>If the range is interrupted by parenthesis, another Range variable is used
+to mark the <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code> of the argument</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_paren_level</span><span class="p">(</span><span class="s2">&quot;CALL sub1(arg1(i),arg2&quot;</span><span class="p">)</span>
+<span class="go">(&#39;arg1,arg2&#39;, [Range(start=10, end=14), Range(start=17, end=22)])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.helper_functions.get_paren_substring">
-<span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">get_paren_substring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.get_paren_substring" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">get_paren_substring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.get_paren_substring" title="Permalink to this definition"></a></dt>
+<dd><p>Get the contents enclosed by the first pair of parenthesis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>string</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – A string</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The part of the string enclosed in parenthesis e.g.  or None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a> | None</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_paren_substring</span><span class="p">(</span><span class="s2">&quot;some line(a, b, (c, d))&quot;</span><span class="p">)</span>
+<span class="go">&quot;a, b, (c, d)&quot;</span>
+</pre></div>
+</div>
+<p>If the line has incomplete parenthesis however, <code class="docutils literal notranslate"><span class="pre">None</span></code> is returned
+&gt;&gt;&gt; get_paren_substring(“some line(a, b”)
+None</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.helper_functions.get_var_stack">
 <span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">get_var_stack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.get_var_stack" title="Permalink to this definition"></a></dt>
 <dd><p>Get user-defined type field sequence terminating the given line</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Document line</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of objects split by <code class="docutils literal notranslate"><span class="pre">%</span></code></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)">list</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<p>“myvar%foo%bar” -&gt; [“myvar”, “foo”, “bar”]
-“myarray(i)%foo%bar” -&gt; [“myarray”, “foo”, “bar”]
-“CALL self%method(this%foo” -&gt; [“this”, “foo”]</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_var_stack</span><span class="p">(</span><span class="s2">&quot;myvar</span><span class="si">%f</span><span class="s2">oo%bar&quot;</span><span class="p">)</span>
+<span class="go">[&quot;myvar&quot;, &quot;foo&quot;, &quot;bar&quot;]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_var_stack</span><span class="p">(</span><span class="s2">&quot;myarray(i)</span><span class="si">%f</span><span class="s2">oo%bar&quot;</span><span class="p">)</span>
+<span class="go">[&quot;myarray&quot;, &quot;foo&quot;, &quot;bar&quot;]</span>
+</pre></div>
+</div>
+<p>In this case it will operate at the end of the string i.e. <code class="docutils literal notranslate"><span class="pre">&quot;this%foo&quot;</span></code></p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_var_stack</span><span class="p">(</span><span class="s2">&quot;CALL self%method(this</span><span class="si">%f</span><span class="s2">oo&quot;</span><span class="p">)</span>
+<span class="go">[&quot;this&quot;, &quot;foo&quot;]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -494,7 +657,22 @@ via backward search up through the line.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.helper_functions.only_dirs">
 <span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">only_dirs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">err_msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.only_dirs" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>From a list of strings returns only paths that are directories</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>paths</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – A list containing the files and directories</p></li>
+<li><p><strong>err_msg</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>, </em><em>optional</em>) – A list to append error messages if any, else use log channel, by default []</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list containing only valid directories</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)">list</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.helper_functions.resolve_globs">
@@ -504,7 +682,7 @@ via backward search up through the line.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>glob_path</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Path containing the glob pattern follows
-<cite>fnmatch</cite> glob pattern, can include relative paths, etc.
+<code class="docutils literal notranslate"><span class="pre">fnmatch</span></code> glob pattern, can include relative paths, etc.
 see fnmatch: <a class="reference external" href="https://docs.python.org/3/library/fnmatch.html#module-fnmatch">https://docs.python.org/3/library/fnmatch.html#module-fnmatch</a></p></li>
 <li><p><strong>root_path</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – root path to start glob search. If left empty the root_path will be
 extracted from the glob_path, by default None</p></li>
@@ -524,9 +702,6 @@ Absolute paths are used to resolve any potential ambiguity</p>
 <dt class="sig sig-object py" id="fortls.helper_functions.separate_def_list">
 <span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">separate_def_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.separate_def_list" title="Permalink to this definition"></a></dt>
 <dd><p>Separate definition lists, skipping parenthesis and bracket groups</p>
-<p class="rubric">Examples</p>
-<p>“var1, var2, var3” -&gt; [“var1”, “var2”, “var3”]
-“var, init_var(3) = [1,2,3], array(3,3)” -&gt; [“var”, “init_var”, “array”]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>test_str</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Text string</p>
@@ -538,6 +713,15 @@ Absolute paths are used to resolve any potential ambiguity</p>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)">list</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>] | None</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">separate_def_list</span><span class="p">(</span><span class="s2">&quot;var1, var2, var3&quot;</span><span class="p">)</span>
+<span class="go">[&quot;var1&quot;, &quot;var2&quot;, &quot;var3&quot;]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">separate_def_list</span><span class="p">(</span><span class="s2">&quot;var, init_var(3) = [1,2,3], array(3,3)&quot;</span><span class="p">)</span>
+<span class="go">[&quot;var&quot;, &quot;init_var&quot;, &quot;array&quot;]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -657,6 +841,39 @@ Absolute paths are used to resolve any potential ambiguity</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.intrinsics.set_lowercase_intrinsics">
 <span class="sig-prename descclassname"><span class="pre">fortls.intrinsics.</span></span><span class="sig-name descname"><span class="pre">set_lowercase_intrinsics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fortls.intrinsics.set_lowercase_intrinsics" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-fortls.json_templates">
+<span id="fortls-json-templates-module"></span><h2>fortls.json_templates module<a class="headerlink" href="#module-fortls.json_templates" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="fortls.json_templates.change_json">
+<span class="sig-prename descclassname"><span class="pre">fortls.json_templates.</span></span><span class="sig-name descname"><span class="pre">change_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sln</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eln</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ech</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.json_templates.change_json" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fortls.json_templates.diagnostic_json">
+<span class="sig-prename descclassname"><span class="pre">fortls.json_templates.</span></span><span class="sig-name descname"><span class="pre">diagnostic_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sln</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eln</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ech</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sev</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.json_templates.diagnostic_json" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fortls.json_templates.location_json">
+<span class="sig-prename descclassname"><span class="pre">fortls.json_templates.</span></span><span class="sig-name descname"><span class="pre">location_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sln</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eln</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ech</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.json_templates.location_json" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fortls.json_templates.range_json">
+<span class="sig-prename descclassname"><span class="pre">fortls.json_templates.</span></span><span class="sig-name descname"><span class="pre">range_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sln</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eln</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ech</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.json_templates.range_json" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fortls.json_templates.symbol_json">
+<span class="sig-prename descclassname"><span class="pre">fortls.json_templates.</span></span><span class="sig-name descname"><span class="pre">symbol_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sln</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eln</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ech</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.json_templates.symbol_json" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fortls.json_templates.uri_json">
+<span class="sig-prename descclassname"><span class="pre">fortls.json_templates.</span></span><span class="sig-name descname"><span class="pre">uri_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sln</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eln</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ech</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.json_templates.uri_json" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>
@@ -806,6 +1023,29 @@ otherwise you will leak a thread.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.langserver.</span></span><span class="sig-name descname"><span class="pre">LangServer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.langserver.LangServer" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="py method">
+<dt class="sig sig-object py" id="fortls.langserver.LangServer.file_init">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">file_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pp_defs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pp_suffixes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_dirs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.langserver.LangServer.file_init" title="Permalink to this definition"></a></dt>
+<dd><p>Initialise a Fortran file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Path to file</p></li>
+<li><p><strong>pp_defs</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#dict" title="(in Python v3.10)"><em>dict</em></a>) – Preprocessor definitions</p></li>
+<li><p><strong>pp_suffixes</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – Preprocessor file extension, additional to default</p></li>
+<li><p><strong>include_dirs</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#set" title="(in Python v3.10)"><em>set</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – Preprocessor only include directories, not used by normal parser</p></li>
+<li><p><strong>sort</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a>) – Whether or not keywords should be sorted</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A Fortran file object or a string containing the error message</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#fortls.parse_fortran.fortran_file" title="fortls.parse_fortran.fortran_file">fortran_file</a> | <a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="fortls.langserver.LangServer.get_all_references">
 <span class="sig-name descname"><span class="pre">get_all_references</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">def_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_mem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_obj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.langserver.LangServer.get_all_references" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
@@ -813,7 +1053,25 @@ otherwise you will leak a thread.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.langserver.LangServer.get_definition">
 <span class="sig-name descname"><span class="pre">get_definition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">def_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">def_line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">def_char</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hover_req</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.langserver.LangServer.get_definition" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Return the Fortran object for the definition that matches the
+Fortran file, line number, column number</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>def_file</strong> (<a class="reference internal" href="#fortls.parse_fortran.fortran_file" title="fortls.parse_fortran.fortran_file"><em>fortran_file</em></a>) – File to query</p></li>
+<li><p><strong>def_line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Line position in the file</p></li>
+<li><p><strong>def_char</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Column position in the file</p></li>
+<li><p><strong>hover_req</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – Flag to enable if calling from a hover request, by default False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Fortran object</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#fortls.objects.fortran_var" title="fortls.objects.fortran_var">fortran_var</a> | <a class="reference internal" href="#fortls.objects.fortran_include" title="fortls.objects.fortran_include">fortran_include</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.langserver.LangServer.get_diagnostics">
@@ -827,7 +1085,7 @@ otherwise you will leak a thread.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.langserver.LangServer.post_message">
-<span class="sig-name descname"><span class="pre">post_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.langserver.LangServer.post_message" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">post_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">severity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.langserver.LangServer.post_message" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -853,7 +1111,16 @@ otherwise you will leak a thread.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.langserver.LangServer.serve_default">
 <span class="sig-name descname"><span class="pre">serve_default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.langserver.LangServer.serve_default" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Raise an error in the Language Server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>request</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#dict" title="(in Python v3.10)"><em>dict</em></a>) – client dictionary with requests</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#fortls.langserver.JSONRPC2Error" title="fortls.langserver.JSONRPC2Error"><strong>JSONRPC2Error</strong></a> – error with code -32601</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.langserver.LangServer.serve_definition">
@@ -868,7 +1135,12 @@ otherwise you will leak a thread.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.langserver.LangServer.serve_exit">
 <span class="sig-name descname"><span class="pre">serve_exit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.langserver.LangServer.serve_exit" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.langserver.LangServer.serve_hover">
@@ -933,14 +1205,10 @@ otherwise you will leak a thread.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.langserver.LangServer.workspace_init">
 <span class="sig-name descname"><span class="pre">workspace_init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fortls.langserver.LangServer.workspace_init" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
+<dd><p>Initialise the workspace root across multiple threads</p>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="fortls.langserver.init_file">
-<span class="sig-prename descclassname"><span class="pre">fortls.langserver.</span></span><span class="sig-name descname"><span class="pre">init_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pp_defs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pp_suffixes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_dirs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.langserver.init_file" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+</dd></dl>
 
 </section>
 <section id="module-fortls.objects">
@@ -1006,6 +1274,24 @@ otherwise you will leak a thread.</p>
 <dt class="sig sig-object py" id="fortls.objects.fortran_ast.add_doc">
 <span class="sig-name descname"><span class="pre">add_doc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forward</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.fortran_ast.add_doc" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fortls.objects.fortran_ast.add_error">
+<span class="sig-name descname"><span class="pre">add_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sev</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ln</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ech</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.fortran_ast.add_error" title="Permalink to this definition"></a></dt>
+<dd><p>Add a Diagnostic error, encountered during parsing, for a range
+in the document.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Error message</p></li>
+<li><p><strong>sev</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Severity, Error, Warning, Notification</p></li>
+<li><p><strong>ln</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Line number</p></li>
+<li><p><strong>sch</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Start character</p></li>
+<li><p><strong>ech</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – End character</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.objects.fortran_ast.add_include">
@@ -1964,27 +2250,31 @@ TYPE, [RESULT_MODIFIERS] :: RESULT_VAR</p>
 <dt class="sig sig-object py" id="fortls.parse_fortran.find_external">
 <span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">find_external</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_ast</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_stripped</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_var</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.find_external" title="Permalink to this definition"></a></dt>
 <dd><p>Find a procedure, function, subroutine, etc. that has been defined as
-<cite>EXTERNAL</cite>. <cite>EXTERNAL`s are parsed as `fortran_var</cite>, since there is no
-way of knowing if <cite>real, external :: val</cite> is a function or a subroutine.</p>
-<p>This method exists solely for <cite>EXTERNAL`s that are defined across multiple
-lines e.g.
-`EXTERNAL VAR</cite>
-<cite>REAL VAR</cite></p>
+<code class="docutils literal notranslate"><span class="pre">EXTERNAL</span></code>. <code class="docutils literal notranslate"><span class="pre">EXTERNAL``s</span> <span class="pre">are</span> <span class="pre">parsed</span> <span class="pre">as</span> <span class="pre">``fortran_var</span></code>, since there is no
+way of knowing if <code class="docutils literal notranslate"><span class="pre">real,</span> <span class="pre">external</span> <span class="pre">::</span> <span class="pre">val</span></code> is a function or a subroutine.</p>
+<p>This method exists solely for <code class="docutils literal notranslate"><span class="pre">EXTERNAL</span></code> s that are defined across multiple
+lines e.g.</p>
+<div class="highlight-fortran notranslate"><div class="highlight"><pre><span></span><span class="k">EXTERNAL </span><span class="n">VAR</span><span class="w"></span>
+<span class="kt">REAL </span><span class="n">VAR</span><span class="w"></span>
+</pre></div>
+</div>
 <p>or</p>
-<p><cite>REAL VAR</cite>
-<cite>EXTERNAL VAR</cite></p>
+<div class="highlight-fortran notranslate"><div class="highlight"><pre><span></span><span class="kt">REAL </span><span class="n">VAR</span><span class="w"></span>
+<span class="k">EXTERNAL </span><span class="n">VAR</span><span class="w"></span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>file_ast</strong> (<a class="reference internal" href="#fortls.objects.fortran_ast" title="fortls.objects.fortran_ast"><em>fortran_ast</em></a>) – AST</p></li>
-<li><p><strong>desc_string</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Variable type e.g. <cite>REAL</cite>, <cite>INTEGER</cite>, <cite>EXTERNAL</cite></p></li>
+<li><p><strong>desc_string</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Variable type e.g. <code class="docutils literal notranslate"><span class="pre">REAL</span></code>, <code class="docutils literal notranslate"><span class="pre">INTEGER</span></code>, <code class="docutils literal notranslate"><span class="pre">EXTERNAL</span></code></p></li>
 <li><p><strong>name_stripped</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Variable name</p></li>
-<li><p><strong>new_var</strong> (<a class="reference internal" href="#fortls.objects.fortran_var" title="fortls.objects.fortran_var"><em>fortran_var</em></a>) – The line variable that we are attempting to match with an <cite>EXTERNAL</cite>
+<li><p><strong>new_var</strong> (<a class="reference internal" href="#fortls.objects.fortran_var" title="fortls.objects.fortran_var"><em>fortran_var</em></a>) – The line variable that we are attempting to match with an <code class="docutils literal notranslate"><span class="pre">EXTERNAL</span></code>
 definition</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True if the variable is <cite>EXTERNAL</cite> and we manage to link it to the
+<dd class="field-even"><p>True if the variable is <code class="docutils literal notranslate"><span class="pre">EXTERNAL</span></code> and we manage to link it to the
 rest of its components, else False</p>
 </dd>
 <dt class="field-odd">Return type</dt>
@@ -1996,11 +2286,22 @@ rest of its components, else False</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.parse_fortran.find_external_attr">
 <span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">find_external_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_ast</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_stripped</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_var</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.find_external_attr" title="Permalink to this definition"></a></dt>
-<dd><p>Check if this NORMAL Fortran variable is in the
-external_objs with only EXTERNAL as its type</p>
+<dd><p>Check if this NORMAL Fortran variable is in the external_objs with only
+<code class="docutils literal notranslate"><span class="pre">EXTERNAL</span></code> as its type. Used to detect seperated <code class="docutils literal notranslate"><span class="pre">EXTERNAL</span></code> declarations.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_ast</strong> (<a class="reference internal" href="#fortls.objects.fortran_ast" title="fortls.objects.fortran_ast"><em>fortran_ast</em></a>) – AST file</p></li>
+<li><p><strong>name_stripped</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Variable name, stripped</p></li>
+<li><p><strong>new_var</strong> (<a class="reference internal" href="#fortls.objects.fortran_var" title="fortls.objects.fortran_var"><em>fortran_var</em></a>) – Fortran variable to check against</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if only a single <code class="docutils literal notranslate"><span class="pre">EXTERNAL</span></code> definition is encountered False
+for everything else, which will cause a diagnostic error to be raised</p>
+</dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2051,22 +2352,75 @@ NORMAL Fortran Type</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.parse_fortran.fortran_file.find_word_in_code_line">
-<span class="sig-name descname"><span class="pre">find_word_in_code_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">word</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forward</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backward</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pp_content</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.fortran_file.find_word_in_code_line" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">find_word_in_code_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line_no</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">word</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forward</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backward</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pp_content</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.fortran_file.find_word_in_code_line" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.parse_fortran.fortran_file.get_code_line">
-<span class="sig-name descname"><span class="pre">get_code_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forward</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backward</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pp_content</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strip_comment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.fortran_file.get_code_line" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_code_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line_no</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forward</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backward</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pp_content</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strip_comment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.fortran_file.get_code_line" title="Permalink to this definition"></a></dt>
 <dd><p>Get full code line from file including any adjacent continuations</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="fortls.parse_fortran.fortran_file.get_comment_regexs">
+<span class="sig-name descname"><span class="pre">get_comment_regexs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.fortran_file.get_comment_regexs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fortls.parse_fortran.fortran_file.get_docstring">
+<span class="sig-name descname"><span class="pre">get_docstring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ln</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">docs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.fortran_file.get_docstring" title="Permalink to this definition"></a></dt>
+<dd><p>Extract entire documentation strings from the current file position</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ln</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Line number</p></li>
+<li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Document line, not necessarily produced by <cite>get_line()</cite></p></li>
+<li><p><strong>match</strong> (<em>Pattern</em>) – Regular expression DOC match</p></li>
+<li><p><strong>docs</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – Docstrings that are pending processing e.g. single line docstrings</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The new line number at the end of the docstring, the docstring and
+a boolean flag indicating whether the docstring precedes the AST node
+(Doxygen style) or succeeds it (traditional FORD style)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)">int</a>, <a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)">list</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>], <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)">bool</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fortls.parse_fortran.fortran_file.get_fortran_definition">
+<span class="sig-name descname"><span class="pre">get_fortran_definition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.fortran_file.get_fortran_definition" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="fortls.parse_fortran.fortran_file.get_line">
-<span class="sig-name descname"><span class="pre">get_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pp_content</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.fortran_file.get_line" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line_no</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pp_content</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.fortran_file.get_line" title="Permalink to this definition"></a></dt>
 <dd><p>Get single line from file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fortls.parse_fortran.fortran_file.get_single_line_docstring">
+<span class="sig-name descname"><span class="pre">get_single_line_docstring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.fortran_file.get_single_line_docstring" title="Permalink to this definition"></a></dt>
+<dd><p>Get a docstring of a single line. This is the same for both Legacy
+and Modern Fortran</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Line of code</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list containing the docstring. List will be empty if there is no
+match or the match is an empty string itself</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)">list</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2078,11 +2432,120 @@ NORMAL Fortran Type</p>
 A MD5 hash is used to determine that</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><cite>str</cite> : string containing IO error message else None
-<cite>bool</cite>: boolean indicating if the file has changed</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">str</span></code> : string containing IO error message else None
+<code class="docutils literal notranslate"><span class="pre">bool</span></code>: boolean indicating if the file has changed</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>|None, <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)">bool</a>|None]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fortls.parse_fortran.fortran_file.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pp_defs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_dirs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.fortran_file.parse" title="Permalink to this definition"></a></dt>
+<dd><p>Parse Fortran file contents of a fortran_file object and build an
+Abstract Syntax Tree (AST)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>debug</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – Set to true to enable debugging, by default False</p></li>
+<li><p><strong>pp_defs</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#dict" title="(in Python v3.10)"><em>dict</em></a><em>, </em><em>optional</em>) – Preprocessor definitions and their values, by default None</p></li>
+<li><p><strong>include_dirs</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#set" title="(in Python v3.10)"><em>set</em></a><em>, </em><em>optional</em>) – Preprocessor include directories, by default None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An Abstract Syntax Tree</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#fortls.objects.fortran_ast" title="fortls.objects.fortran_ast">fortran_ast</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fortls.parse_fortran.fortran_file.parse_contains">
+<span class="sig-name descname"><span class="pre">parse_contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ln</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_ast</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.fortran_file.parse_contains" title="Permalink to this definition"></a></dt>
+<dd><p>Parse contain statements</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Document line</p></li>
+<li><p><strong>ln</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Line number</p></li>
+<li><p><strong>file_ast</strong> (<a class="reference internal" href="#fortls.objects.fortran_ast" title="fortls.objects.fortran_ast"><em>fortran_ast</em></a>) – AST object</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if a contains is present, False otherwise</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fortls.parse_fortran.fortran_file.parse_do_fixed_format">
+<span class="sig-name descname"><span class="pre">parse_do_fixed_format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ln</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_ast</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_id_stack</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.fortran_file.parse_do_fixed_format" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fortls.parse_fortran.fortran_file.parse_docs">
+<span class="sig-name descname"><span class="pre">parse_docs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ln</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_ast</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">docs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.fortran_file.parse_docs" title="Permalink to this definition"></a></dt>
+<dd><p>Parse documentation stings of style Doxygen or FORD.
+Multiline docstrings are detected if the first comment starts with <cite>!&gt;</cite>
+docstring continuations are detected with either <cite>!&gt;</cite>, <cite>!&lt;</cite> or <cite>!!</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Document line</p></li>
+<li><p><strong>ln</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Line number</p></li>
+<li><p><strong>file_ast</strong> (<a class="reference internal" href="#fortls.objects.fortran_ast" title="fortls.objects.fortran_ast"><em>fortran_ast</em></a>) – AST object</p></li>
+<li><p><strong>docs</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – Docstrings that are pending processing e.g. single line docstrings</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fortls.parse_fortran.fortran_file.parse_end_scope_word">
+<span class="sig-name descname"><span class="pre">parse_end_scope_word</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ln</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_ast</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.fortran_file.parse_end_scope_word" title="Permalink to this definition"></a></dt>
+<dd><p>Parses END keyword marking the end of scopes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Document line</p></li>
+<li><p><strong>ln</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Line number</p></li>
+<li><p><strong>file_ast</strong> (<a class="reference internal" href="#fortls.objects.fortran_ast" title="fortls.objects.fortran_ast"><em>fortran_ast</em></a>) – AST object</p></li>
+<li><p><strong>match</strong> (<em>re.Match</em>) – END word regular expression match</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if a AST scope is closed, False otherwise</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fortls.parse_fortran.fortran_file.parse_implicit">
+<span class="sig-name descname"><span class="pre">parse_implicit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ln</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_ast</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.fortran_file.parse_implicit" title="Permalink to this definition"></a></dt>
+<dd><p>Parse implicit statements from a line</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Document line</p></li>
+<li><p><strong>ln</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Line number</p></li>
+<li><p><strong>file_ast</strong> (<a class="reference internal" href="#fortls.objects.fortran_ast" title="fortls.objects.fortran_ast"><em>fortran_ast</em></a>) – AST object</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if an IMPLICIT statements present, False otherwise</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2131,6 +2594,26 @@ A MD5 hash is used to determine that</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="fortls.parse_fortran.get_procedure_modifiers">
+<span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">get_procedure_modifiers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.get_procedure_modifiers" title="Permalink to this definition"></a></dt>
+<dd><p>Attempt to match procedure modifiers for FUNCTIONS and SUBROUTINES</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – document line</p></li>
+<li><p><strong>regex</strong> (<em>Pattern</em>) – regular expression to use e.g. Function or Subroutine sig</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>procedure name, arguments, trailing line</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>] | <a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[None, None, None]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="fortls.parse_fortran.parse_var_keywords">
 <span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">parse_var_keywords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.parse_var_keywords" title="Permalink to this definition"></a></dt>
 <dd><p>Parse Fortran variable declaration keywords</p>
@@ -2142,12 +2625,6 @@ A MD5 hash is used to determine that</p>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="fortls.parse_fortran.process_file">
-<span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">process_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pp_defs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_dirs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.process_file" title="Permalink to this definition"></a></dt>
-<dd><p>Build file AST by parsing file</p>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="fortls.parse_fortran.read_associate_def">
 <span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">read_associate_def</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.read_associate_def" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
@@ -2156,6 +2633,20 @@ A MD5 hash is used to determine that</p>
 <dt class="sig sig-object py" id="fortls.parse_fortran.read_block_def">
 <span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">read_block_def</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.read_block_def" title="Permalink to this definition"></a></dt>
 <dd><p>Attempt to read BLOCK definition line</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fortls.parse_fortran.read_do_def">
+<span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">read_do_def</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.read_do_def" title="Permalink to this definition"></a></dt>
+<dd><p>Attempt to read a DO loop</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Tuple with “do” and a fixed format tag if present</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[Literal[“do”], str] | None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -2174,7 +2665,7 @@ with the function only flag</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – file line</p></li>
-<li><p><strong>result</strong> (<a class="reference internal" href="#fortls.constants.RESULT_sig" title="fortls.constants.RESULT_sig"><em>RESULT_sig</em></a><em>, </em><em>optional</em>) – a dataclass containing the result signature of the function</p></li>
+<li><p><strong>result</strong> (<a class="reference internal" href="#fortls.ftypes.RESULT_sig" title="fortls.ftypes.RESULT_sig"><em>RESULT_sig</em></a><em>, </em><em>optional</em>) – a dataclass containing the result signature of the function</p></li>
 <li><p><strong>mod_flag</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – flag for module and module procedure parsing, by default False</p></li>
 </ul>
 </dd>
@@ -2191,6 +2682,20 @@ with the function only flag</p>
 <dt class="sig sig-object py" id="fortls.parse_fortran.read_generic_def">
 <span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">read_generic_def</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.read_generic_def" title="Permalink to this definition"></a></dt>
 <dd><p>Attempt to read generic procedure definition line</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fortls.parse_fortran.read_if_def">
+<span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">read_if_def</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.read_if_def" title="Permalink to this definition"></a></dt>
+<dd><p>Attempt to read an IF conditional</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A Literal “if” and None tuple</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[Literal[“if”], None] | None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -2232,7 +2737,21 @@ with the function only flag</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.parse_fortran.read_sub_def">
 <span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">read_sub_def</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mod_flag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.read_sub_def" title="Permalink to this definition"></a></dt>
-<dd><p>Attempt to read SUBROUTINE definition line</p>
+<dd><p>Attempt to read a SUBROUTINE definition line</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – document line</p></li>
+<li><p><strong>mod_flag</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – flag for module and module procedure parsing, by default False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a SUB_info dataclass object</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[Literal[“sub”], SUB_info] | None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -2255,7 +2774,7 @@ with the function only flag</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.parse_fortran.read_var_def">
-<span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">read_var_def</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_word</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fun_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.read_var_def" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">read_var_def</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fun_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.read_var_def" title="Permalink to this definition"></a></dt>
 <dd><p>Attempt to read variable definition line</p>
 </dd></dl>
 
@@ -2263,6 +2782,20 @@ with the function only flag</p>
 <dt class="sig sig-object py" id="fortls.parse_fortran.read_vis_stmnt">
 <span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">read_vis_stmnt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.read_vis_stmnt" title="Permalink to this definition"></a></dt>
 <dd><p>Attempt to read PUBLIC/PRIVATE statement</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fortls.parse_fortran.read_where_def">
+<span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">read_where_def</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.read_where_def" title="Permalink to this definition"></a></dt>
+<dd><p>Attempt to read a WHERE block</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Tuple with “where” and a boolean indicating if labelled on unlabelled</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[Literal[“where”], bool] | None</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
