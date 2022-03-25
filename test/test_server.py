@@ -52,7 +52,7 @@ def test_logger():
     errcode, results = run_request(string, ["--debug_log"])
     assert errcode == 0
     assert results[1]["type"] == 3
-    assert results[1]["message"] == "FORTLS debugging enabled"
+    assert results[1]["message"] == "fortls debugging enabled"
 
 
 def test_open():
@@ -136,7 +136,7 @@ def test_symbols():
     def check_return(result_array):
         # Expected objects
         objs = (
-            ["test_free", 2, 0, 79],
+            ["test_free", 2, 0, 81],
             ["scale_type", 5, 4, 6],
             ["val", 13, 5, 5],
             ["vector", 5, 8, 16],
@@ -157,7 +157,7 @@ def test_symbols():
             ["scaled_vector_norm", 12, 55, 59],
             ["unscaled_norm", 12, 61, 65],
             ["test_sig_Sub", 12, 67, 70],
-            ["bound_pass", 12, 72, 78],
+            ["bound_pass", 12, 72, 80],
         )
         assert len(result_array) == len(objs)
         for i, obj in enumerate(objs):
@@ -184,15 +184,11 @@ def test_workspace_symbols():
         objs = (
             ["test", 6, 7],
             ["test_abstract", 2, 0],
-            ["test_enum", 2, 0],
-            ["test_external", 2, 0],
-            ["test_forall", 2, 0],
             ["test_free", 2, 0],
             ["test_gen_type", 5, 1],
             ["test_generic", 2, 0],
             ["test_inherit", 2, 0],
             ["test_int", 2, 0],
-            ["test_lines", 2, 0],
             ["test_mod", 2, 0],
             ["test_nonint_mod", 2, 0],
             ["test_preproc_keywords", 2, 0],
@@ -201,14 +197,11 @@ def test_workspace_symbols():
             ["test_rename_sub", 6, 9],
             ["test_select", 2, 0],
             ["test_select_sub", 6, 16],
-            ["test_semicolon", 2, 0],
             ["test_sig_Sub", 6, 67],
             ["test_str1", 13, 5],
             ["test_str2", 13, 5],
             ["test_sub", 6, 8],
-            ["test_use_ordering", 2, 9],
             ["test_vis_mod", 2, 0],
-            ["test_where", 2, 0],
         )
         assert len(result_array) == len(objs)
         for i, obj in enumerate(objs):
@@ -271,6 +264,7 @@ def test_comp():
     string += comp_request(file_path, 7, 12)
     file_path = test_dir / "subdir" / "test_free.f90"
     string += comp_request(file_path, 10, 22)
+    string += comp_request(file_path, 14, 27)
     string += comp_request(file_path, 28, 14)
     file_path = test_dir / "subdir" / "test_fixed.f"
     string += comp_request(file_path, 15, 8)
@@ -333,6 +327,7 @@ def test_comp():
         [1, "abs_interface", "SUBROUTINE"],
         # subdir/test_free.f90
         [1, "DIMENSION(:)", "KEYWORD"],
+        [2, "vector_create", "SUBROUTINE"],
         [3, "INTENT(IN)", "KEYWORD"],
         # subdir/test_fixed.f90
         [1, "bob", "CHARACTER*(LEN=200)"],
@@ -541,8 +536,7 @@ def test_refs():
             [free_path, 18, 14, 20],
             [free_path, 36, 6, 12],
             [free_path, 44, 6, 12],
-            [free_path, 50, 6, 12],
-            [free_path, 76, 6, 12],
+            [free_path, 78, 6, 12],
         ),
     )
 
@@ -680,233 +674,3 @@ def test_hover():
     )
     assert len(ref_results) == len(results) - 1
     check_return(results[1:], ref_results)
-
-
-def test_docs():
-    def check_return(result_array, checks):
-        comm_lines = []
-        for (i, hover_line) in enumerate(
-            result_array["contents"][0]["value"].splitlines()
-        ):
-            if hover_line.count("!!") > 0:
-                comm_lines.append((i, hover_line))
-        assert len(comm_lines) == len(checks)
-        for i in range(len(checks)):
-            assert comm_lines[i][0] == checks[i][0]
-            assert comm_lines[i][1] == checks[i][1]
-
-    def hover_request(file_path, line, char):
-        return write_rpc_request(
-            1,
-            "textDocument/hover",
-            {
-                "textDocument": {"uri": str(file_path)},
-                "position": {"line": line, "character": char},
-            },
-        )
-
-    #
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
-    file_path = test_dir / "subdir" / "test_free.f90"
-    string += hover_request(file_path, 13, 19)
-    string += hover_request(file_path, 13, 31)
-    string += hover_request(file_path, 14, 17)
-    string += hover_request(file_path, 14, 28)
-    string += hover_request(file_path, 21, 18)
-    string += hover_request(file_path, 21, 37)
-    string += hover_request(file_path, 22, 17)
-    string += hover_request(file_path, 22, 32)
-    string += hover_request(file_path, 15, 32)
-    string += hover_request(file_path, 15, 47)
-    errcode, results = run_request(string)
-    assert errcode == 0
-    #
-    check_return(results[1], ((1, "!! Doc 1"), (3, " !! Doc 5")))
-    check_return(results[2], ((1, "!! Doc 4"), (4, " !! Doc 5")))
-    check_return(results[3], ((1, "!! Doc 2"),))
-    check_return(results[4], ((1, "!! Doc 6"),))
-    check_return(results[5], ((1, "!! Doc 7"), (3, " !! Doc 8")))
-    check_return(results[6], ((1, "!! Doc 7"), (4, " !! Doc 8")))
-    check_return(results[7], ((1, "!! Doc 3"),))
-    check_return(results[8], ())
-    check_return(results[9], ())
-    check_return(results[10], ((3, " !! Doc 9"), (4, " !! Doc 10")))
-
-
-def test_diagnostics():
-    """
-    Tests some aspects of diagnostics
-    """
-
-    def check_return(results, ref_results):
-        for i, r in enumerate(results):
-            print(r["diagnostics"], ref_results[i])
-            assert r["diagnostics"] == ref_results[i]
-
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
-    # Test subroutines and functions with interfaces as arguments
-    file_path = str(test_dir / "test_diagnostic_int.f90")
-    string += write_rpc_notification(
-        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
-    )
-    # Test that  use, non_intrinsic does not raise a diagnostic error
-    file_path = str(test_dir / "test_nonintrinsic.f90")
-    string += write_rpc_notification(
-        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
-    )
-    # Test that submodules with spacings in their parent's names are parsed
-    file_path = str(test_dir / "test_submodule.f90")
-    string += write_rpc_notification(
-        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
-    )
-    # Tests that variables named end do not close the scope prematurely
-    file_path = str(test_dir / "diag" / "test_scope_end_name_var.f90")
-    string += write_rpc_notification(
-        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
-    )
-    # Test that externals can be split between multiple lines
-    # and that diagnostics for multiple definitions of externals can account
-    # for that
-    file_path = str(test_dir / "diag" / "test_external.f90")
-    string += write_rpc_notification(
-        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
-    )
-    # Checks that forall with end forall inside a case select does not cause
-    # unexpected end of scope.
-    file_path = str(test_dir / "diag" / "test_forall.f90")
-    string += write_rpc_notification(
-        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
-    )
-    # Test USE directive ordering errors
-    file_path = str(test_dir / "diag" / "test_use_ordering.f90")
-    string += write_rpc_notification(
-        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
-    )
-    # Test where blocks
-    file_path = str(test_dir / "diag" / "test_where.f90")
-    string += write_rpc_notification(
-        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
-    )
-    # Test where semicolon (multi-line)
-    file_path = str(test_dir / "diag" / "test_semicolon.f90")
-    string += write_rpc_notification(
-        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
-    )
-    # Test ENUM block
-    file_path = str(test_dir / "diag" / "test_enum.f90")
-    string += write_rpc_notification(
-        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
-    )
-    # Test module procedure in submodules importing scopes
-    file_path = str(test_dir / "subdir" / "test_submod.F90")
-    string += write_rpc_notification(
-        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
-    )
-    errcode, results = run_request(string)
-    assert errcode == 0
-
-    # Load a different config file
-    # Test long lines
-    root = str(test_dir / "diag")
-    string = write_rpc_request(1, "initialize", {"rootPath": root})
-    file_path = str(test_dir / "diag" / "test_lines.f90")
-    string += write_rpc_notification(
-        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
-    )
-    file_path = str(test_dir / "diag" / "conf_long_lines.json")
-    errcode, res = run_request(string, [f"--config {file_path}"])
-    assert errcode == 0
-    results.extend(res[1:])
-
-    root = path_to_uri(str((test_dir / "diag" / "test_external.f90").resolve()))
-    ref_results = [
-        [],
-        [],
-        [],
-        [],
-        [
-            {
-                "range": {
-                    "start": {"line": 7, "character": 17},
-                    "end": {"line": 7, "character": 22},
-                },
-                "message": 'Variable "VAR_B" declared twice in scope',
-                "severity": 1,
-                "relatedInformation": [
-                    {
-                        "location": {
-                            "uri": str(root),
-                            "range": {
-                                "start": {"line": 5, "character": 0},
-                                "end": {"line": 5, "character": 0},
-                            },
-                        },
-                        "message": "First declaration",
-                    }
-                ],
-            },
-            {
-                "range": {
-                    "start": {"line": 8, "character": 17},
-                    "end": {"line": 8, "character": 22},
-                },
-                "message": 'Variable "VAR_A" declared twice in scope',
-                "severity": 1,
-                "relatedInformation": [
-                    {
-                        "location": {
-                            "uri": str(root),
-                            "range": {
-                                "start": {"line": 3, "character": 0},
-                                "end": {"line": 3, "character": 0},
-                            },
-                        },
-                        "message": "First declaration",
-                    }
-                ],
-            },
-        ],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [
-            {
-                "range": {
-                    "start": {"line": 2, "character": 100},
-                    "end": {"line": 2, "character": 155},
-                },
-                "message": 'Line length exceeds "max_line_length" (100)',
-                "severity": 2,
-            },
-            {
-                "range": {
-                    "start": {"line": 3, "character": 100},
-                    "end": {"line": 3, "character": 127},
-                },
-                "message": (
-                    'Comment line length exceeds "max_comment_line_length" (100)'
-                ),
-                "severity": 2,
-            },
-        ],
-    ]
-    check_return(results[1:], ref_results)
-
-
-if __name__ == "__main__":
-    test_init()
-    test_logger()
-    test_open()
-    test_change()
-    test_symbols()
-    test_workspace_symbols()
-    test_comp()
-    test_sig()
-    test_def()
-    test_refs()
-    test_hover()
-    test_docs()
-    test_diagnostics()

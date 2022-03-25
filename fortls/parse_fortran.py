@@ -1,10 +1,11 @@
-from __future__ import annotations, print_function
+from __future__ import annotations
 
 import hashlib
 import logging
 import os
 import re
 import sys
+from collections import Counter, deque
 
 # Python < 3.8 does not have typing.Literals
 try:
@@ -12,17 +13,24 @@ try:
 except ImportError:
     from typing_extensions import Literal
 
+from re import Pattern
+
 from fortls.constants import (
     DO_TYPE_ID,
     INTERFACE_TYPE_ID,
-    PY3K,
+    MODULE_TYPE_ID,
     SELECT_TYPE_ID,
     SUBMODULE_TYPE_ID,
-    CLASS_info,
     FRegex,
+    Severity,
+    log,
+)
+from fortls.ftypes import (
+    CLASS_info,
     FUN_sig,
     GEN_info,
     INT_info,
+    Range,
     RESULT_sig,
     SELECT_info,
     SMOD_info,
@@ -30,7 +38,6 @@ from fortls.constants import (
     USE_info,
     VAR_info,
     VIS_info,
-    log,
 )
 from fortls.helper_functions import (
     detect_fixed_format,
@@ -64,9 +71,6 @@ from fortls.objects import (
     fortran_where,
 )
 
-if not PY3K:
-    import io
-
 
 def get_line_context(line: str) -> tuple[str, None] | tuple[str, str]:
     """Get context of ending position in line (for completion)
@@ -84,7 +88,7 @@ def get_line_context(line: str) -> tuple[str, None] | tuple[str, str]:
         `skip`, `import`, `vis`, `call`, `type_only`, `int_only`, `first`, `default`
     """
     last_level, sections = get_paren_level(line)
-    lev1_end = sections[-1][1]
+    lev1_end = sections[-1].end
     # Test if variable definition statement
     test_match = read_var_def(line)
     if test_match is not None:
@@ -92,7 +96,7 @@ def get_line_context(line: str) -> tuple[str, None] | tuple[str, str]:
             if (test_match[1].var_names is None) and (lev1_end == len(line)):
                 return "var_key", None
             # Procedure link?
-            if (test_match[1].type_word == "PROCEDURE") and (line.find("=>") > 0):
+            if (test_match[1].var_type == "PROCEDURE") and (line.find("=>") > 0):
                 return "pro_link", None
             return "var_only", None
     # Test if in USE statement
@@ -116,24 +120,23 @@ def get_line_context(line: str) -> tuple[str, None] | tuple[str, str]:
         return "vis", None
     # In type-def
     type_def = False
-    if FRegex.TYPE_DEF.match(line) is not None:
+    if FRegex.TYPE_DEF.match(line):
         type_def = True
     # Test if in call statement
-    if lev1_end == len(line):
-        if FRegex.CALL.match(last_level) is not None:
-            return "call", None
+    if (lev1_end == len(line)) and FRegex.CALL.match(last_level):
+        return "call", None
     # Test if variable definition using type/class or procedure
-    if (len(sections) == 1) and (sections[0][0] >= 1):
+    if (len(sections) == 1) and (sections[0].start >= 1):
         # Get string one level up
-        test_str, _ = get_paren_level(line[: sections[0][0] - 1])
-        if (FRegex.TYPE_STMNT.match(test_str) is not None) or (
-            type_def and FRegex.EXTENDS.search(test_str) is not None
+        test_str, _ = get_paren_level(line[: sections[0].start - 1])
+        if FRegex.TYPE_STMNT.match(test_str) or (
+            type_def and FRegex.EXTENDS.search(test_str)
         ):
             return "type_only", None
-        if FRegex.PROCEDURE_STMNT.match(test_str) is not None:
+        if FRegex.PROCEDURE_STMNT.match(test_str):
             return "int_only", None
     # Only thing on line?
-    if FRegex.INT_STMNT.match(line) is not None:
+    if FRegex.INT_STMNT.match(line):
         return "first", None
     # Default or skip context
     if type_def:
@@ -164,26 +167,26 @@ def parse_var_keywords(test_str: str) -> tuple[list[str], str]:
     return keywords, test_str
 
 
-def read_var_def(line: str, type_word: str = None, fun_only: bool = False):
+def read_var_def(line: str, var_type: str = None, fun_only: bool = False):
     """Attempt to read variable definition line"""
-    if type_word is None:
+    if var_type is None:
         type_match = FRegex.VAR.match(line)
         if type_match is None:
             return None
         else:
-            type_word = type_match.group(0).strip()
+            var_type = type_match.group(0).strip()
             trailing_line = line[type_match.end(0) :]
     else:
-        trailing_line = line[len(type_word) :]
-    type_word = type_word.upper()
+        trailing_line = line[len(var_type) :]
+    var_type = var_type.upper()
     trailing_line = trailing_line.split("!")[0]
     if len(trailing_line) == 0:
         return None
     #
     kind_match = FRegex.KIND_SPEC.match(trailing_line)
-    if kind_match is not None:
+    if kind_match:
         kind_str = kind_match.group(1).replace(" ", "")
-        type_word += kind_str
+        var_type += kind_str
         trailing_line = trailing_line[kind_match.end(0) :]
         if kind_str.find("(") >= 0:
             match_char = find_paren_match(trailing_line)
@@ -191,11 +194,11 @@ def read_var_def(line: str, type_word: str = None, fun_only: bool = False):
                 return None  # Incomplete type spec
             else:
                 kind_word = trailing_line[: match_char + 1].strip()
-                type_word += kind_word
+                var_type += kind_word
                 trailing_line = trailing_line[match_char + 1 :]
     else:
         # Class and Type statements need a kind spec
-        if type_word in ("TYPE", "CLASS"):
+        if var_type in ("TYPE", "CLASS"):
             return None
         # Make sure next character is space or comma or colon
         if not trailing_line[0] in (" ", ",", ":"):
@@ -203,7 +206,7 @@ def read_var_def(line: str, type_word: str = None, fun_only: bool = False):
     #
     keywords, trailing_line = parse_var_keywords(trailing_line)
     # Check if this is a function definition
-    fun_def = read_fun_def(trailing_line, RESULT_sig(type=type_word, keywords=keywords))
+    fun_def = read_fun_def(trailing_line, RESULT_sig(type=var_type, keywords=keywords))
     if (fun_def is not None) or fun_only:
         return fun_def
     #
@@ -220,7 +223,44 @@ def read_var_def(line: str, type_word: str = None, fun_only: bool = False):
         if var_words is None:
             var_words = []
     #
-    return "var", VAR_info(type_word, keywords, var_words)
+    return "var", VAR_info(var_type, keywords, var_words)
+
+
+def get_procedure_modifiers(
+    line: str, regex: Pattern
+) -> tuple[str, str, str] | tuple[None, None, None]:
+    """Attempt to match procedure modifiers for FUNCTIONS and SUBROUTINES
+
+    Parameters
+    ----------
+    line : str
+        document line
+    regex : Pattern
+        regular expression to use e.g. Function or Subroutine sig
+
+    Returns
+    -------
+    tuple[str, str, str] | tuple[None, None, None]
+        procedure name, arguments, trailing line
+    """
+    match = regex.match(line)
+    if match is None:
+        return None, None, None
+
+    name: str = match.group(1)
+    trailing_line = line[match.end(0) :].split("!")[0]
+    trailing_line = trailing_line.strip()
+
+    paren_match = FRegex.SUB_PAREN.match(trailing_line)
+    args = ""
+    if paren_match is not None:
+        word_match = FRegex.WORD.findall(paren_match.group(0))
+        if word_match is not None:
+            word_match = [word for word in word_match]
+            args = ",".join(word_match)
+        trailing_line = trailing_line[paren_match.end(0) :]
+
+    return name, args, trailing_line
 
 
 def read_fun_def(
@@ -259,22 +299,10 @@ def read_fun_def(
             # Update keywords for function into dataclass
             tmp_var[1].keywords = keywords
             return tmp_var
-    fun_match = FRegex.FUN.match(line)
-    if fun_match is None:
+
+    name, args, trailing_line = get_procedure_modifiers(line, FRegex.FUN)
+    if name is None:
         return None
-    #
-    name = fun_match.group(1)
-    trailing_line = line[fun_match.end(0) :].split("!")[0]
-    trailing_line = trailing_line.strip()
-    #
-    paren_match = FRegex.SUB_PAREN.match(trailing_line)
-    args = ""
-    if paren_match is not None:
-        word_match = FRegex.WORD.findall(paren_match.group(0))
-        if word_match is not None:
-            word_match = [word for word in word_match]
-            args = ",".join(word_match)
-        trailing_line = trailing_line[paren_match.end(0) :]
 
     # Extract if possible the variable name of the result()
     trailing_line = trailing_line.strip()
@@ -286,48 +314,74 @@ def read_fun_def(
     return "fun", FUN_sig(name, args, keywords, mod_flag, result)
 
 
-def read_sub_def(line: str, mod_flag: bool = False):
-    """Attempt to read SUBROUTINE definition line"""
-    # Get all the keyword modifier mathces
+def read_sub_def(
+    line: str, mod_flag: bool = False
+) -> tuple[Literal["sub"], SUB_info] | None:
+    """Attempt to read a SUBROUTINE definition line
+
+    Parameters
+    ----------
+    line : str
+        document line
+    mod_flag : bool, optional
+        flag for module and module procedure parsing, by default False
+
+    Returns
+    -------
+    tuple[Literal["sub"], SUB_info] | None
+        a SUB_info dataclass object
+    """
+    # Get all the keyword modifier matches
     keywords = re.findall(FRegex.SUB_MOD, line)
     # remove modifiers from line
     line = re.sub(FRegex.SUB_MOD, "", line)
-    sub_match = FRegex.SUB.match(line)
-    if sub_match is None:
+    name, args, _ = get_procedure_modifiers(line, FRegex.SUB)
+    if name is None:
         return None
-    #
-    name = sub_match.group(1)
-    trailing_line = line[sub_match.end(0) :].split("!")[0]
-    trailing_line = trailing_line.strip()
-    #
-    paren_match = FRegex.SUB_PAREN.match(trailing_line)
-    args = ""
-    if paren_match is not None:
-        word_match = FRegex.WORD.findall(paren_match.group(0))
-        if word_match is not None:
-            word_match = [word for word in word_match]
-            args = ",".join(word_match)
-        trailing_line = trailing_line[paren_match.end(0) :]
-    return "sub", SUB_info(name, args, mod_flag, keywords)
+
+    return "sub", SUB_info(name, args, keywords, mod_flag)
 
 
-def read_block_def(line: str):
+def read_block_def(line: str) -> tuple[Literal["block"], str] | None:
     """Attempt to read BLOCK definition line"""
     block_match = FRegex.BLOCK.match(line)
-    if block_match is not None:
-        name = block_match.group(1)
-        if name is not None:
+    if block_match:
+        name: str = block_match.group(1)
+        if name:
             name = name.replace(":", " ").strip()
         return "block", name
-    #
+    return None
+
+
+def read_do_def(line: str) -> tuple[Literal["do"], str] | None:
+    """Attempt to read a DO loop
+
+    Returns
+    -------
+    tuple[Literal["do"], str] | None
+        Tuple with "do" and a fixed format tag if present
+    """
     line_stripped = strip_strings(line, maintain_len=True)
     line_no_comment = line_stripped.split("!")[0].rstrip()
     do_match = FRegex.DO.match(line_no_comment)
-    if do_match is not None:
+    if do_match:
         return "do", do_match.group(1).strip()
-    #
+    return None
+
+
+def read_where_def(line: str) -> tuple[Literal["where"], bool] | None:
+    """Attempt to read a WHERE block
+
+    Returns
+    -------
+    tuple[Literal["where"], bool] | None
+        Tuple with "where" and a boolean indicating if labelled on unlabelled
+    """
+    line_stripped = strip_strings(line, maintain_len=True)
+    line_no_comment = line_stripped.split("!")[0].rstrip()
+    # Match WHERE blocks
     where_match = FRegex.WHERE.match(line_no_comment)
-    if where_match is not None:
+    if where_match:
         trailing_line = line[where_match.end(0) :]
         close_paren = find_paren_match(trailing_line)
         if close_paren < 0:
@@ -336,12 +390,21 @@ def read_block_def(line: str):
             return "where", True
         else:
             return "where", False
-    #
-    if_match = FRegex.IF.match(line_no_comment)
-    if if_match is not None:
-        then_match = FRegex.THEN.search(line_no_comment)
-        if then_match is not None:
-            return "if", None
+    return None
+
+
+def read_if_def(line: str) -> tuple[Literal["if"], None] | None:
+    """Attempt to read an IF conditional
+
+    Returns
+    -------
+    tuple[Literal["if"], None] | None
+        A Literal "if" and None tuple
+    """
+    line_stripped = strip_strings(line, maintain_len=True)
+    line_no_comment = line_stripped.split("!")[0].rstrip()
+    if FRegex.IF.match(line_no_comment) and FRegex.THEN.search(line_no_comment):
+        return "if", None
     return None
 
 
@@ -394,14 +457,14 @@ def read_type_def(line: str):
     keyword_match = FRegex.TATTR_LIST.match(trailing_line)
     keywords: list[str] = []
     parent = None
-    while keyword_match is not None:
+    while keyword_match:
         keyword_strip = keyword_match.group(0).replace(",", " ").strip().upper()
         extend_match = FRegex.EXTENDS.match(keyword_strip)
-        if extend_match is not None:
+        if extend_match:
             parent = extend_match.group(1).lower()
         else:
             keywords.append(keyword_strip)
-        #
+        # Get visibility and/or extends/abstract modifiers
         trailing_line = trailing_line[keyword_match.end(0) :]
         keyword_match = FRegex.TATTR_LIST.match(trailing_line)
     # Get name
@@ -417,8 +480,8 @@ def read_type_def(line: str):
         trailing_line = line_split[1]
     #
     word_match = FRegex.WORD.match(trailing_line.strip())
-    if word_match is not None:
-        name = word_match.group(0)
+    if word_match:
+        name: str = word_match.group(0)
     else:
         return None
     #
@@ -427,8 +490,7 @@ def read_type_def(line: str):
 
 def read_enum_def(line: str):
     """Attempt to read ENUM definition line"""
-    enum_match = FRegex.ENUM_DEF.match(line)
-    if enum_match is not None:
+    if FRegex.ENUM_DEF.match(line):
         return "enum", None
     return None
 
@@ -474,28 +536,28 @@ def read_mod_def(line: str):
     mod_match = FRegex.MOD.match(line)
     if mod_match is None:
         return None
-    else:
-        name = mod_match.group(1)
-        if name.lower() == "procedure":
-            trailing_line = line[mod_match.end(1) :]
-            pro_names = []
-            line_split = trailing_line.split(",")
-            for name in line_split:
-                pro_names.append(name.strip().lower())
-            return "int_pro", pro_names
-        # Check for submodule definition
-        trailing_line = line[mod_match.start(1) :]
-        sub_res = read_sub_def(trailing_line, mod_flag=True)
-        if sub_res is not None:
-            return sub_res
-        fun_res = read_var_def(trailing_line, fun_only=True)
-        if fun_res is not None:
-            fun_res[1].mod_flag = True
-            return fun_res[0], fun_res[1]
-        fun_res = read_fun_def(trailing_line, mod_flag=True)
-        if fun_res is not None:
-            return fun_res
-        return "mod", name
+
+    name = mod_match.group(1)
+    if name.lower() == "procedure":
+        trailing_line = line[mod_match.end(1) :]
+        pro_names = []
+        line_split = trailing_line.split(",")
+        for name in line_split:
+            pro_names.append(name.strip().lower())
+        return "int_pro", pro_names
+    # Check for submodule definition
+    trailing_line = line[mod_match.start(1) :]
+    sub_res = read_sub_def(trailing_line, mod_flag=True)
+    if sub_res is not None:
+        return sub_res
+    fun_res = read_var_def(trailing_line, fun_only=True)
+    if fun_res is not None:
+        fun_res[1].mod_flag = True
+        return fun_res[0], fun_res[1]
+    fun_res = read_fun_def(trailing_line, mod_flag=True)
+    if fun_res is not None:
+        return fun_res
+    return "mod", name
 
 
 def read_submod_def(line: str):
@@ -503,50 +565,49 @@ def read_submod_def(line: str):
     submod_match = FRegex.SUBMOD.match(line)
     if submod_match is None:
         return None
-    else:
-        parent_name = None
-        name = None
-        trailing_line = line[submod_match.end(0) :].split("!")[0]
-        trailing_line = trailing_line.strip()
-        parent_match = FRegex.WORD.match(trailing_line)
-        if parent_match is not None:
-            parent_name = parent_match.group(0).lower()
-            if len(trailing_line) > parent_match.end(0) + 1:
-                trailing_line = trailing_line[parent_match.end(0) + 1 :].strip()
-            else:
-                trailing_line = ""
-        #
-        name_match = FRegex.WORD.search(trailing_line)
-        if name_match is not None:
-            name = name_match.group(0).lower()
-        return "smod", SMOD_info(name, parent_name)
+
+    parent_name: str = None
+    name: str = None
+    trailing_line = line[submod_match.end(0) :].split("!")[0]
+    trailing_line = trailing_line.strip()
+    parent_match = FRegex.WORD.match(trailing_line)
+    if parent_match:
+        parent_name = parent_match.group(0).lower()
+        if len(trailing_line) > parent_match.end(0) + 1:
+            trailing_line = trailing_line[parent_match.end(0) + 1 :].strip()
+        else:
+            trailing_line = ""
+
+    name_match = FRegex.WORD.search(trailing_line)
+    if name_match:
+        name = name_match.group(0).lower()
+    return "smod", SMOD_info(name, parent_name)
 
 
-def read_prog_def(line: str):
+def read_prog_def(line: str) -> tuple[Literal["prog"], str] | None:
     """Attempt to read PROGRAM definition line"""
     prog_match = FRegex.PROG.match(line)
     if prog_match is None:
         return None
-    else:
-        return "prog", prog_match.group(1)
+    return "prog", prog_match.group(1)
 
 
-def read_int_def(line: str):
+def read_int_def(line: str) -> tuple[Literal["int"], INT_info] | None:
     """Attempt to read INTERFACE definition line"""
     int_match = FRegex.INT.match(line)
     if int_match is None:
         return None
-    else:
-        int_name = int_match.group(2).lower()
-        is_abstract = int_match.group(1) is not None
-        if int_name == "":
-            return "int", INT_info(None, is_abstract)
-        if int_name == "assignment" or int_name == "operator":
-            return "int", INT_info(None, False)
-        return "int", INT_info(int_match.group(2), is_abstract)
+
+    int_name = int_match.group(2).lower()
+    is_abstract = int_match.group(1) is not None
+    if int_name == "":
+        return "int", INT_info(None, is_abstract)
+    if int_name == "assignment" or int_name == "operator":
+        return "int", INT_info(None, False)
+    return "int", INT_info(int_match.group(2), is_abstract)
 
 
-def read_use_stmt(line: str):
+def read_use_stmt(line: str) -> tuple[Literal["use"], USE_info] | None:
     """Attempt to read USE statement"""
     use_match = FRegex.USE.match(line)
     if use_match is None:
@@ -566,7 +627,7 @@ def read_use_stmt(line: str):
     return "use", USE_info(use_mod, only_list, rename_map)
 
 
-def read_imp_stmt(line: str):
+def read_imp_stmt(line: str) -> tuple[Literal["import"], list[str]] | None:
     """Attempt to read IMPORT statement"""
     import_match = FRegex.IMPORT.match(line)
     if import_match is None:
@@ -577,28 +638,28 @@ def read_imp_stmt(line: str):
     return "import", import_list
 
 
-def read_inc_stmt(line: str):
+def read_inc_stmt(line: str) -> tuple[Literal["inc"], str] | None:
     """Attempt to read INCLUDE statement"""
     inc_match = FRegex.INCLUDE.match(line)
     if inc_match is None:
         return None
-    else:
-        inc_path = inc_match.group(1)
-        return "inc", inc_path
+
+    inc_path: str = inc_match.group(1)
+    return "inc", inc_path
 
 
-def read_vis_stmnt(line: str):
+def read_vis_stmnt(line: str) -> tuple[Literal["vis"], VIS_info] | None:
     """Attempt to read PUBLIC/PRIVATE statement"""
     vis_match = FRegex.VIS.match(line)
     if vis_match is None:
         return None
-    else:
-        vis_type = 0
-        if vis_match.group(1).lower() == "private":
-            vis_type = 1
-        trailing_line = line[vis_match.end(0) :].split("!")[0]
-        mod_words = FRegex.WORD.findall(trailing_line)
-        return "vis", VIS_info(vis_type, mod_words)
+
+    vis_type = 0
+    if vis_match.group(1).lower() == "private":
+        vis_type = 1
+    trailing_line = line[vis_match.end(0) :].split("!")[0]
+    mod_words = FRegex.WORD.findall(trailing_line)
+    return "vis", VIS_info(vis_type, mod_words)
 
 
 def_tests = [
@@ -606,6 +667,9 @@ def_tests = [
     read_sub_def,
     read_fun_def,
     read_block_def,
+    read_where_def,
+    read_do_def,
+    read_if_def,
     read_associate_def,
     read_select_def,
     read_type_def,
@@ -652,8 +716,24 @@ def find_external_type(
 def find_external_attr(
     file_ast: fortran_ast, name_stripped: str, new_var: fortran_var
 ) -> bool:
-    """Check if this NORMAL Fortran variable is in the
-    external_objs with only EXTERNAL as its type"""
+    """Check if this NORMAL Fortran variable is in the external_objs with only
+    ``EXTERNAL`` as its type. Used to detect seperated ``EXTERNAL`` declarations.
+
+    Parameters
+    ----------
+    file_ast : fortran_ast
+        AST file
+    name_stripped : str
+        Variable name, stripped
+    new_var : fortran_var
+        Fortran variable to check against
+
+    Returns
+    -------
+    bool
+        True if only a single ``EXTERNAL`` definition is encountered False
+        for everything else, which will cause a diagnostic error to be raised
+    """
     counter = 0
     for v in file_ast.external_objs:
         if v.name != name_stripped:
@@ -683,18 +763,23 @@ def find_external(
     new_var: fortran_var,
 ) -> bool:
     """Find a procedure, function, subroutine, etc. that has been defined as
-    `EXTERNAL`. `EXTERNAL`s are parsed as `fortran_var`, since there is no
-    way of knowing if `real, external :: val` is a function or a subroutine.
+    ``EXTERNAL``. ``EXTERNAL``s are parsed as ``fortran_var``, since there is no
+    way of knowing if ``real, external :: val`` is a function or a subroutine.
 
-    This method exists solely for `EXTERNAL`s that are defined across multiple
+    This method exists solely for ``EXTERNAL`` s that are defined across multiple
     lines e.g.
-    `EXTERNAL VAR`
-    `REAL VAR`
+
+    .. code-block:: fortran
+
+            EXTERNAL VAR
+            REAL VAR
 
     or
 
-    `REAL VAR`
-    `EXTERNAL VAR`
+    .. code-block:: fortran
+
+            REAL VAR
+            EXTERNAL VAR
 
 
     Parameters
@@ -702,17 +787,17 @@ def find_external(
     file_ast : fortran_ast
         AST
     desc_string : str
-        Variable type e.g. `REAL`, `INTEGER`, `EXTERNAL`
+        Variable type e.g. ``REAL``, ``INTEGER``, ``EXTERNAL``
     name_stripped : str
         Variable name
     new_var : fortran_var
-        The line variable that we are attempting to match with an `EXTERNAL`
+        The line variable that we are attempting to match with an ``EXTERNAL``
         definition
 
     Returns
     -------
     bool
-        True if the variable is `EXTERNAL` and we manage to link it to the
+        True if the variable is ``EXTERNAL`` and we manage to link it to the
         rest of its components, else False
     """
     if find_external_type(file_ast, desc_string, name_stripped):
@@ -726,8 +811,8 @@ def find_external(
 class fortran_file:
     def __init__(self, path: str = None, pp_suffixes: list = None):
         self.path: str = path
-        self.contents_split: list = []
-        self.contents_pp: list = []
+        self.contents_split: list[str] = []
+        self.contents_pp: list[str] = []
         self.pp_defs: dict = {}
         self.nLines: int = 0
         self.fixed: bool = False
@@ -740,8 +825,7 @@ class fortran_file:
                 self.preproc = file_ext in pp_suffixes
             else:
                 self.preproc = file_ext == file_ext.upper()
-        else:
-            self.preproc = False
+        self.COMMENT_LINE_MATCH, self.DOC_COMMENT_MATCH = self.get_comment_regexs()
 
     def copy(self) -> fortran_file:
         """Copy content to new file object (does not copy objects)"""
@@ -761,17 +845,13 @@ class fortran_file:
         Returns
         -------
         tuple[str|None, bool|None]
-            `str` : string containing IO error message else None
-            `bool`: boolean indicating if the file has changed
+            ``str`` : string containing IO error message else None
+            ``bool``: boolean indicating if the file has changed
         """
         contents: str
         try:
-            if PY3K:
-                with open(self.path, "r", encoding="utf-8", errors="replace") as f:
-                    contents = re.sub(r"\t", r" ", f.read())
-            else:
-                with io.open(self.path, "r", encoding="utf-8", errors="replace") as f:
-                    contents = re.sub(r"\t", r" ", f.read())
+            with open(self.path, "r", encoding="utf-8", errors="replace") as f:
+                contents = re.sub(r"\t", r" ", f.read())
         except OSError:
             return "Could not read/decode file", None
         else:
@@ -790,10 +870,10 @@ class fortran_file:
     def apply_change(self, change: dict) -> bool:
         """Apply a change to the file."""
 
-        def check_change_reparse(line_number: int) -> bool:
-            if (line_number < 0) or (line_number > self.nLines - 1):
+        def check_change_reparse(line_no: int) -> bool:
+            if (line_no < 0) or (line_no > self.nLines - 1):
                 return True
-            pre_lines, curr_line, _ = self.get_code_line(line_number, forward=False)
+            pre_lines, curr_line, _ = self.get_code_line(line_no, forward=False)
             # Skip comment lines
             if self.fixed:
                 if FRegex.FIXED_COMMENT.match(curr_line):
@@ -834,8 +914,6 @@ class fortran_file:
         self.hash = None
         text = change.get("text", "")
         change_range = change.get("range")
-        if not PY3K:
-            text = text.encode("utf-8")
         if len(text) == 0:
             text_split = [""]
         else:
@@ -895,30 +973,29 @@ class fortran_file:
         if detect_format:
             self.fixed = detect_fixed_format(self.contents_split)
 
-    def get_line(self, line_number: int, pp_content: bool = False) -> str:
+    def get_line(self, line_no: int, pp_content: bool = False) -> str:
         """Get single line from file"""
         try:
             if pp_content:
-                return self.contents_pp[line_number]
-            else:
-                return self.contents_split[line_number]
-        except:
+                return self.contents_pp[line_no]
+            return self.contents_split[line_no]
+        except (TypeError, IndexError):
             return None
 
     def get_code_line(
         self,
-        line_number: int,
+        line_no: int,
         forward: bool = True,
         backward: bool = True,
         pp_content: bool = False,
         strip_comment: bool = False,
     ) -> tuple[list[str], str, list[str]]:
         """Get full code line from file including any adjacent continuations"""
-        curr_line = self.get_line(line_number, pp_content)
+        curr_line = self.get_line(line_no, pp_content)
         if curr_line is None:
             return [], None, []
         # Search backward for prefix lines
-        line_ind = line_number - 1
+        line_ind = line_no - 1
         pre_lines = []
         if backward:
             if self.fixed:  # Fixed format file
@@ -927,7 +1004,7 @@ class fortran_file:
                     if FRegex.FIXED_CONT.match(tmp_line):
                         prev_line = tmp_line
                         tmp_line = self.get_line(line_ind, pp_content)
-                        if line_ind == line_number - 1:
+                        if line_ind == line_no - 1:
                             curr_line = " " * 6 + curr_line[6:]
                         else:
                             pre_lines[-1] = " " * 6 + prev_line[6:]
@@ -961,7 +1038,7 @@ class fortran_file:
                         break
                     line_ind -= 1
         # Search forward for trailing lines with continuations
-        line_ind = line_number + 1
+        line_ind = line_no + 1
         post_lines = []
         if forward:
             if self.fixed:
@@ -983,7 +1060,7 @@ class fortran_file:
                 next_line = ""
                 # Read the next line if needed
                 while (iAmper >= 0) and (iAmper < iComm):
-                    if line_ind == line_number + 1:
+                    if line_ind == line_no + 1:
                         curr_line = curr_line[:iAmper]
                     elif next_line != "":
                         post_lines[-1] = next_line[:iAmper]
@@ -1030,33 +1107,33 @@ class fortran_file:
 
     def find_word_in_code_line(
         self,
-        line_number: int,
+        line_no: int,
         word: str,
         forward: bool = True,
         backward: bool = False,
         pp_content: bool = False,
-    ) -> tuple[int, int, int]:
+    ) -> tuple[int, Range]:
         back_lines, curr_line, forward_lines = self.get_code_line(
-            line_number, forward=forward, backward=backward, pp_content=pp_content
+            line_no, forward=forward, backward=backward, pp_content=pp_content
         )
-        i0 = i1 = -1
+        word_range = Range(-1, -1)
         if curr_line is not None:
             find_word_lower = word.lower()
-            i0, i1 = find_word_in_line(curr_line.lower(), find_word_lower)
-        if backward and (i0 < 0):
+            word_range = find_word_in_line(curr_line.lower(), find_word_lower)
+        if backward and (word_range.start < 0):
             back_lines.reverse()
             for (i, line) in enumerate(back_lines):
-                i0, i1 = find_word_in_line(line.lower(), find_word_lower)
-                if i0 >= 0:
-                    line_number -= i + 1
-                    return line_number, i0, i1
-        if forward and (i0 < 0):
+                word_range = find_word_in_line(line.lower(), find_word_lower)
+                if word_range.start >= 0:
+                    line_no -= i + 1
+                    return line_no, word_range
+        if forward and (word_range.start < 0):
             for (i, line) in enumerate(forward_lines):
-                i0, i1 = find_word_in_line(line.lower(), find_word_lower)
-                if i0 >= 0:
-                    line_number += i + 1
-                    return line_number, i0, i1
-        return line_number, i0, i1
+                word_range = find_word_in_line(line.lower(), find_word_lower)
+                if word_range.start >= 0:
+                    line_no += i + 1
+                    return line_no, word_range
+        return line_no, word_range
 
     def preprocess(
         self, pp_defs: dict = None, include_dirs: set = None, debug: bool = False
@@ -1078,8 +1155,8 @@ class fortran_file:
     def check_file(self, obj_tree, max_line_length=-1, max_comment_line_length=-1):
         diagnostics = []
         if (max_line_length > 0) or (max_comment_line_length > 0):
-            line_message = f'Line length exceeds "max_line_length" ({max_line_length})'
-            comment_message = (
+            msg_line = f'Line length exceeds "max_line_length" ({max_line_length})'
+            msg_comment = (
                 'Comment line length exceeds "max_comment_line_length"'
                 f" ({max_comment_line_length})"
             )
@@ -1090,39 +1167,731 @@ class fortran_file:
                 COMMENT_LINE_MATCH = FRegex.FREE_COMMENT
             for (i, line) in enumerate(self.contents_split):
                 if COMMENT_LINE_MATCH.match(line) is None:
-                    if (max_line_length > 0) and (len(line) > max_line_length):
-                        diagnostics.append(
-                            {
-                                "range": {
-                                    "start": {"line": i, "character": max_line_length},
-                                    "end": {"line": i, "character": len(line)},
-                                },
-                                "message": line_message,
-                                "severity": 2,
-                            }
+                    if 0 < max_line_length < len(line):
+                        self.ast.add_error(
+                            msg_line, Severity.warn, i + 1, max_line_length, len(line)
                         )
                 else:
-                    if (max_comment_line_length > 0) and (
-                        len(line) > max_comment_line_length
-                    ):
-                        diagnostics.append(
-                            {
-                                "range": {
-                                    "start": {
-                                        "line": i,
-                                        "character": max_comment_line_length,
-                                    },
-                                    "end": {"line": i, "character": len(line)},
-                                },
-                                "message": comment_message,
-                                "severity": 2,
-                            }
+                    if 0 < max_comment_line_length < len(line):
+                        self.ast.add_error(
+                            msg_comment,
+                            Severity.warn,
+                            i + 1,
+                            max_comment_line_length,
+                            len(line),
                         )
         errors, diags_ast = self.ast.check_file(obj_tree)
         diagnostics += diags_ast
         for error in errors:
             diagnostics.append(error.build(self))
         return diagnostics
+
+    def parse(
+        self,
+        debug: bool = False,
+        pp_defs: dict = None,
+        include_dirs: set = None,
+    ) -> fortran_ast:
+        """Parse Fortran file contents of a fortran_file object and build an
+        Abstract Syntax Tree (AST)
+
+        Parameters
+        ----------
+        debug : bool, optional
+            Set to true to enable debugging, by default False
+        pp_defs : dict, optional
+            Preprocessor definitions and their values, by default None
+        include_dirs : set, optional
+            Preprocessor include directories, by default None
+
+        Returns
+        -------
+        fortran_ast
+            An Abstract Syntax Tree
+        """
+
+        if pp_defs is None:
+            pp_defs = {}
+        if include_dirs is None:
+            include_dirs = set()
+        # Configure the parser logger
+        if debug:
+            logging.basicConfig(
+                level=logging.DEBUG, stream=sys.stdout, format="%(message)s"
+            )
+
+        # This is not necessarily the same as self.ast
+        file_ast = fortran_ast(self)
+        if self.preproc:
+            log.debug("=== PreProc Pass ===\n")
+            pp_skips, pp_defines = self.preprocess(
+                pp_defs=pp_defs, include_dirs=include_dirs, debug=debug
+            )
+            for pp_reg in pp_skips:
+                file_ast.start_ppif(pp_reg[0])
+                file_ast.end_ppif(pp_reg[1])
+            log.debug("\n=== Parsing Pass ===\n")
+        else:
+            log.debug("=== No PreProc ===\n")
+            pp_skips = []
+            pp_defines = []
+
+        line_no = 0
+        block_id_stack = []
+        docs: list[str] = []  # list used to temporarily store docstrings
+        counters = Counter(
+            do=0,
+            ifs=0,
+            block=0,
+            select=0,
+            interface=0,
+        )
+        multi_lines = deque()
+        self.COMMENT_LINE_MATCH, self.DOC_COMMENT_MATCH = self.get_comment_regexs()
+        while (line_no < self.nLines) or multi_lines:
+            # Get next line
+            # Get a normal line, i.e. the stack is empty
+            if not multi_lines:
+                # get_line has a 0-based index
+                line = self.get_line(line_no, pp_content=True)
+                line_no += 1
+                get_full = True
+            # Line is part of a multi-line construct, i.e. contained ';'
+            else:
+                line = multi_lines.pop()
+                get_full = False
+
+            if line == "":
+                continue  # Skip empty lines
+
+            # Parse documentation strings to AST nodes, this implicitly operates
+            # on docs, i.e. appends or nullifies it
+            idx = self.parse_docs(line, line_no, file_ast, docs)
+            if idx:
+                line_no = idx
+                continue
+            # Handle preprocessing regions
+            do_skip = False
+            for pp_reg in pp_skips:
+                if (line_no >= pp_reg[0]) and (line_no <= pp_reg[1]):
+                    do_skip = True
+                    break
+            if line_no in pp_defines:
+                do_skip = True
+            if do_skip:
+                continue
+            # Get full line, seek forward for code lines
+            # @note line_no-1 refers to the array index for the current line
+            if get_full:
+                _, line, post_lines = self.get_code_line(
+                    line_no - 1, backward=False, pp_content=True
+                )
+                line_no += len(post_lines)
+                line = "".join([line] + post_lines)
+            line, line_label = strip_line_label(line)
+            line_stripped = strip_strings(line, maintain_len=True)
+            # Find trailing comments
+            comm_ind = line_stripped.find("!")
+            if comm_ind >= 0:
+                line_no_comment = line[:comm_ind]
+                line_stripped = line_stripped[:comm_ind]
+                docs = self.get_single_line_docstring(line[comm_ind:])
+            else:
+                line_no_comment = line
+            # Split lines with semicolons, place the multiple lines into a stack
+            if line_stripped.find(";") >= 0:
+                multi_lines.extendleft(line_stripped.split(";"))
+                line = multi_lines.pop()
+                line_stripped = line
+            # Test for scope end
+            if file_ast.END_SCOPE_REGEX is not None:
+                match = FRegex.END_WORD.match(line_no_comment)
+                # Handle end statement
+                if self.parse_end_scope_word(line_no_comment, line_no, file_ast, match):
+                    continue
+                # Look for old-style end of DO loops with line labels
+                if self.parse_do_fixed_format(
+                    line, line_no, file_ast, line_label, block_id_stack
+                ):
+                    continue
+
+            # Skip if known generic code line
+            if FRegex.NON_DEF.match(line_no_comment):
+                continue
+            # Mark implicit statement
+            if self.parse_implicit(line_no_comment, line_no, file_ast):
+                continue
+            # Mark contains statement
+            if self.parse_contains(line_no_comment, line_no, file_ast):
+                continue
+            # Loop through tests
+            obj_read = self.get_fortran_definition(line)
+            # Move to next line if nothing in the definition tests matches
+            if obj_read is None:
+                continue
+
+            obj_type: str = obj_read[0]
+            obj_info = obj_read[1]
+            if obj_type == "var":
+                if obj_info.var_names is None:
+                    continue
+                desc_string = obj_info.var_type
+                link_name: str = None
+                procedure_def = False
+                if desc_string[:3] == "PRO":
+                    if file_ast.current_scope.get_type() == INTERFACE_TYPE_ID:
+                        for var_name in obj_info.var_names:
+                            file_ast.add_int_member(var_name)
+                        log.debug("%s !!! INTERFACE-PRO - Ln:%d", line.strip(), line_no)
+                        continue
+                    procedure_def = True
+                    link_name = get_paren_substring(desc_string)
+                for var_name in obj_info.var_names:
+                    link_name: str = None
+                    if var_name.find("=>") > -1:
+                        name_split = var_name.split("=>")
+                        name_raw = name_split[0]
+                        link_name = name_split[1].split("(")[0].strip()
+                        if link_name.lower() == "null":
+                            link_name = None
+                    else:
+                        name_raw = var_name.split("=")[0]
+                    # Add dimension if specified
+                    key_tmp = obj_info.keywords[:]
+                    iparen = name_raw.find("(")
+                    if iparen == 0:
+                        continue
+                    elif iparen > 0:
+                        if name_raw[iparen - 1] == "*":
+                            iparen -= 1
+                            if desc_string.find("(") < 0:
+                                desc_string += f"*({get_paren_substring(name_raw)})"
+                        else:
+                            key_tmp.append(
+                                f"dimension({get_paren_substring(name_raw)})"
+                            )
+                        name_raw = name_raw[:iparen]
+                    name_stripped = name_raw.strip()
+                    keywords, keyword_info = map_keywords(key_tmp)
+                    if procedure_def:
+                        new_var = fortran_meth(
+                            file_ast,
+                            line_no,
+                            name_stripped,
+                            desc_string,
+                            keywords,
+                            keyword_info=keyword_info,
+                            link_obj=link_name,
+                        )
+                    else:
+                        new_var = fortran_var(
+                            file_ast,
+                            line_no,
+                            name_stripped,
+                            desc_string,
+                            keywords,
+                            keyword_info=keyword_info,
+                            link_obj=link_name,
+                        )
+                        # If the object is fortran_var and a parameter include
+                        #  the value in hover
+                        if new_var.is_parameter():
+                            _, col = find_word_in_line(line, name_stripped)
+                            match = FRegex.PARAMETER_VAL.match(line[col:])
+                            if match:
+                                var = match.group(1).strip()
+                                new_var.set_parameter_val(var)
+
+                        # Check if the "variable" is external and if so cycle
+                        if find_external(file_ast, desc_string, name_stripped, new_var):
+                            continue
+
+                    # if not merge_external:
+                    file_ast.add_variable(new_var)
+                log.debug("%s !!! VARIABLE - Ln:%d", line, line_no)
+
+            elif obj_type == "mod":
+                new_mod = fortran_module(file_ast, line_no, obj_info)
+                file_ast.add_scope(new_mod, FRegex.END_MOD)
+                log.debug("%s !!! MODULE - Ln:%d", line, line_no)
+
+            elif obj_type == "smod":
+                new_smod = fortran_submodule(
+                    file_ast, line_no, obj_info.name, ancestor_name=obj_info.parent
+                )
+                file_ast.add_scope(new_smod, FRegex.END_SMOD)
+                log.debug("%s !!! SUBMODULE - Ln:%d", line, line_no)
+
+            elif obj_type == "prog":
+                new_prog = fortran_program(file_ast, line_no, obj_info)
+                file_ast.add_scope(new_prog, FRegex.END_PROG)
+                log.debug("%s !!! PROGRAM - Ln:%d", line, line_no)
+
+            elif obj_type == "sub":
+                keywords, _ = map_keywords(obj_info.keywords)
+                new_sub = fortran_subroutine(
+                    file_ast,
+                    line_no,
+                    obj_info.name,
+                    args=obj_info.args,
+                    mod_flag=obj_info.mod_flag,
+                    keywords=keywords,
+                )
+                file_ast.add_scope(new_sub, FRegex.END_SUB)
+                log.debug("%s !!! SUBROUTINE - Ln:%d", line, line_no)
+
+            elif obj_type == "fun":
+                keywords, _ = map_keywords(obj_info.keywords)
+                new_fun = fortran_function(
+                    file_ast,
+                    line_no,
+                    obj_info.name,
+                    args=obj_info.args,
+                    mod_flag=obj_info.mod_flag,
+                    keywords=keywords,
+                    result_type=obj_info.result.type,
+                    result_name=obj_info.result.name,
+                )
+                file_ast.add_scope(new_fun, FRegex.END_FUN)
+                # function type is present without result(), register the automatic
+                # result() variable that is the function name
+                if obj_info.result.type:
+                    keywords, keyword_info = map_keywords(obj_info.result.keywords)
+                    new_obj = fortran_var(
+                        file_ast,
+                        line_no,
+                        name=obj_info.result.name,
+                        var_desc=obj_info.result.type,
+                        keywords=keywords,
+                        keyword_info=keyword_info,
+                    )
+                    file_ast.add_variable(new_obj)
+                log.debug("%s !!! FUNCTION - Ln:%d", line, line_no)
+
+            elif obj_type == "block":
+                name = obj_info
+                if name is None:
+                    counters["block"] += 1
+                    name = f"#BLOCK{counters['block']}"
+                new_block = fortran_block(file_ast, line_no, name)
+                file_ast.add_scope(new_block, FRegex.END_BLOCK, req_container=True)
+                log.debug("%s !!! BLOCK - Ln:%d", line, line_no)
+
+            elif obj_type == "do":
+                counters["do"] += 1
+                name = f"#DO{counters['do']}"
+                if obj_info != "":
+                    block_id_stack.append(obj_info)
+                new_do = fortran_do(file_ast, line_no, name)
+                file_ast.add_scope(new_do, FRegex.END_DO, req_container=True)
+                log.debug("%s !!! DO - Ln:%d", line, line_no)
+
+            elif obj_type == "where":
+                # Add block if WHERE is not single line
+                if not obj_info:
+                    counters["do"] += 1
+                    name = f"#WHERE{counters['do']}"
+                    new_do = fortran_where(file_ast, line_no, name)
+                    file_ast.add_scope(new_do, FRegex.END_WHERE, req_container=True)
+                log.debug("%s !!! WHERE - Ln:%d", line, line_no)
+
+            elif obj_type == "assoc":
+                counters["block"] += 1
+                name = f"#ASSOC{counters['block']}"
+                new_assoc = fortran_associate(file_ast, line_no, name)
+                file_ast.add_scope(new_assoc, FRegex.END_ASSOCIATE, req_container=True)
+                for bound_var in obj_info:
+                    try:
+                        bind_name, link_name = bound_var.split("=>")
+                        file_ast.add_variable(
+                            new_assoc.create_binding_variable(
+                                file_ast,
+                                line_no,
+                                bind_name.strip(),
+                                link_name.strip(),
+                            )
+                        )
+                    except ValueError:
+                        pass
+                log.debug("%s !!! ASSOCIATE - Ln:%d", line, line_no)
+
+            elif obj_type == "if":
+                counters["if"] += 1
+                name = f"#IF{counters['if']}"
+                new_if = fortran_if(file_ast, line_no, name)
+                file_ast.add_scope(new_if, FRegex.END_IF, req_container=True)
+                log.debug("%s !!! IF - Ln:%d", line, line_no)
+
+            elif obj_type == "select":
+                counters["select"] += 1
+                name = f"#SELECT{counters['select']}"
+                new_select = fortran_select(file_ast, line_no, name, obj_info)
+                file_ast.add_scope(new_select, FRegex.END_SELECT, req_container=True)
+                new_var = new_select.create_binding_variable(
+                    file_ast,
+                    line_no,
+                    f"{obj_info.desc}({obj_info.binding})",
+                    obj_info.type,
+                )
+                if new_var is not None:
+                    file_ast.add_variable(new_var)
+                log.debug("%s !!! SELECT - Ln:%d", line, line_no)
+
+            elif obj_type == "typ":
+                keywords, _ = map_keywords(obj_info.keywords)
+                new_type = fortran_type(file_ast, line_no, obj_info.name, keywords)
+                if obj_info.parent is not None:
+                    new_type.set_inherit(obj_info.parent)
+                file_ast.add_scope(new_type, FRegex.END_TYPED, req_container=True)
+                log.debug("%s !!! TYPE - Ln:%d", line, line_no)
+
+            elif obj_type == "enum":
+                counters["block"] += 1
+                name = f"#ENUM{counters['block']}"
+                new_enum = fortran_enum(file_ast, line_no, name)
+                file_ast.add_scope(new_enum, FRegex.END_ENUMD, req_container=True)
+                log.debug("%s !!! ENUM - Ln:%d", line, line_no)
+
+            elif obj_type == "int":
+                name = obj_info.name
+                if name is None:
+                    counters["interface"] += 1
+                    name = f"#GEN_INT{counters['interface']}"
+                new_int = fortran_int(
+                    file_ast, line_no, name, abstract=obj_info.abstract
+                )
+                file_ast.add_scope(new_int, FRegex.END_INT, req_container=True)
+                log.debug("%s !!! INTERFACE - Ln:%d", line, line_no)
+
+            elif obj_type == "gen":
+                new_int = fortran_int(
+                    file_ast, line_no, obj_info.bound_name, abstract=False
+                )
+                new_int.set_visibility(obj_info.vis_flag)
+                file_ast.add_scope(new_int, FRegex.END_INT, req_container=True)
+                for pro_link in obj_info.pro_links:
+                    file_ast.add_int_member(pro_link)
+                file_ast.end_scope(line_no)
+                log.debug("%s !!! GENERIC - Ln:%d", line, line_no)
+
+            elif obj_type == "int_pro":
+                if file_ast.current_scope is not None:
+                    if file_ast.current_scope.get_type() == INTERFACE_TYPE_ID:
+                        for name in obj_info:
+                            file_ast.add_int_member(name)
+                        log.debug("%s !!! INTERFACE-PRO - Ln:%d", line, line_no)
+
+                    elif file_ast.current_scope.get_type() == SUBMODULE_TYPE_ID:
+                        new_impl = fortran_scope(file_ast, line_no, obj_info[0])
+                        file_ast.add_scope(new_impl, FRegex.END_PRO)
+                        log.debug("%s !!! INTERFACE-IMPL - Ln:%d", line, line_no)
+
+            elif obj_type == "use":
+                file_ast.add_use(
+                    obj_info.mod_name,
+                    line_no,
+                    obj_info.only_list,
+                    obj_info.rename_map,
+                )
+                log.debug("%s !!! USE - Ln:%d", line, line_no)
+
+            elif obj_type == "import":
+                file_ast.add_use("#IMPORT", line_no, obj_info)
+                log.debug("%s !!! IMPORT - Ln:%d", line, line_no)
+
+            elif obj_type == "inc":
+                file_ast.add_include(obj_info, line_no)
+                log.debug("%s !!! INCLUDE - Ln:%d", line, line_no)
+
+            elif obj_type == "vis":
+                if file_ast.current_scope is None:
+                    msg = "Visibility statement without enclosing scope"
+                    file_ast.add_error(msg, Severity.error, line_no, 0)
+                else:
+                    if (len(obj_info.obj_names) == 0) and (obj_info.type == 1):
+                        file_ast.current_scope.set_default_vis(-1)
+                    else:
+                        if obj_info.type == MODULE_TYPE_ID:
+                            for word in obj_info.obj_names:
+                                file_ast.add_private(word)
+                        else:
+                            for word in obj_info.obj_names:
+                                file_ast.add_public(word)
+                log.debug("%s !!! VISIBILITY - Ln:%d", line, line_no)
+
+        file_ast.close_file(line_no)
+        if debug:
+            if len(file_ast.end_errors) > 0:
+                log.debug("\n=== Scope Errors ===\n")
+                for error in file_ast.end_errors:
+                    if error[0] >= 0:
+                        message = f"Unexpected end of scope at line {error[0]}"
+                    else:
+                        message = "Unexpected end statement: No open scopes"
+                    log.debug(f"{error[1]}: {message}")
+            if len(file_ast.parse_errors) > 0:
+                log.debug("\n=== Parsing Errors ===\n")
+                for error in file_ast.parse_errors:
+                    log.debug(f"{error['range']}: {error['message']}")
+        return file_ast
+
+    def parse_end_scope_word(
+        self, line: str, ln: int, file_ast: fortran_ast, match: re.Match
+    ) -> bool:
+        """Parses END keyword marking the end of scopes
+
+        Parameters
+        ----------
+        line : str
+            Document line
+        ln : int
+            Line number
+        file_ast : fortran_ast
+            AST object
+        match : re.Match
+            END word regular expression match
+
+        Returns
+        -------
+        bool
+            True if a AST scope is closed, False otherwise
+        """
+        if match is None:
+            return False
+
+        end_scope_word: str = None
+        if match.group(1) is None:
+            end_scope_word = ""
+            if file_ast.current_scope.req_named_end() and (
+                file_ast.current_scope is not file_ast.none_scope
+            ):
+                file_ast.end_errors.append([ln, file_ast.current_scope.sline])
+        else:
+            scope_match = file_ast.END_SCOPE_REGEX.match(line[match.start(1) :])
+            if scope_match is not None:
+                end_scope_word = scope_match.group(0)
+        if end_scope_word is not None:
+            if (file_ast.current_scope.get_type() == SELECT_TYPE_ID) and (
+                file_ast.current_scope.is_type_region()
+            ):
+                file_ast.end_scope(ln)
+            file_ast.end_scope(ln)
+            log.debug("%s !!! END %s Scope - Ln:%d", line, end_scope_word.upper(), ln)
+            return True
+        return False
+
+    def parse_do_fixed_format(
+        self,
+        line: str,
+        ln: int,
+        file_ast: fortran_ast,
+        line_label: str,
+        block_id_stack: list[str],
+    ):
+        if (file_ast.current_scope.get_type() == DO_TYPE_ID) and (
+            line_label is not None
+        ):
+            # TODO: try and move to end_scope pattern
+            did_close = False
+            while (len(block_id_stack) > 0) and (line_label == block_id_stack[-1]):
+                file_ast.end_scope(ln)
+                block_id_stack.pop()
+                did_close = True
+                log.debug("%s !!! END DO-LABELLED - Ln:%d", line, ln)
+            if did_close:
+                return True
+        return False
+
+    def parse_implicit(self, line: str, ln: int, file_ast: fortran_ast) -> bool:
+        """Parse implicit statements from a line
+
+        Parameters
+        ----------
+        line : str
+            Document line
+        ln : int
+            Line number
+        file_ast : fortran_ast
+            AST object
+
+        Returns
+        -------
+        bool
+            True if an IMPLICIT statements present, False otherwise
+        """
+        match = FRegex.IMPLICIT.match(line)
+        if match is None:
+            return False
+        if file_ast.current_scope is None:
+            msg = "IMPLICIT statement without enclosing scope"
+            file_ast.add_error(msg, Severity.error, ln, match.start(1), match.end(1))
+        else:
+            if match.group(1).lower() == "none":
+                file_ast.current_scope.set_implicit(False, ln)
+            else:
+                file_ast.current_scope.set_implicit(True, ln)
+
+        log.debug("%s !!! IMPLICIT - Ln:%d", line, ln)
+        return True
+
+    def parse_contains(self, line: str, ln: int, file_ast: fortran_ast) -> bool:
+        """Parse contain statements
+
+        Parameters
+        ----------
+        line : str
+            Document line
+        ln : int
+            Line number
+        file_ast : fortran_ast
+            AST object
+
+        Returns
+        -------
+        bool
+            True if a contains is present, False otherwise
+        """
+        match = FRegex.CONTAINS.match(line)
+        if match is None:
+            return False
+        msg: str = None
+        try:
+            if file_ast.current_scope is None:
+                msg = "CONTAINS statement without enclosing scope"
+            else:
+                file_ast.current_scope.mark_contains(ln)
+        except ValueError:
+            msg = "Multiple CONTAINS statements in scope"
+        if msg:
+            file_ast.add_error(msg, Severity.error, ln, match.start(1), match.end(1))
+        log.debug("%s !!! CONTAINS - Ln:%d", line, ln)
+        return True
+
+    def parse_docs(self, line: str, ln: int, file_ast: fortran_ast, docs: list[str]):
+        """Parse documentation stings of style Doxygen or FORD.
+        Multiline docstrings are detected if the first comment starts with `!>`
+        docstring continuations are detected with either `!>`, `!<` or `!!`
+
+        Parameters
+        ----------
+        line : str
+            Document line
+        ln : int
+            Line number
+        file_ast : fortran_ast
+            AST object
+        docs : list[str]
+            Docstrings that are pending processing e.g. single line docstrings
+        """
+
+        def format(docs: list[str]) -> str:
+            if len(docs) == 1:
+                return f"!! {docs[0]}"
+            return "!! " + "\n!! ".join(docs)
+
+        def add_line_comment(file_ast: fortran_ast, docs: list[str]):
+            # Handle dangling comments from previous line
+            if docs:
+                file_ast.add_doc(format(docs))
+                log.debug(f"{format(docs)} !!! Doc string - Line:{ln}")
+                docs[:] = []  # empty the documentation stack
+
+        # Check for comments in line
+        if not self.COMMENT_LINE_MATCH.match(line):
+            add_line_comment(file_ast, docs)
+            return False
+        # Check for documentation
+        doc_match = self.DOC_COMMENT_MATCH.match(line)
+        if not doc_match:
+            add_line_comment(file_ast, docs)
+            return False
+
+        _ln = ln
+        ln, docs[:], predocmark = self.get_docstring(ln, line, doc_match, docs)
+
+        # Count the total length of all the stings in docs
+        # most efficient implementation, see: shorturl.at/dfmyV
+        if len("".join(docs)) > 0:
+            file_ast.add_doc(format(docs), forward=predocmark)
+        for (i, doc_line) in enumerate(docs):
+            log.debug(f"{doc_line} !!! Doc string - Line:{_ln + i}")
+        docs[:] = []
+        return ln
+
+    def get_docstring(
+        self, ln: int, line: str, match: Pattern, docs: list[str]
+    ) -> tuple[int, list[str], bool]:
+        """Extract entire documentation strings from the current file position
+
+        Parameters
+        ----------
+        ln : int
+            Line number
+        line : str
+            Document line, not necessarily produced by `get_line()`
+        match : Pattern
+            Regular expression DOC match
+        docs : list[str]
+            Docstrings that are pending processing e.g. single line docstrings
+
+        Returns
+        -------
+        tuple[int, list[str], bool]
+            The new line number at the end of the docstring, the docstring and
+            a boolean flag indicating whether the docstring precedes the AST node
+            (Doxygen style) or succeeds it (traditional FORD style)
+        """
+        docstring: list[str] = docs
+        docstring.append(line[match.end(0) :].strip())
+        predocmark = True if match.group(1) == ">" else False
+
+        if ln >= self.nLines:
+            return ln, docstring, predocmark
+
+        # @note line index is 0-based
+        # Start from the current line until EOF and check for docs
+        for i in range(ln, self.nLines):
+            next_line = self.get_line(i, pp_content=True)
+            match = self.DOC_COMMENT_MATCH.match(next_line)
+            if not match:
+                ln = i
+                break
+            docstring.append(next_line[match.end(0) :].strip())
+        return ln, docstring, predocmark
+
+    def get_single_line_docstring(self, line: str) -> list[str]:
+        """Get a docstring of a single line. This is the same for both Legacy
+        and Modern Fortran
+
+        Parameters
+        ----------
+        line : str
+            Line of code
+
+        Returns
+        -------
+        list[str]
+            A list containing the docstring. List will be empty if there is no
+            match or the match is an empty string itself
+        """
+        match = FRegex.FREE_DOC.match(line)
+        if not match:
+            return []
+        # if the string is empty return an empty list instead
+        doc = line[match.end(0) :].strip()
+        return [doc] if doc else []
+
+    def get_comment_regexs(self) -> tuple[Pattern, Pattern]:
+        if self.fixed:
+            return FRegex.FIXED_COMMENT, FRegex.FIXED_DOC
+        return FRegex.FREE_COMMENT, FRegex.FREE_DOC
+
+    def get_fortran_definition(self, line: str):
+        for fortran_def in def_tests:
+            obj = fortran_def(line)
+            if obj is not None:
+                return obj
+        return None
 
 
 def preprocess_file(
@@ -1228,10 +1997,10 @@ def preprocess_file(
             if if_start:
                 if is_path:
                     pp_stack.append([-1, -1])
-                    log.debug(f"{line.strip()} !!! Conditional TRUE({i+1})")
+                    log.debug(f"{line.strip()} !!! Conditional TRUE({i + 1})")
                 else:
                     pp_stack.append([i + 1, -1])
-                    log.debug(f"{line.strip()} !!! Conditional FALSE({i+1})")
+                    log.debug(f"{line.strip()} !!! Conditional FALSE({i + 1})")
                 continue
             if len(pp_stack) == 0:
                 continue
@@ -1260,13 +2029,13 @@ def preprocess_file(
                     continue
                 if pp_stack[-1][1] < 0:
                     pp_stack[-1][1] = i + 1
-                    log.debug(f"{line.strip()} !!! Conditional FALSE/END({i+1})")
+                    log.debug(f"{line.strip()} !!! Conditional FALSE/END({i + 1})")
                 pp_skips.append(pp_stack.pop())
             if debug:
                 if inc_start:
-                    log.debug(f"{line.strip()} !!! Conditional TRUE({i+1})")
+                    log.debug(f"{line.strip()} !!! Conditional TRUE({i + 1})")
                 elif exc_start:
-                    log.debug(f"{line.strip()} !!! Conditional FALSE({i+1})")
+                    log.debug(f"{line.strip()} !!! Conditional FALSE({i + 1})")
             continue
         # Handle variable/macro definitions files
         match = FRegex.PP_DEF.match(line)
@@ -1295,12 +2064,12 @@ def preprocess_file(
                     defs_tmp[def_name] = "True"
             elif (match.group(1) == "undef") and (def_name in defs_tmp):
                 defs_tmp.pop(def_name, None)
-            log.debug(f"{line.strip()} !!! Define statement({i+1})")
+            log.debug(f"{line.strip()} !!! Define statement({i + 1})")
             continue
         # Handle include files
         match = FRegex.PP_INCLUDE.match(line)
         if (match is not None) and ((len(pp_stack) == 0) or (pp_stack[-1][0] < 0)):
-            log.debug(f"{line.strip()} !!! Include statement({i+1})")
+            log.debug(f"{line.strip()} !!! Include statement({i + 1})")
             include_filename = match.group(1).replace('"', "")
             include_path = None
             # Intentionally keep this as a list and not a set. There are cases
@@ -1333,7 +2102,7 @@ def preprocess_file(
                     log.debug("!!! Failed to parse include file: exception")
 
             else:
-                log.debug(f"{line.strip()} !!! Could not locate include file ({i+1})")
+                log.debug(f"{line.strip()} !!! Could not locate include file ({i + 1})")
 
         # Substitute (if any) read in preprocessor macros
         for def_tmp, value in defs_tmp.items():
@@ -1343,579 +2112,9 @@ def preprocess_file(
                 def_regexes[def_tmp] = def_regex
             line_new, nsubs = def_regex.subn(value, line)
             if nsubs > 0:
-                log.debug(f"{line.strip()} !!! Macro sub({i+1}) '{def_tmp}' -> {value}")
+                log.debug(
+                    f"{line.strip()} !!! Macro sub({i + 1}) '{def_tmp}' -> {value}"
+                )
                 line = line_new
         output_file.append(line)
     return output_file, pp_skips, pp_defines, defs_tmp
-
-
-def process_file(
-    file_obj: fortran_file,
-    debug: bool = False,
-    pp_defs: dict = None,
-    include_dirs: set = None,
-):
-    """Build file AST by parsing file"""
-
-    def parser_debug_msg(msg: str, line: str, ln: int):
-        log.debug(f"{line.strip()} !!! {msg} statement({ln})")
-
-    if pp_defs is None:
-        pp_defs = {}
-    if include_dirs is None:
-        include_dirs = set()
-    # Configure the parser logger
-    if debug:
-        logging.basicConfig(
-            level=logging.DEBUG, stream=sys.stdout, format="%(message)s"
-        )
-
-    file_ast = fortran_ast(file_obj)
-    if file_obj.preproc:
-        log.debug("=== PreProc Pass ===\n")
-        pp_skips, pp_defines = file_obj.preprocess(
-            pp_defs=pp_defs, include_dirs=include_dirs, debug=debug
-        )
-        for pp_reg in pp_skips:
-            file_ast.start_ppif(pp_reg[0])
-            file_ast.end_ppif(pp_reg[1])
-        log.debug("\n=== Parsing Pass ===\n")
-    else:
-        log.debug("=== No PreProc ===\n")
-        pp_skips = []
-        pp_defines = []
-    #
-    line_ind = 0
-    next_line_ind = 0
-    line_number = 1
-    int_counter = 0
-    block_counter = 0
-    do_counter = 0
-    if_counter = 0
-    select_counter = 0
-    block_id_stack = []
-    semi_split = []
-    doc_string: str = None
-    if file_obj.fixed:
-        COMMENT_LINE_MATCH = FRegex.FIXED_COMMENT
-        DOC_COMMENT_MATCH = FRegex.FIXED_DOC
-    else:
-        COMMENT_LINE_MATCH = FRegex.FREE_COMMENT
-        DOC_COMMENT_MATCH = FRegex.FREE_DOC
-    while (next_line_ind < file_obj.nLines) or (len(semi_split) > 0):
-        # Get next line
-        if len(semi_split) > 0:
-            line = semi_split[0]
-            semi_split = semi_split[1:]
-            get_full = False
-        else:
-            line_ind = next_line_ind
-            line_number = line_ind + 1
-            line = file_obj.get_line(line_ind, pp_content=True)
-            next_line_ind = line_ind + 1
-            get_full = True
-        if line == "":
-            continue  # Skip empty lines
-        # Skip comment lines
-        match = COMMENT_LINE_MATCH.match(line)
-        if match:
-            # Check for documentation
-            doc_match = DOC_COMMENT_MATCH.match(line)
-            if doc_match:
-                doc_lines = [line[doc_match.end(0) :].strip()]
-                if doc_match.group(1) == ">":
-                    doc_forward = True
-                else:
-                    if doc_string:
-                        doc_lines = [doc_string] + doc_lines
-                        doc_string = None
-                    doc_forward = False
-                if next_line_ind < file_obj.nLines:
-                    next_line = file_obj.get_line(next_line_ind, pp_content=True)
-                    next_line_ind += 1
-                    doc_match = DOC_COMMENT_MATCH.match(next_line)
-                    while (doc_match is not None) and (next_line_ind < file_obj.nLines):
-                        doc_lines.append(next_line[doc_match.end(0) :].strip())
-                        next_line = file_obj.get_line(next_line_ind, pp_content=True)
-                        next_line_ind += 1
-                        doc_match = DOC_COMMENT_MATCH.match(next_line)
-                    next_line_ind -= 1
-                if debug:
-                    for (i, doc_line) in enumerate(doc_lines):
-                        log.debug(f"{doc_line} !!! Doc string({line_number+i})")
-                line_sum = 0
-                for doc_line in doc_lines:
-                    line_sum += len(doc_line)
-                if line_sum > 0:
-                    file_ast.add_doc(
-                        "!! " + "\n!! ".join(doc_lines), forward=doc_forward
-                    )
-            continue
-        # Handle trailing doc strings
-        if doc_string:
-            file_ast.add_doc("!! " + doc_string)
-            log.debug(f"{doc_string} !!! Doc string({line_number})")
-            doc_string = None
-        # Handle preprocessing regions
-        do_skip = False
-        for pp_reg in pp_skips:
-            if (line_number >= pp_reg[0]) and (line_number <= pp_reg[1]):
-                do_skip = True
-                break
-        if line_number in pp_defines:
-            do_skip = True
-        if do_skip:
-            continue
-        # Get full line
-        if get_full:
-            _, line, post_lines = file_obj.get_code_line(
-                line_ind, backward=False, pp_content=True
-            )
-            next_line_ind += len(post_lines)
-            line = "".join([line] + post_lines)
-        # print(line)
-        line, line_label = strip_line_label(line)
-        line_stripped = strip_strings(line, maintain_len=True)
-        # Find trailing comments
-        comm_ind = line_stripped.find("!")
-        if comm_ind >= 0:
-            line_no_comment = line[:comm_ind]
-            line_post_comment = line[comm_ind:]
-            line_stripped = line_stripped[:comm_ind]
-        else:
-            line_no_comment = line
-            line_post_comment = None
-        # Split lines with semicolons
-        semi_colon_ind = line_stripped.find(";")
-        if semi_colon_ind > 0:
-            semi_inds = []
-            tmp_line = line_stripped
-            while semi_colon_ind >= 0:
-                semi_inds.append(semi_colon_ind)
-                tmp_line = tmp_line[semi_colon_ind + 1 :]
-                semi_colon_ind = tmp_line.find(";")
-            i0 = 0
-            for semi_colon_ind in semi_inds:
-                semi_split.append(line[i0 : i0 + semi_colon_ind])
-                i0 += semi_colon_ind + 1
-            if len(semi_split) > 0:
-                semi_split.append(line[i0:])
-                line = semi_split[0]
-                semi_split = semi_split[1:]
-                line_stripped = strip_strings(line, maintain_len=True)
-                line_no_comment = line
-                line_post_comment = None
-        # Test for scope end
-        if file_ast.END_SCOPE_REGEX is not None:
-            match = FRegex.END_WORD.match(line_no_comment)
-            # Handle end statement
-            if match:
-                end_scope_word = None
-                if match.group(1) is None:
-                    end_scope_word = ""
-                    if file_ast.current_scope.req_named_end() and (
-                        file_ast.current_scope is not file_ast.none_scope
-                    ):
-                        file_ast.end_errors.append(
-                            [line_number, file_ast.current_scope.sline]
-                        )
-                else:
-                    scope_match = file_ast.END_SCOPE_REGEX.match(
-                        line_no_comment[match.start(1) :]
-                    )
-                    if scope_match is not None:
-                        end_scope_word = scope_match.group(0)
-                if end_scope_word is not None:
-                    if (file_ast.current_scope.get_type() == SELECT_TYPE_ID) and (
-                        file_ast.current_scope.is_type_region()
-                    ):
-                        file_ast.end_scope(line_number)
-                    file_ast.end_scope(line_number)
-                    log.debug(
-                        f'{line.strip()} !!! END "{end_scope_word}"'
-                        f" scope({line_number})"
-                    )
-                    continue
-            # Look for old-style end of DO loops with line labels
-            if (file_ast.current_scope.get_type() == DO_TYPE_ID) and (
-                line_label is not None
-            ):
-                did_close = False
-                while (len(block_id_stack) > 0) and (line_label == block_id_stack[-1]):
-                    file_ast.end_scope(line_number)
-                    block_id_stack.pop()
-                    did_close = True
-                    log.debug(f'{line.strip()} !!! END "DO" scope({line_number})')
-                if did_close:
-                    continue
-        # Skip if known generic code line
-        match = FRegex.NON_DEF.match(line_no_comment)
-        if match:
-            continue
-        # Mark implicit statement
-        match = FRegex.IMPLICIT.match(line_no_comment)
-        if match:
-            err_message = None
-            if file_ast.current_scope is None:
-                err_message = "IMPLICIT statement without enclosing scope"
-            else:
-                if match.group(1).lower() == "none":
-                    file_ast.current_scope.set_implicit(False, line_number)
-                else:
-                    file_ast.current_scope.set_implicit(True, line_number)
-            if err_message:
-                file_ast.parse_errors.append(
-                    {
-                        "line": line_number,
-                        "schar": match.start(1),
-                        "echar": match.end(1),
-                        "mess": err_message,
-                        "sev": 1,
-                    }
-                )
-            parser_debug_msg("IMPLICIT", line, line_number)
-            continue
-        # Mark contains statement
-        match = FRegex.CONTAINS.match(line_no_comment)
-        if match:
-            err_message = None
-            try:
-                if file_ast.current_scope is None:
-                    err_message = "CONTAINS statement without enclosing scope"
-                else:
-                    file_ast.current_scope.mark_contains(line_number)
-            except ValueError:
-                err_message = "Multiple CONTAINS statements in scope"
-            if err_message:
-                file_ast.parse_errors.append(
-                    {
-                        "line": line_number,
-                        "schar": match.start(1),
-                        "echar": match.end(1),
-                        "mess": err_message,
-                        "sev": 1,
-                    }
-                )
-            parser_debug_msg("CONTAINS", line, line_number)
-            continue
-        # Look for trailing doc string
-        if line_post_comment:
-            doc_match = FRegex.FREE_DOC.match(line_post_comment)
-            if doc_match:
-                doc_string = line_post_comment[doc_match.end(0) :].strip()
-        # Loop through tests
-        obj_read = None
-        for test in def_tests:
-            obj_read = test(line_no_comment)
-            if obj_read is not None:
-                break
-        # Move to next line if nothing in the definition tests matches
-        if obj_read is None:
-            continue
-
-        obj_type = obj_read[0]
-        obj_info = obj_read[1]
-        if obj_type == "var":
-            if obj_info.var_names is None:
-                continue
-            desc_string = obj_info.type_word
-            link_name: str = None
-            procedure_def = False
-            if desc_string[:3] == "PRO":
-                if file_ast.current_scope.get_type() == INTERFACE_TYPE_ID:
-                    for var_name in obj_info.var_names:
-                        file_ast.add_int_member(var_name)
-                    parser_debug_msg("INTERFACE-PRO", line, line_number)
-                    continue
-                procedure_def = True
-                link_name = get_paren_substring(desc_string)
-            for var_name in obj_info.var_names:
-                link_name: str = None
-                if var_name.find("=>") > -1:
-                    name_split = var_name.split("=>")
-                    name_raw = name_split[0]
-                    link_name = name_split[1].split("(")[0].strip()
-                    if link_name.lower() == "null":
-                        link_name = None
-                else:
-                    name_raw = var_name.split("=")[0]
-                # Add dimension if specified
-                key_tmp = obj_info.keywords[:]
-                iparen = name_raw.find("(")
-                if iparen == 0:
-                    continue
-                elif iparen > 0:
-                    if name_raw[iparen - 1] == "*":
-                        iparen -= 1
-                        if desc_string.find("(") < 0:
-                            desc_string += f"*({get_paren_substring(name_raw)})"
-                    else:
-                        key_tmp.append(f"dimension({get_paren_substring(name_raw)})")
-                    name_raw = name_raw[:iparen]
-                name_stripped = name_raw.strip()
-                keywords, keyword_info = map_keywords(key_tmp)
-                if procedure_def:
-                    new_var = fortran_meth(
-                        file_ast,
-                        line_number,
-                        name_stripped,
-                        desc_string,
-                        keywords,
-                        keyword_info=keyword_info,
-                        link_obj=link_name,
-                    )
-                else:
-                    new_var = fortran_var(
-                        file_ast,
-                        line_number,
-                        name_stripped,
-                        desc_string,
-                        keywords,
-                        keyword_info=keyword_info,
-                        link_obj=link_name,
-                    )
-                    # If the object is fortran_var and a parameter include
-                    #  the value in hover
-                    if new_var.is_parameter():
-                        _, col = find_word_in_line(line, name_stripped)
-                        match = FRegex.PARAMETER_VAL.match(line[col:])
-                        if match:
-                            var = match.group(1).strip()
-                            new_var.set_parameter_val(var)
-
-                    # Check if the "variable" is external and if so cycle
-                    if find_external(file_ast, desc_string, name_stripped, new_var):
-                        continue
-
-                # if not merge_external:
-                file_ast.add_variable(new_var)
-            parser_debug_msg("VARIABLE", line, line_number)
-
-        elif obj_type == "mod":
-            new_mod = fortran_module(file_ast, line_number, obj_info)
-            file_ast.add_scope(new_mod, FRegex.END_MOD)
-            parser_debug_msg("MODULE", line, line_number)
-
-        elif obj_type == "smod":
-            new_smod = fortran_submodule(
-                file_ast, line_number, obj_info.name, ancestor_name=obj_info.parent
-            )
-            file_ast.add_scope(new_smod, FRegex.END_SMOD)
-            parser_debug_msg("SUBMODULE", line, line_number)
-
-        elif obj_type == "prog":
-            new_prog = fortran_program(file_ast, line_number, obj_info)
-            file_ast.add_scope(new_prog, FRegex.END_PROG)
-            parser_debug_msg("PROGRAM", line, line_number)
-
-        elif obj_type == "sub":
-            keywords, _ = map_keywords(obj_info.keywords)
-            new_sub = fortran_subroutine(
-                file_ast,
-                line_number,
-                obj_info.name,
-                args=obj_info.args,
-                mod_flag=obj_info.mod_flag,
-                keywords=keywords,
-            )
-            file_ast.add_scope(new_sub, FRegex.END_SUB)
-            parser_debug_msg("SUBROUTINE", line, line_number)
-
-        elif obj_type == "fun":
-            keywords, _ = map_keywords(obj_info.keywords)
-            new_fun = fortran_function(
-                file_ast,
-                line_number,
-                obj_info.name,
-                args=obj_info.args,
-                mod_flag=obj_info.mod_flag,
-                keywords=keywords,
-                result_type=obj_info.result.type,
-                result_name=obj_info.result.name,
-            )
-            file_ast.add_scope(new_fun, FRegex.END_FUN)
-            # function type is present without result(), register the automatic
-            # result() variable that is the function name
-            if obj_info.result.type:
-                keywords, keyword_info = map_keywords(obj_info.result.keywords)
-                new_obj = fortran_var(
-                    file_ast,
-                    line_number,
-                    name=obj_info.result.name,
-                    var_desc=obj_info.result.type,
-                    keywords=keywords,
-                    keyword_info=keyword_info,
-                )
-                file_ast.add_variable(new_obj)
-            parser_debug_msg("FUNCTION", line, line_number)
-
-        elif obj_type == "block":
-            name = obj_info
-            if name is None:
-                block_counter += 1
-                name = f"#BLOCK{block_counter}"
-            new_block = fortran_block(file_ast, line_number, name)
-            file_ast.add_scope(new_block, FRegex.END_BLOCK, req_container=True)
-            parser_debug_msg("BLOCK", line, line_number)
-
-        elif obj_type == "do":
-            do_counter += 1
-            name = f"#DO{do_counter}"
-            if obj_info != "":
-                block_id_stack.append(obj_info)
-            new_do = fortran_do(file_ast, line_number, name)
-            file_ast.add_scope(new_do, FRegex.END_DO, req_container=True)
-            parser_debug_msg("DO", line, line_number)
-
-        elif obj_type == "where":
-            # Add block if WHERE is not single line
-            if not obj_info:
-                do_counter += 1
-                name = f"#WHERE{do_counter}"
-                new_do = fortran_where(file_ast, line_number, name)
-                file_ast.add_scope(new_do, FRegex.END_WHERE, req_container=True)
-            parser_debug_msg("WHERE", line, line_number)
-
-        elif obj_type == "assoc":
-            block_counter += 1
-            name = f"#ASSOC{block_counter}"
-            new_assoc = fortran_associate(file_ast, line_number, name)
-            file_ast.add_scope(new_assoc, FRegex.END_ASSOCIATE, req_container=True)
-            for bound_var in obj_info:
-                binding_split = bound_var.split("=>")
-                if len(binding_split) == 2:
-                    binding_name = binding_split[0].strip()
-                    link_name = binding_split[1].strip()
-                    file_ast.add_variable(
-                        new_assoc.create_binding_variable(
-                            file_ast, line_number, binding_name, link_name
-                        )
-                    )
-            parser_debug_msg("ASSOCIATE", line, line_number)
-
-        elif obj_type == "if":
-            if_counter += 1
-            name = f"#IF{if_counter}"
-            new_if = fortran_if(file_ast, line_number, name)
-            file_ast.add_scope(new_if, FRegex.END_IF, req_container=True)
-            parser_debug_msg("IF", line, line_number)
-
-        elif obj_type == "select":
-            select_counter += 1
-            name = f"#SELECT{select_counter}"
-            new_select = fortran_select(file_ast, line_number, name, obj_info)
-            file_ast.add_scope(new_select, FRegex.END_SELECT, req_container=True)
-            new_var = new_select.create_binding_variable(
-                file_ast,
-                line_number,
-                f"{obj_info.desc}({obj_info.binding})",
-                obj_info.type,
-            )
-            if new_var is not None:
-                file_ast.add_variable(new_var)
-            parser_debug_msg("SELECT", line, line_number)
-
-        elif obj_type == "typ":
-            keywords, _ = map_keywords(obj_info.keywords)
-            new_type = fortran_type(file_ast, line_number, obj_info.name, keywords)
-            if obj_info.parent is not None:
-                new_type.set_inherit(obj_info.parent)
-            file_ast.add_scope(new_type, FRegex.END_TYPED, req_container=True)
-            parser_debug_msg("TYPE", line, line_number)
-
-        elif obj_type == "enum":
-            block_counter += 1
-            name = f"#ENUM{block_counter}"
-            new_enum = fortran_enum(file_ast, line_number, name)
-            file_ast.add_scope(new_enum, FRegex.END_ENUMD, req_container=True)
-            parser_debug_msg("ENUM", line, line_number)
-
-        elif obj_type == "int":
-            name = obj_info.name
-            if name is None:
-                int_counter += 1
-                name = f"#GEN_INT{int_counter}"
-            new_int = fortran_int(
-                file_ast, line_number, name, abstract=obj_info.abstract
-            )
-            file_ast.add_scope(new_int, FRegex.END_INT, req_container=True)
-            parser_debug_msg("INTERFACE", line, line_number)
-
-        elif obj_type == "gen":
-            new_int = fortran_int(
-                file_ast, line_number, obj_info.bound_name, abstract=False
-            )
-            new_int.set_visibility(obj_info.vis_flag)
-            file_ast.add_scope(new_int, FRegex.END_INT, req_container=True)
-            for pro_link in obj_info.pro_links:
-                file_ast.add_int_member(pro_link)
-            file_ast.end_scope(line_number)
-            parser_debug_msg("GENERIC", line, line_number)
-
-        elif obj_type == "int_pro":
-            if file_ast.current_scope is not None:
-                if file_ast.current_scope.get_type() == INTERFACE_TYPE_ID:
-                    for name in obj_info:
-                        file_ast.add_int_member(name)
-                    parser_debug_msg("INTERFACE-PRO", line, line_number)
-
-                elif file_ast.current_scope.get_type() == SUBMODULE_TYPE_ID:
-                    new_impl = fortran_scope(file_ast, line_number, obj_info[0])
-                    file_ast.add_scope(new_impl, FRegex.END_PRO)
-                    parser_debug_msg("INTERFACE_IMPL", line, line_number)
-
-        elif obj_type == "use":
-            file_ast.add_use(
-                obj_info.mod_name,
-                line_number,
-                obj_info.only_list,
-                obj_info.rename_map,
-            )
-            parser_debug_msg("USE", line, line_number)
-
-        elif obj_type == "import":
-            file_ast.add_use("#IMPORT", line_number, obj_info)
-            parser_debug_msg("IMPORT", line, line_number)
-
-        elif obj_type == "inc":
-            file_ast.add_include(obj_info, line_number)
-            parser_debug_msg("INCLUDE", line, line_number)
-
-        elif obj_type == "vis":
-            if file_ast.current_scope is None:
-                file_ast.parse_errors.append(
-                    {
-                        "line": line_number,
-                        "schar": 0,
-                        "echar": 0,
-                        "mess": "Visibility statement without enclosing scope",
-                        "sev": 1,
-                    }
-                )
-            else:
-                if (len(obj_info.obj_names) == 0) and (obj_info.type == 1):
-                    file_ast.current_scope.set_default_vis(-1)
-                else:
-                    if obj_info.type == 1:
-                        for word in obj_info.obj_names:
-                            file_ast.add_private(word)
-                    else:
-                        for word in obj_info.obj_names:
-                            file_ast.add_public(word)
-            parser_debug_msg("Visibility", line, line_number)
-
-    file_ast.close_file(line_number)
-    if debug:
-        if len(file_ast.end_errors) > 0:
-            log.debug("\n=== Scope Errors ===\n")
-            for error in file_ast.end_errors:
-                if error[0] >= 0:
-                    message = f"Unexpected end of scope at line {error[0]}"
-                else:
-                    message = "Unexpected end statement: No open scopes"
-                log.debug(f"{error[1]}: {message}")
-        if len(file_ast.parse_errors) > 0:
-            log.debug("\n=== Parsing Errors ===\n")
-            for error in file_ast.parse_errors:
-                log.debug(f"{error['line']}: {error['mess']}")
-    return file_ast

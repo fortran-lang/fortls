@@ -1,5 +1,13 @@
 # CHANGELONG
 
+## 2.2.9
+
+### Changed
+
+- Changed how renaming of implicitly named type-bound procedures and their
+  implementations is handled. Unittest was added.
+- Rewrote the Fortran parser to be clearer and more modular
+
 ## 2.2.8
 
 ### Changed

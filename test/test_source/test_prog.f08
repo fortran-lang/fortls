@@ -24,4 +24,5 @@ x = stretch_vector%norm()
 y = stretch_vector%scale%val
 !
 CALL test_sig_Sub(a,b,opt2=c,opt3=d)
+PRINT*, module_variable
 END PROGRAM test_program

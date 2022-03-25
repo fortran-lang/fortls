@@ -1,4 +1,4 @@
-from __future__ import annotations, print_function
+from __future__ import annotations
 
 import copy
 import os
@@ -25,10 +25,10 @@ from fortls.constants import (
     VAR_TYPE_ID,
     WHERE_TYPE_ID,
     FRegex,
-    INCLUDE_info,
-    USE_info,
 )
+from fortls.ftypes import INCLUDE_info, USE_info
 from fortls.helper_functions import get_keywords, get_paren_substring, get_var_stack
+from fortls.json_templates import diagnostic_json, location_json, range_json
 from fortls.jsonrpc import path_to_uri
 
 
@@ -313,30 +313,21 @@ class fortran_diagnostic:
     def build(self, file_obj):
         schar = echar = 0
         if self.find_word is not None:
-            self.sline, found_schar, found_echar = file_obj.find_word_in_code_line(
+            self.sline, obj_range = file_obj.find_word_in_code_line(
                 self.sline, self.find_word
             )
-            if found_schar >= 0:
-                schar = found_schar
-                echar = found_echar
-        diag = {
-            "range": {
-                "start": {"line": self.sline, "character": schar},
-                "end": {"line": self.sline, "character": echar},
-            },
-            "message": self.message,
-            "severity": self.severity,
-        }
+            if obj_range.start >= 0:
+                schar = obj_range.start
+                echar = obj_range.end
+        diag = diagnostic_json(
+            self.sline, schar, self.sline, echar, self.message, self.severity
+        )
         if self.has_related:
             diag["relatedInformation"] = [
                 {
-                    "location": {
-                        "uri": path_to_uri(self.related_path),
-                        "range": {
-                            "start": {"line": self.related_line, "character": 0},
-                            "end": {"line": self.related_line, "character": 0},
-                        },
-                    },
+                    **location_json(
+                        path_to_uri(self.related_path), self.related_line, 0
+                    ),
                     "message": self.related_message,
                 }
             ]
@@ -696,19 +687,13 @@ class fortran_scope(fortran_obj):
                     first_sub_line = min(first_sub_line, child.sline - 1)
             edits.append(
                 {
-                    "range": {
-                        "start": {"line": first_sub_line, "character": 0},
-                        "end": {"line": first_sub_line, "character": 0},
-                    },
+                    **range_json(first_sub_line, 0, first_sub_line, 0),
                     "newText": "CONTAINS\n",
                 }
             )
         edits.append(
             {
-                "range": {
-                    "start": {"line": line_number, "character": 0},
-                    "end": {"line": line_number, "character": 0},
-                },
+                **range_json(line_number, 0, line_number, 0),
                 "newText": interface_string + "\n",
             }
         )
@@ -1270,10 +1255,7 @@ class fortran_type(fortran_scope):
         if self.contains_start is None:
             edits.append(
                 {
-                    "range": {
-                        "start": {"line": line_number, "character": 0},
-                        "end": {"line": line_number, "character": 0},
-                    },
+                    **range_json(line_number, 0, line_number, 0),
                     "newText": "CONTAINS\n",
                 }
             )
@@ -1300,10 +1282,7 @@ class fortran_type(fortran_scope):
                     continue
                 edits.append(
                     {
-                        "range": {
-                            "start": {"line": line_number, "character": 0},
-                            "end": {"line": line_number, "character": 0},
-                        },
+                        **range_json(line_number, 0, line_number, 0),
                         "newText": "  PROCEDURE :: {0} => {0}\n".format(in_child.name),
                     }
                 )
@@ -1880,7 +1859,7 @@ class fortran_ast:
         self.END_SCOPE_REGEX: Pattern = None
         self.enc_scope_name: str = None
         self.last_obj = None
-        self.pending_doc = None
+        self.pending_doc: str = None
 
     def create_none_scope(self):
         """Create empty scope to hold non-module contained items"""
@@ -1994,6 +1973,26 @@ class fortran_ast:
         else:
             if self.last_obj is not None:
                 self.last_obj.add_doc(doc_string)
+
+    def add_error(self, msg: str, sev: int, ln: int, sch: int, ech: int = None):
+        """Add a Diagnostic error, encountered during parsing, for a range
+        in the document.
+
+        Parameters
+        ----------
+        msg : str
+            Error message
+        sev : int
+            Severity, Error, Warning, Notification
+        ln : int
+            Line number
+        sch : int
+            Start character
+        ech : int
+            End character
+        """
+        # Convert from Editor line numbers 1-base index to LSP index which is 0-based
+        self.parse_errors.append(diagnostic_json(ln - 1, sch, ln - 1, ech, msg, sev))
 
     def start_ppif(self, line_number: int):
         self.pp_if.append([line_number - 1, -1])
@@ -2109,24 +2108,9 @@ class fortran_ast:
 
     def check_file(self, obj_tree):
         errors = []
-        diagnostics = []
-        tmp_list = self.scope_list[:]
+        tmp_list = self.scope_list[:]  # shallow copy
         if self.none_scope is not None:
             tmp_list += [self.none_scope]
-        for error in self.parse_errors:
-            diagnostics.append(
-                {
-                    "range": {
-                        "start": {
-                            "line": error["line"] - 1,
-                            "character": error["schar"],
-                        },
-                        "end": {"line": error["line"] - 1, "character": error["echar"]},
-                    },
-                    "message": error["mess"],
-                    "severity": error["sev"],
-                }
-            )
         for error in self.end_errors:
             if error[0] >= 0:
                 message = f"Unexpected end of scope at line {error[0]}"
@@ -2145,4 +2129,4 @@ class fortran_ast:
             errors += scope.check_use(obj_tree)
             errors += scope.check_definitions(obj_tree)
             errors += scope.get_diagnostics()
-        return errors, diagnostics
+        return errors, self.parse_errors
