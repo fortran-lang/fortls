@@ -1725,8 +1725,12 @@ class LangServer:
             request = urllib.request.Request("https://pypi.org/pypi/fortls/json")
             with urllib.request.urlopen(request) as resp:
                 info = json.loads(resp.read().decode("utf-8"))
+                remote_v = version.parse(info["info"]["version"])
+                # Do not update from remote if it is a prerelease
+                if remote_v.is_prerelease:
+                    return False
                 # This is the only reliable way to compare version semantics
-                if version.parse(info["info"]["version"]) > v or test:
+                if remote_v > v or test:
                     self.post_message(
                         "A newer version of fortls is available for download",
                         Severity.info,
