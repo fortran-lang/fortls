@@ -45,3 +45,33 @@ def test_implementation_intrinsics():
     errcode, results = run_request(string, ["-n", "1"])
     assert errcode == 0
     assert results[1] is None
+
+
+def test_implementation_integer():
+    """Go to implementation when no implementation is present is handled gracefully"""
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "rename")})
+    file_path = test_dir / "rename" / "test_rename_intrinsic.f90"
+    string += imp_request(file_path, 20, 31)
+    errcode, results = run_request(string, ["-n", "1"])
+    assert errcode == 0
+    assert results[1] is None
+
+
+def test_implementation_empty():
+    """Go to implementation for empty lines is handled gracefully"""
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "rename")})
+    file_path = test_dir / "rename" / "test_rename_intrinsic.f90"
+    string += imp_request(file_path, 13, 0)
+    errcode, results = run_request(string, ["-n", "1"])
+    assert errcode == 0
+    assert results[1] is None
+
+
+def test_implementation_no_file():
+    """Go to implementation for empty lines is handled gracefully"""
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "rename")})
+    file_path = test_dir / "rename" / "fake.f90"
+    string += imp_request(file_path, 13, 0)
+    errcode, results = run_request(string, ["-n", "1"])
+    assert errcode == 0
+    assert results[1] is None
