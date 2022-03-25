@@ -536,7 +536,6 @@ def test_refs():
             [free_path, 18, 14, 20],
             [free_path, 36, 6, 12],
             [free_path, 44, 6, 12],
-            [free_path, 50, 6, 12],
             [free_path, 78, 6, 12],
         ),
     )

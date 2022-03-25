@@ -48,7 +48,7 @@ norm = SQRT(DOT_PRODUCT(self%v,self%v))
 END FUNCTION vector_norm
 !> Doc 7
 SUBROUTINE scaled_vector_set(self, scale)
-CLASS(vector), INTENT(inout) :: self
+CLASS(scaled_vector), INTENT(inout) :: self
 REAL(8), INTENT(in) :: scale !< Doc 8
 self%scale%val = scale
 END SUBROUTINE scaled_vector_set
