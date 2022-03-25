@@ -44,6 +44,14 @@ fortls.intrinsics module
    :undoc-members:
    :show-inheritance:
 
+fortls.json\_templates module
+-----------------------------
+
+.. automodule:: fortls.json_templates
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 fortls.jsonrpc module
 ---------------------
 
