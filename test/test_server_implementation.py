@@ -1,10 +1,6 @@
 # from types import NoneType
-from setup_tests import (
-    path_to_uri,
-    run_request,
-    test_dir,
-    write_rpc_request,
-)
+from setup_tests import path_to_uri, run_request, test_dir, write_rpc_request
+
 from fortls.json_templates import uri_json
 
 
