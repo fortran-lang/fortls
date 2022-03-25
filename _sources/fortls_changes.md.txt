@@ -61,6 +61,8 @@
 
 ## Fixed
 
+- Fixes GoTo Implementation error for intrinsics
+  ([#80](https://github.com/gnikit/fortls/issues/80))
 - Fixed missing dependency from `setup.cfg`
   ([#78](https://github.com/gnikit/fortls/issues/78))
 - Updated configuration file variables in documentation
