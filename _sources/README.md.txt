@@ -4,7 +4,7 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fortls)
 [![Tests](https://github.com/gnikit/fortls/actions/workflows/main.yml/badge.svg)](https://github.com/gnikit/fortls/actions/workflows/main.yml)
 [![Documentation](https://github.com/gnikit/fortls/actions/workflows/docs.yml/badge.svg)](https://github.com/gnikit/fortls/actions/workflows/docs.yml)
-[![Codecov](https://img.shields.io/codecov/c/gh/gnikit/fortls)](https://app.codecov.io/gh/gnikit/fortls/)
+[![codecov](https://codecov.io/gh/gnikit/fortls/branch/master/graph/badge.svg?token=ZEXUX0R65M)](https://codecov.io/gh/gnikit/fortls)
 [![GitHub license](https://img.shields.io/github/license/gnikit/fortls)](https://github.com/gnikit/fortls/blob/dev/LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
