@@ -1122,6 +1122,9 @@ class LangServer:
         var_obj = self.get_definition(file_obj, def_line, def_char)
         if var_obj is None:
             return None
+        # Intrinsics do not have implementations we can access
+        if isinstance(var_obj, fortran_intrinsic_obj):
+            return None
         # Construct implementation reference
         if var_obj.parent.get_type() == CLASS_TYPE_ID:
             impl_obj = var_obj.link_obj
