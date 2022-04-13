@@ -2,6 +2,7 @@
 
 ## Added
 
+- Added coverage reporting for Unix + Windows
 - Improved autocompletion for Fortran statements F2018 compliant
   ([#63](https://github.com/gnikit/fortls/issues/63))
 - Added the capability for `fortls` to auto-update use `--disable_autoupdate` to disable
