@@ -1,5 +1,12 @@
 # CHANGELONG
 
+## 2.2.11
+
+### Added
+
+- Improved autocompletion for Fortran statements F2018 compliant
+  ([#63](https://github.com/gnikit/fortls/issues/63))
+
 ## 2.2.10
 
 ### Fixed
