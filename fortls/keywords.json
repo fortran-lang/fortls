@@ -1,10 +1,10 @@
 {
   "var_def": {
     "ALLOCATABLE": {
-      "doc": "Specify that an array is an allocatable array with a deferred shape."
+      "doc": "Specifies that an object is allocatable."
     },
     "ASYNCHRONOUS": {
-      "doc": "Specify that a variable can be used for asynchronous input and output."
+      "doc": "Specifies that a variable can be used for asynchronous input and output."
     },
     "BIND": {
       "doc": "Specifies that an object is interoperable with C and has external linkage."
@@ -13,25 +13,25 @@
       "doc": "Specifies that an entity is a coarray, and specifies its corank and cobounds, if any."
     },
     "CONTIGUOUS": {
-      "doc": "Specify that the target of a pointer or an assumed-sized array is contiguous."
+      "doc": "Specifies that the target of a pointer or an assumed-sized array is contiguous."
     },
     "DIMENSION(:)": {
-      "doc": "Specify that an object is an array, and defines the shape of the array."
+      "doc": "Specifies that an object is an array, and defines the shape of the array."
     },
     "EXTERNAL": {
-      "doc": "Allows an external procedure, a dummy procedure, a procedure pointer, or a block data subprogram to be used as an actual argument. (To specify intrinsic procedures as actual arguments, use the INTRINSIC attribute.)"
+      "doc": "Allows an external procedure, a dummy procedure, a procedure pointer, or a block data subprogram to be used as an actual argument."
     },
     "INTRINSIC": {
       "doc": "Allows the specific name of an intrinsic procedure to be used as an actual argument."
     },
     "POINTER": {
-      "doc": "Specify that an object or a procedure is a pointer (a dynamic variable)."
+      "doc": "Specifies that an object or a procedure is a pointer (a dynamic variable)."
     },
     "PROTECTED": {
       "doc": "Specifies limitations on the use of module entities."
     },
     "TARGET": {
-      "doc": "Specify that an object can become the target of a pointer."
+      "doc": "Specifies that an object can become the target of a pointer (it can be pointed to)."
     },
     "VOLATILE": {
       "doc": "Specifies that the value of an object is entirely unpredictable, based on information local to the current program unit. It prevents objects from being optimized during compilation."
@@ -39,19 +39,19 @@
   },
   "arg": {
     "INTENT(IN)": {
-      "doc": "Specify the intended use of one or more dummy arguments."
+      "doc": "Specifies that the dummy argument will be used only to provide data to the procedure."
     },
     "INTENT(OUT)": {
-      "doc": "Specify the intended use of one or more dummy arguments."
+      "doc": "Specifies that the dummy argument will be used to pass data from the procedure back to the calling program."
     },
     "INTENT(INOUT)": {
-      "doc": "Specify the intended use of one or more dummy arguments."
+      "doc": "Specifies that the dummy argument can both provide data to the procedure and return data to the calling program."
     },
     "OPTIONAL": {
-      "doc": "Allow dummy arguments to be omitted in a procedure reference."
+      "doc": "Permits dummy arguments to be omitted in a procedure reference."
     },
     "SAVE": {
-      "doc": "Cause the values and definition of objects to be retained after execution of a RETURN or END statement in a subprogram."
+      "doc": "Causes the values and definition of objects to be retained after execution of a RETURN or END statement in a subprogram."
     },
     "VALUE": {
       "doc": "Specifies a type of argument association for a dummy argument."
@@ -59,16 +59,16 @@
   },
   "type_mem": {
     "DEFERRED": {
-      "doc": "Indicate that the procedure is deferred. Deferred bindings must only be specified for derived-type definitions with the ABSTRACT attribute."
+      "doc": "Indicates that the procedure is deferred. Deferred bindings must only be specified for derived-type definitions with the ABSTRACT attribute."
     },
     "NON_OVERRIDABLE": {
-      "doc": "Determine whether a binding can be overridden in an extended type."
+      "doc": "Determines whether a binding can be overridden in an extended type. You must not specify NON_OVERRIDABLE for a binding with the DEFERRED attribute."
     },
     "NOPASS": {
       "doc": "Indicate that the procedure has no passed-object dummy argument."
     },
     "PASS": {
-      "doc": "Define the 'passed-object dummy argument' of the procedure.",
+      "doc": "Indicates that the procedure has no passed-object dummy argument.",
       "args": "arg_name"
     }
   },

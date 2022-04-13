@@ -137,7 +137,7 @@ def load_intrinsics():
             add_children(child, child_obj)
 
     # Fortran statments taken from Intel Fortran documentation
-    # (https://software.intel.com/en-us/fortran-compiler-18.0-developer-guide)
+    # (https://www.intel.com/content/www/us/en/develop/documentation/fortran-compiler-oneapi-dev-guide-and-reference/top/language-reference/a-to-z-reference)
     json_file = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "statements.json"
     )
@@ -148,7 +148,7 @@ def load_intrinsics():
             for name, json_obj in sorted(intrin_file[key].items()):
                 statements[key].append(create_int_object(name, json_obj, 15))
     # Fortran keywords taken from Intel Fortran documentation
-    # (https://software.intel.com/en-us/fortran-compiler-18.0-developer-guide)
+    # (https://www.intel.com/content/www/us/en/develop/documentation/fortran-compiler-oneapi-dev-guide-and-reference/top/language-reference/a-to-z-reference)
     json_file = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "keywords.json"
     )
