@@ -1,5 +1,11 @@
 # CHANGELONG
 
+## 2.2.12
+
+### Added
+
+- Added coverage reporting for Unix + Windows
+
 ## 2.2.11
 
 ### Added
