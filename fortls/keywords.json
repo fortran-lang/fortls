@@ -6,17 +6,35 @@
     "ASYNCHRONOUS": {
       "doc": "Specify that a variable can be used for asynchronous input and output."
     },
+    "BIND": {
+      "doc": "Specifies that an object is interoperable with C and has external linkage."
+    },
+    "CODIMENSION": {
+      "doc": "Specifies that an entity is a coarray, and specifies its corank and cobounds, if any."
+    },
     "CONTIGUOUS": {
       "doc": "Specify that the target of a pointer or an assumed-sized array is contiguous."
     },
     "DIMENSION(:)": {
       "doc": "Specify that an object is an array, and defines the shape of the array."
     },
+    "EXTERNAL": {
+      "doc": "Allows an external procedure, a dummy procedure, a procedure pointer, or a block data subprogram to be used as an actual argument. (To specify intrinsic procedures as actual arguments, use the INTRINSIC attribute.)"
+    },
+    "INTRINSIC": {
+      "doc": "Allows the specific name of an intrinsic procedure to be used as an actual argument."
+    },
     "POINTER": {
       "doc": "Specify that an object or a procedure is a pointer (a dynamic variable)."
     },
+    "PROTECTED": {
+      "doc": "Specifies limitations on the use of module entities."
+    },
     "TARGET": {
       "doc": "Specify that an object can become the target of a pointer."
+    },
+    "VOLATILE": {
+      "doc": "Specifies that the value of an object is entirely unpredictable, based on information local to the current program unit. It prevents objects from being optimized during compilation."
     }
   },
   "arg": {
@@ -34,6 +52,9 @@
     },
     "SAVE": {
       "doc": "Cause the values and definition of objects to be retained after execution of a RETURN or END statement in a subprogram."
+    },
+    "VALUE": {
+      "doc": "Specifies a type of argument association for a dummy argument."
     }
   },
   "type_mem": {
