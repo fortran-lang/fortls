@@ -2,6 +2,8 @@
 
 ## Added
 
+- Improved autocompletion for Fortran statements F2018 compliant
+  ([#63](https://github.com/gnikit/fortls/issues/63))
 - Added the capability for `fortls` to auto-update use `--disable_autoupdate` to disable
   ([#76](https://github.com/gnikit/fortls/issues/76))
 - Deprecated `--variable_hover` option and now is always enabled
