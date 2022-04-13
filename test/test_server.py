@@ -265,7 +265,7 @@ def test_comp():
     file_path = test_dir / "subdir" / "test_free.f90"
     string += comp_request(file_path, 10, 22)
     string += comp_request(file_path, 14, 27)
-    string += comp_request(file_path, 28, 14)
+    string += comp_request(file_path, 28, 15)
     file_path = test_dir / "subdir" / "test_fixed.f"
     string += comp_request(file_path, 15, 8)
     string += comp_request(file_path, 15, 21)
