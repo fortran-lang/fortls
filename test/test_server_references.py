@@ -1,11 +1,6 @@
-from setup_tests import (
-    path_to_uri,
-    run_request,
-    test_dir,
-    write_rpc_request,
-)
-
 from pathlib import Path
+
+from setup_tests import path_to_uri, run_request, test_dir, write_rpc_request
 
 
 def validate_refs(result_array, checks):

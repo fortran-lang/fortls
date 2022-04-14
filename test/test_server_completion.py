@@ -1,8 +1,4 @@
-from setup_tests import (
-    run_request,
-    test_dir,
-    write_rpc_request,
-)
+from setup_tests import run_request, test_dir, write_rpc_request
 
 
 def check_return(result_array, checks):
