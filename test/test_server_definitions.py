@@ -35,8 +35,8 @@ def test_def_fun_sub_fixed():
     fixed_path = str(test_dir / "subdir" / "test_fixed.f")
     ref_res = [[0, 0, fixed_path], [22, 22, fixed_path]]
     assert len(ref_res) == len(results) - 1
-    for i in range(len(ref_res)):
-        validate_def(results[i + 1], ref_res[i])
+    for i, res in enumerate(ref_res):
+        validate_def(results[i + 1], res)
 
 
 def test_def_variable():
@@ -48,8 +48,8 @@ def test_def_variable():
     assert errcode == 0
     ref_res = [[10, 10, str(test_dir / "test_prog.f08")]]
     assert len(ref_res) == len(results) - 1
-    for i in range(len(ref_res)):
-        validate_def(results[i + 1], ref_res[i])
+    for i, res in enumerate(ref_res):
+        validate_def(results[i + 1], res)
 
 
 def test_def_type_bound_procedure1():
@@ -61,8 +61,8 @@ def test_def_type_bound_procedure1():
     assert errcode == 0
     ref_res = [[21, 21, str(test_dir / "subdir" / "test_free.f90")]]
     assert len(ref_res) == len(results) - 1
-    for i in range(len(ref_res)):
-        validate_def(results[i + 1], ref_res[i])
+    for i, res in enumerate(ref_res):
+        validate_def(results[i + 1], res)
 
 
 def test_def_type_bound_procedure2():
@@ -74,8 +74,8 @@ def test_def_type_bound_procedure2():
     assert errcode == 0
     ref_res = [[14, 14, str(test_dir / "subdir" / "test_free.f90")]]
     assert len(ref_res) == len(results) - 1
-    for i in range(len(ref_res)):
-        validate_def(results[i + 1], ref_res[i])
+    for i, res in enumerate(ref_res):
+        validate_def(results[i + 1], res)
 
 
 def test_def_type_nested_variable():
@@ -87,8 +87,8 @@ def test_def_type_nested_variable():
     assert errcode == 0
     ref_res = [[5, 5, str(test_dir / "subdir" / "test_free.f90")]]
     assert len(ref_res) == len(results) - 1
-    for i in range(len(ref_res)):
-        validate_def(results[i + 1], ref_res[i])
+    for i, res in enumerate(ref_res):
+        validate_def(results[i + 1], res)
 
 
 def test_def_type_in_submod_function():
@@ -100,8 +100,8 @@ def test_def_type_in_submod_function():
     assert errcode == 0
     ref_res = [[1, 1, str(test_dir / "subdir" / "test_submod.F90")]]
     assert len(ref_res) == len(results) - 1
-    for i in range(len(ref_res)):
-        validate_def(results[i + 1], ref_res[i])
+    for i, res in enumerate(ref_res):
+        validate_def(results[i + 1], res)
 
 
 def test_def_type_in_submod_procedure():
@@ -113,8 +113,8 @@ def test_def_type_in_submod_procedure():
     assert errcode == 0
     ref_res = [[1, 1, str(test_dir / "subdir" / "test_submod.F90")]]
     assert len(ref_res) == len(results) - 1
-    for i in range(len(ref_res)):
-        validate_def(results[i + 1], ref_res[i])
+    for i, res in enumerate(ref_res):
+        validate_def(results[i + 1], res)
 
 
 def test_def_include_file():
@@ -126,8 +126,8 @@ def test_def_include_file():
     assert errcode == 0
     ref_res = [[2, 2, str(test_dir / "subdir" / "test_inc2.f90")]]
     assert len(ref_res) == len(results) - 1
-    for i in range(len(ref_res)):
-        validate_def(results[i + 1], ref_res[i])
+    for i, res in enumerate(ref_res):
+        validate_def(results[i + 1], res)
 
 
 def test_def_include_variable1():
@@ -139,8 +139,8 @@ def test_def_include_variable1():
     assert errcode == 0
     ref_res = [[0, 0, str(test_dir / "subdir" / "test_inc2.f90")]]
     assert len(ref_res) == len(results) - 1
-    for i in range(len(ref_res)):
-        validate_def(results[i + 1], ref_res[i])
+    for i, res in enumerate(ref_res):
+        validate_def(results[i + 1], res)
 
 
 def test_def_include_variable2():
@@ -152,8 +152,8 @@ def test_def_include_variable2():
     assert errcode == 0
     ref_res = [[4, 4, str(test_dir / "test_inc.f90")]]
     assert len(ref_res) == len(results) - 1
-    for i in range(len(ref_res)):
-        validate_def(results[i + 1], ref_res[i])
+    for i, res in enumerate(ref_res):
+        validate_def(results[i + 1], res)
 
 
 def test_def_include_file_missing():
@@ -165,8 +165,8 @@ def test_def_include_file_missing():
     assert errcode == 0
     ref_res = [[None]]
     assert len(ref_res) == len(results) - 1
-    for i in range(len(ref_res)):
-        validate_def(results[i + 1], ref_res[i])
+    for i, res in enumerate(ref_res):
+        validate_def(results[i + 1], res)
 
 
 def test_def_rename_only_variable():
@@ -180,8 +180,8 @@ def test_def_rename_only_variable():
     assert errcode == 0
     ref_res = [[6, 6, str(test_dir / "subdir" / "test_rename.F90")]]
     assert len(ref_res) == len(results) - 1
-    for i in range(len(ref_res)):
-        validate_def(results[i + 1], ref_res[i])
+    for i, res in enumerate(ref_res):
+        validate_def(results[i + 1], res)
 
 
 def test_def_rename_only_variable_nested():
@@ -195,8 +195,8 @@ def test_def_rename_only_variable_nested():
     assert errcode == 0
     ref_res = [[1, 1, str(test_dir / "subdir" / "test_rename.F90")]]
     assert len(ref_res) == len(results) - 1
-    for i in range(len(ref_res)):
-        validate_def(results[i + 1], ref_res[i])
+    for i, res in enumerate(ref_res):
+        validate_def(results[i + 1], res)
 
 
 def test_def_function_implicit_result_variable():
@@ -210,5 +210,5 @@ def test_def_function_implicit_result_variable():
     assert errcode == 0
     ref_res = [[3, 3, str(test_dir / "hover" / "functions.f90")]]
     assert len(ref_res) == len(results) - 1
-    for i in range(len(ref_res)):
-        validate_def(results[i + 1], ref_res[i])
+    for i, res in enumerate(ref_res):
+        validate_def(results[i + 1], res)

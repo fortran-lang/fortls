@@ -1,7 +1,7 @@
 from setup_tests import run_request, test_dir, write_rpc_request
 
 
-def check_return(result_array, checks):
+def validate_comp(result_array, checks):
     assert len(result_array) == checks[0]
     if checks[0] > 0:
         assert result_array[0]["label"] == checks[1]
@@ -48,9 +48,9 @@ def test_comp1():
         [2, "n", "INTEGER(4)"],
         [1, "val", "REAL(8)"],
     )
-    assert len(exp_results) + 1 == len(results)
-    for i in range(len(exp_results)):
-        check_return(results[i + 1], exp_results[i])
+    assert len(exp_results) == len(results) - 1
+    for i, ref in enumerate(exp_results):
+        validate_comp(results[i + 1], ref)
 
 
 def test_comp2():
@@ -72,9 +72,9 @@ def test_comp2():
         [1, "point", "TYPE"],
         [2, "x", "REAL"],
     )
-    assert len(exp_results) + 1 == len(results)
-    for i in range(len(exp_results)):
-        check_return(results[i + 1], exp_results[i])
+    assert len(exp_results) == len(results) - 1
+    for i, ref in enumerate(exp_results):
+        validate_comp(results[i + 1], ref)
 
 
 def test_comp3():
@@ -92,9 +92,9 @@ def test_comp3():
         # subdir/test_inc2.f90
         [2, "val1", "REAL(8)"],
     )
-    assert len(exp_results) + 1 == len(results)
-    for i in range(len(exp_results)):
-        check_return(results[i + 1], exp_results[i])
+    assert len(exp_results) == len(results) - 1
+    for i, ref in enumerate(exp_results):
+        validate_comp(results[i + 1], ref)
 
 
 def test_comp4():
@@ -108,9 +108,9 @@ def test_comp4():
         # subdir/test_abstract.f90
         [1, "abs_interface", "SUBROUTINE"],
     )
-    assert len(exp_results) + 1 == len(results)
-    for i in range(len(exp_results)):
-        check_return(results[i + 1], exp_results[i])
+    assert len(exp_results) == len(results) - 1
+    for i, ref in enumerate(exp_results):
+        validate_comp(results[i + 1], ref)
 
 
 def test_comp5():
@@ -128,9 +128,9 @@ def test_comp5():
         [2, "vector_create", "SUBROUTINE"],
         [3, "INTENT(IN)", "KEYWORD"],
     )
-    assert len(exp_results) + 1 == len(results)
-    for i in range(len(exp_results)):
-        check_return(results[i + 1], exp_results[i])
+    assert len(exp_results) == len(results) - 1
+    for i, ref in enumerate(exp_results):
+        validate_comp(results[i + 1], ref)
 
 
 def test_comp6():
@@ -150,9 +150,9 @@ def test_comp6():
         [1, "n", "INTEGER(4)"],
         [2, "a", "REAL(8)"],
     )
-    assert len(exp_results) + 1 == len(results)
-    for i in range(len(exp_results)):
-        check_return(results[i + 1], exp_results[i])
+    assert len(exp_results) == len(results) - 1
+    for i, ref in enumerate(exp_results):
+        validate_comp(results[i + 1], ref)
 
 
 def test_comp7():
@@ -170,9 +170,9 @@ def test_comp7():
         [10, "READ", "STATEMENT"],
         [11, "READ", "STATEMENT"],
     )
-    assert len(exp_results) + 1 == len(results)
-    for i in range(len(exp_results)):
-        check_return(results[i + 1], exp_results[i])
+    assert len(exp_results) == len(results) - 1
+    for i, ref in enumerate(exp_results):
+        validate_comp(results[i + 1], ref)
 
 
 def test_comp8():
@@ -186,9 +186,9 @@ def test_comp8():
         # subdir/test_inherit.f90
         [1, "val", "REAL(8)"],
     )
-    assert len(exp_results) + 1 == len(results)
-    for i in range(len(exp_results)):
-        check_return(results[i + 1], exp_results[i])
+    assert len(exp_results) == len(results) - 1
+    for i, ref in enumerate(exp_results):
+        validate_comp(results[i + 1], ref)
 
 
 def test_comp9():
@@ -204,9 +204,9 @@ def test_comp9():
         [1, "localname", "INTEGER"],
         [2, "renamed_var2", "REAL(8)"],
     )
-    assert len(exp_results) + 1 == len(results)
-    for i in range(len(exp_results)):
-        check_return(results[i + 1], exp_results[i])
+    assert len(exp_results) == len(results) - 1
+    for i, ref in enumerate(exp_results):
+        validate_comp(results[i + 1], ref)
 
 
 def test_comp10():
@@ -220,9 +220,9 @@ def test_comp10():
         # subdir/test_vis.f90
         [3, "some_type", "TYPE"],
     )
-    assert len(exp_results) + 1 == len(results)
-    for i in range(len(exp_results)):
-        check_return(results[i + 1], exp_results[i])
+    assert len(exp_results) == len(results) - 1
+    for i, ref in enumerate(exp_results):
+        validate_comp(results[i + 1], ref)
 
 
 def test_comp_import_host_association():
@@ -237,9 +237,9 @@ def test_comp_import_host_association():
         # see #5 and #8 on GitHub
         [2, "mytype", "TYPE"],
     )
-    assert len(exp_results) + 1 == len(results)
-    for i in range(len(exp_results)):
-        check_return(results[i + 1], exp_results[i])
+    assert len(exp_results) == len(results) - 1
+    for i, ref in enumerate(exp_results):
+        validate_comp(results[i + 1], ref)
 
 
 def test_comp_visibility_scopes():
@@ -256,9 +256,9 @@ def test_comp_visibility_scopes():
         [1, "some_var", "INTEGER"],
         [3, "length", "INTEGER"],
     )
-    assert len(exp_results) + 1 == len(results)
-    for i in range(len(exp_results)):
-        check_return(results[i + 1], exp_results[i])
+    assert len(exp_results) == len(results) - 1
+    for i, ref in enumerate(exp_results):
+        validate_comp(results[i + 1], ref)
 
 
 def test_comp_interface():
@@ -278,9 +278,9 @@ def test_comp_interface():
             "my_gen(${1:self}, ${2:a}, ${3:b})",
         ],
     )
-    assert len(exp_results) + 1 == len(results)
-    for i in range(len(exp_results)):
-        check_return(results[i + 1], exp_results[i])
+    assert len(exp_results) == len(results) - 1
+    for i, ref in enumerate(exp_results):
+        validate_comp(results[i + 1], ref)
 
 
 def test_comp_no_signature_help():
@@ -300,9 +300,9 @@ def test_comp_no_signature_help():
             "myfun(${1:n}, ${2:xval})",
         ],
     )
-    assert len(exp_results) + 1 == len(results)
-    for i in range(len(exp_results)):
-        check_return(results[i + 1], exp_results[i])
+    assert len(exp_results) == len(results) - 1
+    for i, ref in enumerate(exp_results):
+        validate_comp(results[i + 1], ref)
 
 
 def test_comp_fixed():
@@ -318,6 +318,6 @@ def test_comp_fixed():
         [1, "bob", "CHARACTER*(LEN=200)"],
         [1, "dave", "CHARACTER*(20)"],
     )
-    assert len(exp_results) + 1 == len(results)
-    for i in range(len(exp_results)):
-        check_return(results[i + 1], exp_results[i])
+    assert len(exp_results) == len(results) - 1
+    for i, ref in enumerate(exp_results):
+        validate_comp(results[i + 1], ref)

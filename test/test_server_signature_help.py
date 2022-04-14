@@ -44,5 +44,5 @@ def test_subroutine_signature_help():
         [4, 5, sub_sig],
     )
     assert len(ref) == len(results) - 1
-    for i in range(len(ref)):
-        validate_sigh(results[i + 1], ref[i])
+    for i, r in enumerate(ref):
+        validate_sigh(results[i + 1], r)
