@@ -2,6 +2,7 @@
 
 ## Added
 
+- Automated the update for GitHub Acions
 - Added coverage reporting for Unix + Windows
 - Improved autocompletion for Fortran statements F2018 compliant
   ([#63](https://github.com/gnikit/fortls/issues/63))
