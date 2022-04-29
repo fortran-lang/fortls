@@ -2,7 +2,8 @@
 
 ## Added
 
-- Automated the update for GitHub Acions
+- Added unittests for intrinsics and improved overall coverage
+- Automated the update for GitHub Actions
 - Added coverage reporting for Unix + Windows
 - Improved autocompletion for Fortran statements F2018 compliant
   ([#63](https://github.com/gnikit/fortls/issues/63))
@@ -32,6 +33,7 @@
 
 ## Changed
 
+- Restructured unittests to individual files for more granular reporting
 - Changed how renaming of implicitly named type-bound procedures and their
   implementations is handled. Unittest was added.
 - Rewrote the Fortran parser to be clearer and more modular
