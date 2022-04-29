@@ -46,3 +46,21 @@ def test_subroutine_signature_help():
     assert len(ref) == len(results) - 1
     for i, r in enumerate(ref):
         validate_sigh(results[i + 1], r)
+
+
+def test_intrinsics():
+
+    string = write_rpc_request(
+        1, "initialize", {"rootPath": str(test_dir / "signature")}
+    )
+    file_path = test_dir / "signature" / "nested_sigs.f90"
+    string += sigh_request(file_path, 8, 77)
+    errcode, results = run_request(
+        string, ["--hover_signature", "--use_signature_help", "-n", "1"]
+    )
+    assert errcode == 0
+
+    ref = [[0, 2, "REAL(A, KIND=kind)"]]
+    assert len(ref) == len(results) - 1
+    for i, r in enumerate(ref):
+        validate_sigh(results[i + 1], r)
