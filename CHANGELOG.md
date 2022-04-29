@@ -1,5 +1,11 @@
 # CHANGELONG
 
+## 2.2.13
+
+### Added
+
+- Automated the update for GitHub Acions
+
 ## 2.2.12
 
 ### Added
