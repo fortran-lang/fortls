@@ -1,10 +1,20 @@
 # CHANGELONG
 
+## 2.2.14
+
+### Added
+
+- Added unittests for intrinsics and improved overall coverage
+
+### Changed
+
+- Restructured unittests to individual files for more granular reporting
+
 ## 2.2.13
 
 ### Added
 
-- Automated the update for GitHub Acions
+- Automated the update for GitHub Actions
 
 ## 2.2.12
 
