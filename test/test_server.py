@@ -183,6 +183,7 @@ def test_workspace_symbols():
             ["test_inherit", 2, 0],
             ["test_int", 2, 0],
             ["test_mod", 2, 0],
+            ["test_nan", 2, 0],
             ["test_nonint_mod", 2, 0],
             ["test_preproc_keywords", 2, 0],
             ["test_private", 2, 8],
