@@ -1,5 +1,12 @@
 # CHANGELONG
 
+## 2.3.0
+
+### Added
+
+- Added keywords to the PyPi manifest
+  ([#99](https://github.com/gnikit/fortls/issues/99))
+
 ## 2.2.14
 
 ### Added
