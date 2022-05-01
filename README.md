@@ -11,6 +11,8 @@
 [![GitHub Sponsor](https://img.shields.io/static/v1?style=social&label=Sponsor&message=%E2%9D%A4&logo=GitHub&color&link=%3Curl%3E)](https://github.com/sponsors/gnikit)
 [![PayPal](https://img.shields.io/static/v1?style=social&label=Donate&message=%E2%9D%A4&logo=Paypal&color&link=%3Curl%3E)](https://paypal.me/inikit)
 
+![alt](https://raw.githubusercontent.com/gnikit/fortls/master/assets/animations/intro-demo.gif)
+
 `fortls` is an implementation of the [Language Server Protocol](https://github.com/Microsoft/language-server-protocol)
 (LSP) for Fortran using Python (3.7+).
 
@@ -21,7 +23,6 @@ Some supported code editors include:
 [Atom](https://gnikit.github.io/fortls/editor_integration.html#atom),
 [Sublime Text](https://gnikit.github.io/fortls/editor_integration.html#sublime-text),
 [(Neo)Vim](https://gnikit.github.io/fortls/editor_integration.html#vim-neovim-gvim),
-[Visual Studio](https://gnikit.github.io/fortls/editor_integration.html#visual-studio-2017)
 and [Emacs](https://gnikit.github.io/fortls/editor_integration.html#emacs).
 
 ## Features
