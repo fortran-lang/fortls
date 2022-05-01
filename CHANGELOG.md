@@ -7,6 +7,10 @@
 - Added keywords to the PyPi manifest
   ([#99](https://github.com/gnikit/fortls/issues/99))
 
+### Changed
+
+- Updated `README` to include conda-forge installation instructions
+
 ## 2.2.14
 
 ### Added
