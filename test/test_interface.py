@@ -169,6 +169,7 @@ def test_config_file_codeactions_options():
 def test_version_update_pypi():
     from fortls.jsonrpc import JSONRPC2Connection, ReadWriter
     from fortls.langserver import LangServer
+    from packaging import version
 
     parser = commandline_args("fortls")
     args = parser.parse_args("-c f90_config.json".split())
@@ -186,5 +187,6 @@ def test_version_update_pypi():
     assert not did_update
 
     s.disable_autoupdate = False
+    s._version = version.parse("999.0.0")
     did_update = s._update_version_pypi()
     assert not did_update

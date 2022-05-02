@@ -73,6 +73,7 @@ class LangServer:
         self.workspace: dict[str, fortran_file] = {}
         self.obj_tree: dict = {}
         self.link_version = 0
+        self._version = version.parse(__version__)
         # Parse a dictionary of the command line interface and make them into
         # class variable. This way the command line and the file interfaces
         # are always on sync, with the same default arguments
@@ -1719,9 +1720,8 @@ class LangServer:
         """
         if self.disable_autoupdate:
             return False
-        v = version.parse(__version__)
         # Do not run for prerelease and dev release
-        if v.is_prerelease and not test:
+        if self._version.is_prerelease and not test:
             return False
         try:
             # For security reasons register as Request before opening
@@ -1733,7 +1733,7 @@ class LangServer:
                 if remote_v.is_prerelease:
                     return False
                 # This is the only reliable way to compare version semantics
-                if remote_v > v or test:
+                if remote_v > self._version or test:
                     self.post_message(
                         "A newer version of fortls is available for download",
                         Severity.info,
