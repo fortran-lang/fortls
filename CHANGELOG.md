@@ -9,6 +9,7 @@
 
 ### Changed
 
+- Updated `README` to include logo and animations
 - Updated `README` to include conda-forge installation instructions
 
 ## 2.2.14
