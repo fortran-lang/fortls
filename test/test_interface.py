@@ -180,3 +180,11 @@ def test_version_update_pypi():
     s.root_path = (Path(__file__).parent / "test_source").resolve()
     did_update = s._update_version_pypi(test=True)
     assert did_update
+
+    s.disable_autoupdate = True
+    did_update = s._update_version_pypi()
+    assert not did_update
+
+    s.disable_autoupdate = False
+    did_update = s._update_version_pypi()
+    assert not did_update

@@ -1,3 +1,5 @@
+![alt](https://raw.githubusercontent.com/gnikit/fortls/master/assets/logo.png)
+
 # fortls - Fortran Language Server
 
 ![PyPI](https://img.shields.io/pypi/v/fortls)
@@ -8,6 +10,11 @@
 [![GitHub license](https://img.shields.io/github/license/gnikit/fortls)](https://github.com/gnikit/fortls/blob/dev/LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
+[![GitHub Sponsor](https://img.shields.io/static/v1?style=social&label=Sponsor&message=%E2%9D%A4&logo=GitHub&color&link=%3Curl%3E)](https://github.com/sponsors/gnikit)
+[![PayPal](https://img.shields.io/static/v1?style=social&label=Donate&message=%E2%9D%A4&logo=Paypal&color&link=%3Curl%3E)](https://paypal.me/inikit)
+
+![alt](https://raw.githubusercontent.com/gnikit/fortls/master/assets/animations/intro-demo.gif)
+
 `fortls` is an implementation of the [Language Server Protocol](https://github.com/Microsoft/language-server-protocol)
 (LSP) for Fortran using Python (3.7+).
 
@@ -16,23 +23,9 @@ All code editors that support LSP can integrate with `fortls` see the section
 Some supported code editors include:
 [Visual Studio Code](https://gnikit.github.io/fortls/editor_integration.html#visual-studio-code),
 [Atom](https://gnikit.github.io/fortls/editor_integration.html#atom),
-[Sublime Text](https://gnikit.github.io/fortls/editor_integration.html#sublime-text)
+[Sublime Text](https://gnikit.github.io/fortls/editor_integration.html#sublime-text),
 [(Neo)Vim](https://gnikit.github.io/fortls/editor_integration.html#vim-neovim-gvim),
-[Visual Studio](https://gnikit.github.io/fortls/editor_integration.html#visual-studio-2017),
 and [Emacs](https://gnikit.github.io/fortls/editor_integration.html#emacs).
-
-## `fortls` vs `fortran-language-server`
-
-This project is based on @hansec's original Language Server implementation but the two projects have since diverged.
-`fortls` (this project) is now developed independently of the upstream `hansec/fortran-language-server` project and contains numerous bug fixes and new features
-the original `fortran-language-server` does not.
-
-For a complete and detailed list of the differences between the two Language Servers
-see the Documentation section: [Unique fortls features (not in fortran-language-server)](https://gnikit.github.io/fortls/fortls_changes.html)
-
-The name of executable for this project has been chosen to remain `fortls`
-to allow for integration with pre-existing plugins and workflows but it is
-potentially subject to change.
 
 ## Features
 
@@ -68,20 +61,55 @@ potentially subject to change.
 
 - Signature help and hover does not handle elegantly overloaded functions i.e. interfaces
 
+## `fortls` vs `fortran-language-server`
+
+This project was originally based on `fortran-language-server` LSP implementation, but the two projects have since diverged.
+
+`fortls` (this project) is now developed independently of the upstream `hansec/fortran-language-server` project and contains numerous new features and bug fixes
+the original `fortran-language-server` does not.
+
+For a complete and detailed list of the differences between the two Language Servers
+see the Documentation section: [Unique fortls features (not in fortran-language-server)](https://gnikit.github.io/fortls/fortls_changes.html)
+
+The name of executable for this project has been chosen to remain `fortls`
+to allow for integration with pre-existing plugins and workflows, but it could
+change in the future.
+
 ## Installation
+
+### PyPi
 
 ```sh
 pip install fortls
 ```
 
-> **Warning**: it is not recommended having `fortls` and `fortran-language-server`
-> simultaneously installed, since they use the same binary name. If you are having trouble
-> getting `fortls` to work try uninstalling `fortran-language-server` and reinstalling `fortls`.
->
-> ```sh
-> pip uninstall fortran-language-server
-> pip install fortls --upgrade
-> ```
+### Anaconda
+
+```sh
+conda install -c conda-forge fortls
+```
+
+for more information about the Anaconda installation [see](https://github.com/conda-forge/fortls-feedstock#about-fortls)
+
+### Common installation problems
+
+It is **NOT** recommended having `fortls` and `fortran-language-server`
+simultaneously installed, since they use the same binary name. If you are having trouble
+getting `fortls` to work try uninstalling `fortran-language-server` and reinstalling `fortls`.
+
+With `pip`
+
+```sh
+pip uninstall fortran-language-server
+pip install fortls --upgrade
+```
+
+or with Anaconda
+
+```sh
+conda uninstall fortran-language-server
+conda install -c conda-forge fortls
+```
 
 ## Settings
 
@@ -129,16 +157,14 @@ An example for a Configuration file is given below
 ## Acknowledgements
 
 This project would not have been possible without the original work of [@hansec](https://github.com/hansec/)
-and the original [`fortran-language-server`](https://github.com/hansec/fortran-language-server)
+in [`fortran-language-server`](https://github.com/hansec/fortran-language-server)
 
-## Support
+<!-- ## Support
 
 If you want to support this project you can do it through
 
 [![Alt](https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-150px.png)](https://paypal.me/inikit)
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/gnikit)
-
-Support the original project go [here](https://paypal.me/hansec)
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/gnikit) -->
 
 ## Bug reports
 
