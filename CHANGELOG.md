@@ -1,4 +1,11 @@
-# CHANGELONG
+# CHANGELOG
+
+## 2.3.1
+
+### Fixed
+
+- Fixed remote coverage report line diff
+  ([#101](https://github.com/gnikit/fortls/issues/101))
 
 ## 2.3.0
 
