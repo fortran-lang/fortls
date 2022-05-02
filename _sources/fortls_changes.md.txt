@@ -71,6 +71,8 @@
 
 ## Fixed
 
+- Fixed remote coverage report line diff
+  ([#101](https://github.com/gnikit/fortls/issues/101))
 - Fixes GoTo Implementation error for intrinsics
   ([#80](https://github.com/gnikit/fortls/issues/80))
 - Fixed missing dependency from `setup.cfg`
