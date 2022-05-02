@@ -1,3 +1,5 @@
+![alt](https://raw.githubusercontent.com/gnikit/fortls/master/assets/logo.png)
+
 # fortls - Fortran Language Server
 
 ![PyPI](https://img.shields.io/pypi/v/fortls)
