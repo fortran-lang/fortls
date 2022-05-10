@@ -1,31 +1,36 @@
-![alt](https://raw.githubusercontent.com/gnikit/fortls/master/assets/logo.png)
-
-# fortls - Fortran Language Server
+# fortls - the Fortran Language Server
 
 ![PyPI](https://img.shields.io/pypi/v/fortls)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fortls)
 [![Tests](https://github.com/gnikit/fortls/actions/workflows/main.yml/badge.svg)](https://github.com/gnikit/fortls/actions/workflows/main.yml)
 [![Documentation](https://github.com/gnikit/fortls/actions/workflows/docs.yml/badge.svg)](https://github.com/gnikit/fortls/actions/workflows/docs.yml)
-[![codecov](https://codecov.io/gh/gnikit/fortls/branch/master/graph/badge.svg?token=ZEXUX0R65M)](https://codecov.io/gh/gnikit/fortls)
+[![Codecov](https://img.shields.io/codecov/c/gh/gnikit/fortls)](https://app.codecov.io/gh/gnikit/fortls/)
 [![GitHub license](https://img.shields.io/github/license/gnikit/fortls)](https://github.com/gnikit/fortls/blob/dev/LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-
-[![GitHub Sponsor](https://img.shields.io/static/v1?style=social&label=Sponsor&message=%E2%9D%A4&logo=GitHub&color&link=%3Curl%3E)](https://github.com/sponsors/gnikit)
-[![PayPal](https://img.shields.io/static/v1?style=social&label=Donate&message=%E2%9D%A4&logo=Paypal&color&link=%3Curl%3E)](https://paypal.me/inikit)
-
-![alt](https://raw.githubusercontent.com/gnikit/fortls/master/assets/animations/intro-demo.gif)
 
 `fortls` is an implementation of the [Language Server Protocol](https://github.com/Microsoft/language-server-protocol)
 (LSP) for Fortran using Python (3.7+).
 
-All code editors that support LSP can integrate with `fortls` see the section
-[Editor Integration](https://gnikit.github.io/fortls/editor_integration.html#editor-integration) in the documentation.
-Some supported code editors include:
-[Visual Studio Code](https://gnikit.github.io/fortls/editor_integration.html#visual-studio-code),
-[Atom](https://gnikit.github.io/fortls/editor_integration.html#atom),
-[Sublime Text](https://gnikit.github.io/fortls/editor_integration.html#sublime-text),
-[(Neo)Vim](https://gnikit.github.io/fortls/editor_integration.html#vim-neovim-gvim),
-and [Emacs](https://gnikit.github.io/fortls/editor_integration.html#emacs).
+Editor extensions that can integrate with `fortls` to provide autocomplete and
+other IDE-like functionality are available for
+[Visual Studio Code](https://github.com/krvajal/vscode-fortran-support),
+[Atom](https://atom.io/packages/ide-fortran),
+[Visual Studio](https://github.com/michaelkonecny/vs-fortran-ls-client),
+[(Neo)vim](https://github.com/hansec/fortran-language-server/wiki/Using-forts-with-vim),
+and [Emacs](https://github.com/emacs-lsp/lsp-mode).
+
+## fortls vs fortran-language-server
+
+This project is based on @hansec's original Language Server implementation but the two projects have since diverged.
+`fortls` (this project) is now developed independently of the upstream `hansec/fortran-language-server` project and contains numerous bug fixes and new features
+the original `fortran-language-server` does not.
+
+For a complete and detailed list of the differences between the two Language Servers
+see the Documentation section: [Unique fortls features (not in fortran-language-server)](https://gnikit.github.io/fortls/fortls_changes.html)
+
+The name of executable for this project has been chosen to remain `fortls`
+to allow for integration with pre-existing plugins and workflows but it is
+potentially subject to change.
 
 ## Features
 
@@ -51,65 +56,32 @@ and [Emacs](https://gnikit.github.io/fortls/editor_integration.html#emacs).
   - Invalid scope nesting
   - Unknown modules in `USE` statement
   - Unimplemented deferred type-bound procedures
-  - Use of non-imported variables/objects in interface blocks
+  - Use of unimported variables/objects in interface blocks
   - Statement placement errors (`CONTAINS`, `IMPLICIT`, `IMPORT`)
-- Code actions
+- Code actions (`textDocument/codeAction`) \[Experimental\]
   - Generate type-bound procedures and implementation templates for
     deferred procedures
 
 ### Notes/Limitations
 
-- Signature help and hover does not handle elegantly overloaded functions i.e. interfaces
-
-## `fortls` vs `fortran-language-server`
-
-This project was originally based on `fortran-language-server` LSP implementation, but the two projects have since diverged.
-
-`fortls` (this project) is now developed independently of the upstream `hansec/fortran-language-server` project and contains numerous new features and bug fixes
-the original `fortran-language-server` does not.
-
-For a complete and detailed list of the differences between the two Language Servers
-see the Documentation section: [Unique fortls features (not in fortran-language-server)](https://gnikit.github.io/fortls/fortls_changes.html)
-
-The name of executable for this project has been chosen to remain `fortls`
-to allow for integration with pre-existing plugins and workflows, but it could
-change in the future.
+- Signature help is not available for overloaded subroutines/functions
+- Diagnostics are only updated when files are saved or opened/closed
 
 ## Installation
-
-### PyPi
 
 ```sh
 pip install fortls
 ```
 
-### Anaconda
+>**Warning**: it is not recommended having `fortls` and `fortran-language-server`
+>simultaneously installed, since they use the same binary name. If you are having trouble
+>getting `fortls` to work try uninstalling `fortran-language-server` and reinstalling `fortls`.
+>
+>```sh
+>pip uninstall fortran-language-server
+>pip install fortls --upgrade
+>```
 
-```sh
-conda install -c conda-forge fortls
-```
-
-for more information about the Anaconda installation [see](https://github.com/conda-forge/fortls-feedstock#about-fortls)
-
-### Common installation problems
-
-It is **NOT** recommended having `fortls` and `fortran-language-server`
-simultaneously installed, since they use the same binary name. If you are having trouble
-getting `fortls` to work try uninstalling `fortran-language-server` and reinstalling `fortls`.
-
-With `pip`
-
-```sh
-pip uninstall fortran-language-server
-pip install fortls --upgrade
-```
-
-or with Anaconda
-
-```sh
-conda uninstall fortran-language-server
-conda install -c conda-forge fortls
-```
 
 ## Settings
 
@@ -143,28 +115,24 @@ An example for a Configuration file is given below
 | `textDocument/documentSymbol` | Get document symbols e.g. functions, subroutines, etc. |
 | `textDocument/completion`     | Suggested tab-completion when typing                   |
 | `textDocument/signatureHelp`  | Get signature information at a given cursor position   |
-| `textDocument/definition`     | GoTo definition/Peek definition                        |
+| `textDocument/definition`     | GoTo implementation/Peek implementation                |
 | `textDocument/references`     | Find all/Peek references                               |
-| `textDocument/hover`          | Show messages and signatures upon hover                |
-| `textDocument/implementation` | GoTo implementation/Peek implementation                |
 | `textDocument/rename`         | Rename a symbol across the workspace                   |
-| `textDocument/didOpen`        | Document synchronisation upon opening                  |
-| `textDocument/didSave`        | Document synchronisation upon saving                   |
-| `textDocument/didClose`       | Document synchronisation upon closing                  |
-| `textDocument/didChange`      | Document synchronisation upon changes to the document  |
 | `textDocument/codeAction`     | **Experimental** Generate code                         |
 
 ## Acknowledgements
 
 This project would not have been possible without the original work of [@hansec](https://github.com/hansec/)
-in [`fortran-language-server`](https://github.com/hansec/fortran-language-server)
+and the original [`fortran-language-server`](https://github.com/hansec/fortran-language-server)
 
-<!-- ## Support
+## Support
 
 If you want to support this project you can do it through
 
 [![Alt](https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-150px.png)](https://paypal.me/inikit)
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/gnikit) -->
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/gnikit)
+
+Support the original project go [here](https://paypal.me/hansec)
 
 ## Bug reports
 

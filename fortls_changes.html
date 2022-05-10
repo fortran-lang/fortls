@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Unique fortls features (not in fortran-language-server) &mdash; fortls 0.1.dev1+g5441942 documentation</title>
+  <title>Unique fortls features (not in fortran-language-server) &mdash; fortls 0.1.dev1+g5addf6e documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -20,7 +20,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Developers’ documentations" href="modules.html" />
-    <link rel="prev" title="Editor Integration" href="editor_integration.html" /> 
+    <link rel="prev" title="Configuration options" href="options.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -38,11 +38,10 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="README.html">fortls - Fortran Language Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html">fortls - the Fortran Language Server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="options.html">Configuration options</a></li>
-<li class="toctree-l1"><a class="reference internal" href="editor_integration.html">Editor Integration</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Unique fortls features (not in fortran-language-server)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#added">Added</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#changed">Changed</a></li>
@@ -82,18 +81,6 @@
 <section id="added">
 <h2>Added<a class="headerlink" href="#added" title="Permalink to this headline"></a></h2>
 <ul class="simple">
-<li><p>Added Code of Conduct</p></li>
-<li><p>Added keywords to the PyPi manifest
-(<a class="reference external" href="https://github.com/gnikit/fortls/issues/99">#99</a>)</p></li>
-<li><p>Added unittests for intrinsics and improved overall coverage</p></li>
-<li><p>Automated the update for GitHub Actions</p></li>
-<li><p>Added coverage reporting for Unix + Windows</p></li>
-<li><p>Improved autocompletion for Fortran statements F2018 compliant
-(<a class="reference external" href="https://github.com/gnikit/fortls/issues/63">#63</a>)</p></li>
-<li><p>Added the capability for <code class="docutils literal notranslate"><span class="pre">fortls</span></code> to auto-update use <code class="docutils literal notranslate"><span class="pre">--disable_autoupdate</span></code> to disable
-(<a class="reference external" href="https://github.com/gnikit/fortls/issues/76">#76</a>)</p></li>
-<li><p>Deprecated <code class="docutils literal notranslate"><span class="pre">--variable_hover</span></code> option and now is always enabled
-(<a class="reference external" href="https://github.com/gnikit/fortls/issues/46">#46</a>)</p></li>
 <li><p>Added semantic versioning with <code class="docutils literal notranslate"><span class="pre">setuptools_scm</span></code>
 (<a class="reference external" href="https://github.com/gnikit/fortls/issues/34">gnikit/fortls#34</a>)</p></li>
 <li><p>Added additional shields to REAMDE, including coverage and Python versions</p></li>
@@ -118,22 +105,6 @@
 <section id="changed">
 <h2>Changed<a class="headerlink" href="#changed" title="Permalink to this headline"></a></h2>
 <ul class="simple">
-<li><p>Updated <code class="docutils literal notranslate"><span class="pre">README</span></code> to include logo and animations</p></li>
-<li><p>Updated <code class="docutils literal notranslate"><span class="pre">README</span></code> to include conda-forge installation instructions</p></li>
-<li><p>Restructured unittests to individual files for more granular reporting</p></li>
-<li><p>Changed how renaming of implicitly named type-bound procedures and their
-implementations is handled. Unittest was added.</p></li>
-<li><p>Rewrote the Fortran parser to be clearer and more modular</p></li>
-<li><p>Disable PyPi autoupdating for pre-releases and dev versions</p></li>
-<li><p>Changed the auto-update feature to skip <code class="docutils literal notranslate"><span class="pre">anaconda</span></code> environments since they
-handle their dependencies through <code class="docutils literal notranslate"><span class="pre">conda</span></code> and not <code class="docutils literal notranslate"><span class="pre">pip</span></code></p></li>
-<li><p>Updated <code class="docutils literal notranslate"><span class="pre">setup.cfg</span></code> in preparation of submitting package to <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">Editor</span> <span class="pre">Integration</span></code> section in documentation</p></li>
-<li><p>Changed reading in <code class="docutils literal notranslate"><span class="pre">json</span></code> files to be encoded as UTF-8
-(<a class="reference external" href="https://github.com/gnikit/fortls/pull/51">#51</a>)</p></li>
-<li><p>Changed the way function hover messages are displayed, now signatures are standardised
-(<a class="reference external" href="https://github.com/gnikit/fortls/issues/47">gnikit/fortls#47</a>)</p></li>
-<li><p>Changed default branch to master and updated Actions workflows</p></li>
 <li><p>Changes from <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> to <code class="docutils literal notranslate"><span class="pre">setup.toml</span></code> and <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>
 (<a class="reference external" href="https://github.com/gnikit/fortls/issues/33">gnikit/fortls#33</a>)</p></li>
 <li><p>Changed documentation CI to up to date action</p></li>
@@ -158,27 +129,6 @@ handle their dependencies through <code class="docutils literal notranslate"><sp
 <section id="fixed">
 <h2>Fixed<a class="headerlink" href="#fixed" title="Permalink to this headline"></a></h2>
 <ul class="simple">
-<li><p>Fixed remote coverage report line diff
-(<a class="reference external" href="https://github.com/gnikit/fortls/issues/101">#101</a>)</p></li>
-<li><p>Fixes GoTo Implementation error for intrinsics
-(<a class="reference external" href="https://github.com/gnikit/fortls/issues/80">#80</a>)</p></li>
-<li><p>Fixed missing dependency from <code class="docutils literal notranslate"><span class="pre">setup.cfg</span></code>
-(<a class="reference external" href="https://github.com/gnikit/fortls/issues/78">#78</a>)</p></li>
-<li><p>Updated configuration file variables in documentation</p></li>
-<li><p>Fixed parsing of <code class="docutils literal notranslate"><span class="pre">defined</span></code> without by parenthesis surrounding the definition
-(<a class="reference external" href="https://github.com/gnikit/fortls/pull/67">#67</a>)</p></li>
-<li><p>Fixed hovering value of literal and constant strings not displaying
-(<a class="reference external" href="https://github.com/gnikit/fortls/issues/54">#54</a>)</p></li>
-<li><p>Fixed hovering string length size is now matching the string
-(<a class="reference external" href="https://github.com/gnikit/fortls/issues/55">#55</a>)</p></li>
-<li><p>Fixed space separated keywords not being displayed upon hover
-(<a class="reference external" href="https://github.com/gnikit/fortls/issues/60">#60</a>)</p></li>
-<li><p>Fixed hovering over functions displaying as theire result types
-(<a class="reference external" href="https://github.com/gnikit/fortls/issues/22">gnikit/fortls#22</a>)</p></li>
-<li><p>Fixed function modifiers not displaying upon hover
-(<a class="reference external" href="https://github.com/gnikit/fortls/issues/48">gnikit/fortls#48</a>)</p></li>
-<li><p>Fixed function hover when returning arrays
-(<a class="reference external" href="https://github.com/gnikit/fortls/issues/50">gnikit/fortls#50</a>)</p></li>
 <li><p>Fixed code autocompletion bug with f-strings
 (<a class="reference external" href="https://github.com/hansec/fortran-language-server/issues/39">#39</a>)</p></li>
 <li><p>Fixed global <code class="docutils literal notranslate"><span class="pre">sort_keywords</span></code> option not propagating during parsing on Windows
@@ -228,7 +178,7 @@ multiline but the function body can.</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="editor_integration.html" class="btn btn-neutral float-left" title="Editor Integration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="options.html" class="btn btn-neutral float-left" title="Configuration options" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="modules.html" class="btn btn-neutral float-right" title="Developers’ documentations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
