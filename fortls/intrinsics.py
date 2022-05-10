@@ -3,16 +3,16 @@ import os
 
 from fortls.helper_functions import map_keywords
 from fortls.objects import (
-    fortran_ast,
-    fortran_function,
-    fortran_module,
-    fortran_obj,
-    fortran_subroutine,
-    fortran_type,
-    fortran_var,
+    FortranAST,
+    FortranObj,
+    Function,
+    Module,
+    Subroutine,
+    Type,
+    Variable,
 )
 
-none_ast = fortran_ast()
+none_ast = FortranAST()
 lowercase_intrinsics = False
 
 
@@ -21,7 +21,7 @@ def set_lowercase_intrinsics():
     lowercase_intrinsics = True
 
 
-class fortran_intrinsic_obj(fortran_obj):
+class Intrinsic(FortranObj):
     def __init__(self, name, type, doc_str=None, args="", parent=None):
         self.name = name
         self.type = type
@@ -87,7 +87,7 @@ def load_intrinsics():
         if lowercase_intrinsics:
             name = name.lower()
             args = args.lower()
-        return fortran_intrinsic_obj(name, type, doc_str=doc_str, args=args)
+        return Intrinsic(name, type, doc_str=doc_str, args=args)
 
     def create_object(json_obj, enc_obj=None):
         if enc_obj is not None:
@@ -105,14 +105,14 @@ def load_intrinsics():
             name = name.lower()
             args = args.lower()
         if json_obj["type"] == 0:
-            mod_tmp = fortran_module(none_ast, 0, name)
+            mod_tmp = Module(none_ast, 0, name)
             if "use" in json_obj:
                 mod_tmp.add_use(json_obj["use"], 0)
             return mod_tmp
         elif json_obj["type"] == 1:
-            return fortran_subroutine(none_ast, 0, name, args=args)
+            return Subroutine(none_ast, 0, name, args=args)
         elif json_obj["type"] == 2:
-            return fortran_function(
+            return Function(
                 none_ast,
                 0,
                 name,
@@ -122,11 +122,9 @@ def load_intrinsics():
                 # keyword_info=keyword_info,
             )
         elif json_obj["type"] == 3:
-            return fortran_var(
-                none_ast, 0, name, json_obj["desc"], keywords, keyword_info
-            )
+            return Variable(none_ast, 0, name, json_obj["desc"], keywords, keyword_info)
         elif json_obj["type"] == 4:
-            return fortran_type(none_ast, 0, name, keywords)
+            return Type(none_ast, 0, name, keywords)
         else:
             raise ValueError
 

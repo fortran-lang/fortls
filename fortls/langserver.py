@@ -41,7 +41,7 @@ from fortls.helper_functions import (
     set_keyword_ordering,
 )
 from fortls.intrinsics import (
-    fortran_intrinsic_obj,
+    Intrinsic,
     get_intrinsic_keywords,
     load_intrinsics,
     set_lowercase_intrinsics,
@@ -49,14 +49,14 @@ from fortls.intrinsics import (
 from fortls.json_templates import change_json, symbol_json, uri_json
 from fortls.jsonrpc import JSONRPC2Connection, path_from_uri, path_to_uri
 from fortls.objects import (
+    FortranAST,
+    Variable,
     climb_type_tree,
     find_in_scope,
     find_in_workspace,
-    fortran_ast,
-    fortran_var,
     get_use_tree,
 )
-from fortls.parse_fortran import fortran_file, get_line_context
+from fortls.parse_fortran import FortranFile, get_line_context
 from fortls.regex_patterns import src_file_exts
 from fortls.version import __version__
 
@@ -70,7 +70,7 @@ class LangServer:
         self.conn: JSONRPC2Connection = conn
         self.running: bool = True
         self.root_path: str = None
-        self.workspace: dict[str, fortran_file] = {}
+        self.workspace: dict[str, FortranFile] = {}
         self.obj_tree: dict = {}
         self.link_version = 0
         self._version = version.parse(__version__)
@@ -496,7 +496,7 @@ class LangServer:
         params: dict = request["params"]
         uri: str = params["textDocument"]["uri"]
         path: str = path_from_uri(uri)
-        file_obj: fortran_file = self.workspace.get(path)
+        file_obj: FortranFile = self.workspace.get(path)
         if file_obj is None:
             return None
         # Check line
@@ -673,7 +673,7 @@ class LangServer:
 
     def get_definition(
         self,
-        def_file: fortran_file,
+        def_file: FortranFile,
         def_line: int,
         def_char: int,
         hover_req: bool = False,
@@ -716,7 +716,7 @@ class LangServer:
             return None
         # Search in Preprocessor defined variables
         if def_name in def_file.pp_defs:
-            var = fortran_var(
+            var = Variable(
                 def_file.ast,
                 def_line + 1,
                 def_name,
@@ -778,7 +778,7 @@ class LangServer:
                 ):
                     var_type = f"{FORTRAN_LITERAL}STRING"
                 if var_type:
-                    return fortran_var(
+                    return Variable(
                         curr_scope.file_ast,
                         def_line + 1,
                         def_name,
@@ -897,7 +897,7 @@ class LangServer:
         self,
         def_obj,
         type_mem: bool,
-        file_obj: fortran_file = None,
+        file_obj: FortranFile = None,
     ):
         # Search through all files
         def_name: str = def_obj.name.lower()
@@ -1124,7 +1124,7 @@ class LangServer:
         if var_obj is None:
             return None
         # Intrinsics do not have implementations we can access
-        if isinstance(var_obj, fortran_intrinsic_obj):
+        if isinstance(var_obj, Intrinsic):
             return None
         # Construct implementation reference
         if var_obj.parent.get_type() == CLASS_TYPE_ID:
@@ -1147,7 +1147,7 @@ class LangServer:
         def_obj = self.get_definition(file_obj, def_line, def_char)
         if def_obj is None:
             return None
-        if isinstance(def_obj, fortran_intrinsic_obj):
+        if isinstance(def_obj, Intrinsic):
             self.post_message("Rename failed: Cannot rename intrinsics", Severity.warn)
             return None
         # Determine global accesibility and type membership
@@ -1335,11 +1335,11 @@ class LangServer:
             file_obj = self.workspace.get(filepath)
             if read_file:
                 if file_obj is None:
-                    file_obj = fortran_file(filepath, self.pp_suffixes)
+                    file_obj = FortranFile(filepath, self.pp_suffixes)
                     # Create empty file if not yet saved to disk
                     if not os.path.isfile(filepath):
                         if allow_empty:
-                            file_obj.ast = fortran_ast(file_obj)
+                            file_obj.ast = FortranAST(file_obj)
                             self.workspace[filepath] = file_obj
                             return False, None
                         else:
@@ -1405,7 +1405,7 @@ class LangServer:
         fortran_file | str
             A Fortran file object or a string containing the error message
         """
-        file_obj = fortran_file(filepath, pp_suffixes)
+        file_obj = FortranFile(filepath, pp_suffixes)
         err_str, _ = file_obj.load_from_disk()
         if err_str:
             return err_str
@@ -1704,7 +1704,7 @@ class LangServer:
 
     def _create_ref_link(self, obj) -> dict:
         """Create a link reference to an object"""
-        obj_file: fortran_file = obj.file_ast.file
+        obj_file: FortranFile = obj.file_ast.file
         sline, (schar, echar) = obj_file.find_word_in_code_line(obj.sline - 1, obj.name)
         if schar < 0:
             schar = echar = 0

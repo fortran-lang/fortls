@@ -10,7 +10,7 @@ from .helper_functions import only_dirs, resolve_globs
 from .interface import commandline_args
 from .jsonrpc import JSONRPC2Connection, ReadWriter, path_from_uri
 from .langserver import LangServer
-from .parse_fortran import fortran_file
+from .parse_fortran import FortranFile
 from .version import __version__
 
 __all__ = ["__version__"]
@@ -484,7 +484,7 @@ def debug_server_parser(args):
     #
     print("\nTesting parser")
     print('  File = "{}"'.format(args.debug_filepath))
-    file_obj = fortran_file(args.debug_filepath, pp_suffixes)
+    file_obj = FortranFile(args.debug_filepath, pp_suffixes)
     err_str, _ = file_obj.load_from_disk()
     if err_str:
         error_exit(f"Reading file failed: {err_str}")
