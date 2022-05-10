@@ -6,6 +6,7 @@
 
 ### Added
 
+- Added multiple unittests for diagnostic messages
 - Added `pre-commit` hook to the project
   ([#106](https://github.com/gnikit/fortls/issues/106))
 - Added Code of Conduct
@@ -14,6 +15,8 @@
 
 ### Changed
 
+- Changed the naming convention for Fortran Objects
+  ([#109](https://github.com/gnikit/fortls/issues/109))
 - Formatted all files with `pre-commit`
 
 ## 2.3.1

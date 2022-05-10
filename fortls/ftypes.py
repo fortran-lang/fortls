@@ -8,7 +8,7 @@ Range = NamedTuple("Range", [("start", int), ("end", int)])
 
 
 @dataclass
-class VAR_info:
+class VarInfo:
     """Holds information about a Fortran VARIABLE"""
 
     var_type: str  #: Type of variable e.g. ``INTEGER``, ``REAL``, etc.
@@ -18,7 +18,7 @@ class VAR_info:
 
 
 @dataclass
-class SELECT_info:
+class SelectInfo:
     """Holds information about a SELECT construct"""
 
     type: int  #: Type of SELECT e.g. normal, select type, select kind, select rank
@@ -27,7 +27,7 @@ class SELECT_info:
 
 
 @dataclass
-class CLASS_info:
+class ClassInfo:
     """Holds information about a Fortran CLASS"""
 
     name: str  #: Class name
@@ -36,7 +36,7 @@ class CLASS_info:
 
 
 @dataclass
-class USE_info:
+class UseInfo:
     """Holds information about a Fortran USE statement"""
 
     mod_name: str  #: Module name
@@ -47,7 +47,7 @@ class USE_info:
 
 
 @dataclass
-class GEN_info:
+class GenProcDefInfo:
     """Holds information about a GENERIC PROCEDURE DEFINITION"""
 
     bound_name: str  #: Procedure name
@@ -56,7 +56,7 @@ class GEN_info:
 
 
 @dataclass
-class SMOD_info:
+class SmodInfo:
     """Holds information about Fortran SUBMODULES"""
 
     name: str  #: Submodule name
@@ -64,7 +64,7 @@ class SMOD_info:
 
 
 @dataclass
-class INT_info:
+class InterInfo:
     """Holds information about a Fortran INTERFACE"""
 
     name: str  #: Interface name
@@ -72,7 +72,7 @@ class INT_info:
 
 
 @dataclass
-class VIS_info:
+class VisInfo:
     """Holds information about the VISIBILITY of a module's contents"""
 
     type: int  #: Visibility type 0: PUBLIC 1: PRIVATE TODO: convert to boolean
@@ -80,7 +80,7 @@ class VIS_info:
 
 
 @dataclass
-class INCLUDE_info:
+class IncludeInfo:
     """Holds information about a Fortran INCLUDE statement"""
 
     line_number: int  #: Line number of include
@@ -90,7 +90,7 @@ class INCLUDE_info:
 
 
 @dataclass
-class SUB_info:
+class SubInfo:
     """Holds information about a Fortran SUBROUTINE"""
 
     name: str  #: Procedure name
@@ -102,7 +102,7 @@ class SUB_info:
 
 
 @dataclass
-class RESULT_sig:
+class ResultSig:
     """Holds information about the RESULT section of a Fortran FUNCTION"""
 
     name: str = field(default=None)  #: Variable name of result
@@ -112,11 +112,11 @@ class RESULT_sig:
 
 
 @dataclass
-class FUN_sig(SUB_info):
+class FunSig(SubInfo):
     """Holds information about a Fortran FUNCTION"""
 
     #: Function's result with default ``result.name = name``
-    result: RESULT_sig = field(default_factory=RESULT_sig)
+    result: ResultSig = field(default_factory=ResultSig)
 
     def __post_init__(self):
         if not self.result.name:

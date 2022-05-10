@@ -262,6 +262,14 @@ def test_contains():
             "message": "CONTAINS statement without enclosing scope",
             "severity": 1,
         },
+        {
+            "range": {
+                "start": {"line": 8, "character": 0},
+                "end": {"line": 8, "character": 0},
+            },
+            "message": "Subroutine/Function definition before CONTAINS statement",
+            "severity": 1,
+        },
     ]
 
 
@@ -277,10 +285,109 @@ def test_visibility():
     assert results[1]["diagnostics"] == [
         {
             "range": {
-                "start": {"line": 3, "character": 0},
-                "end": {"line": 3, "character": 0},
+                "start": {"line": 5, "character": 0},
+                "end": {"line": 5, "character": 0},
             },
             "message": "Visibility statement without enclosing scope",
+            "severity": 1,
+        },
+        {
+            "range": {
+                "start": {"line": 1, "character": 8},
+                "end": {"line": 1, "character": 26},
+            },
+            "message": 'Module "nonexisting_module" not found in project',
+            "severity": 3,
+        },
+        {
+            "range": {
+                "start": {"line": 3, "character": 8},
+                "end": {"line": 3, "character": 11},
+            },
+            "message": 'Module "mod" not found in project',
+            "severity": 3,
+        },
+        {
+            "range": {
+                "start": {"line": 2, "character": 4},
+                "end": {"line": 2, "character": 12},
+            },
+            "message": "USE statements after IMPLICIT statement",
+            "severity": 1,
+        },
+    ]
+
+
+def test_import():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    # Test module procedure in submodules importing scopes
+    file_path = str(test_dir / "diag" / "test_import.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
+    errcode, results = run_request(string)
+    assert errcode == 0
+    assert results[1]["diagnostics"] == [
+        {
+            "range": {
+                "start": {"line": 1, "character": 0},
+                "end": {"line": 1, "character": 0},
+            },
+            "message": "IMPORT statement outside of interface",
+            "severity": 1,
+        }
+    ]
+
+
+def test_variable():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    # Test module procedure in submodules importing scopes
+    file_path = str(test_dir / "diag" / "test_variable.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
+    errcode, results = run_request(string)
+    assert errcode == 0
+    assert results[1]["diagnostics"] == [
+        {
+            "range": {
+                "start": {"line": 4, "character": 19},
+                "end": {"line": 4, "character": 22},
+            },
+            "message": 'Variable "val" masks variable in parent scope',
+            "severity": 2,
+            "relatedInformation": [
+                {
+                    "location": {
+                        "uri": path_to_uri(str(file_path)),
+                        "range": {
+                            "start": {"line": 1, "character": 0},
+                            "end": {"line": 1, "character": 0},
+                        },
+                    },
+                    "message": "First declaration",
+                }
+            ],
+        }
+    ]
+
+
+def test_function():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    # Test module procedure in submodules importing scopes
+    file_path = str(test_dir / "diag" / "test_function.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
+    errcode, results = run_request(string)
+    assert errcode == 0
+    assert results[1]["diagnostics"] == [
+        {
+            "range": {
+                "start": {"line": 3, "character": 31},
+                "end": {"line": 3, "character": 34},
+            },
+            "message": 'Variable "bar" with INTENT keyword not found in argument list',
             "severity": 1,
         }
     ]
