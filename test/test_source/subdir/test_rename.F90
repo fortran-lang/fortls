@@ -12,5 +12,5 @@ use rename_mod2, only : localname => originalname, renamed_var2 => renamed_var1
 implicit none
 !
 localname = 4
-renamed_var2 = 4    
+renamed_var2 = 4
 end subroutine test_rename_sub

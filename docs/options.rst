@@ -108,7 +108,7 @@ incl_suffixes
 .F .f .F03 .f03 .F05 .f05 .F08 .f08 .F18 .f18 .F77 .f77 .F90 .f90 .F95 .f95 .FOR .for .FPP .fpp.
 Additional source file extensions can be defined in ``incl_suffixes``.
 
-.. note:: The default file extensions cannot be overwritten. ``incl_suffixes`` will only append to the default extensions. 
+.. note:: The default file extensions cannot be overwritten. ``incl_suffixes`` will only append to the default extensions.
 
 
 excl_suffixes
@@ -187,7 +187,7 @@ pp_defs
       }
    }
 
-Additional **preprocessor definitions** from what are specified in files found in 
+Additional **preprocessor definitions** from what are specified in files found in
 ``include_dirs`` can be defined in ``pp_defs``.
 
 .. note:: Definitions in ``pp_defs`` will override definitions from ``include_dirs``

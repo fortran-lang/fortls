@@ -3,7 +3,7 @@ REAL &
 #ifdef HAVE_CONTIGUOUS
 , CONTIGUOUS &
 #endif
-, POINTER :: & 
+, POINTER :: &
 var1(:), &
 var2(:)
 

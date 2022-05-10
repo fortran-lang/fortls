@@ -40,7 +40,7 @@ pytest -v
 ```
 This will run the entire unit test suite. You can also run this to verify that you haven't broken anything in the code.
 
-👉 **Tip!** You can run individual tests by selecting the path to the Python file and the method 
+👉 **Tip!** You can run individual tests by selecting the path to the Python file and the method
 ```sh
 pytest test/test_interface.py::test_version_update_pypi
 ```
