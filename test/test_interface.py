@@ -28,10 +28,10 @@ def test_command_line_file_parsing_options():
         "--source_dirs tmp ./local /usr/include/** --incl_suffixes .FF .fpc .h f20"
         " --excl_suffixes _tmp.f90 _h5hut_tests.F90 --excl_paths exclude tests".split()
     )
-    assert args.source_dirs == set(["tmp", "./local", "/usr/include/**"])
+    assert args.source_dirs == {"tmp", "./local", "/usr/include/**"}
     assert args.incl_suffixes == [".FF", ".fpc", ".h", "f20"]
-    assert args.excl_suffixes == set(["_tmp.f90", "_h5hut_tests.F90"])
-    assert args.excl_paths == set(["exclude", "tests"])
+    assert args.excl_suffixes == {"_tmp.f90", "_h5hut_tests.F90"}
+    assert args.excl_paths == {"exclude", "tests"}
 
 
 def test_command_line_autocomplete_options():
@@ -69,7 +69,7 @@ def test_command_line_preprocessor_options():
         ' {"HAVE_PETSC":"","HAVE_ZOLTAN":"","Mat":"type(tMat)"}'.split()
     )
     assert args.pp_suffixes == [".h", ".fh"]
-    assert args.include_dirs == set(["/usr/include/**", "./local/incl"])
+    assert args.include_dirs == {"/usr/include/**", "./local/incl"}
     assert args.pp_defs == {"HAVE_PETSC": "", "HAVE_ZOLTAN": "", "Mat": "type(tMat)"}
 
 
@@ -109,12 +109,10 @@ def test_config_file_general_options():
 def test_config_file_dir_parsing_options():
     server, r = unittest_server_init()
     # File parsing
-    assert server.source_dirs == set(
-        [f'{r/"subdir"}', f'{r/"pp"}', f'{r/"pp"/"include"}']
-    )
+    assert server.source_dirs == {f'{r/"subdir"}', f'{r/"pp"}', f'{r/"pp"/"include"}'}
     assert server.incl_suffixes == [".FF", ".fpc", ".h", "f20"]
-    assert server.excl_suffixes == set(["_tmp.f90", "_h5hut_tests.F90"])
-    assert server.excl_paths == set([f'{r/"excldir"}', f'{r/"hover"}'])
+    assert server.excl_suffixes == {"_tmp.f90", "_h5hut_tests.F90"}
+    assert server.excl_paths == {f'{r/"excldir"}', f'{r/"hover"}'}
 
 
 def test_config_file_autocomplete_options():
@@ -146,7 +144,7 @@ def test_config_file_preprocessor_options():
     server, root = unittest_server_init()
     # Preprocessor options
     assert server.pp_suffixes == [".h", ".fh"]
-    assert server.include_dirs == set([f'{root/"include"}'])
+    assert server.include_dirs == {f'{root/"include"}'}
     assert server.pp_defs == {
         "HAVE_PETSC": "",
         "HAVE_ZOLTAN": "",

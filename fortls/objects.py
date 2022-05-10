@@ -1666,7 +1666,7 @@ class fortran_var(fortran_obj):
         if self.is_parameter() and self.param_val:
             hover_str += f" :: {self.name} = {self.param_val}"
         if include_doc and (doc_str is not None):
-            hover_str += "\n {0}".format("\n ".join(doc_str.splitlines()))
+            hover_str += "\n {}".format("\n ".join(doc_str.splitlines()))
         return hover_str, True
 
     def get_keywords(self):

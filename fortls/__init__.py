@@ -86,18 +86,18 @@ def debug_server_general(args, settings):
                 "Specified 'debug_rootpath' does not exist or is not a directory"
             )
         print('\nTesting "initialize" request:')
-        print('  Root = "{0}"'.format(args.debug_rootpath))
+        print('  Root = "{}"'.format(args.debug_rootpath))
         s.serve_initialize({"params": {"rootPath": args.debug_rootpath}})
         if len(s.post_messages) == 0:
             print("  Successful!")
         else:
             print("  Successful with errors:")
             for message in s.post_messages:
-                print("    {0}".format(message[1]))
+                print("    {}".format(message[1]))
         # Print module directories
         print("\n  Source directories:")
         for source_dir in s.source_dirs:
-            print("    {0}".format(source_dir))
+            print("    {}".format(source_dir))
     #
     if args.debug_diagnostics:
         print('\nTesting "textDocument/publishDiagnostics" notification:')
@@ -117,7 +117,7 @@ def debug_server_general(args, settings):
                     sline = diag["range"]["start"]["line"]
                     message = diag["message"]
                     sev = sev_map[diag["severity"] - 1]
-                    print('  {0:5d}:{1}  "{2}"'.format(sline, sev, message))
+                    print('  {:5d}:{}  "{}"'.format(sline, sev, message))
     #
     if args.debug_symbols:
         print('\nTesting "textDocument/documentSymbol" request:')
@@ -192,7 +192,7 @@ def debug_server_general(args, settings):
             else:
                 for obj in completion_results:
                     print(
-                        "    {0}: {1} -> {2}".format(
+                        "    {}: {} -> {}".format(
                             obj["kind"], obj["label"], obj["detail"]
                         )
                     )
@@ -220,11 +220,11 @@ def debug_server_general(args, settings):
                 print(json.dumps(signature_results, indent=2))
             else:
                 active_param = signature_results.get("activeParameter", 0)
-                print("    Active param = {0}".format(active_param))
+                print("    Active param = {}".format(active_param))
                 active_signature = signature_results.get("activeSignature", 0)
-                print("    Active sig   = {0}".format(active_signature))
+                print("    Active sig   = {}".format(active_signature))
                 for i, signature in enumerate(signature_results["signatures"]):
-                    print("    {0}".format(signature["label"]))
+                    print("    {}".format(signature["label"]))
                     for j, obj in enumerate(signature["parameters"]):
                         if (i == active_signature) and (j == active_param):
                             active_mark = "*"
@@ -278,14 +278,14 @@ def debug_server_general(args, settings):
             if args.debug_full_result:
                 print(json.dumps(definition_results, indent=2))
             else:
-                print('    URI  = "{0}"'.format(definition_results["uri"]))
+                print('    URI  = "{}"'.format(definition_results["uri"]))
                 print(
-                    "    Line = {0}".format(
+                    "    Line = {}".format(
                         definition_results["range"]["start"]["line"] + 1
                     )
                 )
                 print(
-                    "    Char = {0}".format(
+                    "    Char = {}".format(
                         definition_results["range"]["start"]["character"] + 1
                     )
                 )
@@ -345,7 +345,7 @@ def debug_server_general(args, settings):
                 print("=======")
                 for result in ref_results:
                     print(
-                        "  {0}  ({1}, {2})".format(
+                        "  {}  ({}, {})".format(
                             result["uri"],
                             result["range"]["start"]["line"] + 1,
                             result["range"]["start"]["character"] + 1,
@@ -379,7 +379,7 @@ def debug_server_general(args, settings):
                 print("=======")
                 for uri, result in ref_results["changes"].items():
                     path = path_from_uri(uri)
-                    print('File: "{0}"'.format(path))
+                    print('File: "{}"'.format(path))
                     file_obj = s.workspace.get(path)
                     if file_obj is not None:
                         file_contents = file_obj.contents_split
@@ -388,11 +388,11 @@ def debug_server_general(args, settings):
                             end_line = change["range"]["end"]["line"]
                             start_col = change["range"]["start"]["character"]
                             end_col = change["range"]["end"]["character"]
-                            print("  {0}, {1}".format(start_line + 1, end_line + 1))
+                            print("  {}, {}".format(start_line + 1, end_line + 1))
                             new_contents = []
                             for i in range(start_line, end_line + 1):
                                 line = file_contents[i]
-                                print("  - {0}".format(line))
+                                print("  - {}".format(line))
                                 if i == start_line:
                                     new_contents.append(
                                         line[:start_col] + change["newText"]
@@ -400,10 +400,10 @@ def debug_server_general(args, settings):
                                 if i == end_line:
                                     new_contents[-1] += line[end_col:]
                             for line in new_contents:
-                                print("  + {0}".format(line))
+                                print("  + {}".format(line))
                             print()
                     else:
-                        print('Unknown file: "{0}"'.format(path))
+                        print('Unknown file: "{}"'.format(path))
                 print("=======")
     #
     if args.debug_actions:
@@ -434,12 +434,10 @@ def debug_server_general(args, settings):
         else:
             for result in action_results:
                 print(
-                    "Kind = '{0}', Title = '{1}'".format(
-                        result["kind"], result["title"]
-                    )
+                    "Kind = '{}', Title = '{}'".format(result["kind"], result["title"])
                 )
                 for editUri, editChange in result["edit"]["changes"].items():
-                    print("\nChange: URI = '{0}'".format(editUri))
+                    print("\nChange: URI = '{}'".format(editUri))
                     pp.pprint(editChange)
                 print()
     tmpout.close()
@@ -485,7 +483,7 @@ def debug_server_parser(args):
                 print(f"Error while parsing '{args.config}' settings file")
     #
     print("\nTesting parser")
-    print('  File = "{0}"'.format(args.debug_filepath))
+    print('  File = "{}"'.format(args.debug_filepath))
     file_obj = fortran_file(args.debug_filepath, pp_suffixes)
     err_str, _ = file_obj.load_from_disk()
     if err_str:
@@ -495,11 +493,11 @@ def debug_server_parser(args):
     file_ast = file_obj.parse(debug=True, pp_defs=pp_defs, include_dirs=include_dirs)
     print("\n=========\nObject Tree\n=========\n")
     for obj in file_ast.get_scopes():
-        print("{0}: {1}".format(obj.get_type(), obj.FQSN))
+        print("{}: {}".format(obj.get_type(), obj.FQSN))
         print_children(obj)
     print("\n=========\nExportable Objects\n=========\n")
     for _, obj in file_ast.global_dict.items():
-        print("{0}: {1}".format(obj.get_type(), obj.FQSN))
+        print("{}: {}".format(obj.get_type(), obj.FQSN))
 
 
 def check_request_params(args, loc_needed=True):
@@ -508,17 +506,17 @@ def check_request_params(args, loc_needed=True):
     file_exists = os.path.isfile(args.debug_filepath)
     if file_exists is False:
         error_exit("Specified 'debug_filepath' does not exist")
-    print('  File = "{0}"'.format(args.debug_filepath))
+    print('  File = "{}"'.format(args.debug_filepath))
     if loc_needed:
         if args.debug_line is None:
             error_exit("'debug_line' not specified for debug request")
-        print("  Line = {0}".format(args.debug_line))
+        print("  Line = {}".format(args.debug_line))
         if args.debug_char is None:
             error_exit("'debug_char' not specified for debug request")
-        print("  Char = {0}\n".format(args.debug_char))
+        print("  Char = {}\n".format(args.debug_char))
 
 
 def print_children(obj, indent=""):
     for child in obj.get_children():
-        print("  {0}{1}: {2}".format(indent, child.get_type(), child.FQSN))
+        print("  {}{}: {}".format(indent, child.get_type(), child.FQSN))
         print_children(child, indent + "  ")
