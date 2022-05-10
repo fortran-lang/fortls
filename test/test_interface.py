@@ -165,9 +165,10 @@ def test_config_file_codeactions_options():
 
 
 def test_version_update_pypi():
+    from packaging import version
+
     from fortls.jsonrpc import JSONRPC2Connection, ReadWriter
     from fortls.langserver import LangServer
-    from packaging import version
 
     parser = commandline_args("fortls")
     args = parser.parse_args("-c f90_config.json".split())
