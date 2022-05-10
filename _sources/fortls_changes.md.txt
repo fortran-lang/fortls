@@ -3,6 +3,8 @@
 ## Added
 
 - Added Code of Conduct
+- Added basic support for hovering over `ASSOCIATE` blocks
+  ([#62](https://github.com/gnikit/fortls/issues/62))
 - Added keywords to the PyPi manifest
   ([#99](https://github.com/gnikit/fortls/issues/99))
 - Added unittests for intrinsics and improved overall coverage

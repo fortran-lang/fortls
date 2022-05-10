@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fortls package &mdash; fortls 0.1.dev1+g8565d4b documentation</title>
+  <title>fortls package &mdash; fortls 0.1.dev1+gc7c3a76 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -1214,6 +1214,27 @@ Fortran file, line number, column number</p>
 <section id="module-fortls.objects">
 <span id="fortls-objects-module"></span><h2>fortls.objects module<a class="headerlink" href="#module-fortls.objects" title="Permalink to this headline"></a></h2>
 <dl class="py class">
+<dt class="sig sig-object py" id="fortls.objects.AssociateMap">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.objects.</span></span><span class="sig-name descname"><span class="pre">AssociateMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bind_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.AssociateMap" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fortls.objects.AssociateMap.bind_name">
+<span class="sig-name descname"><span class="pre">bind_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.objects.AssociateMap.bind_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fortls.objects.AssociateMap.link_name">
+<span class="sig-name descname"><span class="pre">link_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#fortls.objects.AssociateMap.link_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fortls.objects.AssociateMap.var">
+<span class="sig-name descname"><span class="pre">var</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#fortls.objects.fortran_var" title="fortls.objects.fortran_var"><span class="pre">fortls.objects.fortran_var</span></a></em><a class="headerlink" href="#fortls.objects.AssociateMap.var" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="fortls.objects.USE_line">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.objects.</span></span><span class="sig-name descname"><span class="pre">USE_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mod_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rename_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.USE_line" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
@@ -1241,8 +1262,27 @@ Fortran file, line number, column number</p>
 <dd><p>Bases: <a class="reference internal" href="#fortls.objects.fortran_block" title="fortls.objects.fortran_block"><code class="xref py py-class docutils literal notranslate"><span class="pre">fortls.objects.fortran_block</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.objects.fortran_associate.create_binding_variable">
-<span class="sig-name descname"><span class="pre">create_binding_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_ast</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bound_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link_var</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.fortran_associate.create_binding_variable" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">create_binding_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_ast</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bind_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.fortran_associate.create_binding_variable" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new variable to be linked upon resolution to the real variable
+that contains the information of the mapping from the parent scope to the
+ASSOCIATE block scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_ast</strong> (<a class="reference internal" href="#fortls.objects.fortran_ast" title="fortls.objects.fortran_ast"><em>fortran_ast</em></a>) – AST file</p></li>
+<li><p><strong>line_number</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Line number</p></li>
+<li><p><strong>bind_name</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Name of the ASSOCIATE block variable</p></li>
+<li><p><strong>link_name</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Name of the parent scope variable</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Variable object holding the ASSOCIATE block variable, pending resolution</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#fortls.objects.fortran_var" title="fortls.objects.fortran_var">fortran_var</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.objects.fortran_associate.get_desc">
@@ -2158,6 +2198,11 @@ TYPE, [RESULT_MODIFIERS] :: RESULT_VAR</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.objects.fortran_var.get_hover">
 <span class="sig-name descname"><span class="pre">get_hover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_doc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.fortran_var.get_hover" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fortls.objects.fortran_var.get_keywords">
+<span class="sig-name descname"><span class="pre">get_keywords</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.fortran_var.get_keywords" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
