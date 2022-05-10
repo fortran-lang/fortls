@@ -7,7 +7,7 @@
 [![Tests](https://github.com/gnikit/fortls/actions/workflows/main.yml/badge.svg)](https://github.com/gnikit/fortls/actions/workflows/main.yml)
 [![Documentation](https://github.com/gnikit/fortls/actions/workflows/docs.yml/badge.svg)](https://github.com/gnikit/fortls/actions/workflows/docs.yml)
 [![codecov](https://codecov.io/gh/gnikit/fortls/branch/master/graph/badge.svg?token=ZEXUX0R65M)](https://codecov.io/gh/gnikit/fortls)
-[![GitHub license](https://img.shields.io/github/license/gnikit/fortls)](https://github.com/gnikit/fortls/blob/dev/LICENSE)
+[![GitHub license](https://img.shields.io/github/license/gnikit/fortls)](https://github.com/gnikit/fortls/blob/master/LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 [![GitHub Sponsor](https://img.shields.io/static/v1?style=social&label=Sponsor&message=%E2%9D%A4&logo=GitHub&color&link=%3Curl%3E)](https://github.com/sponsors/gnikit)
@@ -173,4 +173,4 @@ please provide example code to reproduce the observed issue.
 
 ## License
 
-This project is made available under the [MIT License](https://github.com/gnikit/fortls/blob/dev/LICENSE).
+This project is made available under the [MIT License](https://github.com/gnikit/fortls/blob/master/LICENSE).
