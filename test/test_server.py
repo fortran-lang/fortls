@@ -177,6 +177,7 @@ def test_workspace_symbols():
         objs = (
             ["test", 6, 7],
             ["test_abstract", 2, 0],
+            ["test_associate_block", 2, 0],
             ["test_free", 2, 0],
             ["test_gen_type", 5, 1],
             ["test_generic", 2, 0],

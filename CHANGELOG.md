@@ -7,6 +7,8 @@
 ### Added
 
 - Added Code of Conduct
+- Added basic support for hovering over `ASSOCIATE` blocks
+  ([#62](https://github.com/gnikit/fortls/issues/62))
 
 ## 2.3.1
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 import copy
 import os
 import re
-from dataclasses import replace
+from dataclasses import dataclass, replace
 from typing import Pattern
 
 from fortls.constants import (
@@ -289,6 +289,13 @@ class USE_line:
             self.rename_map: dict = {
                 key.lower(): value.lower() for key, value in rename_map.items()
             }
+
+
+@dataclass
+class AssociateMap:
+    var: fortran_var
+    bind_name: str
+    link_name: str
 
 
 class fortran_diagnostic:
@@ -1365,7 +1372,7 @@ class fortran_if(fortran_block):
 class fortran_associate(fortran_block):
     def __init__(self, file_ast: fortran_ast, line_number: int, name: str):
         super().__init__(file_ast, line_number, name)
-        self.assoc_links = []
+        self.links: list[AssociateMap] = []  # holds the info to associate variables
 
     def get_type(self, no_link=False):
         return ASSOC_TYPE_ID
@@ -1373,25 +1380,57 @@ class fortran_associate(fortran_block):
     def get_desc(self):
         return "ASSOCIATE"
 
-    def create_binding_variable(self, file_ast, line_number, bound_name, link_var):
-        new_var = fortran_var(file_ast, line_number, bound_name, "UNKNOWN", [])
-        self.assoc_links.append([new_var, bound_name, link_var])
+    def create_binding_variable(
+        self, file_ast: fortran_ast, line_number: int, bind_name: str, link_name: str
+    ) -> fortran_var:
+        """Create a new variable to be linked upon resolution to the real variable
+        that contains the information of the mapping from the parent scope to the
+        ASSOCIATE block scope.
+
+        Parameters
+        ----------
+        file_ast : fortran_ast
+            AST file
+        line_number : int
+            Line number
+        bind_name : str
+            Name of the ASSOCIATE block variable
+        link_name : str
+            Name of the parent scope variable
+
+        Returns
+        -------
+        fortran_var
+            Variable object holding the ASSOCIATE block variable, pending resolution
+        """
+        new_var = fortran_var(file_ast, line_number, bind_name, "UNKNOWN", [])
+        self.links.append(AssociateMap(new_var, bind_name, link_name))
         return new_var
 
     def resolve_link(self, obj_tree):
-        for assoc_link in self.assoc_links:
-            var_stack = get_var_stack(assoc_link[2])
-            if len(var_stack) > 1:
+        # Loop through the list of the associated variables map and resolve the links
+        # find the AST node that that corresponds to the variable with link_name
+        for assoc in self.links:
+            # TODO: extract the dimensions component from the link_name
+            # re.sub(r'\(.*\)', '', link_name) removes the dimensions component
+            # keywords = re.match(r'(.*)\((.*)\)', link_name).groups()
+            # now pass the keywords through the dimension_parser and set the keywords
+            # in the associate object. Hover should now pick the local keywords
+            # over the linked_object keywords
+            assoc.link_name = re.sub(r"\(.*\)", "", assoc.link_name)
+            var_stack = get_var_stack(assoc.link_name)
+            is_member = len(var_stack) > 1
+            if is_member:
                 type_scope = climb_type_tree(var_stack, self, obj_tree)
                 if type_scope is None:
                     continue
                 var_obj = find_in_scope(type_scope, var_stack[-1], obj_tree)
                 if var_obj is not None:
-                    assoc_link[0].link_obj = var_obj
+                    assoc.var.link_obj = var_obj
             else:
-                var_obj = find_in_scope(self, assoc_link[2], obj_tree)
+                var_obj = find_in_scope(self, assoc.link_name, obj_tree)
                 if var_obj is not None:
-                    assoc_link[0].link_obj = var_obj
+                    assoc.var.link_obj = var_obj
 
     def require_link(self):
         return True
@@ -1601,6 +1640,7 @@ class fortran_var(fortran_obj):
                         self.type_obj = type_obj
         return self.type_obj
 
+    # XXX: unused delete or use for associate blocks
     def set_dim(self, dim_str):
         if KEYWORD_ID_DICT["dimension"] not in self.keywords:
             self.keywords.append(KEYWORD_ID_DICT["dimension"])
@@ -1618,9 +1658,9 @@ class fortran_var(fortran_obj):
 
     def get_hover(self, long=False, include_doc=True, drop_arg=-1):
         doc_str = self.get_documentation()
-        hover_str = ", ".join(
-            [self.desc] + get_keywords(self.keywords, self.keyword_info)
-        )
+        # In associated blocks we need to fetch the desc and keywords of the
+        # linked object
+        hover_str = ", ".join([self.get_desc()] + self.get_keywords())
         # TODO: at this stage we can mae this lowercase
         # Add parameter value in the output
         if self.is_parameter() and self.param_val:
@@ -1628,6 +1668,14 @@ class fortran_var(fortran_obj):
         if include_doc and (doc_str is not None):
             hover_str += "\n {0}".format("\n ".join(doc_str.splitlines()))
         return hover_str, True
+
+    def get_keywords(self):
+        # TODO: if local keywords are set they should take precedence over link_obj
+        # Alternatively, I could do a dictionary merge with local variables
+        # having precedence by default and use a flag to override?
+        if self.link_obj is not None:
+            return get_keywords(self.link_obj.keywords, self.link_obj.keyword_info)
+        return get_keywords(self.keywords, self.keyword_info)
 
     def is_optional(self):
         if self.keywords.count(KEYWORD_ID_DICT["optional"]) > 0:
