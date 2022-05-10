@@ -6,6 +6,7 @@
 
 ### Added
 
+- Added multiple unittests for diagnostic messages
 - Added `pre-commit` hook to the project
   ([#106](https://github.com/gnikit/fortls/issues/106))
 - Added Code of Conduct
