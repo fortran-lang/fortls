@@ -5,9 +5,9 @@
 
 #define PC type(tPC)
 #define PCType character*(80)
-#define ewrite(priority, format) if (priority <= 3) write((priority), format) 
+#define ewrite(priority, format) if (priority <= 3) write((priority), format)
 #define ewrite2(priority, format) \
-    if (priority <= 3) write((priority), format) 
+    if (priority <= 3) write((priority), format)
 #define varVar \
         55
 #endif

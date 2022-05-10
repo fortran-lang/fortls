@@ -38,14 +38,26 @@ To verify that your cloning of the GitHub repository work as expected open a ter
 ```sh
 pytest -v
 ```
+
 This will run the entire unit test suite. You can also run this to verify that you haven't broken anything in the code.
 
-👉 **Tip!** You can run individual tests by selecting the path to the Python file and the method 
+👉 **Tip!** You can run individual tests by selecting the path to the Python file and the method
+
 ```sh
 pytest test/test_interface.py::test_version_update_pypi
 ```
 
 ### Developing & Debugging 🐞️
+
+❗️ Before you start developing, open a terminal inside `fortls` and run:
+
+```sh
+pre-commit install
+```
+
+This will ensure that all you commits meet the formatting standards of the project.
+
+----
 
 You can now start writing code! Your local `fortls` version will be updated with every code change you make, so you can use your normal code editor to checkout the `fortls` features that you have implemented.
 It is however considerably easier to create compact unittests to check if your changes have worked.
@@ -54,9 +66,7 @@ A `fortls` test normally involves writing a Python function which sends a JSONRP
 Often times small bits of Fortran source code also have to be submited to be used by the test.
 You can find varisous test examples in the `tests` directory.
 
-
 👉 **Tip!** You can attach a debugger to the main `fortls` source code during unittesting which should allow you to pause, break, step into, etc. while testing, thus making it easier to find mistakes.
-
 
 ### Merging
 

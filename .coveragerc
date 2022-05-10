@@ -1,6 +1,6 @@
 [run]
 dynamic_context = test_function
-omit = 
+omit =
     fortls/__init__.py
     fortls/version.py
 

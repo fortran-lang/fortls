@@ -88,6 +88,17 @@ def test_doc_type_bound_procedure_sub_implementation():
     check_return(results[1], ((1, "!! Doc 4"), (4, " !! Doc 5")))
 
 
+def test_doc_variable():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    file_path = test_dir / "subdir" / "test_free.f90"
+    # n !! Doc 5
+    # Test that a variable can carry over documentation
+    string += hover_request(file_path, 37, 26)
+    errcode, results = run_request(string)
+    assert errcode == 0
+    check_return(results[1], ((1, " !! Doc 5"),))
+
+
 def test_doc_overwrite_type_bound_procedure_fun():
     string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
     file_path = test_dir / "subdir" / "test_free.f90"

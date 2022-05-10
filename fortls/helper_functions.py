@@ -107,10 +107,10 @@ def strip_strings(in_line: str, maintain_len: bool = False) -> str:
     """
 
     def repl_sq(m):
-        return "'{0}'".format(" " * (len(m.group()) - 2))
+        return "'{}'".format(" " * (len(m.group()) - 2))
 
     def repl_dq(m):
-        return '"{0}"'.format(" " * (len(m.group()) - 2))
+        return '"{}"'.format(" " * (len(m.group()) - 2))
 
     if maintain_len:
         out_line = FRegex.SQ_STRING.sub(repl_sq, in_line)

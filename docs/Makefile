@@ -6,7 +6,7 @@
 SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SPHINXAPIDOC  ?= sphinx-apidoc
-PANDOC		  ?= pandoc	
+PANDOC		  ?= pandoc
 SOURCEDIR     = .
 BUILDDIR      = _build
 

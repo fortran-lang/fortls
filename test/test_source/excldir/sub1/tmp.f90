@@ -9,7 +9,7 @@ module oumods
        FINAL :: del_ex_type
        PROCEDURE :: sub => ex_sub
      END TYPE ex_type
-     
+
 contains
   subroutine zI12(t,c,alpha,beta,r)
     complex(c_double_complex) c,r,    x,y,z

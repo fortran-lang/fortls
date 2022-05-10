@@ -120,5 +120,3 @@ Edit your kakrc config to enable kak-lsp, adding fortran as a filetype:
    hook global WinSetOption filetype=(fortran) %{
      lsp-enable-window
    }
-
-

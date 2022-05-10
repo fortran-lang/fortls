@@ -6,9 +6,15 @@
 
 ### Added
 
+- Added `pre-commit` hook to the project
+  ([#106](https://github.com/gnikit/fortls/issues/106))
 - Added Code of Conduct
 - Added basic support for hovering over `ASSOCIATE` blocks
   ([#62](https://github.com/gnikit/fortls/issues/62))
+
+### Changed
+
+- Formatted all files with `pre-commit`
 
 ## 2.3.1
 

@@ -1,6 +1,6 @@
 module test_doxygen
     implicit none
-    
+
 contains
 
     !> @brief inserts a value into an ordered array
