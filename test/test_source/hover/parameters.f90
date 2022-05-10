@@ -6,4 +6,7 @@ program params
                           var*var2, &
                           var4 = 123
     double precision, parameter :: somevar = 23.12, some = 1e-19
+    logical(kind=8), parameter :: long_bool = .true.
+    character(len=5), parameter :: sq_str = '12345'
+    character(len=5), parameter :: dq_str = "12345"
 end program params

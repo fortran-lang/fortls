@@ -3,6 +3,7 @@
   "notify_init": true,
   "incremental_sync": true,
   "sort_keywords": true,
+  "disable_autoupdate": true,
 
   "source_dirs": ["subdir", "pp/**"],
   "incl_suffixes": [".FF", ".fpc", ".h", "f20"],

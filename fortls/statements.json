@@ -12,37 +12,71 @@
   },
   "int_stmnts": {
     "ALLOCATE": {
-      "doc": "Dynamically create storage for allocatable variables and pointer targets."
+      "doc": "Dynamically creates storage for allocatable variables and pointer targets."
+    },
+    "BACKSPACE": {
+      "doc": "Positions a sequential file at the beginning of the preceding record, making it available for subsequent I/O processing."
     },
     "CALL": {
       "doc": "Transfers control to a subroutine subprogram."
     },
     "CLOSE": {
-      "doc": "Disconnect a file from a unit."
+      "doc": "Disconnects a file from a unit."
+    },
+    "CONTINUE": {
+      "doc": "Primarily used to terminate a labelled DO construct when the construct would otherwise end improperly with either a GO TO, arithmetic IF, or other prohibited control statement."
     },
     "CYCLE": {
-      "doc": "Interrupt the current execution cycle of the innermost (or named) DO construct."
+      "doc": "Interrupts the current execution cycle of the innermost (or named) DO construct."
     },
     "DEALLOCATE": {
-      "doc": "Free the storage allocated for allocatable variables and nonprocedure pointer targets (and causes the pointers to become disassociated)."
+      "doc": "Frees the storage allocated for allocatable variables and nonprocedure pointer targets (and causes the pointers to become disassociated)."
+    },
+    "ENDFILE": {
+      "doc": "For sequential files, writes an end-of-file record to the file and positions the file after this record (the terminal point)."
+    },
+    "ERROR STOP": {
+      "doc": "Initiates error termination of an image before the execution of an END statement of the main program."
+    },
+    "EVENT POST": {
+      "doc": "Allows an image to notify another image that it can proceed to work on tasks that use common resources."
+    },
+    "EVENT WAIT": {
+      "doc": "Allows an image to wait on events posted by other images."
+    },
+    "FAIL IMAGE": {
+      "doc": "Forces the failure of the current image of the program unit."
+    },
+    "FLUSH": {
+      "doc": "Causes data written to a file to become available to other processes or causes data written to a file outside of Fortran to be accessible to a READ statement."
+    },
+    "FORM TEAM": {
+      "args": "team_number,team_variable",
+      "doc": "Defines team variables; creates one or more teams of images from the images on the current team."
     },
     "FORMAT": {
-      "doc": "Specify the form of data being transferred and the data conversion (editing) required to achieve that form."
+      "doc": "Specifies the form of data being transferred and the data conversion (editing) required to achieve that form."
     },
     "INQUIRE": {
-      "doc": "Return information on the status of specified properties of a file, logical unit, or directory."
+      "doc": "Returns information on the status of specified properties of a file or logical unit."
+    },
+    "LOCK": {
+      "doc": "Causes a lock variable to become locked by an image."
     },
     "NAMELIST": {
       "doc": "Associates a name with a list of variables. This group name can be referenced in some input/output operations."
     },
     "NULLIFY": {
-      "doc": "Disassociate a pointer from a target."
+      "doc": "Disassociates a pointer from a target."
     },
     "OPEN": {
-      "doc": "Connect an external file to a unit, creates a new file and connects it to a unit, creates a preconnected file, or changes certain properties of a connection."
+      "doc": "Connects an external file to a unit, creates a new file and connects it to a unit, creates a preconnected file, or changes certain properties of a connection."
+    },
+    "PRINT": {
+      "doc": "Displays output on the screen."
     },
     "READ": {
-      "doc": "Transfer input data from external sequential, direct-access, or internal records."
+      "doc": "Transfers input data from external sequential, direct-access, or internal records."
     },
     "RETURN": {
       "doc": "Return control to the calling program unit."
@@ -51,10 +85,32 @@
       "doc": "Positions a sequential or direct access file at the beginning of the file (the initial point)."
     },
     "STOP": {
-      "doc": "Terminate execution of the program."
+      "doc": "Initiates normal termination of an image before the execution of an END statement of the main program."
+    },
+    "SYNC ALL": {
+      "args": "STAT=stat,ERRMSG=errmsg",
+      "doc": "Performs a synchronization of all images in the current team."
+    },
+    "SYNC IMAGES": {
+      "args": "image_set,STAT=stat,ERRMSG=errmsg",
+      "doc": "Performs a synchronization of the image with each of the other images in the image set."
+    },
+    "SYNC MEMORY": {
+      "args": "STAT=stat,ERRMSG=errmsg",
+      "doc": "Ends one image segment and begins another. Each segment can then be ordered in some way with respect to segments on other images."
+    },
+    "SYNC TEAM": {
+      "args": "team_value,STAT=stat,ERRMSG=errmsg",
+      "doc": "Performs a synchronization of all images on the specified team."
+    },
+    "UNLOCK": {
+      "doc": "Causes a lock variable to become unlocked by an image."
+    },
+    "WAIT": {
+      "doc": "Performs a wait operation for a specified pending asynchronous data transfer operation."
     },
     "WRITE": {
-      "doc": "Transfer output data to external sequential, direct-access, or internal records."
+      "doc": "Transfers output data to external sequential, direct-access, or internal records."
     }
   }
 }

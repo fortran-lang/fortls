@@ -3,7 +3,10 @@
     "**/"
   ],
   "excl_paths": [
-    "excldir/**"
+    "excldir/**",
+    "./diag/",
+    "docs",
+    "rename"
   ]
 
 }

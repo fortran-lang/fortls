@@ -1,18 +1,18 @@
-name: "Documentation"
+name: "Docs"
 on: [push, pull_request]
 
 jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: sphinx-toolbox/sphinx-action@master
         with:
           pre-build-command: "pip install .[docs]"
           docs-folder: "docs/"
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/dev'
+        if: github.ref == 'refs/heads/master'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: docs/_build/html

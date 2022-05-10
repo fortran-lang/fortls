@@ -5,10 +5,16 @@ import json
 import logging
 import os
 import re
+import subprocess
+import sys
 import traceback
+import urllib.request
 from multiprocessing import Pool
 from pathlib import Path
 from typing import Pattern
+from urllib.error import URLError
+
+from packaging import version
 
 # Local modules
 from fortls.constants import (
@@ -21,6 +27,8 @@ from fortls.constants import (
     SELECT_TYPE_ID,
     SUBROUTINE_TYPE_ID,
     VAR_TYPE_ID,
+    FRegex,
+    Severity,
     log,
 )
 from fortls.helper_functions import (
@@ -33,11 +41,13 @@ from fortls.helper_functions import (
     set_keyword_ordering,
 )
 from fortls.intrinsics import (
+    fortran_intrinsic_obj,
     get_intrinsic_keywords,
     load_intrinsics,
     set_lowercase_intrinsics,
 )
-from fortls.jsonrpc import path_from_uri, path_to_uri
+from fortls.json_templates import change_json, symbol_json, uri_json
+from fortls.jsonrpc import JSONRPC2Connection, path_from_uri, path_to_uri
 from fortls.objects import (
     climb_type_tree,
     find_in_scope,
@@ -46,57 +56,24 @@ from fortls.objects import (
     fortran_var,
     get_use_tree,
 )
-from fortls.parse_fortran import fortran_file, get_line_context, process_file
-from fortls.regex_patterns import (
-    DQ_STRING_REGEX,
-    INT_STMNT_REGEX,
-    LOGICAL_REGEX,
-    NUMBER_REGEX,
-    SQ_STRING_REGEX,
-    src_file_exts,
-)
+from fortls.parse_fortran import fortran_file, get_line_context
+from fortls.regex_patterns import src_file_exts
 from fortls.version import __version__
 
 # Global regexes
 # TODO: I think this can be replaced by fortls.regex_patterns type & class
 TYPE_DEF_REGEX = re.compile(r"[ ]*(TYPE|CLASS)[ ]*\([a-z0-9_ ]*$", re.I)
-# TODO: I think this can be replaced by fortls.regex_patterns
-SCOPE_DEF_REGEX = re.compile(r"[ ]*(MODULE|PROGRAM|SUBROUTINE|FUNCTION)[ ]+", re.I)
-# TODO: I think this can be replaced by fortls.regex_patterns END_REGEx
-END_REGEX = re.compile(
-    r"[ ]*(END)( |MODULE|PROGRAM|SUBROUTINE|FUNCTION|TYPE|DO|IF|SELECT)?", re.I
-)
-
-
-def init_file(filepath, pp_defs, pp_suffixes, include_dirs, sort):
-    #
-    file_obj = fortran_file(filepath, pp_suffixes)
-    err_str, _ = file_obj.load_from_disk()
-    if err_str:
-        return None, err_str
-    try:
-        # On Windows multiprocess does not propage global variables through a shell.
-        # Windows uses 'spawn' while Unix uses 'fork' which propagates globals.
-        # This is a bypass.
-        # For more see on SO: shorturl.at/hwAG1
-        set_keyword_ordering(sort)
-        file_ast = process_file(file_obj, pp_defs=pp_defs, include_dirs=include_dirs)
-    except:
-        log.error("Error while parsing file %s", filepath, exc_info=True)
-        return None, "Error during parsing"
-    file_obj.ast = file_ast
-    return file_obj, None
 
 
 class LangServer:
     def __init__(self, conn, settings: dict):
-        self.conn = conn
+        self.conn: JSONRPC2Connection = conn
         self.running: bool = True
         self.root_path: str = None
-        self.all_symbols = None
-        self.workspace: dict = {}
+        self.workspace: dict[str, fortran_file] = {}
         self.obj_tree: dict = {}
         self.link_version = 0
+        self._version = version.parse(__version__)
         # Parse a dictionary of the command line interface and make them into
         # class variable. This way the command line and the file interfaces
         # are always on sync, with the same default arguments
@@ -107,7 +84,6 @@ class LangServer:
             setattr(self, k, v)
 
         self.sync_type: int = 2 if self.incremental_sync else 1
-        self.variable_hover: bool = self.variable_hover or self.hover_signature
         self.post_messages = []
         self.FORTRAN_SRC_EXT_REGEX: Pattern[str] = src_file_exts()
         # Intrinsic (re-loaded during initialize)
@@ -120,10 +96,16 @@ class LangServer:
         # Set object settings
         set_keyword_ordering(self.sort_keywords)
 
-    def post_message(self, message, type=1):
+    def post_message(self, msg: str, severity: int = Severity.error, exc_info=False):
         self.conn.send_notification(
-            "window/showMessage", {"type": type, "message": message}
+            "window/showMessage", {"type": severity, "message": msg}
         )
+        if severity == 1:
+            log.error(msg, exc_info=exc_info)
+        elif severity == 2:
+            log.warning(msg, exc_info=exc_info)
+        elif severity == 3:
+            log.info(msg, exc_info=exc_info)
 
     def run(self):
         # Run server
@@ -134,16 +116,15 @@ class LangServer:
             except EOFError:
                 break
             except Exception as e:
-                self.post_messages.append([1, f"Unexpected error: {e}"])
-                log.error("Unexpected error: %s", e, exc_info=True)
+                self.post_message(f"Unexpected error: {e}", exc_info=True)
                 break
             else:
                 for message in self.post_messages:
                     self.post_message(message[1], message[0])
                 self.post_messages = []
 
-    def handle(self, request):
-        def noop(request):
+    def handle(self, request: dict):
+        def noop(request: dict):
             return None
 
         # Request handler
@@ -171,9 +152,7 @@ class LangServer:
             "shutdown": noop,
             "exit": self.serve_exit,
         }.get(request["method"], self.serve_default)
-        # handler = {
-        #     "workspace/symbol": self.serve_symbols,
-        # }.get(request["method"], self.serve_default)
+
         # We handle notifications differently since we can't respond
         if "id" not in request:
             try:
@@ -202,24 +181,23 @@ class LangServer:
         else:
             self.conn.write_response(request["id"], resp)
 
-    def serve_initialize(self, request):
+    def serve_initialize(self, request: dict):
         # Setup language server
-        params = request["params"]
+        params: dict = request["params"]
         self.root_path = path_from_uri(
             params.get("rootUri") or params.get("rootPath") or ""
         )
         self.source_dirs.add(self.root_path)
-        logging.basicConfig(
-            format="[%(levelname)-.4s - %(asctime)s] %(message)s",
-            datefmt="%H:%M:%S",
-            level=logging.INFO,
-        )
+
+        self._load_config_file()
         self._config_logger(request)
-        init_debug_log = self._load_config_file()
-        if init_debug_log:
-            self._config_logger(request)
         self._load_intrinsics()
         self._add_source_dirs()
+        if self._update_version_pypi():
+            self.post_message(
+                "Please restart the server for the new version to activate",
+                Severity.info,
+            )
 
         # Initialize workspace
         self.workspace_init()
@@ -246,7 +224,7 @@ class LangServer:
         if self.enable_code_actions:
             server_capabilities["codeActionProvider"] = True
         if self.notify_init:
-            self.post_messages.append([3, "fortls initialization complete"])
+            self.post_message("fortls initialization complete", Severity.info)
         return {"capabilities": server_capabilities}
 
     def serve_workspace_symbol(self, request):
@@ -289,8 +267,8 @@ class LangServer:
             matching_symbols.append(tmp_out)
         return sorted(matching_symbols, key=lambda k: k["name"])
 
-    def serve_document_symbols(self, request):
-        def map_types(type, in_class=False):
+    def serve_document_symbols(self, request: dict):
+        def map_types(type, in_class: bool = False):
             if type == 1:
                 return 2
             elif type in (2, 3):
@@ -310,9 +288,9 @@ class LangServer:
                 return 1
 
         # Get parameters from request
-        params = request["params"]
-        uri = params["textDocument"]["uri"]
-        path = path_from_uri(uri)
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
+        path: str = path_from_uri(uri)
         file_obj = self.workspace.get(path)
         if file_obj is None:
             return []
@@ -329,42 +307,52 @@ class LangServer:
                     continue
             else:
                 scope_type = map_types(scope.get_type())
-            tmp_out = {"name": scope.name, "kind": scope_type}
-            sline = scope.sline - 1
-            eline = scope.eline - 1
-            tmp_out["location"] = {
-                "uri": uri,
-                "range": {
-                    "start": {"line": sline, "character": 0},
-                    "end": {"line": eline, "character": 0},
-                },
-            }
+
             # Set containing scope
             if scope.FQSN.find("::") > 0:
                 tmp_list = scope.FQSN.split("::")
-                tmp_out["containerName"] = tmp_list[0]
-            test_output.append(tmp_out)
+                test_output.append(
+                    symbol_json(
+                        scope.name,
+                        scope_type,
+                        uri,
+                        scope.sline - 1,
+                        0,
+                        scope.eline - 1,
+                        0,
+                        tmp_list[0],
+                    )
+                )
+            else:
+                test_output.append(
+                    symbol_json(
+                        scope.name,
+                        scope_type,
+                        uri,
+                        scope.sline - 1,
+                        0,
+                        scope.eline - 1,
+                        0,
+                    )
+                )
             # If class add members
             if scope.get_type() == CLASS_TYPE_ID and not self.symbol_skip_mem:
                 for child in scope.children:
-                    tmp_out = {
-                        "name": child.name,
-                        "kind": map_types(child.get_type(), True),
-                        "location": {
-                            "uri": uri,
-                            "range": {
-                                "start": {"line": child.sline - 1, "character": 0},
-                                "end": {"line": child.sline - 1, "character": 0},
-                            },
-                        },
-                        "containerName": scope.name,
-                    }
-                    test_output.append(tmp_out)
+                    test_output.append(
+                        symbol_json(
+                            child.name,
+                            map_types(child.get_type(), True),
+                            uri,
+                            child.sline - 1,
+                            0,
+                            container_name=scope.name,
+                        )
+                    )
         return test_output
 
-    def serve_autocomplete(self, request):
+    def serve_autocomplete(self, request: dict):
         #
-        def map_types(type):
+        def map_types(type: int):
             if type == 1:
                 return 9
             elif type == 2:
@@ -380,12 +368,12 @@ class LangServer:
             return [def_value if i < 8 else True for i in range(16)]
 
         def get_candidates(
-            scope_list,
-            var_prefix,
-            inc_globals=True,
-            public_only=False,
-            abstract_only=False,
-            no_use=False,
+            scope_list: list,
+            var_prefix: str,
+            inc_globals: bool = True,
+            public_only: bool = False,
+            abstract_only: bool = False,
+            no_use: bool = False,
         ):
             #
             def child_candidates(
@@ -470,10 +458,10 @@ class LangServer:
 
         def build_comp(
             candidate,
-            name_only=self.autocomplete_name_only,
-            name_replace=None,
-            is_interface=False,
-            is_member=False,
+            name_only: bool = self.autocomplete_name_only,
+            name_replace: str = None,
+            is_interface: bool = False,
+            is_member: bool = False,
         ):
             comp_obj = {}
             call_sig = None
@@ -505,15 +493,15 @@ class LangServer:
             return comp_obj
 
         # Get parameters from request
-        params = request["params"]
-        uri = params["textDocument"]["uri"]
-        path = path_from_uri(uri)
-        file_obj = self.workspace.get(path)
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
+        path: str = path_from_uri(uri)
+        file_obj: fortran_file = self.workspace.get(path)
         if file_obj is None:
             return None
         # Check line
-        ac_line = params["position"]["line"]
-        ac_char = params["position"]["character"]
+        ac_line: int = params["position"]["line"]
+        ac_char: int = params["position"]["character"]
         # Get full line (and possible continuations) from file
         pre_lines, curr_line, _ = file_obj.get_code_line(
             ac_line, forward=False, strip_comment=True
@@ -526,7 +514,7 @@ class LangServer:
             var_stack = get_var_stack(line_prefix)
             is_member = len(var_stack) > 1
             var_prefix = var_stack[-1].strip()
-        except:
+        except (TypeError, AttributeError):
             return None
         # print(var_stack)
         item_list = []
@@ -540,6 +528,7 @@ class LangServer:
         if self.autocomplete_no_prefix:
             var_prefix = ""
         # Suggestions for user-defined type members
+        scope_list = []
         if is_member:
             curr_scope = file_obj.ast.get_inner_scope(ac_line + 1)
             type_scope = climb_type_tree(var_stack, curr_scope, self.obj_tree)
@@ -689,6 +678,25 @@ class LangServer:
         def_char: int,
         hover_req: bool = False,
     ):
+        """Return the Fortran object for the definition that matches the
+        Fortran file, line number, column number
+
+        Parameters
+        ----------
+        def_file : fortran_file
+            File to query
+        def_line : int
+            Line position in the file
+        def_char : int
+            Column position in the file
+        hover_req : bool, optional
+            Flag to enable if calling from a hover request, by default False
+
+        Returns
+        -------
+        fortran_var | fortran_include | None
+            Fortran object
+        """
         # Get full line (and possible continuations) from file
         pre_lines, curr_line, _ = def_file.get_code_line(
             def_line, forward=False, strip_comment=True
@@ -702,7 +710,7 @@ class LangServer:
             var_stack = get_var_stack(line_prefix)
             is_member = len(var_stack) > 1
             def_name = expand_name(curr_line, def_char)
-        except:
+        except (TypeError, AttributeError):
             return None
         if def_name == "":
             return None
@@ -740,7 +748,9 @@ class LangServer:
                 )
             ):
                 curr_scope = curr_scope.parent
-            var_obj = find_in_scope(curr_scope, def_name, self.obj_tree)
+            var_obj = find_in_scope(
+                curr_scope, def_name, self.obj_tree, var_line_number=def_line + 1
+            )
         # Search in global scope
         if var_obj is None:
             if is_member:
@@ -756,14 +766,16 @@ class LangServer:
             # Return a dummy object with the correct type & position in the doc
             if hover_req and curr_scope:
                 var_type = None
-                if NUMBER_REGEX.match(def_name):
+                if FRegex.NUMBER.match(def_name):
                     if any(s in def_name for s in [".", "e", "d"]):
                         var_type = f"{FORTRAN_LITERAL}REAL"
                     else:
                         var_type = f"{FORTRAN_LITERAL}INTEGER"
-                elif LOGICAL_REGEX.match(def_name):
+                elif FRegex.LOGICAL.match(def_name):
                     var_type = f"{FORTRAN_LITERAL}LOGICAL"
-                elif SQ_STRING_REGEX.match(def_name) or DQ_STRING_REGEX.match(def_name):
+                elif FRegex.SQ_STRING.match(def_name) or FRegex.DQ_STRING.match(
+                    def_name
+                ):
                     var_type = f"{FORTRAN_LITERAL}STRING"
                 if var_type:
                     return fortran_var(
@@ -778,16 +790,16 @@ class LangServer:
             return var_obj
         return None
 
-    def serve_signature(self, request):
-        def get_sub_name(line):
+    def serve_signature(self, request: dict):
+        def get_sub_name(line: str):
             _, sections = get_paren_level(line)
-            if sections[0][0] <= 1:
+            if sections[0].start <= 1:
                 return None, None, None
-            arg_string = line[sections[0][0] : sections[-1][1]]
-            sub_string, sections = get_paren_level(line[: sections[0][0] - 1])
-            return sub_string.strip(), arg_string.split(","), sections[-1][0]
+            arg_string = line[sections[0].start : sections[-1].end]
+            sub_string, sections = get_paren_level(line[: sections[0].start - 1])
+            return sub_string.strip(), arg_string.split(","), sections[-1].start
 
-        def check_optional(arg, params):
+        def check_optional(arg, params: dict):
             opt_split = arg.split("=")
             if len(opt_split) > 1:
                 opt_arg = opt_split[0].strip().lower()
@@ -798,15 +810,15 @@ class LangServer:
             return None
 
         # Get parameters from request
-        params = request["params"]
-        uri = params["textDocument"]["uri"]
-        path = path_from_uri(uri)
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
+        path: str = path_from_uri(uri)
         file_obj = self.workspace.get(path)
         if file_obj is None:
             return None
         # Check line
-        sig_line = params["position"]["line"]
-        sig_char = params["position"]["character"]
+        sig_line: int = params["position"]["line"]
+        sig_char: int = params["position"]["character"]
         # Get full line (and possible continuations) from file
         pre_lines, curr_line, _ = file_obj.get_code_line(
             sig_line, forward=False, strip_comment=True
@@ -815,14 +827,14 @@ class LangServer:
         if line_prefix is None:
             return None
         # Test if scope declaration or end statement
-        if SCOPE_DEF_REGEX.match(curr_line) or END_REGEX.match(curr_line):
+        if FRegex.SCOPE_DEF.match(curr_line) or FRegex.END.match(curr_line):
             return None
         is_member = False
         try:
             sub_name, arg_strings, sub_end = get_sub_name(line_prefix)
             var_stack = get_var_stack(sub_name)
             is_member = len(var_stack) > 1
-        except:
+        except (TypeError, AttributeError):
             return None
         #
         curr_scope = file_obj.ast.get_inner_scope(sig_line + 1)
@@ -851,7 +863,7 @@ class LangServer:
                         break
         # Check keywords
         if (var_obj is None) and (
-            INT_STMNT_REGEX.match(line_prefix[:sub_end]) is not None
+            FRegex.INT_STMNT.match(line_prefix[:sub_end]) is not None
         ):
             key = sub_name.lower()
             for candidate in get_intrinsic_keywords(self.statements, self.keywords, 0):
@@ -881,16 +893,23 @@ class LangServer:
         req_dict = {"signatures": [signature], "activeParameter": param_num}
         return req_dict
 
-    def get_all_references(self, def_obj, type_mem, file_obj=None):
+    def get_all_references(
+        self,
+        def_obj,
+        type_mem: bool,
+        file_obj: fortran_file = None,
+    ):
         # Search through all files
-        def_name = def_obj.name.lower()
-        def_fqsn = def_obj.FQSN
+        def_name: str = def_obj.name.lower()
+        def_fqsn: str = def_obj.FQSN
         NAME_REGEX = re.compile(rf"(?:\W|^)({def_name})(?:\W|$)", re.I)
         if file_obj is None:
             file_set = self.workspace.items()
         else:
             file_set = ((file_obj.path, file_obj),)
-        override_cache = []
+        # A container that includes all the FQSN signatures for objects that
+        # are linked to the rename request and that should also be replaced
+        override_cache: list[str] = []
         refs = {}
         ref_objs = []
         for filename, file_obj in file_set:
@@ -905,12 +924,17 @@ class LangServer:
                     continue
                 for match in NAME_REGEX.finditer(line):
                     var_def = self.get_definition(file_obj, i, match.start(1) + 1)
-                    if var_def is not None:
-                        ref_match = False
-                        if (def_fqsn == var_def.FQSN) or (
-                            var_def.FQSN in override_cache
-                        ):
+                    if var_def is None:
+                        continue
+                    ref_match = False
+                    try:
+                        # NOTE: throws AttributeError if object is intrinsic since
+                        # it will not have a FQSN
+                        # BUG: intrinsic objects should be excluded, but get_definition
+                        # does not recognise the arguments
+                        if def_fqsn == var_def.FQSN or var_def.FQSN in override_cache:
                             ref_match = True
+                        # NOTE: throws AttributeError if object is None
                         elif var_def.parent.get_type() == CLASS_TYPE_ID:
                             if type_mem:
                                 for inherit_def in var_def.parent.get_overridden(
@@ -920,29 +944,47 @@ class LangServer:
                                         ref_match = True
                                         override_cache.append(var_def.FQSN)
                                         break
+
+                            # Standalone definition of a type-bound procedure,
+                            # no pointer replace all its instances in the current scope
+                            # NOTE: throws AttributeError if object has no link_obj
                             if (
-                                (var_def.sline - 1 == i)
-                                and (var_def.file_ast.path == filename)
-                                and (line.count("=>") == 0)
+                                var_def.sline - 1 == i
+                                and var_def.file_ast.path == filename
+                                and line.count("=>") == 0
+                                and var_def.link_obj is def_obj
                             ):
-                                try:
-                                    if var_def.link_obj is def_obj:
-                                        ref_objs.append(var_def)
-                                        ref_match = True
-                                except:
-                                    pass
-                        if ref_match:
-                            file_refs.append([i, match.start(1), match.end(1)])
+                                ref_objs.append(var_def)
+                                override_cache.append(var_def.FQSN)
+                                ref_match = True
+
+                        # Object is a Method and the linked object i.e. the
+                        # implementation
+                        # shares the same parent signature as the current variable
+                        # NOTE:: throws and AttributeError if the link_object or
+                        # parent are not present OR they are set to None
+                        # hence not having a FQSN
+                        elif (
+                            def_obj.get_type(True) == METH_TYPE_ID
+                            and def_obj.link_obj.parent.FQSN == var_def.parent.FQSN
+                        ):
+                            ref_match = True
+                            override_cache.append(var_def.FQSN)
+                    except AttributeError:
+                        ref_match = False
+
+                    if ref_match:
+                        file_refs.append([i, match.start(1), match.end(1)])
             if len(file_refs) > 0:
                 refs[filename] = file_refs
         return refs, ref_objs
 
     def serve_references(self, request):
         # Get parameters from request
-        params = request["params"]
-        uri = params["textDocument"]["uri"]
-        def_line = params["position"]["line"]
-        def_char = params["position"]["character"]
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
+        def_line: int = params["position"]["line"]
+        def_char: int = params["position"]["character"]
         path = path_from_uri(uri)
         # Find object
         file_obj = self.workspace.get(path)
@@ -966,22 +1008,16 @@ class LangServer:
         for (filename, file_refs) in all_refs.items():
             for ref in file_refs:
                 refs.append(
-                    {
-                        "uri": path_to_uri(filename),
-                        "range": {
-                            "start": {"line": ref[0], "character": ref[1]},
-                            "end": {"line": ref[0], "character": ref[2]},
-                        },
-                    }
+                    uri_json(path_to_uri(filename), ref[0], ref[1], ref[0], ref[2])
                 )
         return refs
 
-    def serve_definition(self, request):
+    def serve_definition(self, request: dict):
         # Get parameters from request
-        params = request["params"]
-        uri = params["textDocument"]["uri"]
-        def_line = params["position"]["line"]
-        def_char = params["position"]["character"]
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
+        def_line: int = params["position"]["line"]
+        def_char: int = params["position"]["character"]
         path = path_from_uri(uri)
         # Find object
         file_obj = self.workspace.get(path)
@@ -996,7 +1032,7 @@ class LangServer:
         return None
 
     def serve_hover(self, request: dict):
-        def create_hover(string, highlight):
+        def create_hover(string: str, highlight: bool):
             if highlight:
                 return {"language": self.hover_language, "value": string}
             else:
@@ -1028,7 +1064,7 @@ class LangServer:
         def_line: int = params["position"]["line"]
         def_char: int = params["position"]["character"]
         path = path_from_uri(uri)
-        file_obj: fortran_file = self.workspace.get(path)
+        file_obj = self.workspace.get(path)
         if file_obj is None:
             return None
         # Find object
@@ -1046,7 +1082,7 @@ class LangServer:
                 hover_str, highlight = member.get_hover(long=True)
                 if hover_str is not None:
                     hover_array.append(create_hover(hover_str, highlight))
-        elif self.variable_hover and (var_type == VAR_TYPE_ID):
+        elif var_type == VAR_TYPE_ID:
             # Unless we have a Fortran literal include the desc in the hover msg
             # See get_definition for an explanation about this default name
             if not var_obj.desc.startswith(FORTRAN_LITERAL):
@@ -1060,7 +1096,7 @@ class LangServer:
             elif var_obj.desc.endswith("LOGICAL"):
                 hover_array.append(create_hover("LOGICAL", True))
             elif var_obj.desc.endswith("STRING"):
-                hover_str = f"CHARACTER(LEN={len(var_obj.name)})"
+                hover_str = f"CHARACTER(LEN={len(var_obj.name)-2})"
                 hover_array.append(create_hover(hover_str, True))
 
             # Include the signature if one is present e.g. if in an argument list
@@ -1073,12 +1109,12 @@ class LangServer:
             return {"contents": hover_array}
         return None
 
-    def serve_implementation(self, request):
+    def serve_implementation(self, request: dict):
         # Get parameters from request
-        params = request["params"]
-        uri = params["textDocument"]["uri"]
-        def_line = params["position"]["line"]
-        def_char = params["position"]["character"]
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
+        def_line: int = params["position"]["line"]
+        def_char: int = params["position"]["character"]
         path = path_from_uri(uri)
         file_obj = self.workspace.get(path)
         if file_obj is None:
@@ -1087,6 +1123,9 @@ class LangServer:
         var_obj = self.get_definition(file_obj, def_line, def_char)
         if var_obj is None:
             return None
+        # Intrinsics do not have implementations we can access
+        if isinstance(var_obj, fortran_intrinsic_obj):
+            return None
         # Construct implementation reference
         if var_obj.parent.get_type() == CLASS_TYPE_ID:
             impl_obj = var_obj.link_obj
@@ -1094,12 +1133,12 @@ class LangServer:
                 return self._create_ref_link(impl_obj)
         return None
 
-    def serve_rename(self, request):
+    def serve_rename(self, request: dict):
         # Get parameters from request
-        params = request["params"]
-        uri = params["textDocument"]["uri"]
-        def_line = params["position"]["line"]
-        def_char = params["position"]["character"]
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
+        def_line: int = params["position"]["line"]
+        def_char: int = params["position"]["character"]
         path = path_from_uri(uri)
         # Find object
         file_obj = self.workspace.get(path)
@@ -1107,6 +1146,9 @@ class LangServer:
             return None
         def_obj = self.get_definition(file_obj, def_line, def_char)
         if def_obj is None:
+            return None
+        if isinstance(def_obj, fortran_intrinsic_obj):
+            self.post_message("Rename failed: Cannot rename intrinsics", Severity.warn)
             return None
         # Determine global accesibility and type membership
         restrict_file = None
@@ -1122,53 +1164,25 @@ class LangServer:
             def_obj, type_mem, file_obj=restrict_file
         )
         if len(all_refs) == 0:
-            self.post_message("Rename failed: No usages found to rename", type=2)
+            self.post_message("Rename failed: No usages found to rename", Severity.warn)
             return None
         # Create rename changes
         new_name = params["newName"]
-        changes = {}
-        for (filename, file_refs) in all_refs.items():
+        changes: dict[str, list[dict]] = {}
+        for filename, file_refs in all_refs.items():
             file_uri = path_to_uri(filename)
             changes[file_uri] = []
             for ref in file_refs:
                 changes[file_uri].append(
-                    {
-                        "range": {
-                            "start": {"line": ref[0], "character": ref[1]},
-                            "end": {"line": ref[0], "character": ref[2]},
-                        },
-                        "newText": new_name,
-                    }
+                    change_json(new_name, ref[0], ref[1], ref[0], ref[2])
                 )
-        # Check for implicit procedure implementation naming
-        bind_obj = None
-        if def_obj.get_type(no_link=True) == METH_TYPE_ID:
-            _, curr_line, post_lines = def_obj.file_ast.file.get_code_line(
-                def_obj.sline - 1, backward=False, strip_comment=True
-            )
-            if curr_line is not None:
-                full_line = curr_line + "".join(post_lines)
-                if full_line.find("=>") < 0:
-                    bind_obj = def_obj
-                    bind_change = f"{new_name} => {def_obj.name}"
-        elif (len(ref_objs) > 0) and (
-            ref_objs[0].get_type(no_link=True) == METH_TYPE_ID
-        ):
-            bind_obj = ref_objs[0]
-            bind_change = f"{ref_objs[0].name} => {new_name}"
-        # Replace definition statement with explicit implementation naming
-        if bind_obj is not None:
-            def_uri = path_to_uri(bind_obj.file_ast.file.path)
-            for change in changes[def_uri]:
-                if change["range"]["start"]["line"] == bind_obj.sline - 1:
-                    change["newText"] = bind_change
         return {"changes": changes}
 
-    def serve_codeActions(self, request):
-        params = request["params"]
-        uri = params["textDocument"]["uri"]
-        sline = params["range"]["start"]["line"]
-        eline = params["range"]["end"]["line"]
+    def serve_codeActions(self, request: dict):
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
+        sline: int = params["range"]["start"]["line"]
+        eline: int = params["range"]["end"]["line"]
         path = path_from_uri(uri)
         file_obj = self.workspace.get(path)
         # Find object
@@ -1190,7 +1204,7 @@ class LangServer:
                 action["diagnostics"] = new_diags
         return action_list
 
-    def send_diagnostics(self, uri):
+    def send_diagnostics(self, uri: str):
         diag_results, diag_exp = self.get_diagnostics(uri)
         if diag_results is not None:
             self.conn.send_notification(
@@ -1207,7 +1221,7 @@ class LangServer:
                 },
             )
 
-    def get_diagnostics(self, uri):
+    def get_diagnostics(self, uri: str):
         filepath = path_from_uri(uri)
         file_obj = self.workspace.get(filepath)
         if file_obj is not None:
@@ -1223,15 +1237,14 @@ class LangServer:
                 return diags, None
         return None, None
 
-    def serve_onChange(self, request):
+    def serve_onChange(self, request: dict):
         # Update workspace from file sent by editor
-        params = request["params"]
-        uri = params["textDocument"]["uri"]
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
         path = path_from_uri(uri)
         file_obj = self.workspace.get(path)
         if file_obj is None:
             self.post_message(f"Change request failed for unknown file '{path}'")
-            log.error("Change request failed for unknown file '%s'", path)
             return
         else:
             # Update file contents with changes
@@ -1247,11 +1260,8 @@ class LangServer:
                 except:
                     self.post_message(
                         f"Change request failed for file '{path}': Could not apply"
-                        " change"
-                    )
-                    log.error(
-                        "Change request failed for file '%s': Could not apply change",
-                        path,
+                        " change",
+                        Severity.error,
                         exc_info=True,
                     )
                     return
@@ -1271,16 +1281,18 @@ class LangServer:
             file_obj.preprocess(pp_defs=self.pp_defs)
             self.pp_defs = {**self.pp_defs, **file_obj.pp_defs}
 
-    def serve_onOpen(self, request):
+    def serve_onOpen(self, request: dict):
         self.serve_onSave(request, did_open=True)
 
-    def serve_onClose(self, request):
+    def serve_onClose(self, request: dict):
         self.serve_onSave(request, did_close=True)
 
-    def serve_onSave(self, request, did_open=False, did_close=False):
+    def serve_onSave(
+        self, request: dict, did_open: bool = False, did_close: bool = False
+    ):
         # Update workspace from file on disk
-        params = request["params"]
-        uri = params["textDocument"]["uri"]
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
         filepath = path_from_uri(uri)
         # Skip update and remove objects if file is deleted
         if did_close and (not os.path.isfile(filepath)):
@@ -1312,7 +1324,11 @@ class LangServer:
             self.send_diagnostics(uri)
 
     def update_workspace_file(
-        self, filepath, read_file=False, allow_empty=False, update_links=False
+        self,
+        filepath: str,
+        read_file: bool = False,
+        allow_empty: bool = False,
+        update_links: bool = False,
     ):
         # Update workspace from file contents and path
         try:
@@ -1334,8 +1350,8 @@ class LangServer:
                     return False, err_string  # Error during file read
                 if not file_changed:
                     return False, None
-            ast_new = process_file(
-                file_obj, pp_defs=self.pp_defs, include_dirs=self.include_dirs
+            ast_new = file_obj.parse(
+                pp_defs=self.pp_defs, include_dirs=self.include_dirs
             )
             # Add the included read in pp_defs from to the ones specified in the
             # configuration file
@@ -1361,7 +1377,53 @@ class LangServer:
             ast_new.resolve_links(self.obj_tree, self.link_version)
         return True, None
 
+    @staticmethod
+    def file_init(
+        filepath: str,
+        pp_defs: dict,
+        pp_suffixes: list[str],
+        include_dirs: set[str],
+        sort: bool,
+    ):
+        """Initialise a Fortran file
+
+        Parameters
+        ----------
+        filepath : str
+            Path to file
+        pp_defs : dict
+            Preprocessor definitions
+        pp_suffixes : list[str]
+            Preprocessor file extension, additional to default
+        include_dirs : set[str]
+            Preprocessor only include directories, not used by normal parser
+        sort : bool
+            Whether or not keywords should be sorted
+
+        Returns
+        -------
+        fortran_file | str
+            A Fortran file object or a string containing the error message
+        """
+        file_obj = fortran_file(filepath, pp_suffixes)
+        err_str, _ = file_obj.load_from_disk()
+        if err_str:
+            return err_str
+        try:
+            # On Windows multiprocess does not propagate global variables in a shell.
+            # Windows uses 'spawn' while Unix uses 'fork' which propagates globals.
+            # This is a bypass.
+            # For more see on SO: shorturl.at/hwAG1
+            set_keyword_ordering(sort)
+            file_ast = file_obj.parse(pp_defs=pp_defs, include_dirs=include_dirs)
+        except:
+            log.error("Error while parsing file %s", filepath, exc_info=True)
+            return "Error during parsing"
+        file_obj.ast = file_ast
+        return file_obj
+
     def workspace_init(self):
+        """Initialise the workspace root across multiple threads"""
 
         file_list = self._get_source_files()
         # Process files
@@ -1369,7 +1431,7 @@ class LangServer:
         results = {}
         for filepath in file_list:
             results[filepath] = pool.apply_async(
-                init_file,
+                self.file_init,
                 args=(
                     filepath,
                     self.pp_defs,
@@ -1382,12 +1444,12 @@ class LangServer:
         pool.join()
         for path, result in results.items():
             result_obj = result.get()
-            if result_obj[0] is None:
-                self.post_messages.append(
-                    [1, f"Initialization failed for file '{path}': {result_obj[1]}"]
+            if isinstance(result_obj, str):
+                self.post_message(
+                    f"Initialization failed for file '{path}': {result_obj}"
                 )
                 continue
-            self.workspace[path] = result_obj[0]
+            self.workspace[path] = result_obj
             # Add top-level objects to object tree
             ast_new = self.workspace[path].ast
             for key in ast_new.global_dict:
@@ -1400,19 +1462,31 @@ class LangServer:
         for _, file_obj in self.workspace.items():
             file_obj.ast.resolve_links(self.obj_tree, self.link_version)
 
-    def serve_exit(self, request):
+    def serve_exit(self, request: dict) -> None:
         # Exit server
         self.workspace = {}
         self.obj_tree = {}
         self.running = False
 
-    def serve_default(self, request):
+    def serve_default(self, request: dict):
+        """Raise an error in the Language Server
+
+        Parameters
+        ----------
+        request : dict
+            client dictionary with requests
+
+        Raises
+        ------
+        JSONRPC2Error
+            error with code -32601
+        """
         # Default handler (errors!)
         raise JSONRPC2Error(
             code=-32601, message=f"method {request['method']} not found"
         )
 
-    def _load_config_file(self) -> bool | None:
+    def _load_config_file(self) -> None:
         """Loads the configuration file for the Language Server"""
 
         # Check for config file
@@ -1444,18 +1518,16 @@ class LangServer:
                 # command line argument return True so that debug log is setup
                 if debugging != self.debug_log and not self.debug_log:
                     self.debug_log = True
-                    return True
-                return False
 
         except FileNotFoundError:
-            msg = f"Error settings file '{self.config}' not found"
-            self.post_messages.append([1, msg])
-            log.error(msg)
+            self.post_messages(
+                [Severity.error, f"Error settings file '{self.config}' not found"]
+            )
 
         except ValueError:
-            msg = f"Error while parsing '{self.config}' settings file"
-            self.post_messages.append([1, msg])
-            log.error(msg)
+            self.post_messages(
+                [Severity.error, f"Error while parsing '{self.config}' settings file"]
+            )
 
     def _load_config_file_dirs(self, config_dict: dict) -> None:
         # Exclude paths (directories & files)
@@ -1491,6 +1563,9 @@ class LangServer:
         )
         self.sync_type: int = 2 if self.incremental_sync else 1
         self.sort_keywords = config_dict.get("sort_keywords", self.sort_keywords)
+        self.disable_autoupdate = config_dict.get(
+            "disable_autoupdate", self.disable_autoupdate
+        )
 
         # Autocomplete options -------------------------------------------------
         self.autocomplete_no_prefix = config_dict.get(
@@ -1510,7 +1585,6 @@ class LangServer:
         )
 
         # Hover options --------------------------------------------------------
-        self.variable_hover = config_dict.get("variable_hover", self.variable_hover)
         self.hover_signature = config_dict.get("hover_signature", self.hover_signature)
         self.hover_language = config_dict.get("hover_language", self.hover_language)
 
@@ -1598,16 +1672,19 @@ class LangServer:
         the logger will by default output to the main (stderr, stdout) channels.
         """
 
-        if not self.debug_log:
-            return None
-        if not self.root_path:
-            return None
-
-        fname = "fortls_debug.log"
-        fname = os.path.join(self.root_path, fname)
-        logging.basicConfig(filename=fname, level=logging.DEBUG, filemode="w")
-        log.debug("REQUEST %s %s", request.get("id"), request.get("method"))
-        self.post_messages.append([3, "FORTLS debugging enabled"])
+        file_log = True if self.debug_log and self.root_path else False
+        fmt = "[%(levelname)-.4s - %(asctime)s] %(message)s"
+        if file_log:
+            fname = "fortls_debug.log"
+            fname = os.path.join(self.root_path, fname)
+            logging.basicConfig(filename=fname, level=logging.DEBUG, filemode="w")
+            # Also forward logs to the console
+            consoleHandler = logging.StreamHandler()
+            log.addHandler(consoleHandler)
+            log.debug("REQUEST %s %s", request.get("id"), request.get("method"))
+            self.post_messages.append([Severity.info, "fortls debugging enabled"])
+        else:
+            logging.basicConfig(format=fmt, datefmt="%H:%M:%S", level=logging.INFO)
 
     def _load_intrinsics(self) -> None:
         # Load intrinsics
@@ -1625,19 +1702,70 @@ class LangServer:
         # Set object settings
         set_keyword_ordering(self.sort_keywords)
 
-    def _create_ref_link(self, obj):
+    def _create_ref_link(self, obj) -> dict:
         """Create a link reference to an object"""
-        obj_file = obj.file_ast.file
-        sline, schar, echar = obj_file.find_word_in_code_line(obj.sline - 1, obj.name)
+        obj_file: fortran_file = obj.file_ast.file
+        sline, (schar, echar) = obj_file.find_word_in_code_line(obj.sline - 1, obj.name)
         if schar < 0:
             schar = echar = 0
-        return {
-            "uri": path_to_uri(obj_file.path),
-            "range": {
-                "start": {"line": sline, "character": schar},
-                "end": {"line": sline, "character": echar},
-            },
-        }
+        return uri_json(path_to_uri(obj_file.path), sline, schar, sline, echar)
+
+    def _update_version_pypi(self, test: bool = False):
+        """Fetch updates from PyPi for fortls
+
+        Parameters
+        ----------
+        test : bool, optional
+            flag used to override exit checks, only for unittesting, by default False
+        """
+        if self.disable_autoupdate:
+            return False
+        # Do not run for prerelease and dev release
+        if self._version.is_prerelease and not test:
+            return False
+        try:
+            # For security reasons register as Request before opening
+            request = urllib.request.Request("https://pypi.org/pypi/fortls/json")
+            with urllib.request.urlopen(request) as resp:
+                info = json.loads(resp.read().decode("utf-8"))
+                remote_v = version.parse(info["info"]["version"])
+                # Do not update from remote if it is a prerelease
+                if remote_v.is_prerelease:
+                    return False
+                # This is the only reliable way to compare version semantics
+                if remote_v > self._version or test:
+                    self.post_message(
+                        "A newer version of fortls is available for download",
+                        Severity.info,
+                    )
+                    # Anaconda environments should handle their updates through conda
+                    if os.path.exists(os.path.join(sys.prefix, "conda-meta")):
+                        return False
+                    self.post_message(
+                        f"Downloading from PyPi fortls {info['info']['version']}",
+                        Severity.info,
+                    )
+                    # Run pip
+                    result = subprocess.run(
+                        [
+                            sys.executable,
+                            "-m",
+                            "pip",
+                            "install",
+                            "fortls",
+                            "--upgrade",
+                        ],
+                        capture_output=True,
+                    )
+                    if result.stdout:
+                        log.info(result.stdout.decode("utf-8"))
+                    if result.stderr:
+                        log.error(result.stderr.decode("utf-8"))
+                    return True
+        # No internet connection exceptions
+        except (URLError, KeyError):
+            self.post_message("Failed to update the fortls", Severity.warn)
+        return False
 
 
 class JSONRPC2Error(Exception):

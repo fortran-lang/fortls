@@ -10,7 +10,7 @@ from .helper_functions import only_dirs, resolve_globs
 from .interface import commandline_args
 from .jsonrpc import JSONRPC2Connection, ReadWriter, path_from_uri
 from .langserver import LangServer
-from .parse_fortran import fortran_file, process_file
+from .parse_fortran import fortran_file
 from .version import __version__
 
 __all__ = ["__version__"]
@@ -52,7 +52,7 @@ def main():
         debug_server_general(args, vars(args))
 
     else:
-        stdin, stdout = _binary_stdio()
+        stdin, stdout = sys.stdin.buffer, sys.stdout.buffer
         LangServer(
             conn=JSONRPC2Connection(ReadWriter(stdin, stdout)),
             settings=vars(args),
@@ -492,18 +492,7 @@ def debug_server_parser(args):
         error_exit(f"Reading file failed: {err_str}")
     print(f"  Detected format: {'fixed' if file_obj.fixed else 'free'}")
     print("\n=========\nParser Output\n=========\n")
-    _, file_ext = os.path.splitext(os.path.basename(args.debug_filepath))
-    preproc_file = False
-    if pp_suffixes is not None:
-        preproc_file = file_ext in pp_suffixes
-    else:
-        preproc_file = file_ext == file_ext.upper()
-    if preproc_file:
-        file_ast = process_file(
-            file_obj, debug=True, pp_defs=pp_defs, include_dirs=include_dirs
-        )
-    else:
-        file_ast = process_file(file_obj, debug=True)
+    file_ast = file_obj.parse(debug=True, pp_defs=pp_defs, include_dirs=include_dirs)
     print("\n=========\nObject Tree\n=========\n")
     for obj in file_ast.get_scopes():
         print("{0}: {1}".format(obj.get_type(), obj.FQSN))
@@ -533,26 +522,3 @@ def print_children(obj, indent=""):
     for child in obj.get_children():
         print("  {0}{1}: {2}".format(indent, child.get_type(), child.FQSN))
         print_children(child, indent + "  ")
-
-
-def _binary_stdio():
-    """Construct binary stdio streams (not text mode).
-    This seems to be different for Window/Unix Python2/3, so going by:
-        https://stackoverflow.com/questions/2850893/reading-binary-data-from-stdin
-    """
-    PY3K = sys.version_info >= (3, 0)
-
-    if PY3K:
-        stdin, stdout = sys.stdin.buffer, sys.stdout.buffer
-    else:
-        # Python 2 on Windows opens sys.stdin in text mode, and
-        # binary data that read from it becomes corrupted on \r\n
-        if sys.platform == "win32":
-            # set sys.stdin to binary mode
-            import msvcrt
-
-            msvcrt.setmode(sys.stdin.fileno(), os.O_BINARY)
-            msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
-        stdin, stdout = sys.stdin, sys.stdout
-
-    return stdin, stdout

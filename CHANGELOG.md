@@ -1,4 +1,158 @@
-# CHANGELONG
+# CHANGELOG
+
+## Unreleased
+
+## 2.4.0
+
+### Added
+
+- Added Code of Conduct
+
+## 2.3.1
+
+### Fixed
+
+- Fixed remote coverage report line diff
+  ([#101](https://github.com/gnikit/fortls/issues/101))
+
+## 2.3.0
+
+### Added
+
+- Added keywords to the PyPi manifest
+  ([#99](https://github.com/gnikit/fortls/issues/99))
+
+### Changed
+
+- Updated `README` to include logo and animations
+- Updated `README` to include conda-forge installation instructions
+
+## 2.2.14
+
+### Added
+
+- Added unittests for intrinsics and improved overall coverage
+
+### Changed
+
+- Restructured unittests to individual files for more granular reporting
+
+## 2.2.13
+
+### Added
+
+- Automated the update for GitHub Actions
+
+## 2.2.12
+
+### Added
+
+- Added coverage reporting for Unix + Windows
+
+## 2.2.11
+
+### Added
+
+- Improved autocompletion for Fortran statements F2018 compliant
+  ([#63](https://github.com/gnikit/fortls/issues/63))
+
+## 2.2.10
+
+### Fixed
+
+- Fixes GoTo Implementation error for intrinsics
+  ([#80](https://github.com/gnikit/fortls/issues/80))
+
+## 2.2.9
+
+### Changed
+
+- Changed how renaming of implicitly named type-bound procedures and their
+  implementations is handled. Unittest was added.
+- Rewrote the Fortran parser to be clearer and more modular
+
+## 2.2.8
+
+### Changed
+
+- Disable PyPi autoupdating for pre-releases and dev versions
+
+## 2.2.7
+
+### Changed
+
+- Changed the auto-update feature to skip `anaconda` environments since they
+  handle their dependencies through `conda` and not `pip`
+
+### Fixed
+
+- Fixed missing dependency from `setup.cfg`
+  ([#78](https://github.com/gnikit/fortls/issues/78))
+- Updated configuration file variables in documentation
+
+## 2.2.6
+
+### Added
+
+- Added the capability for `fortls` to auto-update use `--disable_autoupdate` to disable
+  ([#76](https://github.com/gnikit/fortls/issues/76))
+
+## Deprecated
+
+- Deprecated `--variable_hover` option and now is always enabled
+  ([#46](https://github.com/gnikit/fortls/issues/46))
+
+## 2.2.5
+
+### Changed
+
+- Updated `setup.cfg` in preparation of submitting package to `conda-forge`
+- Added `Editor Integration` section in documentation
+
+### Fixed
+
+- Fixed parsing of `defined` without by parenthesis surrounding the definition
+  ([#67](https://github.com/gnikit/fortls/pull/67))
+
+## 2.2.4
+
+### Fixed
+
+- Fixed hovering value of literal and constant strings not displaying
+  ([#54](https://github.com/gnikit/fortls/issues/54))
+- Fixed hovering string length size is now matching the string
+  ([#55](https://github.com/gnikit/fortls/issues/55))
+- Fixed space separated keywords not being displayed upon hover
+  ([#60](https://github.com/gnikit/fortls/issues/60))
+
+## 2.2.3
+
+### Changed
+
+- Changed reading in `json` files to be encoded as UTF-8
+  ([#51](https://github.com/gnikit/fortls/pull/51))
+
+## 2.2.2
+
+### Changed
+
+- Changed the way function hover messages are displayed, now signatures are standardised
+  ([gnikit/fortls#47](https://github.com/gnikit/fortls/issues/47))
+
+### Fixed
+
+- Fixed hovering over functions displaying as theire result types
+  ([gnikit/fortls#22](https://github.com/gnikit/fortls/issues/22))
+- Fixed function modifiers not displaying upon hover
+  ([gnikit/fortls#48](https://github.com/gnikit/fortls/issues/48))
+- Fixed function hover when returning arrays
+  ([gnikit/fortls#50](https://github.com/gnikit/fortls/issues/50))
+
+## 2.2.1
+
+### Changed
+
+- Changed default branch to master and updated Actions workflows
 
 ## 2.2.0
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Builds the Fortran Language Server - dev
+"""Builds the fortls Language Server
 """
 import setuptools
 

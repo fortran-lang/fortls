@@ -12,13 +12,14 @@ parser = commandline_args("fortls")
 def test_command_line_general_options():
     args = parser.parse_args(
         "-c config_file.json -n 2 --notify_init --incremental_sync --sort_keywords"
-        " --debug_log".split()
+        " --disable_autoupdate --debug_log".split()
     )
     assert args.config == "config_file.json"
     assert args.nthreads == 2
     assert args.notify_init
     assert args.incremental_sync
     assert args.sort_keywords
+    assert args.disable_autoupdate
     assert args.debug_log
 
 
@@ -47,9 +48,8 @@ def test_command_line_autocomplete_options():
 
 def test_command_line_hover_options():
     args = parser.parse_args(
-        "--variable_hover --hover_signature --hover_language FortranFreeForm".split()
+        "--hover_signature --hover_language FortranFreeForm".split()
     )
-    assert args.variable_hover
     assert args.hover_signature
     assert args.hover_language == "FortranFreeForm"
 
@@ -103,6 +103,7 @@ def test_config_file_general_options():
     assert server.notify_init
     assert server.incremental_sync
     assert server.sort_keywords
+    assert server.disable_autoupdate
 
 
 def test_config_file_dir_parsing_options():
@@ -129,7 +130,6 @@ def test_config_file_autocomplete_options():
 def test_config_file_hover_options():
     server, root = unittest_server_init()
     # Hover options
-    assert server.variable_hover
     assert server.hover_signature
     assert server.hover_language == "FortranFreeForm"
 
@@ -164,3 +164,29 @@ def test_config_file_codeactions_options():
     server, root = unittest_server_init()
     # Code Actions options
     assert server.enable_code_actions
+
+
+def test_version_update_pypi():
+    from fortls.jsonrpc import JSONRPC2Connection, ReadWriter
+    from fortls.langserver import LangServer
+    from packaging import version
+
+    parser = commandline_args("fortls")
+    args = parser.parse_args("-c f90_config.json".split())
+    args = vars(args)
+    args["disable_autoupdate"] = False
+
+    stdin, stdout = sys.stdin.buffer, sys.stdout.buffer
+    s = LangServer(conn=JSONRPC2Connection(ReadWriter(stdin, stdout)), settings=args)
+    s.root_path = (Path(__file__).parent / "test_source").resolve()
+    did_update = s._update_version_pypi(test=True)
+    assert did_update
+
+    s.disable_autoupdate = True
+    did_update = s._update_version_pypi()
+    assert not did_update
+
+    s.disable_autoupdate = False
+    s._version = version.parse("999.0.0")
+    did_update = s._update_version_pypi()
+    assert not did_update

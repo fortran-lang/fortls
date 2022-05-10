@@ -1,10 +1,10 @@
-from __future__ import annotations, print_function
+from __future__ import annotations
 
 import copy
 import os
 import re
-from dataclasses import dataclass
-from typing import Dict, List, NamedTuple, Pattern, Set
+from dataclasses import replace
+from typing import Pattern
 
 from fortls.constants import (
     ASSOC_TYPE_ID,
@@ -24,64 +24,21 @@ from fortls.constants import (
     SUBROUTINE_TYPE_ID,
     VAR_TYPE_ID,
     WHERE_TYPE_ID,
+    FRegex,
 )
+from fortls.ftypes import INCLUDE_info, USE_info
 from fortls.helper_functions import get_keywords, get_paren_substring, get_var_stack
+from fortls.json_templates import diagnostic_json, location_json, range_json
 from fortls.jsonrpc import path_to_uri
-from fortls.regex_patterns import CLASS_VAR_REGEX, DEF_KIND_REGEX
-
-# Helper types
-VAR_info = NamedTuple(
-    "VAR_info", [("type_word", str), ("keywords", List[str]), ("var_names", List[str])]
-)
-SUB_info = NamedTuple(
-    "SUB_info",
-    [("name", str), ("args", str), ("mod_flag", bool), ("keywords", List[str])],
-)
-FUN_info = NamedTuple(
-    "FUN_info",
-    [
-        ("name", str),
-        ("args", str),
-        ("return_type", None),
-        ("return_var", str),
-        ("mod_flag", bool),
-        ("keywords", List[str]),
-    ],
-)
-SELECT_info = NamedTuple(
-    "SELECT_info", [("type", int), ("binding", str), ("desc", str)]
-)
-CLASS_info = NamedTuple(
-    "CLASS_info", [("name", str), ("parent", str), ("keywords", List[str])]
-)
-USE_info = NamedTuple(
-    "USE_info",
-    [("mod_name", str), ("only_list", Set[str]), ("rename_map", Dict[str, str])],
-)
-GEN_info = NamedTuple(
-    "GEN_info",
-    [("bound_name", str), ("pro_links", List[str]), ("vis_flag", int)],
-)
-SMOD_info = NamedTuple("SMOD_info", [("name", str), ("parent", str)])
-INT_info = NamedTuple("INT_info", [("name", str), ("abstract", bool)])
-VIS_info = NamedTuple("VIS_info", [("type", int), ("obj_names", List[str])])
-
-
-@dataclass
-class INCLUDE_info:
-    line_number: int
-    path: str
-    file: None  # fortran_file
-    scope_objs: list[str]
 
 
 def get_use_tree(
     scope: fortran_scope,
-    use_dict: dict,
+    use_dict: dict[str, USE_info],
     obj_tree: dict,
-    only_list: list = None,
-    rename_map: dict = None,
-    curr_path: list = None,
+    only_list: list[str] = None,
+    rename_map: dict[str, str] = None,
+    curr_path: list[str] = None,
 ):
     def intersect_only(use_stmnt):
         tmp_list = []
@@ -135,8 +92,8 @@ def get_use_tree(
                         only_len = len(use_dict_mod.only_list)
                         new_rename = merged_rename.get(only_name, None)
                         if new_rename is not None:
-                            use_dict[use_stmnt.mod_name] = use_dict_mod._replace(
-                                rename_map=merged_rename
+                            use_dict[use_stmnt.mod_name] = replace(
+                                use_dict_mod, rename_map=merged_rename
                             )
             else:
                 use_dict[use_stmnt.mod_name] = USE_info(use_stmnt.mod_name, set(), {})
@@ -165,9 +122,13 @@ def find_in_scope(
     obj_tree: dict,
     interface: bool = False,
     local_only: bool = False,
+    var_line_number: int = None,
 ):
     def check_scope(
-        local_scope: fortran_scope, var_name_lower: str, filter_public: bool = False
+        local_scope: fortran_scope,
+        var_name_lower: str,
+        filter_public: bool = False,
+        var_line_number: int = None,
     ):
         for child in local_scope.get_children():
             if child.name.startswith("#GEN_INT"):
@@ -178,6 +139,19 @@ def find_in_scope(
                 if (child.vis < 0) or ((local_scope.def_vis < 0) and (child.vis <= 0)):
                     continue
             if child.name.lower() == var_name_lower:
+                # For functions with an implicit result() variable the name
+                # of the function is used. If we are hovering over the function
+                # definition, we do not want the implicit result() to be returned.
+                # If scope is from a function and child's name is same as functions name
+                # and start of scope i.e. function definition is equal to the request ln
+                # then we are need to skip this child
+                if (
+                    isinstance(local_scope, fortran_function)
+                    and local_scope.name.lower() == child.name.lower()
+                    and var_line_number in (local_scope.sline, local_scope.eline)
+                ):
+                    return None
+
                 return child
         return None
 
@@ -186,7 +160,7 @@ def find_in_scope(
     # Check local scope
     if scope is None:
         return None
-    tmp_var = check_scope(scope, var_name_lower)
+    tmp_var = check_scope(scope, var_name_lower, var_line_number=var_line_number)
     if local_only or (tmp_var is not None):
         return tmp_var
     # Check INCLUDE statements
@@ -339,30 +313,21 @@ class fortran_diagnostic:
     def build(self, file_obj):
         schar = echar = 0
         if self.find_word is not None:
-            self.sline, found_schar, found_echar = file_obj.find_word_in_code_line(
+            self.sline, obj_range = file_obj.find_word_in_code_line(
                 self.sline, self.find_word
             )
-            if found_schar >= 0:
-                schar = found_schar
-                echar = found_echar
-        diag = {
-            "range": {
-                "start": {"line": self.sline, "character": schar},
-                "end": {"line": self.sline, "character": echar},
-            },
-            "message": self.message,
-            "severity": self.severity,
-        }
+            if obj_range.start >= 0:
+                schar = obj_range.start
+                echar = obj_range.end
+        diag = diagnostic_json(
+            self.sline, schar, self.sline, echar, self.message, self.severity
+        )
         if self.has_related:
             diag["relatedInformation"] = [
                 {
-                    "location": {
-                        "uri": path_to_uri(self.related_path),
-                        "range": {
-                            "start": {"line": self.related_line, "character": 0},
-                            "end": {"line": self.related_line, "character": 0},
-                        },
-                    },
+                    **location_json(
+                        path_to_uri(self.related_path), self.related_line, 0
+                    ),
                     "message": self.related_message,
                 }
             ]
@@ -722,19 +687,13 @@ class fortran_scope(fortran_obj):
                     first_sub_line = min(first_sub_line, child.sline - 1)
             edits.append(
                 {
-                    "range": {
-                        "start": {"line": first_sub_line, "character": 0},
-                        "end": {"line": first_sub_line, "character": 0},
-                    },
+                    **range_json(first_sub_line, 0, first_sub_line, 0),
                     "newText": "CONTAINS\n",
                 }
             )
         edits.append(
             {
-                "range": {
-                    "start": {"line": line_number, "character": 0},
-                    "end": {"line": line_number, "character": 0},
-                },
+                **range_json(line_number, 0, line_number, 0),
                 "newText": interface_string + "\n",
             }
         )
@@ -959,7 +918,7 @@ class fortran_subroutine(fortran_scope):
         keyword_list = get_keywords(self.keywords)
         keyword_list.append(f"{self.get_desc()} ")
         hover_array = [" ".join(keyword_list) + sub_sig]
-        self.get_docs_full(hover_array, long, include_doc, drop_arg)
+        hover_array = self.get_docs_full(hover_array, long, include_doc, drop_arg)
         return "\n ".join(hover_array), long
 
     def get_docs_full(
@@ -977,6 +936,7 @@ class fortran_subroutine(fortran_scope):
                 doc_str = arg_obj.get_documentation()
                 if include_doc and (doc_str is not None):
                     hover_array += doc_str.splitlines()
+        return hover_array
 
     def get_signature(self, drop_arg=-1):
         arg_sigs = []
@@ -1070,8 +1030,8 @@ class fortran_function(fortran_subroutine):
         args: str = "",
         mod_flag: bool = False,
         keywords: list = None,
-        return_type=None,
-        result_var=None,
+        result_type: str = None,
+        result_name: str = None,
     ):
         super().__init__(file_ast, line_number, name, args, mod_flag, keywords)
         self.args: str = args.replace(" ", "").lower()
@@ -1080,17 +1040,19 @@ class fortran_function(fortran_subroutine):
         self.in_children: list = []
         self.missing_args: list = []
         self.mod_scope: bool = mod_flag
-        self.result_var = result_var
-        self.result_obj = None
-        self.return_type = None
-        if return_type is not None:
-            self.return_type = return_type[0]
+        self.result_name: str = result_name
+        self.result_type: str = result_type
+        self.result_obj: fortran_var = None
+        # Set the implicit result() name to be the function name
+        if self.result_name is None:
+            self.result_name = self.name
 
     def copy_interface(self, copy_source: fortran_function):
         # Call the parent class method
         child_names = super().copy_interface(copy_source)
         # Return specific options
-        self.result_var = copy_source.result_var
+        self.result_name = copy_source.result_name
+        self.result_type = copy_source.result_type
         self.result_obj = copy_source.result_obj
         if copy_source.result_obj is not None:
             if copy_source.result_obj.name.lower() not in child_names:
@@ -1098,47 +1060,84 @@ class fortran_function(fortran_subroutine):
 
     def resolve_link(self, obj_tree):
         self.resolve_arg_link(obj_tree)
-        if self.result_var is not None:
-            result_var_lower = self.result_var.lower()
-            for child in self.children:
-                if child.name.lower() == result_var_lower:
-                    self.result_obj = child
+        result_var_lower = self.result_name.lower()
+        for child in self.children:
+            if child.name.lower() == result_var_lower:
+                self.result_obj = child
+                # Update result value and type
+                self.result_name = child.name
+                self.result_type = child.get_desc()
 
     def get_type(self, no_link=False):
         return FUNCTION_TYPE_ID
 
     def get_desc(self):
-        if self.result_obj is not None:
-            return self.result_obj.get_desc() + " FUNCTION"
-        if self.return_type is not None:
-            return self.return_type + " FUNCTION"
+        if self.result_type:
+            return self.result_type + " FUNCTION"
         return "FUNCTION"
 
     def is_callable(self):
         return False
 
-    def get_hover(self, long=False, include_doc=True, drop_arg=-1):
+    def get_hover(
+        self, long: bool = False, include_doc: bool = True, drop_arg: int = -1
+    ) -> tuple[str, bool]:
+        """Construct the hover message for a FUNCTION.
+        Two forms are produced here the `long` i.e. the normal for hover requests
+
+        [MODIFIERS] FUNCTION NAME([ARGS]) RESULT(RESULT_VAR)
+          TYPE, [ARG_MODIFIERS] :: [ARGS]
+          TYPE, [RESULT_MODIFIERS] :: RESULT_VAR
+
+        note: intrinsic functions will display slightly different,
+        `RESULT_VAR` and its `TYPE` might not always be present
+
+        short form, used when functions are arguments in functions and subroutines:
+
+        FUNCTION NAME([ARGS]) :: ARG_LIST_NAME
+
+        Parameters
+        ----------
+        long : bool, optional
+            toggle between long and short hover results, by default False
+        include_doc : bool, optional
+            if to include any documentation, by default True
+        drop_arg : int, optional
+            Ignore argument at position `drop_arg` in the argument list, by default -1
+
+        Returns
+        -------
+        tuple[str, bool]
+            String representative of the hover message and the `long` flag used
+        """
         fun_sig, _ = self.get_snippet(drop_arg=drop_arg)
-        fun_return = ""
-        if self.result_obj is not None:
-            fun_return, _ = self.result_obj.get_hover(include_doc=False)
-        if self.return_type is not None:
-            fun_return = self.return_type
+        # short hover messages do not include the result()
+        fun_sig += f" RESULT({self.result_name})" if long else ""
         keyword_list = get_keywords(self.keywords)
         keyword_list.append("FUNCTION")
-        hover_array = [f"{fun_return} {' '.join(keyword_list)} {fun_sig}"]
-        self.get_docs_full(hover_array, long, include_doc, drop_arg)
+
+        hover_array = [f"{' '.join(keyword_list)} {fun_sig}"]
+        hover_array = self.get_docs_full(hover_array, long, include_doc, drop_arg)
+        # Only append the return value if using long form
+        if self.result_obj and long:
+            arg_doc, _ = self.result_obj.get_hover(include_doc=False)
+            hover_array.append(f"{arg_doc} :: {self.result_obj.name}")
+        # intrinsic functions, where the return type is missing but can be inferred
+        elif self.result_type and long:
+            # prepend type to function signature
+            hover_array[0] = f"{self.result_type} {hover_array[0]}"
         return "\n ".join(hover_array), long
 
     def get_interface(self, name_replace=None, change_arg=-1, change_strings=None):
         fun_sig, _ = self.get_snippet(name_replace=name_replace)
+        fun_sig += f" RESULT({self.result_name})"
+        # XXX:
         keyword_list = []
-        if self.return_type is not None:
-            keyword_list.append(self.return_type)
-        if self.result_obj is not None:
-            fun_sig += f" RESULT({self.result_obj.name})"
+        if self.result_type:
+            keyword_list.append(self.result_type)
         keyword_list += get_keywords(self.keywords)
         keyword_list.append("FUNCTION ")
+
         interface_array = self.get_interface_array(
             keyword_list, fun_sig, change_arg, change_strings
         )
@@ -1256,10 +1255,7 @@ class fortran_type(fortran_scope):
         if self.contains_start is None:
             edits.append(
                 {
-                    "range": {
-                        "start": {"line": line_number, "character": 0},
-                        "end": {"line": line_number, "character": 0},
-                    },
+                    **range_json(line_number, 0, line_number, 0),
                     "newText": "CONTAINS\n",
                 }
             )
@@ -1286,10 +1282,7 @@ class fortran_type(fortran_scope):
                     continue
                 edits.append(
                     {
-                        "range": {
-                            "start": {"line": line_number, "character": 0},
-                            "end": {"line": line_number, "character": 0},
-                        },
+                        **range_json(line_number, 0, line_number, 0),
                         "newText": "  PROCEDURE :: {0} => {0}\n".format(in_child.name),
                     }
                 )
@@ -1534,7 +1527,7 @@ class fortran_var(fortran_obj):
         self.desc: str = var_desc
         self.keywords: list = keywords
         self.keyword_info: dict = keyword_info
-        self.callable: bool = CLASS_VAR_REGEX.match(var_desc) is not None
+        self.callable: bool = FRegex.CLASS_VAR.match(var_desc) is not None
         self.children: list = []
         self.use: list[USE_line] = []
         self.link_obj = None
@@ -1628,6 +1621,7 @@ class fortran_var(fortran_obj):
         hover_str = ", ".join(
             [self.desc] + get_keywords(self.keywords, self.keyword_info)
         )
+        # TODO: at this stage we can mae this lowercase
         # Add parameter value in the output
         if self.is_parameter() and self.param_val:
             hover_str += f" :: {self.name} = {self.param_val}"
@@ -1656,7 +1650,7 @@ class fortran_var(fortran_obj):
 
     def check_definition(self, obj_tree, known_types={}, interface=False):
         # Check for type definition in scope
-        type_match = DEF_KIND_REGEX.match(self.desc)
+        type_match = FRegex.DEF_KIND.match(self.desc)
         if type_match is not None:
             var_type = type_match.group(1).strip().lower()
             if var_type == "procedure":
@@ -1865,7 +1859,7 @@ class fortran_ast:
         self.END_SCOPE_REGEX: Pattern = None
         self.enc_scope_name: str = None
         self.last_obj = None
-        self.pending_doc = None
+        self.pending_doc: str = None
 
     def create_none_scope(self):
         """Create empty scope to hold non-module contained items"""
@@ -1979,6 +1973,26 @@ class fortran_ast:
         else:
             if self.last_obj is not None:
                 self.last_obj.add_doc(doc_string)
+
+    def add_error(self, msg: str, sev: int, ln: int, sch: int, ech: int = None):
+        """Add a Diagnostic error, encountered during parsing, for a range
+        in the document.
+
+        Parameters
+        ----------
+        msg : str
+            Error message
+        sev : int
+            Severity, Error, Warning, Notification
+        ln : int
+            Line number
+        sch : int
+            Start character
+        ech : int
+            End character
+        """
+        # Convert from Editor line numbers 1-base index to LSP index which is 0-based
+        self.parse_errors.append(diagnostic_json(ln - 1, sch, ln - 1, ech, msg, sev))
 
     def start_ppif(self, line_number: int):
         self.pp_if.append([line_number - 1, -1])
@@ -2094,24 +2108,9 @@ class fortran_ast:
 
     def check_file(self, obj_tree):
         errors = []
-        diagnostics = []
-        tmp_list = self.scope_list[:]
+        tmp_list = self.scope_list[:]  # shallow copy
         if self.none_scope is not None:
             tmp_list += [self.none_scope]
-        for error in self.parse_errors:
-            diagnostics.append(
-                {
-                    "range": {
-                        "start": {
-                            "line": error["line"] - 1,
-                            "character": error["schar"],
-                        },
-                        "end": {"line": error["line"] - 1, "character": error["echar"]},
-                    },
-                    "message": error["mess"],
-                    "severity": error["sev"],
-                }
-            )
         for error in self.end_errors:
             if error[0] >= 0:
                 message = f"Unexpected end of scope at line {error[0]}"
@@ -2130,4 +2129,4 @@ class fortran_ast:
             errors += scope.check_use(obj_tree)
             errors += scope.check_definitions(obj_tree)
             errors += scope.get_diagnostics()
-        return errors, diagnostics
+        return errors, self.parse_errors

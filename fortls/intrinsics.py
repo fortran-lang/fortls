@@ -117,7 +117,9 @@ def load_intrinsics():
                 0,
                 name,
                 args=args,
-                return_type=[json_obj["return"], keywords, keyword_info],
+                result_type=json_obj["return"],
+                keywords=keywords,
+                # keyword_info=keyword_info,
             )
         elif json_obj["type"] == 3:
             return fortran_var(
@@ -135,23 +137,23 @@ def load_intrinsics():
             add_children(child, child_obj)
 
     # Fortran statments taken from Intel Fortran documentation
-    # (https://software.intel.com/en-us/fortran-compiler-18.0-developer-guide)
+    # (https://www.intel.com/content/www/us/en/develop/documentation/fortran-compiler-oneapi-dev-guide-and-reference/top/language-reference/a-to-z-reference)
     json_file = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "statements.json"
     )
     statements = {"var_def": [], "int_stmnts": []}
-    with open(json_file, "r") as fid:
+    with open(json_file, "r", encoding="utf-8") as fid:
         intrin_file = json.load(fid)
         for key in statements:
             for name, json_obj in sorted(intrin_file[key].items()):
                 statements[key].append(create_int_object(name, json_obj, 15))
     # Fortran keywords taken from Intel Fortran documentation
-    # (https://software.intel.com/en-us/fortran-compiler-18.0-developer-guide)
+    # (https://www.intel.com/content/www/us/en/develop/documentation/fortran-compiler-oneapi-dev-guide-and-reference/top/language-reference/a-to-z-reference)
     json_file = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "keywords.json"
     )
     keywords = {"var_def": [], "arg": [], "type_mem": [], "vis": [], "param": []}
-    with open(json_file, "r") as fid:
+    with open(json_file, "r", encoding="utf-8") as fid:
         intrin_file = json.load(fid)
         for key in keywords:
             for name, json_obj in sorted(intrin_file[key].items()):
@@ -162,7 +164,7 @@ def load_intrinsics():
         os.path.dirname(os.path.abspath(__file__)), "intrinsic_funs.json"
     )
     int_funs = []
-    with open(json_file, "r") as fid:
+    with open(json_file, "r", encoding="utf-8") as fid:
         intrin_file = json.load(fid)
         for name, json_obj in sorted(intrin_file.items()):
             int_funs.append(create_int_object(name, json_obj, json_obj["type"]))
@@ -173,7 +175,7 @@ def load_intrinsics():
         os.path.dirname(os.path.abspath(__file__)), "intrinsic_mods.json"
     )
     int_mods = []
-    with open(json_file, "r") as fid:
+    with open(json_file, "r", encoding="utf-8") as fid:
         intrin_file = json.load(fid)
         for key, json_obj in intrin_file.items():
             fort_obj = create_object(json_obj)

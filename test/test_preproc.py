@@ -27,6 +27,7 @@ def test_hover():
     string += hover_req(file_path, 7, 40)  # multi-lin variable
     string += hover_req(file_path, 8, 7)  # function with if conditional
     string += hover_req(file_path, 9, 7)  # multiline function with if conditional
+    string += hover_req(file_path, 10, 15)  # defined without ()
     file_path = root_dir / "preproc_keywords.F90"
     string += hover_req(file_path, 6, 2)  # ignores PP across Fortran line continuations
     config = str(root_dir / ".pp_conf.json")
@@ -40,6 +41,7 @@ def test_hover():
         "#define varVar 55",
         "#define ewrite if (priority <= 3) write((priority), format)",
         "#define ewrite2 if (priority <= 3) write((priority), format)",
+        "#define SUCCESS .true.",
         "REAL, CONTIGUOUS, POINTER, DIMENSION(:)",
     )
     assert len(ref_results) == len(results) - 1
