@@ -1,4 +1,4 @@
-PROGRAM associate_block_test
+PROGRAM test_associate_block
     IMPLICIT NONE
     REAL :: A(5), B(5,5), C, III = 1
     ASSOCIATE (X => A, Y => C)
@@ -10,4 +10,4 @@ PROGRAM associate_block_test
     ASSOCIATE (ARRAY => B(:,1))
         ARRAY (3) = ARRAY (1) + ARRAY (2)
     END ASSOCIATE
-END PROGRAM associate_block_test
+END PROGRAM test_associate_block
