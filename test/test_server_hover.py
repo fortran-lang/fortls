@@ -315,3 +315,15 @@ def test_hover_interface_as_argument():
  REAL :: arg3""",
     )
     validate_hover(results, ref_results)
+
+
+def test_hover_block():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
+    file_path = test_dir / "hover" / "associate_block.f90"
+    string += hover_req(file_path, 4, 17)
+    string += hover_req(file_path, 4, 20)
+    # string += hover_req(file_path, 10, 11)    # slice of array
+    errcode, results = run_request(string, fortls_args=["--sort_keywords", "-n", "1"])
+    assert errcode == 0
+    ref_results = ["REAL, DIMENSION(5)", "REAL"]
+    validate_hover(results, ref_results)

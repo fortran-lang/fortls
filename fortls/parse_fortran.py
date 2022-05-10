@@ -1357,6 +1357,7 @@ class fortran_file:
                     else:
                         name_raw = var_name.split("=")[0]
                     # Add dimension if specified
+                    # TODO: turn into function and add support for co-arrays i.e. [*]
                     key_tmp = obj_info.keywords[:]
                     iparen = name_raw.find("(")
                     if iparen == 0:
