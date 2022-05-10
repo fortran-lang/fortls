@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## Unreleased
+
+## 2.4.0
+
+### Added
+
+- Added Code of Conduct
+
 ## 2.3.1
 
 ### Fixed
