@@ -137,22 +137,23 @@ An example for a Configuration file is given below
 
 ## Implemented server requests
 
-| Request                       | Description                                            |
-| ----------------------------- | ------------------------------------------------------ |
-| `workspace/symbol`            | Get workspace-wide symbols                             |
-| `textDocument/documentSymbol` | Get document symbols e.g. functions, subroutines, etc. |
-| `textDocument/completion`     | Suggested tab-completion when typing                   |
-| `textDocument/signatureHelp`  | Get signature information at a given cursor position   |
-| `textDocument/definition`     | GoTo definition/Peek definition                        |
-| `textDocument/references`     | Find all/Peek references                               |
-| `textDocument/hover`          | Show messages and signatures upon hover                |
-| `textDocument/implementation` | GoTo implementation/Peek implementation                |
-| `textDocument/rename`         | Rename a symbol across the workspace                   |
-| `textDocument/didOpen`        | Document synchronisation upon opening                  |
-| `textDocument/didSave`        | Document synchronisation upon saving                   |
-| `textDocument/didClose`       | Document synchronisation upon closing                  |
-| `textDocument/didChange`      | Document synchronisation upon changes to the document  |
-| `textDocument/codeAction`     | **Experimental** Generate code                         |
+| Request                          | Description                                            |
+| -------------------------------- | ------------------------------------------------------ |
+| `workspace/symbol`               | Get workspace-wide symbols                             |
+| `textDocument/documentSymbol`    | Get document symbols e.g. functions, subroutines, etc. |
+| `textDocument/completion`        | Suggested tab-completion when typing                   |
+| `textDocument/signatureHelp`     | Get signature information at a given cursor position   |
+| `textDocument/definition`        | GoTo definition/Peek definition                        |
+| `textDocument/references`        | Find all/Peek references                               |
+| `textDocument/documentHighlight` | Same as `textDocument/references`                      |
+| `textDocument/hover`             | Show messages and signatures upon hover                |
+| `textDocument/implementation`    | GoTo implementation/Peek implementation                |
+| `textDocument/rename`            | Rename a symbol across the workspace                   |
+| `textDocument/didOpen`           | Document synchronisation upon opening                  |
+| `textDocument/didSave`           | Document synchronisation upon saving                   |
+| `textDocument/didClose`          | Document synchronisation upon closing                  |
+| `textDocument/didChange`         | Document synchronisation upon changes to the document  |
+| `textDocument/codeAction`        | **Experimental** Generate code                         |
 
 ## Acknowledgements
 

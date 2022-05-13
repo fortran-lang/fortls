@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 2.5.0
+
+### Added
+
+- Added `textDocument/documentHighlight` request for Vim and EMACS
+  ([#43](https://github.com/gnikit/fortls/issues/43))
+
 ## 2.4.0
 
 ### Added
