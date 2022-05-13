@@ -2,6 +2,8 @@
 
 ## Added
 
+- Added `textDocument/documentHighlight` request for Vim and EMACS
+  ([#43](https://github.com/gnikit/fortls/issues/43))
 - Added multiple unittests for diagnostic messages
 - Added `pre-commit` hook to the project
   ([#106](https://github.com/gnikit/fortls/issues/106))
