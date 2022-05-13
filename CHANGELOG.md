@@ -8,6 +8,15 @@
 
 - Added `textDocument/documentHighlight` request for Vim and EMACS
   ([#43](https://github.com/gnikit/fortls/issues/43))
+- Added `pre-commit` hook with `flake`, `black`, `isort` and `pyupgrade`
+  ([#106](https://github.com/gnikit/fortls/issues/106))
+- Added test support for diagnostic messages
+
+### Changed
+
+- Changed code structure, reformatted files and changed name conventions
+  ([#109](https://github.com/gnikit/fortls/issues/109))
+- Updated CONTRIBUTING instructions
 
 ## 2.4.0
 
