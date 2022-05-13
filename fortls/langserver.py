@@ -136,6 +136,7 @@ class LangServer:
             "textDocument/signatureHelp": self.serve_signature,
             "textDocument/definition": self.serve_definition,
             "textDocument/references": self.serve_references,
+            "textDocument/documentHighlight": self.serve_references,
             "textDocument/hover": self.serve_hover,
             "textDocument/implementation": self.serve_implementation,
             "textDocument/rename": self.serve_rename,
