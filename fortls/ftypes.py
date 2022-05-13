@@ -32,7 +32,7 @@ class ClassInfo:
 
     name: str  #: Class name
     parent: str  #: Parent object of class e.g. ``TYPE, EXTENDS(scaled_vector) :: a``
-    keywords: str  #: Keywords associated with the class
+    keywords: list[str]  #: Keywords associated with the class
 
 
 @dataclass
