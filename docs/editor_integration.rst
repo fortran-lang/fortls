@@ -1,20 +1,20 @@
 Editor Integration
 ===================
 
-Visual Studio Code
-------------------
+`Visual Studio Code <https://code.visualstudio.com/>`__
+-------------------------------------------------------
 
 The Language Server is natively supported through the `Modern Fortran`_ extension.
-Install ``fortls`` then install the extension and all of the server's features should be instantly available.
+Install ``fortls`` then install the extension and all the server's features should be instantly available.
 
-.. _Modern Fortran: https://marketplace.visualstudio.com/items?itemName=krvajalm.linter-gfortran
+.. _Modern Fortran: https://marketplace.visualstudio.com/items?itemName=fortran-lang.linter-gfortran
 
-.. note::
+.. important::
     Make sure that ``fortls`` is reachable in your ``$PATH``. If not you can specify the option
     ``"fortran.fortls.path": "/custom/path/to/fortls"``
 
-Atom
-----
+`Atom <https://atom.io/>`__
+---------------------------
 
 Firstly ``fortls`` then install the `language-fortran`_ plugin by `@dparkins`_ to get Fortran syntax highlighting.
 Finally, install either `fortran-lsp`_ by `@gnikit`_ or `ide-fortran`_ by `@hansec`_
@@ -31,8 +31,8 @@ Finally, install either `fortran-lsp`_ by `@gnikit`_ or `ide-fortran`_ by `@hans
 .. _ide-fortran: https://atom.io/packages/ide-fortran
 .. _@hansec: https://github.com/hansec
 
-Sublime Text
-------------
+`Sublime Text <https://www.sublimetext.com/>`__
+-----------------------------------------------
 
 Firstly, install ``fortls`` then install the `LSP`_ package from package control.
 Finally, install the `Fortran`_ package and add the following in your configuration
@@ -56,8 +56,42 @@ For more details see the LSP `documentation`_.
 .. _documentation: https://lsp.sublimetext.io/language_servers/#fortran
 
 
-Vim, Neovim, GVim
------------------
+.. _vim:
+
+`Vim <https://www.vim.org/>`__
+------------------------------
+
+Vim does not support LSP natively, so a 3rd party extensions need to be installed.
+A few options are available:
+
+`YouCompleteMe <https://ycm-core.github.io/YouCompleteMe/>`__
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+`YouCompleteMe <https://github.com/ycm-core/YouCompleteMe>`__
+is a popular Vim plugin and code-completion engine that also provides an LSP interface.
+You can therefore use it to register Language Servers like ``fortls``.
+
+For more information about configuring an arbitrary Language Server in YouCompleteMe,
+`see here <https://ycm-core.github.io/YouCompleteMe/#plugging-an-arbitrary-lsp-server>`__.
+
+.. code-block:: vim
+
+    " YouCompleteMe configuration options
+    let g:ycm_language_server =
+        \[
+        \   {
+        \       'name': 'fortls',
+        \       'cmdline': ['fortls', '--hover_language', 'fortran', '--notify_init', '--hover_signature', '--use_signature_help'],
+        \       'filetypes': ['fortran'],
+        \       'project_root_files': ['.fortls'],
+        \   },
+        \]
+    nmap <leader>yfw <Plug>(YCMFindSymbolInWorkspace)
+    nmap <leader>yfd <Plug>(YCMFindSymbolInDocument)
+
+
+`LanguageClient-neovim <https://github.com/autozimu/LanguageClient-neovim>`__
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Firstly install the plugin `LanguageClient-neovim`_. Then edit your ``~/.vimrc`` settings file
 to set ``fortls`` for Fortran files
@@ -67,7 +101,7 @@ to set ``fortls`` for Fortran files
     " Required for operations modifying multiple buffers like rename. set hidden
     let g:LanguageClient_serverCommands = {
         " Add any default arguments you want fortls to have inside []
-        \ 'fortls': ['--hover_signature', '--use_signature_help'],
+        \ 'fortran': ['fortls', '--hover_signature', '--hover_language', 'fortran', '--use_signature_help'],
         \ }
 
     " note that if you are using Plug mapping you should not use `noremap` mappings.
@@ -79,8 +113,52 @@ to set ``fortls`` for Fortran files
 
 .. _LanguageClient-neovim: https://github.com/autozimu/LanguageClient-neovim
 
-EMACS
------
+
+`neovim <https://neovim.io/>`__
+-------------------------------
+
+.. warning::
+    For neovim versions < 0.5.0 follow the instructions in the :ref:`vim` section.
+
+Neovim version >= 0.5.0 `natively supports LSP <https://neovim.io/doc/lsp/>`_.
+To enable the native LSP functionality install the `lspconfig`_ plugin with your
+favourite plugin manager.
+
+Then in your configuration file (i.e. ``init.lua``) add the following:
+
+.. code-block:: lua
+
+    require'lspconfig'.fortls.setup{}
+
+
+If additional ``fortls`` options need to be passed to you can do that through
+the ``cmd`` option in ``setup{}``
+
+
+.. code-block:: lua
+
+    require'lspconfig'.fortls.setup{
+        cmd = {
+            'fortls',
+            '--lowercase_intrisics',
+            '--hover_signature',
+            '--hover_language=fortran',
+            '--use_signature_help'
+        }
+    }
+
+.. important::
+    If you are just starting with ``neovim`` it is strongly recommended using
+    the `Suggested configuration`_ from `lspconfig`_ for keybingings and server
+    attaching. **Remember to attach the server during setup{}**
+
+.. _lspconfig: https://github.com/neovim/nvim-lspconfig
+.. _Suggested configuration: https://github.com/neovim/nvim-lspconfig#suggested-configuration
+
+
+
+`EMACS <https://www.gnu.org/software/emacs/>`__
+-----------------------------------------------
 
 Install the `lsp-mode`_ plugin. This should then allow for the variables
 `lsp-clients-fortls-args`_ and `lsp-clients-fortls-executable`_ to be defined in the ``~/.emacs`` configuration file.
@@ -96,12 +174,12 @@ Installing this `VS17 extension`_ should enable ``fortls`` features in Visual St
 
 .. _VS17 extension: https://github.com/michaelkonecny/vs-fortran-ls-client
 
-Kakoune
--------
+`Kakoune <https://kakoune.org/>`__
+----------------------------------
 
 Install `kak-lsp <https://github.com/kak-lsp/>`_.
 
-Edit the kak-lsp.toml config file to include:
+Edit the ``kak-lsp.toml`` config file to include:
 
 .. code-block:: sh
 
@@ -111,7 +189,7 @@ Edit the kak-lsp.toml config file to include:
   command = "fortls"
   args = ["--symbol_skip_mem", "--incremental_sync", "--autocomplete_no_prefix", "--lowercase_intrisics"]
 
-Edit your kakrc config to enable kak-lsp, adding fortran as a filetype:
+Edit your ``kakrc`` config to enable ``kak-lsp``, adding ``fortran`` as a filetype:
 
 .. code-block:: sh
 
