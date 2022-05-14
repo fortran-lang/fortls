@@ -9,7 +9,7 @@ Install ``fortls`` then install the extension and all the server's features shou
 
 .. _Modern Fortran: https://marketplace.visualstudio.com/items?itemName=fortran-lang.linter-gfortran
 
-.. note::
+.. important::
     Make sure that ``fortls`` is reachable in your ``$PATH``. If not you can specify the option
     ``"fortran.fortls.path": "/custom/path/to/fortls"``
 

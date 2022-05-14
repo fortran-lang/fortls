@@ -6,7 +6,7 @@ through a configuration file (by default named ``.fortls``).
 The options available from the command line and through the configuration file
 are identical and interchangeable.
 
-.. note:: Options defined in the configuration file have precedence over command line arguments.
+.. important:: Options defined in the configuration file have precedence over command line arguments.
 
 The following sections discuss the available settings in detail.
 
