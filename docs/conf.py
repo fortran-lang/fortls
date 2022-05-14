@@ -55,7 +55,7 @@ with open("fortls_changes.md", "w") as f:
 # -- Project information -----------------------------------------------------
 
 project = "fortls"
-copyright = "2021, Giannis Nikiteas"
+copyright = "2021-2022, Giannis Nikiteas"
 author = "Giannis Nikiteas"
 
 # The full version, including alpha/beta/rc tags
