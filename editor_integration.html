@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Editor Integration &mdash; fortls 0.1.dev1+gcf40a4d documentation</title>
+  <title>Editor Integration &mdash; fortls 0.1.dev1+g8a39f3c documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -46,7 +46,12 @@
 <li class="toctree-l2"><a class="reference internal" href="#visual-studio-code">Visual Studio Code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#atom">Atom</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#sublime-text">Sublime Text</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#vim-neovim-gvim">Vim, Neovim, GVim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#vim">Vim</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#youcompleteme">YouCompleteMe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#languageclient-neovim">LanguageClient-neovim</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#neovim">neovim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#emacs">EMACS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#visual-studio-2017">Visual Studio 2017</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#kakoune">Kakoune</a></li>
@@ -83,17 +88,17 @@
   <section id="editor-integration">
 <h1>Editor Integration<a class="headerlink" href="#editor-integration" title="Permalink to this headline"></a></h1>
 <section id="visual-studio-code">
-<h2>Visual Studio Code<a class="headerlink" href="#visual-studio-code" title="Permalink to this headline"></a></h2>
-<p>The Language Server is natively supported through the <a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=krvajalm.linter-gfortran">Modern Fortran</a> extension.
-Install <code class="docutils literal notranslate"><span class="pre">fortls</span></code> then install the extension and all of the server’s features should be instantly available.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<h2><a class="reference external" href="https://code.visualstudio.com/">Visual Studio Code</a><a class="headerlink" href="#visual-studio-code" title="Permalink to this headline"></a></h2>
+<p>The Language Server is natively supported through the <a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=fortran-lang.linter-gfortran">Modern Fortran</a> extension.
+Install <code class="docutils literal notranslate"><span class="pre">fortls</span></code> then install the extension and all the server’s features should be instantly available.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
 <p>Make sure that <code class="docutils literal notranslate"><span class="pre">fortls</span></code> is reachable in your <code class="docutils literal notranslate"><span class="pre">$PATH</span></code>. If not you can specify the option
 <code class="docutils literal notranslate"><span class="pre">&quot;fortran.fortls.path&quot;:</span> <span class="pre">&quot;/custom/path/to/fortls&quot;</span></code></p>
 </div>
 </section>
 <section id="atom">
-<h2>Atom<a class="headerlink" href="#atom" title="Permalink to this headline"></a></h2>
+<h2><a class="reference external" href="https://atom.io/">Atom</a><a class="headerlink" href="#atom" title="Permalink to this headline"></a></h2>
 <p>Firstly <code class="docutils literal notranslate"><span class="pre">fortls</span></code> then install the <a class="reference external" href="https://atom.io/packages/language-fortran">language-fortran</a> plugin by <a class="reference external" href="https://github.com/dparkins">&#64;dparkins</a> to get Fortran syntax highlighting.
 Finally, install either <a class="reference external" href="https://atom.io/packages/fortran-lsp">fortran-lsp</a> by <a class="reference external" href="https://github.com/gnikit">&#64;gnikit</a> or <a class="reference external" href="https://atom.io/packages/ide-fortran">ide-fortran</a> by <a class="reference external" href="https://github.com/hansec">&#64;hansec</a></p>
 <div class="admonition warning">
@@ -104,7 +109,7 @@ available through the extension are not representative of <code class="docutils 
 </div>
 </section>
 <section id="sublime-text">
-<h2>Sublime Text<a class="headerlink" href="#sublime-text" title="Permalink to this headline"></a></h2>
+<h2><a class="reference external" href="https://www.sublimetext.com/">Sublime Text</a><a class="headerlink" href="#sublime-text" title="Permalink to this headline"></a></h2>
 <p>Firstly, install <code class="docutils literal notranslate"><span class="pre">fortls</span></code> then install the <a class="reference external" href="https://github.com/sublimelsp/LSP">LSP</a> package from package control.
 Finally, install the <a class="reference external" href="https://packagecontrol.io/packages/Fortran">Fortran</a> package and add the following in your configuration</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
@@ -120,14 +125,40 @@ Finally, install the <a class="reference external" href="https://packagecontrol.
 </div>
 <p>For more details see the LSP <a class="reference external" href="https://lsp.sublimetext.io/language_servers/#fortran">documentation</a>.</p>
 </section>
-<section id="vim-neovim-gvim">
-<h2>Vim, Neovim, GVim<a class="headerlink" href="#vim-neovim-gvim" title="Permalink to this headline"></a></h2>
+<section id="vim">
+<span id="id1"></span><h2><a class="reference external" href="https://www.vim.org/">Vim</a><a class="headerlink" href="#vim" title="Permalink to this headline"></a></h2>
+<p>Vim does not support LSP natively, so a 3rd party extensions need to be installed.
+A few options are available:</p>
+<section id="youcompleteme">
+<h3><a class="reference external" href="https://ycm-core.github.io/YouCompleteMe/">YouCompleteMe</a><a class="headerlink" href="#youcompleteme" title="Permalink to this headline"></a></h3>
+<p><a class="reference external" href="https://github.com/ycm-core/YouCompleteMe">YouCompleteMe</a>
+is a popular Vim plugin and code-completion engine that also provides an LSP interface.
+You can therefore use it to register Language Servers like <code class="docutils literal notranslate"><span class="pre">fortls</span></code>.</p>
+<p>For more information about configuring an arbitrary Language Server in YouCompleteMe,
+<a class="reference external" href="https://ycm-core.github.io/YouCompleteMe/#plugging-an-arbitrary-lsp-server">see here</a>.</p>
+<div class="highlight-vim notranslate"><div class="highlight"><pre><span></span><span class="c">&quot; YouCompleteMe configuration options</span>
+<span class="k">let</span> <span class="k">g</span>:ycm_language_server <span class="p">=</span>
+    \[
+    \   {
+    \       <span class="s1">&#39;name&#39;</span>: <span class="s1">&#39;fortls&#39;</span><span class="p">,</span>
+    \       <span class="s1">&#39;cmdline&#39;</span>: [<span class="s1">&#39;fortls&#39;</span><span class="p">,</span> <span class="s1">&#39;--hover_language&#39;</span><span class="p">,</span> <span class="s1">&#39;fortran&#39;</span><span class="p">,</span> <span class="s1">&#39;--notify_init&#39;</span><span class="p">,</span> <span class="s1">&#39;--hover_signature&#39;</span><span class="p">,</span> <span class="s1">&#39;--use_signature_help&#39;</span>]<span class="p">,</span>
+    \       <span class="s1">&#39;filetypes&#39;</span>: [<span class="s1">&#39;fortran&#39;</span>]<span class="p">,</span>
+    \       <span class="s1">&#39;project_root_files&#39;</span>: [<span class="s1">&#39;.fortls&#39;</span>]<span class="p">,</span>
+    \   }<span class="p">,</span>
+    \]
+nmap <span class="p">&lt;</span>leader<span class="p">&gt;</span>yfw <span class="p">&lt;</span>Plug<span class="p">&gt;(</span>YCMFindSymbolInWorkspace<span class="p">)</span>
+nmap <span class="p">&lt;</span>leader<span class="p">&gt;</span>yfd <span class="p">&lt;</span>Plug<span class="p">&gt;(</span>YCMFindSymbolInDocument<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="languageclient-neovim">
+<h3><a class="reference external" href="https://github.com/autozimu/LanguageClient-neovim">LanguageClient-neovim</a><a class="headerlink" href="#languageclient-neovim" title="Permalink to this headline"></a></h3>
 <p>Firstly install the plugin <a class="reference external" href="https://github.com/autozimu/LanguageClient-neovim">LanguageClient-neovim</a>. Then edit your <code class="docutils literal notranslate"><span class="pre">~/.vimrc</span></code> settings file
 to set <code class="docutils literal notranslate"><span class="pre">fortls</span></code> for Fortran files</p>
 <div class="highlight-vim notranslate"><div class="highlight"><pre><span></span><span class="c">&quot; Required for operations modifying multiple buffers like rename. set hidden</span>
 <span class="k">let</span> <span class="k">g</span>:LanguageClient_serverCommands <span class="p">=</span> {
 <span class="c">    &quot; Add any default arguments you want fortls to have inside []</span>
-    \ <span class="s1">&#39;fortls&#39;</span>: [<span class="s1">&#39;--hover_signature&#39;</span><span class="p">,</span> <span class="s1">&#39;--use_signature_help&#39;</span>]<span class="p">,</span>
+    \ <span class="s1">&#39;fortran&#39;</span>: [<span class="s1">&#39;fortls&#39;</span><span class="p">,</span> <span class="s1">&#39;--hover_signature&#39;</span><span class="p">,</span> <span class="s1">&#39;--hover_language&#39;</span><span class="p">,</span> <span class="s1">&#39;fortran&#39;</span><span class="p">,</span> <span class="s1">&#39;--use_signature_help&#39;</span>]<span class="p">,</span>
     \ }
 
 <span class="c">&quot; note that if you are using Plug mapping you should not use `noremap` mappings.</span>
@@ -139,8 +170,42 @@ nmap <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt
 </pre></div>
 </div>
 </section>
+</section>
+<section id="neovim">
+<h2><a class="reference external" href="https://neovim.io/">neovim</a><a class="headerlink" href="#neovim" title="Permalink to this headline"></a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>For neovim versions &lt; 0.5.0 follow the instructions in the <a class="reference internal" href="#vim"><span class="std std-ref">Vim</span></a> section.</p>
+</div>
+<p>Neovim version &gt;= 0.5.0 <a class="reference external" href="https://neovim.io/doc/lsp/">natively supports LSP</a>.
+To enable the native LSP functionality install the <a class="reference external" href="https://github.com/neovim/nvim-lspconfig">lspconfig</a> plugin with your
+favourite plugin manager.</p>
+<p>Then in your configuration file (i.e. <code class="docutils literal notranslate"><span class="pre">init.lua</span></code>) add the following:</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="nb">require</span><span class="s1">&#39;lspconfig&#39;</span><span class="p">.</span><span class="n">fortls</span><span class="p">.</span><span class="n">setup</span><span class="p">{}</span>
+</pre></div>
+</div>
+<p>If additional <code class="docutils literal notranslate"><span class="pre">fortls</span></code> options need to be passed to you can do that through
+the <code class="docutils literal notranslate"><span class="pre">cmd</span></code> option in <code class="docutils literal notranslate"><span class="pre">setup{}</span></code></p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="nb">require</span><span class="s1">&#39;lspconfig&#39;</span><span class="p">.</span><span class="n">fortls</span><span class="p">.</span><span class="n">setup</span><span class="p">{</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;fortls&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;--lowercase_intrisics&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;--hover_signature&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;--hover_language=fortran&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;--use_signature_help&#39;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>If you are just starting with <code class="docutils literal notranslate"><span class="pre">neovim</span></code> it is strongly recommended using
+the <a class="reference external" href="https://github.com/neovim/nvim-lspconfig#suggested-configuration">Suggested configuration</a> from <a class="reference external" href="https://github.com/neovim/nvim-lspconfig">lspconfig</a> for keybingings and server
+attaching. <strong>Remember to attach the server during setup{}</strong></p>
+</div>
+</section>
 <section id="emacs">
-<h2>EMACS<a class="headerlink" href="#emacs" title="Permalink to this headline"></a></h2>
+<h2><a class="reference external" href="https://www.gnu.org/software/emacs/">EMACS</a><a class="headerlink" href="#emacs" title="Permalink to this headline"></a></h2>
 <p>Install the <a class="reference external" href="https://emacs-lsp.github.io/lsp-mode/page/installation">lsp-mode</a> plugin. This should then allow for the variables
 <a class="reference external" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-fortran/#lsp-clients-fortls-args">lsp-clients-fortls-args</a> and <a class="reference external" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-fortran/#lsp-clients-fortls-executable">lsp-clients-fortls-executable</a> to be defined in the <code class="docutils literal notranslate"><span class="pre">~/.emacs</span></code> configuration file.</p>
 </section>
@@ -149,9 +214,9 @@ nmap <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt
 <p>Installing this <a class="reference external" href="https://github.com/michaelkonecny/vs-fortran-ls-client">VS17 extension</a> should enable <code class="docutils literal notranslate"><span class="pre">fortls</span></code> features in Visual Studio</p>
 </section>
 <section id="kakoune">
-<h2>Kakoune<a class="headerlink" href="#kakoune" title="Permalink to this headline"></a></h2>
+<h2><a class="reference external" href="https://kakoune.org/">Kakoune</a><a class="headerlink" href="#kakoune" title="Permalink to this headline"></a></h2>
 <p>Install <a class="reference external" href="https://github.com/kak-lsp/">kak-lsp</a>.</p>
-<p>Edit the kak-lsp.toml config file to include:</p>
+<p>Edit the <code class="docutils literal notranslate"><span class="pre">kak-lsp.toml</span></code> config file to include:</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>language.fortran<span class="o">]</span>
 <span class="nv">filetypes</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&quot;fortran&quot;</span><span class="o">]</span>
 <span class="nv">roots</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&quot;.git&quot;</span>, <span class="s2">&quot;.fortls&quot;</span><span class="o">]</span>
@@ -159,7 +224,7 @@ nmap <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt
 <span class="nv">args</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&quot;--symbol_skip_mem&quot;</span>, <span class="s2">&quot;--incremental_sync&quot;</span>, <span class="s2">&quot;--autocomplete_no_prefix&quot;</span>, <span class="s2">&quot;--lowercase_intrisics&quot;</span><span class="o">]</span>
 </pre></div>
 </div>
-<p>Edit your kakrc config to enable kak-lsp, adding fortran as a filetype:</p>
+<p>Edit your <code class="docutils literal notranslate"><span class="pre">kakrc</span></code> config to enable <code class="docutils literal notranslate"><span class="pre">kak-lsp</span></code>, adding <code class="docutils literal notranslate"><span class="pre">fortran</span></code> as a filetype:</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">eval</span> %sh<span class="o">{</span>kak-lsp --kakoune -s <span class="nv">$kak_session</span><span class="o">}</span>
 <span class="c1"># lsp-enable</span>
 hook global WinSetOption <span class="nv">filetype</span><span class="o">=(</span>fortran<span class="o">)</span> %<span class="o">{</span>
@@ -181,7 +246,7 @@ hook global WinSetOption <span class="nv">filetype</span><span class="o">=(</spa
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Giannis Nikiteas.</p>
+    <p>&#169; Copyright 2021-2022, Giannis Nikiteas.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
