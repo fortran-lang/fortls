@@ -56,6 +56,48 @@ For more details see the LSP `documentation`_.
 .. _documentation: https://lsp.sublimetext.io/language_servers/#fortran
 
 
+`neovim <https://neovim.io/>`__
+-------------------------------
+
+.. warning::
+    For neovim versions < 0.5.0 follow the instructions in the :ref:`vim` section.
+
+Neovim version >= 0.5.0 `natively supports LSP <https://neovim.io/doc/lsp/>`_.
+To enable the native LSP functionality install the `lspconfig`_ plugin with your
+favourite plugin manager.
+
+Then in your configuration file (i.e. ``init.lua``) add the following:
+
+.. code-block:: lua
+
+    require'lspconfig'.fortls.setup{}
+
+
+If additional ``fortls`` options need to be passed to you can do that through
+the ``cmd`` option in ``setup{}``
+
+
+.. code-block:: lua
+
+    require'lspconfig'.fortls.setup{
+        cmd = {
+            'fortls',
+            '--lowercase_intrisics',
+            '--hover_signature',
+            '--hover_language=fortran',
+            '--use_signature_help'
+        }
+    }
+
+.. important::
+    If you are just starting with ``neovim`` it is strongly recommended using
+    the `Suggested configuration`_ from `lspconfig`_ for keybingings and server
+    attaching. **Remember to attach the server during setup{}**
+
+.. _lspconfig: https://github.com/neovim/nvim-lspconfig
+.. _Suggested configuration: https://github.com/neovim/nvim-lspconfig#suggested-configuration
+
+
 .. _vim:
 
 `Vim <https://www.vim.org/>`__
@@ -112,49 +154,6 @@ to set ``fortls`` for Fortran files
     nmap <silent> <F2> <Plug>(lcn-rename)
 
 .. _LanguageClient-neovim: https://github.com/autozimu/LanguageClient-neovim
-
-
-`neovim <https://neovim.io/>`__
--------------------------------
-
-.. warning::
-    For neovim versions < 0.5.0 follow the instructions in the :ref:`vim` section.
-
-Neovim version >= 0.5.0 `natively supports LSP <https://neovim.io/doc/lsp/>`_.
-To enable the native LSP functionality install the `lspconfig`_ plugin with your
-favourite plugin manager.
-
-Then in your configuration file (i.e. ``init.lua``) add the following:
-
-.. code-block:: lua
-
-    require'lspconfig'.fortls.setup{}
-
-
-If additional ``fortls`` options need to be passed to you can do that through
-the ``cmd`` option in ``setup{}``
-
-
-.. code-block:: lua
-
-    require'lspconfig'.fortls.setup{
-        cmd = {
-            'fortls',
-            '--lowercase_intrisics',
-            '--hover_signature',
-            '--hover_language=fortran',
-            '--use_signature_help'
-        }
-    }
-
-.. important::
-    If you are just starting with ``neovim`` it is strongly recommended using
-    the `Suggested configuration`_ from `lspconfig`_ for keybingings and server
-    attaching. **Remember to attach the server during setup{}**
-
-.. _lspconfig: https://github.com/neovim/nvim-lspconfig
-.. _Suggested configuration: https://github.com/neovim/nvim-lspconfig#suggested-configuration
-
 
 
 `EMACS <https://www.gnu.org/software/emacs/>`__

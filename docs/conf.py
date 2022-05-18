@@ -77,8 +77,12 @@ extensions = [
     "sphinx.ext.inheritance_diagram",
     "sphinx_autodoc_typehints",
     "sphinx.ext.autosectionlabel",
+    "sphinx_design",
+    "sphinx_copybutton",
     "myst_parser",
 ]
+# For sphinx_design in Markdown
+myst_enable_extensions = ["colon_fence"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -98,7 +102,10 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 #
 html_theme = "alabaster"
 html_theme = "sphinx_rtd_theme"
-
+html_theme = "furo"
+html_title = "fortls"
+html_logo = "../assets/logo.svg"
+html_favicon = "../assets/icon.svg"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
