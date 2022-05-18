@@ -73,17 +73,17 @@ fortls
         .. tab-item:: Completion
             :class-label: sd-rounded-2 sd-border-1 sd-my-2 sd-mx-2 sd-px-2 sd-py-1
 
-            .. image:: ../assets/lsp/completion-ani3.gif
+            .. image:: ../assets/lsp/completion-ani.gif
 
         .. tab-item:: Hover
             :class-label: sd-rounded-2 sd-border-1 sd-my-2 sd-mx-2 sd-px-2 sd-py-1
 
-            .. image:: ../assets/lsp/hover4-crop.png
+            .. image:: ../assets/lsp/hover2.png
 
         .. tab-item:: Rename
             :class-label: sd-rounded-2 sd-border-1 sd-my-2 sd-mx-2 sd-px-2 sd-py-1
 
-            .. image:: ../assets/lsp/rename2-trim.gif
+            .. image:: ../assets/lsp/rename2.gif
 
         .. tab-item:: Symbols
             :class-label: sd-rounded-2 sd-border-1 sd-my-2 sd-mx-2 sd-px-2 sd-py-1
@@ -93,12 +93,12 @@ fortls
         .. tab-item:: References
             :class-label: sd-rounded-2 sd-border-1 sd-my-2 sd-mx-2 sd-px-2 sd-py-1
 
-            .. image:: ../assets/lsp/definition-peek2-crop.png
+            .. image:: ../assets/lsp/definition-peek.png
 
         .. tab-item:: Diagnostics
             :class-label: sd-rounded-2 sd-border-1 sd-my-2 sd-mx-2 sd-px-2 sd-py-1
 
-            .. image:: ../assets/lsp/diagnostics1-crop.png
+            .. image:: ../assets/lsp/diagnostics1.png
 
 
 .. TODO: here go the sponsors

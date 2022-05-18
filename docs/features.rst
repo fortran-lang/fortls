@@ -14,7 +14,7 @@ Features
 Completion
 ----------
 
-.. image:: ../assets/lsp/completion-ani3.gif
+.. image:: ../assets/lsp/completion-ani.gif
 
 .. image:: ../assets/lsp/completion.png
 
@@ -24,7 +24,7 @@ Hover
 
 .. image:: ../assets/lsp/hover.png
 
-.. image:: ../assets/lsp/hover4.png
+.. image:: ../assets/lsp/hover2.png
 
 
 Symbols
