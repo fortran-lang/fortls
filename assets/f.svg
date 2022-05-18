@@ -31,8 +31,8 @@
      inkscape:cx="23.580246"
      inkscape:cy="49.576842"
      inkscape:window-width="1400"
-     inkscape:window-height="1053"
-     inkscape:window-x="2126"
+     inkscape:window-height="1023"
+     inkscape:window-x="520"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
      inkscape:current-layer="layer1" />
@@ -51,16 +51,14 @@
        x="73.283318"
        y="109.96873"
        ry="3.5308964" />
-    <text
-       xml:space="preserve"
-       style="font-size:10.5833px;line-height:1.25;font-family:Caladea;-inkscape-font-specification:Caladea;fill:#ffffff;stroke:none;stroke-width:0.3;stroke-miterlimit:4;stroke-dasharray:none"
-       x="75.582489"
-       y="119.92778"
-       id="text1843"><tspan
-         sodipodi:role="line"
-         id="tspan1841"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Clarendon;-inkscape-font-specification:'Clarendon Bold';fill:#ffffff;stroke:none;stroke-width:0.3;stroke-miterlimit:4;stroke-dasharray:none"
-         x="75.582489"
-         y="119.92778">F</tspan></text>
+    <g
+       aria-label="F"
+       id="text1843"
+       style="font-size:10.5833px;line-height:1.25;font-family:Caladea;-inkscape-font-specification:Caladea;fill:#ffffff;stroke-width:0.3">
+      <path
+         d="m 75.688322,113.09097 h 0.89958 c 0.03175,0 0.07408,0 0.105833,0 0.338666,0.0318 0.402166,0.11641 0.402166,0.60325 v 4.46615 0.381 c 0,0.48683 -0.05292,0.5715 -0.402166,0.60325 -0.03175,0 -0.07408,0.0106 -0.105833,0.0106 h -0.888997 v 0.77258 h 4.339153 v -0.77258 h -0.804331 c -0.04233,0 -0.08467,-0.0106 -0.126999,-0.0106 -0.497415,-0.0318 -0.560915,-0.10584 -0.560915,-0.60325 v -2.0955 h 1.132413 c 0.761998,0 1.037163,0.254 1.037163,0.99483 v 0.35984 h 0.677332 v -3.50308 h -0.698498 v 0.381 c 0,0.0741 0,0.14817 -0.01058,0.22225 -0.07408,0.60325 -0.328082,0.79375 -1.079496,0.79375 h -1.05833 v -2.60349 h 2.296576 c 1.312329,0 1.799161,0.37041 1.947327,1.36524 0.02117,0.11642 0.03175,0.22225 0.03175,0.33867 l 0.01058,0.49741 h 0.719665 v -2.98449 h -7.863392 z"
+         style="font-weight:bold;font-family:Clarendon;-inkscape-font-specification:'Clarendon Bold'"
+         id="path824" />
+    </g>
   </g>
 </svg>
