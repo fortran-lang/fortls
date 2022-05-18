@@ -6,7 +6,8 @@
 
 ### Changed
 
-- Redesigned the `fortls` website to be more aesthetically pleasing and user-friendly.
+- Redesigned the `fortls` website to be more aesthetically pleasing and user-friendly
+  ([#112](https://github.com/gnikit/fortls/issues/112)
 
 ## 2.5.0
 
