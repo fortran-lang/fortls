@@ -33,7 +33,7 @@ pip install -e .[dev,docs]
 
 ### Testing 🧪
 
-To verify that your cloning of the GitHub repository work as expected open a terminal and run:
+To verify that your cloning of the GitHub repository worked as expected open a terminal and run:
 
 ```sh
 pytest -v
@@ -57,7 +57,7 @@ pre-commit install
 
 This will ensure that all you commits meet the formatting standards of the project.
 
-----
+---
 
 You can now start writing code! Your local `fortls` version will be updated with every code change you make, so you can use your normal code editor to checkout the `fortls` features that you have implemented.
 It is however considerably easier to create compact unittests to check if your changes have worked.
