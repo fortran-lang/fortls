@@ -46,6 +46,7 @@
 
 ## Changed
 
+- Redesigned the `fortls` website to be more aesthetically pleasing and user-friendly.
 - Changed code structure, reformatted files and changed name conventions
   ([#109](https://github.com/gnikit/fortls/issues/109))
 - Updated CONTRIBUTING instructions

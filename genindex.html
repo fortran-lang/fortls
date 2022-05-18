@@ -1,1439 +1,1622 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; fortls 0.1.dev1+g1bb0e56 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-    <script src="_static/js/theme.js"></script>
-    <link rel="index" title="Index" href="#" />
-    <link rel="search" title="Search" href="search.html" /> 
-</head>
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="#" /><link rel="search" title="Search" href="search.html" />
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> fortls
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+    <link rel="shortcut icon" href="_static/icon.svg"/><meta name="generator" content="sphinx-4.5.0, furo 2022.04.07"/><title>Index - fortls</title>
+<link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=68f4518137b9aefe99b631505a2064c3c42c9852" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">fortls</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="_static/logo.svg" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">fortls</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Get Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Components</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="README.html">fortls - Fortran Language Server</a></li>
-<li class="toctree-l1"><a class="reference internal" href="options.html">Configuration options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="features.html">Features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="editor_integration.html">Editor Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="options.html">Configuration options</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fortls_changes.html">Unique fortls features (not in fortran-language-server)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">Developers’ documentations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Involved</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to fortls</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contact Us</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact Us</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Dev</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="modules.html">Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="fortls.html">fortls package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html#indices-and-tables">Indices and tables</a></li>
 </ul>
 
-        </div>
+</div>
+</div>
+
       </div>
-    </nav>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          
+<section class="genindex-section">
+  <h1 id="index">Index</h1>
+  <div class="genindex-jumpbox"><a href="#A"><strong>A</strong></a> | <a href="#B"><strong>B</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#D"><strong>D</strong></a> | <a href="#E"><strong>E</strong></a> | <a href="#F"><strong>F</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#H"><strong>H</strong></a> | <a href="#I"><strong>I</strong></a> | <a href="#J"><strong>J</strong></a> | <a href="#K"><strong>K</strong></a> | <a href="#L"><strong>L</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#N"><strong>N</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#T"><strong>T</strong></a> | <a href="#U"><strong>U</strong></a> | <a href="#V"><strong>V</strong></a> | <a href="#W"><strong>W</strong></a></div>
+</section>
+<section id="A" class="genindex-section">
+  <h2>A</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.ftypes.InterInfo.abstract">abstract (fortls.ftypes.InterInfo attribute)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.Scope.add_child">add_child() (fortls.objects.Scope method)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.FortranAST.add_doc">add_doc() (fortls.objects.FortranAST method)</a>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">fortls</a>
-      </nav>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.FortranObj.add_doc">(fortls.objects.FortranObj method)</a>
+</li>
+        </ul></li>
+        <li><a href="fortls.html#fortls.objects.FortranAST.add_error">add_error() (fortls.objects.FortranAST method)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.FortranAST.add_include">add_include() (fortls.objects.FortranAST method)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.FortranAST.add_int_member">add_int_member() (fortls.objects.FortranAST method)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.Scope.add_member">add_member() (fortls.objects.Scope method)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.FortranAST.add_private">add_private() (fortls.objects.FortranAST method)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.FortranAST.add_public">add_public() (fortls.objects.FortranAST method)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.objects.Diagnostic.add_related">add_related() (fortls.objects.Diagnostic method)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.FortranAST.add_scope">add_scope() (fortls.objects.FortranAST method)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.Scope.add_subroutine">add_subroutine() (fortls.objects.Scope method)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.FortranAST.add_use">add_use() (fortls.objects.FortranAST method)</a>
 
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Index</li>
-      <li class="wy-breadcrumbs-aside">
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+        <ul>
+          <li><a href="fortls.html#fortls.objects.Scope.add_use">(fortls.objects.Scope method)</a>
+</li>
+        </ul></li>
+        <li><a href="fortls.html#fortls.objects.FortranAST.add_variable">add_variable() (fortls.objects.FortranAST method)</a>
+</li>
+        <li><a href="fortls.html#fortls.parse_fortran.FortranFile.apply_change">apply_change() (fortls.parse_fortran.FortranFile method)</a>
+</li>
+        <li><a href="fortls.html#fortls.ftypes.SubInfo.args">args (fortls.ftypes.SubInfo attribute)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.Associate">Associate (class in fortls.objects)</a>
+</li>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.ASSOCIATE">ASSOCIATE (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.AssociateMap">AssociateMap (class in fortls.objects)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
 
-<h1 id="index">Index</h1>
+<section id="B" class="genindex-section">
+  <h2>B</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.objects.AssociateMap.bind_name">bind_name (fortls.objects.AssociateMap attribute)</a>
+</li>
+        <li><a href="fortls.html#fortls.ftypes.SelectInfo.binding">binding (fortls.ftypes.SelectInfo attribute)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.Block">Block (class in fortls.objects)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.BLOCK">BLOCK (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+</li>
+        <li><a href="fortls.html#fortls.ftypes.GenProcDefInfo.bound_name">bound_name (fortls.ftypes.GenProcDefInfo attribute)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.Diagnostic.build">build() (fortls.objects.Diagnostic method)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
 
-<div class="genindex-jumpbox">
- <a href="#A"><strong>A</strong></a>
- | <a href="#B"><strong>B</strong></a>
- | <a href="#C"><strong>C</strong></a>
- | <a href="#D"><strong>D</strong></a>
- | <a href="#E"><strong>E</strong></a>
- | <a href="#F"><strong>F</strong></a>
- | <a href="#G"><strong>G</strong></a>
- | <a href="#H"><strong>H</strong></a>
- | <a href="#I"><strong>I</strong></a>
- | <a href="#J"><strong>J</strong></a>
- | <a href="#K"><strong>K</strong></a>
- | <a href="#L"><strong>L</strong></a>
- | <a href="#M"><strong>M</strong></a>
- | <a href="#N"><strong>N</strong></a>
- | <a href="#O"><strong>O</strong></a>
- | <a href="#P"><strong>P</strong></a>
- | <a href="#R"><strong>R</strong></a>
- | <a href="#S"><strong>S</strong></a>
- | <a href="#T"><strong>T</strong></a>
- | <a href="#U"><strong>U</strong></a>
- | <a href="#V"><strong>V</strong></a>
- | <a href="#W"><strong>W</strong></a>
- 
-</div>
-<h2 id="A">A</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.ftypes.InterInfo.abstract">abstract (fortls.ftypes.InterInfo attribute)</a>
+<section id="C" class="genindex-section">
+  <h2>C</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.CALL">CALL (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Scope.add_child">add_child() (fortls.objects.Scope method)</a>
+        <li><a href="fortls.html#fortls.json_templates.change_json">change_json() (in module fortls.json_templates)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.FortranAST.add_doc">add_doc() (fortls.objects.FortranAST method)</a>
+        <li><a href="fortls.html#fortls.objects.FortranObj.check_definition">check_definition() (fortls.objects.FortranObj method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.FortranObj.add_doc">(fortls.objects.FortranObj method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.Method.check_definition">(fortls.objects.Method method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.objects.FortranAST.add_error">add_error() (fortls.objects.FortranAST method)</a>
+          <li><a href="fortls.html#fortls.objects.Variable.check_definition">(fortls.objects.Variable method)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.FortranAST.add_include">add_include() (fortls.objects.FortranAST method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.objects.Scope.check_definitions">check_definitions() (fortls.objects.Scope method)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.FortranAST.add_int_member">add_int_member() (fortls.objects.FortranAST method)</a>
-</li>
-      <li><a href="fortls.html#fortls.objects.Scope.add_member">add_member() (fortls.objects.Scope method)</a>
-</li>
-      <li><a href="fortls.html#fortls.objects.FortranAST.add_private">add_private() (fortls.objects.FortranAST method)</a>
-</li>
-      <li><a href="fortls.html#fortls.objects.FortranAST.add_public">add_public() (fortls.objects.FortranAST method)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.objects.Diagnostic.add_related">add_related() (fortls.objects.Diagnostic method)</a>
-</li>
-      <li><a href="fortls.html#fortls.objects.FortranAST.add_scope">add_scope() (fortls.objects.FortranAST method)</a>
-</li>
-      <li><a href="fortls.html#fortls.objects.Scope.add_subroutine">add_subroutine() (fortls.objects.Scope method)</a>
-</li>
-      <li><a href="fortls.html#fortls.objects.FortranAST.add_use">add_use() (fortls.objects.FortranAST method)</a>
+        <li><a href="fortls.html#fortls.objects.FortranAST.check_file">check_file() (fortls.objects.FortranAST method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.Scope.add_use">(fortls.objects.Scope method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.parse_fortran.FortranFile.check_file">(fortls.parse_fortran.FortranFile method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.objects.FortranAST.add_variable">add_variable() (fortls.objects.FortranAST method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.objects.Scope.check_use">check_use() (fortls.objects.Scope method)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.FortranFile.apply_change">apply_change() (fortls.parse_fortran.FortranFile method)</a>
-</li>
-      <li><a href="fortls.html#fortls.ftypes.SubInfo.args">args (fortls.ftypes.SubInfo attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.objects.Associate">Associate (class in fortls.objects)</a>
-</li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.ASSOCIATE">ASSOCIATE (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.objects.AssociateMap">AssociateMap (class in fortls.objects)</a>
-</li>
-  </ul></td>
-</tr></table>
+        <li><a href="fortls.html#fortls.objects.FortranObj.check_valid_parent">check_valid_parent() (fortls.objects.FortranObj method)</a>
 
-<h2 id="B">B</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.objects.AssociateMap.bind_name">bind_name (fortls.objects.AssociateMap attribute)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.Module.check_valid_parent">(fortls.objects.Module method)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.SelectInfo.binding">binding (fortls.ftypes.SelectInfo attribute)</a>
+          <li><a href="fortls.html#fortls.objects.Subroutine.check_valid_parent">(fortls.objects.Subroutine method)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Block">Block (class in fortls.objects)</a>
+          <li><a href="fortls.html#fortls.objects.Type.check_valid_parent">(fortls.objects.Type method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.BLOCK">BLOCK (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.CLASS_VAR">CLASS_VAR (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.GenProcDefInfo.bound_name">bound_name (fortls.ftypes.GenProcDefInfo attribute)</a>
+        <li><a href="fortls.html#fortls.ftypes.ClassInfo">ClassInfo (class in fortls.ftypes)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Diagnostic.build">build() (fortls.objects.Diagnostic method)</a>
+        <li><a href="fortls.html#fortls.objects.climb_type_tree">climb_type_tree() (in module fortls.objects)</a>
 </li>
-  </ul></td>
-</tr></table>
+        <li><a href="fortls.html#fortls.objects.FortranAST.close_file">close_file() (fortls.objects.FortranAST method)</a>
+</li>
+        <li><a href="fortls.html#fortls.interface.commandline_args">commandline_args() (in module fortls.interface)</a>
+</li>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.CONTAINS">CONTAINS (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+</li>
+        <li><a href="fortls.html#fortls.parse_fortran.FortranFile.copy">copy() (fortls.parse_fortran.FortranFile method)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.Scope.copy_from">copy_from() (fortls.objects.Scope method)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.Function.copy_interface">copy_interface() (fortls.objects.Function method)</a>
 
-<h2 id="C">C</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.CALL">CALL (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.Subroutine.copy_interface">(fortls.objects.Subroutine method)</a>
 </li>
-      <li><a href="fortls.html#fortls.json_templates.change_json">change_json() (in module fortls.json_templates)</a>
-</li>
-      <li><a href="fortls.html#fortls.objects.FortranObj.check_definition">check_definition() (fortls.objects.FortranObj method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.objects.Associate.create_binding_variable">create_binding_variable() (fortls.objects.Associate method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.Method.check_definition">(fortls.objects.Method method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.Select.create_binding_variable">(fortls.objects.Select method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Variable.check_definition">(fortls.objects.Variable method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.objects.FortranAST.create_none_scope">create_none_scope() (fortls.objects.FortranAST method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.objects.Scope.check_definitions">check_definitions() (fortls.objects.Scope method)</a>
-</li>
-      <li><a href="fortls.html#fortls.objects.FortranAST.check_file">check_file() (fortls.objects.FortranAST method)</a>
+    </ul></td>
+  </tr></table>
+</section>
 
-      <ul>
-        <li><a href="fortls.html#fortls.parse_fortran.FortranFile.check_file">(fortls.parse_fortran.FortranFile method)</a>
+<section id="D" class="genindex-section">
+  <h2>D</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.DEF_KIND">DEF_KIND (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.objects.Scope.check_use">check_use() (fortls.objects.Scope method)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.DEFINED">DEFINED (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.FortranObj.check_valid_parent">check_valid_parent() (fortls.objects.FortranObj method)</a>
+        <li><a href="fortls.html#fortls.jsonrpc.deque_find_and_pop">deque_find_and_pop() (in module fortls.jsonrpc)</a>
+</li>
+        <li><a href="fortls.html#fortls.ftypes.SelectInfo.desc">desc (fortls.ftypes.SelectInfo attribute)</a>
+</li>
+        <li><a href="fortls.html#fortls.helper_functions.detect_fixed_format">detect_fixed_format() (in module fortls.helper_functions)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.objects.Diagnostic">Diagnostic (class in fortls.objects)</a>
+</li>
+        <li><a href="fortls.html#fortls.json_templates.diagnostic_json">diagnostic_json() (in module fortls.json_templates)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.Do">Do (class in fortls.objects)</a>
+</li>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.DO">DO (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+</li>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.DQ_STRING">DQ_STRING (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.Module.check_valid_parent">(fortls.objects.Module method)</a>
+<section id="E" class="genindex-section">
+  <h2>E</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.ftypes.Range.end">end (fortls.ftypes.Range attribute)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Subroutine.check_valid_parent">(fortls.objects.Subroutine method)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END">END (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Type.check_valid_parent">(fortls.objects.Type method)</a>
+        <li><a href="fortls.html#fortls.objects.FortranObj.end">end() (fortls.objects.FortranObj method)</a>
 </li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.CLASS_VAR">CLASS_VAR (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_ASSOCIATE">END_ASSOCIATE (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.ClassInfo">ClassInfo (class in fortls.ftypes)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_BLOCK">END_BLOCK (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.climb_type_tree">climb_type_tree() (in module fortls.objects)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_DO">END_DO (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.FortranAST.close_file">close_file() (fortls.objects.FortranAST method)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_ENUMD">END_ENUMD (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.interface.commandline_args">commandline_args() (in module fortls.interface)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_FIXED">END_FIXED (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.CONTAINS">CONTAINS (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_FUN">END_FUN (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.FortranFile.copy">copy() (fortls.parse_fortran.FortranFile method)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_IF">END_IF (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Scope.copy_from">copy_from() (fortls.objects.Scope method)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_INT">END_INT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Function.copy_interface">copy_interface() (fortls.objects.Function method)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_MOD">END_MOD (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.FortranAST.end_ppif">end_ppif() (fortls.objects.FortranAST method)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_PRO">END_PRO (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+</li>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_PROG">END_PROG (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.FortranAST.end_scope">end_scope() (fortls.objects.FortranAST method)</a>
+</li>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_SELECT">END_SELECT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+</li>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_SMOD">END_SMOD (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+</li>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_SUB">END_SUB (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+</li>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_TYPED">END_TYPED (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+</li>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_WHERE">END_WHERE (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+</li>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_WORD">END_WORD (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.Enum">Enum (class in fortls.objects)</a>
+</li>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.ENUM_DEF">ENUM_DEF (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+</li>
+        <li><a href="fortls.html#fortls.constants.Severity.error">error (fortls.constants.Severity attribute)</a>
+</li>
+        <li><a href="fortls.html#fortls.helper_functions.expand_name">expand_name() (in module fortls.helper_functions)</a>
+</li>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.EXTENDS">EXTENDS (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.Subroutine.copy_interface">(fortls.objects.Subroutine method)</a>
+<section id="F" class="genindex-section">
+  <h2>F</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.ftypes.IncludeInfo.file">file (fortls.ftypes.IncludeInfo attribute)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.objects.Associate.create_binding_variable">create_binding_variable() (fortls.objects.Associate method)</a>
-
-      <ul>
-        <li><a href="fortls.html#fortls.objects.Select.create_binding_variable">(fortls.objects.Select method)</a>
+        <li><a href="fortls.html#fortls.langserver.LangServer.file_init">file_init() (fortls.langserver.LangServer static method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.objects.FortranAST.create_none_scope">create_none_scope() (fortls.objects.FortranAST method)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.find_external">find_external() (in module fortls.parse_fortran)</a>
 </li>
-  </ul></td>
-</tr></table>
-
-<h2 id="D">D</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.DEF_KIND">DEF_KIND (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.find_external_attr">find_external_attr() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.DEFINED">DEFINED (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.find_external_type">find_external_type() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.jsonrpc.deque_find_and_pop">deque_find_and_pop() (in module fortls.jsonrpc)</a>
+        <li><a href="fortls.html#fortls.objects.find_in_scope">find_in_scope() (in module fortls.objects)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.SelectInfo.desc">desc (fortls.ftypes.SelectInfo attribute)</a>
+        <li><a href="fortls.html#fortls.objects.find_in_workspace">find_in_workspace() (in module fortls.objects)</a>
 </li>
-      <li><a href="fortls.html#fortls.helper_functions.detect_fixed_format">detect_fixed_format() (in module fortls.helper_functions)</a>
+        <li><a href="fortls.html#fortls.helper_functions.find_paren_match">find_paren_match() (in module fortls.helper_functions)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.objects.Diagnostic">Diagnostic (class in fortls.objects)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.FortranFile.find_word_in_code_line">find_word_in_code_line() (fortls.parse_fortran.FortranFile method)</a>
 </li>
-      <li><a href="fortls.html#fortls.json_templates.diagnostic_json">diagnostic_json() (in module fortls.json_templates)</a>
+        <li><a href="fortls.html#fortls.helper_functions.find_word_in_line">find_word_in_line() (in module fortls.helper_functions)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Do">Do (class in fortls.objects)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.FIXED_COMMENT">FIXED_COMMENT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.DO">DO (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.FIXED_CONT">FIXED_CONT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.DQ_STRING">DQ_STRING (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.FIXED_DOC">FIXED_DOC (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-  </ul></td>
-</tr></table>
-
-<h2 id="E">E</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.ftypes.Range.end">end (fortls.ftypes.Range attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.FIXED_OPENMP">FIXED_OPENMP (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END">END (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.objects.FortranObj.end">end() (fortls.objects.FortranObj method)</a>
-</li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_ASSOCIATE">END_ASSOCIATE (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_BLOCK">END_BLOCK (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_DO">END_DO (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_ENUMD">END_ENUMD (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_FIXED">END_FIXED (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_FUN">END_FUN (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_IF">END_IF (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_INT">END_INT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_MOD">END_MOD (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.objects.FortranAST.end_ppif">end_ppif() (fortls.objects.FortranAST method)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_PRO">END_PRO (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_PROG">END_PROG (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.objects.FortranAST.end_scope">end_scope() (fortls.objects.FortranAST method)</a>
-</li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_SELECT">END_SELECT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_SMOD">END_SMOD (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_SUB">END_SUB (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_TYPED">END_TYPED (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_WHERE">END_WHERE (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.END_WORD">END_WORD (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.objects.Enum">Enum (class in fortls.objects)</a>
-</li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.ENUM_DEF">ENUM_DEF (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.constants.Severity.error">error (fortls.constants.Severity attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.helper_functions.expand_name">expand_name() (in module fortls.helper_functions)</a>
-</li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.EXTENDS">EXTENDS (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="F">F</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.ftypes.IncludeInfo.file">file (fortls.ftypes.IncludeInfo attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.file_init">file_init() (fortls.langserver.LangServer static method)</a>
-</li>
-      <li><a href="fortls.html#fortls.parse_fortran.find_external">find_external() (in module fortls.parse_fortran)</a>
-</li>
-      <li><a href="fortls.html#fortls.parse_fortran.find_external_attr">find_external_attr() (in module fortls.parse_fortran)</a>
-</li>
-      <li><a href="fortls.html#fortls.parse_fortran.find_external_type">find_external_type() (in module fortls.parse_fortran)</a>
-</li>
-      <li><a href="fortls.html#fortls.objects.find_in_scope">find_in_scope() (in module fortls.objects)</a>
-</li>
-      <li><a href="fortls.html#fortls.objects.find_in_workspace">find_in_workspace() (in module fortls.objects)</a>
-</li>
-      <li><a href="fortls.html#fortls.helper_functions.find_paren_match">find_paren_match() (in module fortls.helper_functions)</a>
-</li>
-      <li><a href="fortls.html#fortls.parse_fortran.FortranFile.find_word_in_code_line">find_word_in_code_line() (fortls.parse_fortran.FortranFile method)</a>
-</li>
-      <li><a href="fortls.html#fortls.helper_functions.find_word_in_line">find_word_in_line() (in module fortls.helper_functions)</a>
-</li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.FIXED_COMMENT">FIXED_COMMENT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.FIXED_CONT">FIXED_CONT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.FIXED_DOC">FIXED_DOC (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.FIXED_OPENMP">FIXED_OPENMP (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
-</li>
-      <li>
+        <li>
     fortls
 
-      <ul>
-        <li><a href="fortls.html#module-fortls">module</a>
+        <ul>
+          <li><a href="fortls.html#module-fortls">module</a>
 </li>
-      </ul></li>
-      <li>
+        </ul></li>
+        <li>
     fortls.constants
 
-      <ul>
-        <li><a href="fortls.html#module-fortls.constants">module</a>
+        <ul>
+          <li><a href="fortls.html#module-fortls.constants">module</a>
 </li>
-      </ul></li>
-      <li>
+        </ul></li>
+        <li>
     fortls.ftypes
 
-      <ul>
-        <li><a href="fortls.html#module-fortls.ftypes">module</a>
+        <ul>
+          <li><a href="fortls.html#module-fortls.ftypes">module</a>
 </li>
-      </ul></li>
-      <li>
+        </ul></li>
+        <li>
     fortls.helper_functions
 
-      <ul>
-        <li><a href="fortls.html#module-fortls.helper_functions">module</a>
+        <ul>
+          <li><a href="fortls.html#module-fortls.helper_functions">module</a>
 </li>
-      </ul></li>
-      <li>
+        </ul></li>
+        <li>
     fortls.interface
 
-      <ul>
-        <li><a href="fortls.html#module-fortls.interface">module</a>
+        <ul>
+          <li><a href="fortls.html#module-fortls.interface">module</a>
 </li>
-      </ul></li>
-      <li>
+        </ul></li>
+        <li>
     fortls.intrinsics
 
-      <ul>
-        <li><a href="fortls.html#module-fortls.intrinsics">module</a>
+        <ul>
+          <li><a href="fortls.html#module-fortls.intrinsics">module</a>
 </li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li>
     fortls.json_templates
 
-      <ul>
-        <li><a href="fortls.html#module-fortls.json_templates">module</a>
+        <ul>
+          <li><a href="fortls.html#module-fortls.json_templates">module</a>
 </li>
-      </ul></li>
-      <li>
+        </ul></li>
+        <li>
     fortls.jsonrpc
 
-      <ul>
-        <li><a href="fortls.html#module-fortls.jsonrpc">module</a>
+        <ul>
+          <li><a href="fortls.html#module-fortls.jsonrpc">module</a>
 </li>
-      </ul></li>
-      <li>
+        </ul></li>
+        <li>
     fortls.langserver
 
-      <ul>
-        <li><a href="fortls.html#module-fortls.langserver">module</a>
+        <ul>
+          <li><a href="fortls.html#module-fortls.langserver">module</a>
 </li>
-      </ul></li>
-      <li>
+        </ul></li>
+        <li>
     fortls.objects
 
-      <ul>
-        <li><a href="fortls.html#module-fortls.objects">module</a>
+        <ul>
+          <li><a href="fortls.html#module-fortls.objects">module</a>
 </li>
-      </ul></li>
-      <li>
+        </ul></li>
+        <li>
     fortls.parse_fortran
 
-      <ul>
-        <li><a href="fortls.html#module-fortls.parse_fortran">module</a>
+        <ul>
+          <li><a href="fortls.html#module-fortls.parse_fortran">module</a>
 </li>
-      </ul></li>
-      <li>
+        </ul></li>
+        <li>
     fortls.regex_patterns
 
-      <ul>
-        <li><a href="fortls.html#module-fortls.regex_patterns">module</a>
+        <ul>
+          <li><a href="fortls.html#module-fortls.regex_patterns">module</a>
 </li>
-      </ul></li>
-      <li>
+        </ul></li>
+        <li>
     fortls.version
 
-      <ul>
-        <li><a href="fortls.html#module-fortls.version">module</a>
+        <ul>
+          <li><a href="fortls.html#module-fortls.version">module</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.constants.FORTRAN_LITERAL">FORTRAN_LITERAL (in module fortls.constants)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.constants.FORTRAN_LITERAL">FORTRAN_LITERAL (in module fortls.constants)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.FortranAST">FortranAST (class in fortls.objects)</a>
+        <li><a href="fortls.html#fortls.objects.FortranAST">FortranAST (class in fortls.objects)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.FortranFile">FortranFile (class in fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.FortranFile">FortranFile (class in fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.FortranObj">FortranObj (class in fortls.objects)</a>
+        <li><a href="fortls.html#fortls.objects.FortranObj">FortranObj (class in fortls.objects)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions">FortranRegularExpressions (class in fortls.regex_patterns)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions">FortranRegularExpressions (class in fortls.regex_patterns)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.FREE_COMMENT">FREE_COMMENT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.FREE_COMMENT">FREE_COMMENT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.FREE_CONT">FREE_CONT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.FREE_CONT">FREE_CONT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.FREE_DOC">FREE_DOC (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.FREE_DOC">FREE_DOC (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.FREE_FORMAT_TEST">FREE_FORMAT_TEST (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.FREE_FORMAT_TEST">FREE_FORMAT_TEST (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.FREE_OPENMP">FREE_OPENMP (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.FREE_OPENMP">FREE_OPENMP (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.FUN">FUN (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.FUN">FUN (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Function">Function (class in fortls.objects)</a>
+        <li><a href="fortls.html#fortls.objects.Function">Function (class in fortls.objects)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.FunSig">FunSig (class in fortls.ftypes)</a>
+        <li><a href="fortls.html#fortls.ftypes.FunSig">FunSig (class in fortls.ftypes)</a>
 </li>
-  </ul></td>
-</tr></table>
+    </ul></td>
+  </tr></table>
+</section>
 
-<h2 id="G">G</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.GEN_ASSIGN">GEN_ASSIGN (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+<section id="G" class="genindex-section">
+  <h2>G</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.GEN_ASSIGN">GEN_ASSIGN (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.GENERIC_PRO">GENERIC_PRO (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.GENERIC_PRO">GENERIC_PRO (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.GenProcDefInfo">GenProcDefInfo (class in fortls.ftypes)</a>
+        <li><a href="fortls.html#fortls.ftypes.GenProcDefInfo">GenProcDefInfo (class in fortls.ftypes)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.FortranObj.get_actions">get_actions() (fortls.objects.FortranObj method)</a>
+        <li><a href="fortls.html#fortls.objects.FortranObj.get_actions">get_actions() (fortls.objects.FortranObj method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.Type.get_actions">(fortls.objects.Type method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.Type.get_actions">(fortls.objects.Type method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.get_all_references">get_all_references() (fortls.langserver.LangServer method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.langserver.LangServer.get_all_references">get_all_references() (fortls.langserver.LangServer method)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.FortranObj.get_ancestors">get_ancestors() (fortls.objects.FortranObj method)</a>
+        <li><a href="fortls.html#fortls.objects.FortranObj.get_ancestors">get_ancestors() (fortls.objects.FortranObj method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.Submodule.get_ancestors">(fortls.objects.Submodule method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.Submodule.get_ancestors">(fortls.objects.Submodule method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.objects.Block.get_children">get_children() (fortls.objects.Block method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.objects.Block.get_children">get_children() (fortls.objects.Block method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.FortranObj.get_children">(fortls.objects.FortranObj method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.FortranObj.get_children">(fortls.objects.FortranObj method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Scope.get_children">(fortls.objects.Scope method)</a>
+          <li><a href="fortls.html#fortls.objects.Scope.get_children">(fortls.objects.Scope method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Subroutine.get_children">(fortls.objects.Subroutine method)</a>
+          <li><a href="fortls.html#fortls.objects.Subroutine.get_children">(fortls.objects.Subroutine method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Type.get_children">(fortls.objects.Type method)</a>
+          <li><a href="fortls.html#fortls.objects.Type.get_children">(fortls.objects.Type method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.parse_fortran.FortranFile.get_code_line">get_code_line() (fortls.parse_fortran.FortranFile method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.parse_fortran.FortranFile.get_code_line">get_code_line() (fortls.parse_fortran.FortranFile method)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.FortranFile.get_comment_regexs">get_comment_regexs() (fortls.parse_fortran.FortranFile method)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.FortranFile.get_comment_regexs">get_comment_regexs() (fortls.parse_fortran.FortranFile method)</a>
 </li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.get_definition">get_definition() (fortls.langserver.LangServer method)</a>
+        <li><a href="fortls.html#fortls.langserver.LangServer.get_definition">get_definition() (fortls.langserver.LangServer method)</a>
 </li>
-      <li><a href="fortls.html#fortls.intrinsics.Intrinsic.get_desc">get_desc() (fortls.intrinsics.Intrinsic method)</a>
+        <li><a href="fortls.html#fortls.intrinsics.Intrinsic.get_desc">get_desc() (fortls.intrinsics.Intrinsic method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.Associate.get_desc">(fortls.objects.Associate method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.Associate.get_desc">(fortls.objects.Associate method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Block.get_desc">(fortls.objects.Block method)</a>
+          <li><a href="fortls.html#fortls.objects.Block.get_desc">(fortls.objects.Block method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Do.get_desc">(fortls.objects.Do method)</a>
+          <li><a href="fortls.html#fortls.objects.Do.get_desc">(fortls.objects.Do method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Enum.get_desc">(fortls.objects.Enum method)</a>
+          <li><a href="fortls.html#fortls.objects.Enum.get_desc">(fortls.objects.Enum method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.FortranObj.get_desc">(fortls.objects.FortranObj method)</a>
+          <li><a href="fortls.html#fortls.objects.FortranObj.get_desc">(fortls.objects.FortranObj method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Function.get_desc">(fortls.objects.Function method)</a>
+          <li><a href="fortls.html#fortls.objects.Function.get_desc">(fortls.objects.Function method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.If.get_desc">(fortls.objects.If method)</a>
+          <li><a href="fortls.html#fortls.objects.If.get_desc">(fortls.objects.If method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Include.get_desc">(fortls.objects.Include method)</a>
+          <li><a href="fortls.html#fortls.objects.Include.get_desc">(fortls.objects.Include method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Interface.get_desc">(fortls.objects.Interface method)</a>
+          <li><a href="fortls.html#fortls.objects.Interface.get_desc">(fortls.objects.Interface method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Module.get_desc">(fortls.objects.Module method)</a>
+          <li><a href="fortls.html#fortls.objects.Module.get_desc">(fortls.objects.Module method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Program.get_desc">(fortls.objects.Program method)</a>
+          <li><a href="fortls.html#fortls.objects.Program.get_desc">(fortls.objects.Program method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Select.get_desc">(fortls.objects.Select method)</a>
+          <li><a href="fortls.html#fortls.objects.Select.get_desc">(fortls.objects.Select method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Submodule.get_desc">(fortls.objects.Submodule method)</a>
+          <li><a href="fortls.html#fortls.objects.Submodule.get_desc">(fortls.objects.Submodule method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Subroutine.get_desc">(fortls.objects.Subroutine method)</a>
+          <li><a href="fortls.html#fortls.objects.Subroutine.get_desc">(fortls.objects.Subroutine method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Type.get_desc">(fortls.objects.Type method)</a>
+          <li><a href="fortls.html#fortls.objects.Type.get_desc">(fortls.objects.Type method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Variable.get_desc">(fortls.objects.Variable method)</a>
+          <li><a href="fortls.html#fortls.objects.Variable.get_desc">(fortls.objects.Variable method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Where.get_desc">(fortls.objects.Where method)</a>
+          <li><a href="fortls.html#fortls.objects.Where.get_desc">(fortls.objects.Where method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.get_diagnostics">get_diagnostics() (fortls.langserver.LangServer method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.langserver.LangServer.get_diagnostics">get_diagnostics() (fortls.langserver.LangServer method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.FortranObj.get_diagnostics">(fortls.objects.FortranObj method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.FortranObj.get_diagnostics">(fortls.objects.FortranObj method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Subroutine.get_diagnostics">(fortls.objects.Subroutine method)</a>
+          <li><a href="fortls.html#fortls.objects.Subroutine.get_diagnostics">(fortls.objects.Subroutine method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Type.get_diagnostics">(fortls.objects.Type method)</a>
+          <li><a href="fortls.html#fortls.objects.Type.get_diagnostics">(fortls.objects.Type method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.objects.Subroutine.get_docs_full">get_docs_full() (fortls.objects.Subroutine method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.objects.Subroutine.get_docs_full">get_docs_full() (fortls.objects.Subroutine method)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.FortranFile.get_docstring">get_docstring() (fortls.parse_fortran.FortranFile method)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.FortranFile.get_docstring">get_docstring() (fortls.parse_fortran.FortranFile method)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.FortranObj.get_documentation">get_documentation() (fortls.objects.FortranObj method)</a>
+        <li><a href="fortls.html#fortls.objects.FortranObj.get_documentation">get_documentation() (fortls.objects.FortranObj method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.Method.get_documentation">(fortls.objects.Method method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.Method.get_documentation">(fortls.objects.Method method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.objects.FortranAST.get_enc_scope_name">get_enc_scope_name() (fortls.objects.FortranAST method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.objects.FortranAST.get_enc_scope_name">get_enc_scope_name() (fortls.objects.FortranAST method)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.FortranFile.get_fortran_definition">get_fortran_definition() (fortls.parse_fortran.FortranFile method)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.FortranFile.get_fortran_definition">get_fortran_definition() (fortls.parse_fortran.FortranFile method)</a>
 </li>
-      <li><a href="fortls.html#fortls.intrinsics.Intrinsic.get_hover">get_hover() (fortls.intrinsics.Intrinsic method)</a>
+        <li><a href="fortls.html#fortls.intrinsics.Intrinsic.get_hover">get_hover() (fortls.intrinsics.Intrinsic method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.FortranObj.get_hover">(fortls.objects.FortranObj method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.FortranObj.get_hover">(fortls.objects.FortranObj method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Function.get_hover">(fortls.objects.Function method)</a>
+          <li><a href="fortls.html#fortls.objects.Function.get_hover">(fortls.objects.Function method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Method.get_hover">(fortls.objects.Method method)</a>
+          <li><a href="fortls.html#fortls.objects.Method.get_hover">(fortls.objects.Method method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Subroutine.get_hover">(fortls.objects.Subroutine method)</a>
+          <li><a href="fortls.html#fortls.objects.Subroutine.get_hover">(fortls.objects.Subroutine method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Variable.get_hover">(fortls.objects.Variable method)</a>
+          <li><a href="fortls.html#fortls.objects.Variable.get_hover">(fortls.objects.Variable method)</a>
 </li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.objects.FortranObj.get_implicit">get_implicit() (fortls.objects.FortranObj method)</a>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.objects.FortranObj.get_implicit">get_implicit() (fortls.objects.FortranObj method)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.FortranAST.get_inner_scope">get_inner_scope() (fortls.objects.FortranAST method)</a>
+        <li><a href="fortls.html#fortls.objects.FortranAST.get_inner_scope">get_inner_scope() (fortls.objects.FortranAST method)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.FortranObj.get_interface">get_interface() (fortls.objects.FortranObj method)</a>
+        <li><a href="fortls.html#fortls.objects.FortranObj.get_interface">get_interface() (fortls.objects.FortranObj method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.Function.get_interface">(fortls.objects.Function method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.Function.get_interface">(fortls.objects.Function method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Method.get_interface">(fortls.objects.Method method)</a>
+          <li><a href="fortls.html#fortls.objects.Method.get_interface">(fortls.objects.Method method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Subroutine.get_interface">(fortls.objects.Subroutine method)</a>
+          <li><a href="fortls.html#fortls.objects.Subroutine.get_interface">(fortls.objects.Subroutine method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.objects.Subroutine.get_interface_array">get_interface_array() (fortls.objects.Subroutine method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.objects.Subroutine.get_interface_array">get_interface_array() (fortls.objects.Subroutine method)</a>
 </li>
-      <li><a href="fortls.html#fortls.intrinsics.get_intrinsic_keywords">get_intrinsic_keywords() (in module fortls.intrinsics)</a>
+        <li><a href="fortls.html#fortls.intrinsics.get_intrinsic_keywords">get_intrinsic_keywords() (in module fortls.intrinsics)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Variable.get_keywords">get_keywords() (fortls.objects.Variable method)</a>
+        <li><a href="fortls.html#fortls.objects.Variable.get_keywords">get_keywords() (fortls.objects.Variable method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.helper_functions.get_keywords">(in module fortls.helper_functions)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.helper_functions.get_keywords">(in module fortls.helper_functions)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.parse_fortran.FortranFile.get_line">get_line() (fortls.parse_fortran.FortranFile method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.parse_fortran.FortranFile.get_line">get_line() (fortls.parse_fortran.FortranFile method)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.get_line_context">get_line_context() (in module fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.get_line_context">get_line_context() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.helper_functions.get_line_prefix">get_line_prefix() (in module fortls.helper_functions)</a>
+        <li><a href="fortls.html#fortls.helper_functions.get_line_prefix">get_line_prefix() (in module fortls.helper_functions)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.FortranAST.get_object">get_object() (fortls.objects.FortranAST method)</a>
+        <li><a href="fortls.html#fortls.objects.FortranAST.get_object">get_object() (fortls.objects.FortranAST method)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Type.get_overridden">get_overridden() (fortls.objects.Type method)</a>
+        <li><a href="fortls.html#fortls.objects.Type.get_overridden">get_overridden() (fortls.objects.Type method)</a>
 </li>
-      <li><a href="fortls.html#fortls.helper_functions.get_paren_level">get_paren_level() (in module fortls.helper_functions)</a>
+        <li><a href="fortls.html#fortls.helper_functions.get_paren_level">get_paren_level() (in module fortls.helper_functions)</a>
 </li>
-      <li><a href="fortls.html#fortls.helper_functions.get_paren_substring">get_paren_substring() (in module fortls.helper_functions)</a>
+        <li><a href="fortls.html#fortls.helper_functions.get_paren_substring">get_paren_substring() (in module fortls.helper_functions)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.FortranObj.get_placeholders">get_placeholders() (fortls.objects.FortranObj static method)</a>
+        <li><a href="fortls.html#fortls.objects.FortranObj.get_placeholders">get_placeholders() (fortls.objects.FortranObj static method)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.get_procedure_modifiers">get_procedure_modifiers() (in module fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.get_procedure_modifiers">get_procedure_modifiers() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.FortranAST.get_scopes">get_scopes() (fortls.objects.FortranAST method)</a>
+        <li><a href="fortls.html#fortls.objects.FortranAST.get_scopes">get_scopes() (fortls.objects.FortranAST method)</a>
 </li>
-      <li><a href="fortls.html#fortls.intrinsics.Intrinsic.get_signature">get_signature() (fortls.intrinsics.Intrinsic method)</a>
+        <li><a href="fortls.html#fortls.intrinsics.Intrinsic.get_signature">get_signature() (fortls.intrinsics.Intrinsic method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.FortranObj.get_signature">(fortls.objects.FortranObj method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.FortranObj.get_signature">(fortls.objects.FortranObj method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Method.get_signature">(fortls.objects.Method method)</a>
+          <li><a href="fortls.html#fortls.objects.Method.get_signature">(fortls.objects.Method method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Subroutine.get_signature">(fortls.objects.Subroutine method)</a>
+          <li><a href="fortls.html#fortls.objects.Subroutine.get_signature">(fortls.objects.Subroutine method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.parse_fortran.FortranFile.get_single_line_docstring">get_single_line_docstring() (fortls.parse_fortran.FortranFile method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.parse_fortran.FortranFile.get_single_line_docstring">get_single_line_docstring() (fortls.parse_fortran.FortranFile method)</a>
 </li>
-      <li><a href="fortls.html#fortls.intrinsics.Intrinsic.get_snippet">get_snippet() (fortls.intrinsics.Intrinsic method)</a>
+        <li><a href="fortls.html#fortls.intrinsics.Intrinsic.get_snippet">get_snippet() (fortls.intrinsics.Intrinsic method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.FortranObj.get_snippet">(fortls.objects.FortranObj method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.FortranObj.get_snippet">(fortls.objects.FortranObj method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Method.get_snippet">(fortls.objects.Method method)</a>
+          <li><a href="fortls.html#fortls.objects.Method.get_snippet">(fortls.objects.Method method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Subroutine.get_snippet">(fortls.objects.Subroutine method)</a>
+          <li><a href="fortls.html#fortls.objects.Subroutine.get_snippet">(fortls.objects.Subroutine method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Variable.get_snippet">(fortls.objects.Variable method)</a>
+          <li><a href="fortls.html#fortls.objects.Variable.get_snippet">(fortls.objects.Variable method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.intrinsics.Intrinsic.get_type">get_type() (fortls.intrinsics.Intrinsic method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.intrinsics.Intrinsic.get_type">get_type() (fortls.intrinsics.Intrinsic method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.Associate.get_type">(fortls.objects.Associate method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.Associate.get_type">(fortls.objects.Associate method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Block.get_type">(fortls.objects.Block method)</a>
+          <li><a href="fortls.html#fortls.objects.Block.get_type">(fortls.objects.Block method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Do.get_type">(fortls.objects.Do method)</a>
+          <li><a href="fortls.html#fortls.objects.Do.get_type">(fortls.objects.Do method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Enum.get_type">(fortls.objects.Enum method)</a>
+          <li><a href="fortls.html#fortls.objects.Enum.get_type">(fortls.objects.Enum method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.FortranObj.get_type">(fortls.objects.FortranObj method)</a>
+          <li><a href="fortls.html#fortls.objects.FortranObj.get_type">(fortls.objects.FortranObj method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Function.get_type">(fortls.objects.Function method)</a>
+          <li><a href="fortls.html#fortls.objects.Function.get_type">(fortls.objects.Function method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.If.get_type">(fortls.objects.If method)</a>
+          <li><a href="fortls.html#fortls.objects.If.get_type">(fortls.objects.If method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Interface.get_type">(fortls.objects.Interface method)</a>
+          <li><a href="fortls.html#fortls.objects.Interface.get_type">(fortls.objects.Interface method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Method.get_type">(fortls.objects.Method method)</a>
+          <li><a href="fortls.html#fortls.objects.Method.get_type">(fortls.objects.Method method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Module.get_type">(fortls.objects.Module method)</a>
+          <li><a href="fortls.html#fortls.objects.Module.get_type">(fortls.objects.Module method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Select.get_type">(fortls.objects.Select method)</a>
+          <li><a href="fortls.html#fortls.objects.Select.get_type">(fortls.objects.Select method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Submodule.get_type">(fortls.objects.Submodule method)</a>
+          <li><a href="fortls.html#fortls.objects.Submodule.get_type">(fortls.objects.Submodule method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Subroutine.get_type">(fortls.objects.Subroutine method)</a>
+          <li><a href="fortls.html#fortls.objects.Subroutine.get_type">(fortls.objects.Subroutine method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Type.get_type">(fortls.objects.Type method)</a>
+          <li><a href="fortls.html#fortls.objects.Type.get_type">(fortls.objects.Type method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Variable.get_type">(fortls.objects.Variable method)</a>
+          <li><a href="fortls.html#fortls.objects.Variable.get_type">(fortls.objects.Variable method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Where.get_type">(fortls.objects.Where method)</a>
+          <li><a href="fortls.html#fortls.objects.Where.get_type">(fortls.objects.Where method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.objects.FortranObj.get_type_obj">get_type_obj() (fortls.objects.FortranObj method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.objects.FortranObj.get_type_obj">get_type_obj() (fortls.objects.FortranObj method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.Variable.get_type_obj">(fortls.objects.Variable method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.Variable.get_type_obj">(fortls.objects.Variable method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.objects.get_use_tree">get_use_tree() (in module fortls.objects)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.objects.get_use_tree">get_use_tree() (in module fortls.objects)</a>
 </li>
-      <li><a href="fortls.html#fortls.helper_functions.get_var_stack">get_var_stack() (in module fortls.helper_functions)</a>
+        <li><a href="fortls.html#fortls.helper_functions.get_var_stack">get_var_stack() (in module fortls.helper_functions)</a>
 </li>
-  </ul></td>
-</tr></table>
+    </ul></td>
+  </tr></table>
+</section>
 
-<h2 id="H">H</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.langserver.LangServer.handle">handle() (fortls.langserver.LangServer method)</a>
+<section id="H" class="genindex-section">
+  <h2>H</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.langserver.LangServer.handle">handle() (fortls.langserver.LangServer method)</a>
 </li>
-  </ul></td>
-</tr></table>
+    </ul></td>
+  </tr></table>
+</section>
 
-<h2 id="I">I</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.objects.If">If (class in fortls.objects)</a>
+<section id="I" class="genindex-section">
+  <h2>I</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.objects.If">If (class in fortls.objects)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.IF">IF (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.IF">IF (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.IMPLICIT">IMPLICIT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.IMPLICIT">IMPLICIT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.IMPORT">IMPORT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.IMPORT">IMPORT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Include">Include (class in fortls.objects)</a>
+        <li><a href="fortls.html#fortls.objects.Include">Include (class in fortls.objects)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.INCLUDE">INCLUDE (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.INCLUDE">INCLUDE (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.IncludeInfo">IncludeInfo (class in fortls.ftypes)</a>
+        <li><a href="fortls.html#fortls.ftypes.IncludeInfo">IncludeInfo (class in fortls.ftypes)</a>
 </li>
-      <li><a href="fortls.html#fortls.constants.Severity.info">info (fortls.constants.Severity attribute)</a>
+        <li><a href="fortls.html#fortls.constants.Severity.info">info (fortls.constants.Severity attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.INT">INT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.INT">INT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.INT_STMNT">INT_STMNT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.INT_STMNT">INT_STMNT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Interface">Interface (class in fortls.objects)</a>
+        <li><a href="fortls.html#fortls.objects.Interface">Interface (class in fortls.objects)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.InterInfo">InterInfo (class in fortls.ftypes)</a>
+        <li><a href="fortls.html#fortls.ftypes.InterInfo">InterInfo (class in fortls.ftypes)</a>
 </li>
-      <li><a href="fortls.html#fortls.intrinsics.Intrinsic">Intrinsic (class in fortls.intrinsics)</a>
+        <li><a href="fortls.html#fortls.intrinsics.Intrinsic">Intrinsic (class in fortls.intrinsics)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.FortranObj.is_abstract">is_abstract() (fortls.objects.FortranObj method)</a>
+        <li><a href="fortls.html#fortls.objects.FortranObj.is_abstract">is_abstract() (fortls.objects.FortranObj method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.Interface.is_abstract">(fortls.objects.Interface method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.Interface.is_abstract">(fortls.objects.Interface method)</a>
 </li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.intrinsics.Intrinsic.is_callable">is_callable() (fortls.intrinsics.Intrinsic method)</a>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.intrinsics.Intrinsic.is_callable">is_callable() (fortls.intrinsics.Intrinsic method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.FortranObj.is_callable">(fortls.objects.FortranObj method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.FortranObj.is_callable">(fortls.objects.FortranObj method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Function.is_callable">(fortls.objects.Function method)</a>
+          <li><a href="fortls.html#fortls.objects.Function.is_callable">(fortls.objects.Function method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Interface.is_callable">(fortls.objects.Interface method)</a>
+          <li><a href="fortls.html#fortls.objects.Interface.is_callable">(fortls.objects.Interface method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Method.is_callable">(fortls.objects.Method method)</a>
+          <li><a href="fortls.html#fortls.objects.Method.is_callable">(fortls.objects.Method method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Subroutine.is_callable">(fortls.objects.Subroutine method)</a>
+          <li><a href="fortls.html#fortls.objects.Subroutine.is_callable">(fortls.objects.Subroutine method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Variable.is_callable">(fortls.objects.Variable method)</a>
+          <li><a href="fortls.html#fortls.objects.Variable.is_callable">(fortls.objects.Variable method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.objects.FortranObj.is_external_int">is_external_int() (fortls.objects.FortranObj method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.objects.FortranObj.is_external_int">is_external_int() (fortls.objects.FortranObj method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.Interface.is_external_int">(fortls.objects.Interface method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.Interface.is_external_int">(fortls.objects.Interface method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.objects.FortranObj.is_mod_scope">is_mod_scope() (fortls.objects.FortranObj method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.objects.FortranObj.is_mod_scope">is_mod_scope() (fortls.objects.FortranObj method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.Subroutine.is_mod_scope">(fortls.objects.Subroutine method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.Subroutine.is_mod_scope">(fortls.objects.Subroutine method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.objects.FortranObj.is_optional">is_optional() (fortls.objects.FortranObj method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.objects.FortranObj.is_optional">is_optional() (fortls.objects.FortranObj method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.Variable.is_optional">(fortls.objects.Variable method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.Variable.is_optional">(fortls.objects.Variable method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.objects.Variable.is_parameter">is_parameter() (fortls.objects.Variable method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.objects.Variable.is_parameter">is_parameter() (fortls.objects.Variable method)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Select.is_type_binding">is_type_binding() (fortls.objects.Select method)</a>
+        <li><a href="fortls.html#fortls.objects.Select.is_type_binding">is_type_binding() (fortls.objects.Select method)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Select.is_type_region">is_type_region() (fortls.objects.Select method)</a>
+        <li><a href="fortls.html#fortls.objects.Select.is_type_region">is_type_region() (fortls.objects.Select method)</a>
 </li>
-  </ul></td>
-</tr></table>
+    </ul></td>
+  </tr></table>
+</section>
 
-<h2 id="J">J</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.jsonrpc.JSONRPC2Connection">JSONRPC2Connection (class in fortls.jsonrpc)</a>
+<section id="J" class="genindex-section">
+  <h2>J</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.jsonrpc.JSONRPC2Connection">JSONRPC2Connection (class in fortls.jsonrpc)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.langserver.JSONRPC2Error">JSONRPC2Error</a>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.langserver.JSONRPC2Error">JSONRPC2Error</a>
 </li>
-      <li><a href="fortls.html#fortls.jsonrpc.JSONRPC2ProtocolError">JSONRPC2ProtocolError</a>
+        <li><a href="fortls.html#fortls.jsonrpc.JSONRPC2ProtocolError">JSONRPC2ProtocolError</a>
 </li>
-  </ul></td>
-</tr></table>
+    </ul></td>
+  </tr></table>
+</section>
 
-<h2 id="K">K</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.KEYWORD_LIST">KEYWORD_LIST (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+<section id="K" class="genindex-section">
+  <h2>K</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.KEYWORD_LIST">KEYWORD_LIST (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.ClassInfo.keywords">keywords (fortls.ftypes.ClassInfo attribute)</a>
+        <li><a href="fortls.html#fortls.ftypes.ClassInfo.keywords">keywords (fortls.ftypes.ClassInfo attribute)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.ftypes.ResultSig.keywords">(fortls.ftypes.ResultSig attribute)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.ftypes.ResultSig.keywords">(fortls.ftypes.ResultSig attribute)</a>
 </li>
-        <li><a href="fortls.html#fortls.ftypes.SubInfo.keywords">(fortls.ftypes.SubInfo attribute)</a>
+          <li><a href="fortls.html#fortls.ftypes.SubInfo.keywords">(fortls.ftypes.SubInfo attribute)</a>
 </li>
-        <li><a href="fortls.html#fortls.ftypes.VarInfo.keywords">(fortls.ftypes.VarInfo attribute)</a>
+          <li><a href="fortls.html#fortls.ftypes.VarInfo.keywords">(fortls.ftypes.VarInfo attribute)</a>
 </li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.KIND_SPEC">KIND_SPEC (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.KIND_SPEC">KIND_SPEC (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-  </ul></td>
-</tr></table>
+    </ul></td>
+  </tr></table>
+</section>
 
-<h2 id="L">L</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.langserver.LangServer">LangServer (class in fortls.langserver)</a>
+<section id="L" class="genindex-section">
+  <h2>L</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.langserver.LangServer">LangServer (class in fortls.langserver)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.LINE_LABEL">LINE_LABEL (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.LINE_LABEL">LINE_LABEL (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.IncludeInfo.line_number">line_number (fortls.ftypes.IncludeInfo attribute)</a>
+        <li><a href="fortls.html#fortls.ftypes.IncludeInfo.line_number">line_number (fortls.ftypes.IncludeInfo attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.AssociateMap.link_name">link_name (fortls.objects.AssociateMap attribute)</a>
+        <li><a href="fortls.html#fortls.objects.AssociateMap.link_name">link_name (fortls.objects.AssociateMap attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.parse_fortran.FortranFile.load_from_disk">load_from_disk() (fortls.parse_fortran.FortranFile method)</a>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.parse_fortran.FortranFile.load_from_disk">load_from_disk() (fortls.parse_fortran.FortranFile method)</a>
 </li>
-      <li><a href="fortls.html#fortls.intrinsics.load_intrinsics">load_intrinsics() (in module fortls.intrinsics)</a>
+        <li><a href="fortls.html#fortls.intrinsics.load_intrinsics">load_intrinsics() (in module fortls.intrinsics)</a>
 </li>
-      <li><a href="fortls.html#fortls.json_templates.location_json">location_json() (in module fortls.json_templates)</a>
+        <li><a href="fortls.html#fortls.json_templates.location_json">location_json() (in module fortls.json_templates)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.LOGICAL">LOGICAL (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.LOGICAL">LOGICAL (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-  </ul></td>
-</tr></table>
+    </ul></td>
+  </tr></table>
+</section>
 
-<h2 id="M">M</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.helper_functions.map_keywords">map_keywords() (in module fortls.helper_functions)</a>
+<section id="M" class="genindex-section">
+  <h2>M</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.helper_functions.map_keywords">map_keywords() (in module fortls.helper_functions)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Scope.mark_contains">mark_contains() (fortls.objects.Scope method)</a>
+        <li><a href="fortls.html#fortls.objects.Scope.mark_contains">mark_contains() (fortls.objects.Scope method)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Method">Method (class in fortls.objects)</a>
+        <li><a href="fortls.html#fortls.objects.Method">Method (class in fortls.objects)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.MOD">MOD (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.MOD">MOD (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.SubInfo.mod_flag">mod_flag (fortls.ftypes.SubInfo attribute)</a>
+        <li><a href="fortls.html#fortls.ftypes.SubInfo.mod_flag">mod_flag (fortls.ftypes.SubInfo attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.UseInfo.mod_name">mod_name (fortls.ftypes.UseInfo attribute)</a>
+        <li><a href="fortls.html#fortls.ftypes.UseInfo.mod_name">mod_name (fortls.ftypes.UseInfo attribute)</a>
 </li>
-      <li>
+        <li>
     module
 
-      <ul>
-        <li><a href="fortls.html#module-fortls">fortls</a>
+        <ul>
+          <li><a href="fortls.html#module-fortls">fortls</a>
 </li>
-        <li><a href="fortls.html#module-fortls.constants">fortls.constants</a>
+          <li><a href="fortls.html#module-fortls.constants">fortls.constants</a>
 </li>
-        <li><a href="fortls.html#module-fortls.ftypes">fortls.ftypes</a>
+          <li><a href="fortls.html#module-fortls.ftypes">fortls.ftypes</a>
 </li>
-        <li><a href="fortls.html#module-fortls.helper_functions">fortls.helper_functions</a>
+          <li><a href="fortls.html#module-fortls.helper_functions">fortls.helper_functions</a>
 </li>
-        <li><a href="fortls.html#module-fortls.interface">fortls.interface</a>
+          <li><a href="fortls.html#module-fortls.interface">fortls.interface</a>
 </li>
-        <li><a href="fortls.html#module-fortls.intrinsics">fortls.intrinsics</a>
+          <li><a href="fortls.html#module-fortls.intrinsics">fortls.intrinsics</a>
 </li>
-        <li><a href="fortls.html#module-fortls.json_templates">fortls.json_templates</a>
+          <li><a href="fortls.html#module-fortls.json_templates">fortls.json_templates</a>
 </li>
-        <li><a href="fortls.html#module-fortls.jsonrpc">fortls.jsonrpc</a>
+          <li><a href="fortls.html#module-fortls.jsonrpc">fortls.jsonrpc</a>
 </li>
-        <li><a href="fortls.html#module-fortls.langserver">fortls.langserver</a>
+          <li><a href="fortls.html#module-fortls.langserver">fortls.langserver</a>
 </li>
-        <li><a href="fortls.html#module-fortls.objects">fortls.objects</a>
+          <li><a href="fortls.html#module-fortls.objects">fortls.objects</a>
 </li>
-        <li><a href="fortls.html#module-fortls.parse_fortran">fortls.parse_fortran</a>
+          <li><a href="fortls.html#module-fortls.parse_fortran">fortls.parse_fortran</a>
 </li>
-        <li><a href="fortls.html#module-fortls.regex_patterns">fortls.regex_patterns</a>
+          <li><a href="fortls.html#module-fortls.regex_patterns">fortls.regex_patterns</a>
 </li>
-        <li><a href="fortls.html#module-fortls.version">fortls.version</a>
+          <li><a href="fortls.html#module-fortls.version">fortls.version</a>
 </li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.objects.Module">Module (class in fortls.objects)</a>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.objects.Module">Module (class in fortls.objects)</a>
 </li>
-  </ul></td>
-</tr></table>
+    </ul></td>
+  </tr></table>
+</section>
 
-<h2 id="N">N</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.ftypes.ClassInfo.name">name (fortls.ftypes.ClassInfo attribute)</a>
+<section id="N" class="genindex-section">
+  <h2>N</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.ftypes.ClassInfo.name">name (fortls.ftypes.ClassInfo attribute)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.ftypes.InterInfo.name">(fortls.ftypes.InterInfo attribute)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.ftypes.InterInfo.name">(fortls.ftypes.InterInfo attribute)</a>
 </li>
-        <li><a href="fortls.html#fortls.ftypes.ResultSig.name">(fortls.ftypes.ResultSig attribute)</a>
+          <li><a href="fortls.html#fortls.ftypes.ResultSig.name">(fortls.ftypes.ResultSig attribute)</a>
 </li>
-        <li><a href="fortls.html#fortls.ftypes.SmodInfo.name">(fortls.ftypes.SmodInfo attribute)</a>
+          <li><a href="fortls.html#fortls.ftypes.SmodInfo.name">(fortls.ftypes.SmodInfo attribute)</a>
 </li>
-        <li><a href="fortls.html#fortls.ftypes.SubInfo.name">(fortls.ftypes.SubInfo attribute)</a>
+          <li><a href="fortls.html#fortls.ftypes.SubInfo.name">(fortls.ftypes.SubInfo attribute)</a>
 </li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.NON_DEF">NON_DEF (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.NON_DEF">NON_DEF (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.NUMBER">NUMBER (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.NUMBER">NUMBER (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-  </ul></td>
-</tr></table>
+    </ul></td>
+  </tr></table>
+</section>
 
-<h2 id="O">O</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.ftypes.VisInfo.obj_names">obj_names (fortls.ftypes.VisInfo attribute)</a>
+<section id="O" class="genindex-section">
+  <h2>O</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.ftypes.VisInfo.obj_names">obj_names (fortls.ftypes.VisInfo attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.OBJBREAK">OBJBREAK (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.OBJBREAK">OBJBREAK (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.helper_functions.only_dirs">only_dirs() (in module fortls.helper_functions)</a>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.helper_functions.only_dirs">only_dirs() (in module fortls.helper_functions)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.UseInfo.only_list">only_list (fortls.ftypes.UseInfo attribute)</a>
+        <li><a href="fortls.html#fortls.ftypes.UseInfo.only_list">only_list (fortls.ftypes.UseInfo attribute)</a>
 </li>
-  </ul></td>
-</tr></table>
+    </ul></td>
+  </tr></table>
+</section>
 
-<h2 id="P">P</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.PARAMETER_VAL">PARAMETER_VAL (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+<section id="P" class="genindex-section">
+  <h2>P</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.PARAMETER_VAL">PARAMETER_VAL (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.ClassInfo.parent">parent (fortls.ftypes.ClassInfo attribute)</a>
+        <li><a href="fortls.html#fortls.ftypes.ClassInfo.parent">parent (fortls.ftypes.ClassInfo attribute)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.ftypes.SmodInfo.parent">(fortls.ftypes.SmodInfo attribute)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.ftypes.SmodInfo.parent">(fortls.ftypes.SmodInfo attribute)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.parse_fortran.FortranFile.parse">parse() (fortls.parse_fortran.FortranFile method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.parse_fortran.FortranFile.parse">parse() (fortls.parse_fortran.FortranFile method)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.FortranFile.parse_contains">parse_contains() (fortls.parse_fortran.FortranFile method)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.FortranFile.parse_contains">parse_contains() (fortls.parse_fortran.FortranFile method)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.FortranFile.parse_do_fixed_format">parse_do_fixed_format() (fortls.parse_fortran.FortranFile method)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.FortranFile.parse_do_fixed_format">parse_do_fixed_format() (fortls.parse_fortran.FortranFile method)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.FortranFile.parse_docs">parse_docs() (fortls.parse_fortran.FortranFile method)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.FortranFile.parse_docs">parse_docs() (fortls.parse_fortran.FortranFile method)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.FortranFile.parse_end_scope_word">parse_end_scope_word() (fortls.parse_fortran.FortranFile method)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.FortranFile.parse_end_scope_word">parse_end_scope_word() (fortls.parse_fortran.FortranFile method)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.FortranFile.parse_implicit">parse_implicit() (fortls.parse_fortran.FortranFile method)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.FortranFile.parse_implicit">parse_implicit() (fortls.parse_fortran.FortranFile method)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.parse_var_keywords">parse_var_keywords() (in module fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.parse_var_keywords">parse_var_keywords() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.IncludeInfo.path">path (fortls.ftypes.IncludeInfo attribute)</a>
+        <li><a href="fortls.html#fortls.ftypes.IncludeInfo.path">path (fortls.ftypes.IncludeInfo attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.jsonrpc.path_from_uri">path_from_uri() (in module fortls.jsonrpc)</a>
+        <li><a href="fortls.html#fortls.jsonrpc.path_from_uri">path_from_uri() (in module fortls.jsonrpc)</a>
 </li>
-      <li><a href="fortls.html#fortls.jsonrpc.path_to_uri">path_to_uri() (in module fortls.jsonrpc)</a>
+        <li><a href="fortls.html#fortls.jsonrpc.path_to_uri">path_to_uri() (in module fortls.jsonrpc)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.langserver.LangServer.post_message">post_message() (fortls.langserver.LangServer method)</a>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.langserver.LangServer.post_message">post_message() (fortls.langserver.LangServer method)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.PP_ANY">PP_ANY (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.PP_ANY">PP_ANY (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.PP_DEF">PP_DEF (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.PP_DEF">PP_DEF (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.PP_DEF_TEST">PP_DEF_TEST (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.PP_DEF_TEST">PP_DEF_TEST (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.PP_INCLUDE">PP_INCLUDE (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.PP_INCLUDE">PP_INCLUDE (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.PP_REGEX">PP_REGEX (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.PP_REGEX">PP_REGEX (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.FortranFile.preprocess">preprocess() (fortls.parse_fortran.FortranFile method)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.FortranFile.preprocess">preprocess() (fortls.parse_fortran.FortranFile method)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.preprocess_file">preprocess_file() (in module fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.preprocess_file">preprocess_file() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.PRO_LINK">PRO_LINK (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.PRO_LINK">PRO_LINK (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.GenProcDefInfo.pro_links">pro_links (fortls.ftypes.GenProcDefInfo attribute)</a>
+        <li><a href="fortls.html#fortls.ftypes.GenProcDefInfo.pro_links">pro_links (fortls.ftypes.GenProcDefInfo attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.PROCEDURE_STMNT">PROCEDURE_STMNT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.PROCEDURE_STMNT">PROCEDURE_STMNT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.PROG">PROG (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.PROG">PROG (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Program">Program (class in fortls.objects)</a>
+        <li><a href="fortls.html#fortls.objects.Program">Program (class in fortls.objects)</a>
 </li>
-  </ul></td>
-</tr></table>
+    </ul></td>
+  </tr></table>
+</section>
 
-<h2 id="R">R</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.ftypes.Range">Range (class in fortls.ftypes)</a>
+<section id="R" class="genindex-section">
+  <h2>R</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.ftypes.Range">Range (class in fortls.ftypes)</a>
 </li>
-      <li><a href="fortls.html#fortls.json_templates.range_json">range_json() (in module fortls.json_templates)</a>
+        <li><a href="fortls.html#fortls.json_templates.range_json">range_json() (in module fortls.json_templates)</a>
 </li>
-      <li><a href="fortls.html#fortls.jsonrpc.ReadWriter.read">read() (fortls.jsonrpc.ReadWriter method)</a>
+        <li><a href="fortls.html#fortls.jsonrpc.ReadWriter.read">read() (fortls.jsonrpc.ReadWriter method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.jsonrpc.TCPReadWriter.read">(fortls.jsonrpc.TCPReadWriter method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.jsonrpc.TCPReadWriter.read">(fortls.jsonrpc.TCPReadWriter method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.parse_fortran.read_associate_def">read_associate_def() (in module fortls.parse_fortran)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.parse_fortran.read_associate_def">read_associate_def() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.read_block_def">read_block_def() (in module fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.read_block_def">read_block_def() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.read_do_def">read_do_def() (in module fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.read_do_def">read_do_def() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.read_enum_def">read_enum_def() (in module fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.read_enum_def">read_enum_def() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.read_fun_def">read_fun_def() (in module fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.read_fun_def">read_fun_def() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.read_generic_def">read_generic_def() (in module fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.read_generic_def">read_generic_def() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.read_if_def">read_if_def() (in module fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.read_if_def">read_if_def() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.read_imp_stmt">read_imp_stmt() (in module fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.read_imp_stmt">read_imp_stmt() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.read_inc_stmt">read_inc_stmt() (in module fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.read_inc_stmt">read_inc_stmt() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.read_int_def">read_int_def() (in module fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.read_int_def">read_int_def() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.jsonrpc.JSONRPC2Connection.read_message">read_message() (fortls.jsonrpc.JSONRPC2Connection method)</a>
+        <li><a href="fortls.html#fortls.jsonrpc.JSONRPC2Connection.read_message">read_message() (fortls.jsonrpc.JSONRPC2Connection method)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.read_mod_def">read_mod_def() (in module fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.read_mod_def">read_mod_def() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.read_prog_def">read_prog_def() (in module fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.read_prog_def">read_prog_def() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.jsonrpc.read_rpc_messages">read_rpc_messages() (in module fortls.jsonrpc)</a>
+        <li><a href="fortls.html#fortls.jsonrpc.read_rpc_messages">read_rpc_messages() (in module fortls.jsonrpc)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.read_select_def">read_select_def() (in module fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.read_select_def">read_select_def() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.read_sub_def">read_sub_def() (in module fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.read_sub_def">read_sub_def() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.read_submod_def">read_submod_def() (in module fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.read_submod_def">read_submod_def() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.read_type_def">read_type_def() (in module fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.read_type_def">read_type_def() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.read_use_stmt">read_use_stmt() (in module fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.read_use_stmt">read_use_stmt() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.read_var_def">read_var_def() (in module fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.read_var_def">read_var_def() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.read_vis_stmnt">read_vis_stmnt() (in module fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.read_vis_stmnt">read_vis_stmnt() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.read_where_def">read_where_def() (in module fortls.parse_fortran)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.read_where_def">read_where_def() (in module fortls.parse_fortran)</a>
 </li>
-      <li><a href="fortls.html#fortls.jsonrpc.ReadWriter.readline">readline() (fortls.jsonrpc.ReadWriter method)</a>
+        <li><a href="fortls.html#fortls.jsonrpc.ReadWriter.readline">readline() (fortls.jsonrpc.ReadWriter method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.jsonrpc.TCPReadWriter.readline">(fortls.jsonrpc.TCPReadWriter method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.jsonrpc.TCPReadWriter.readline">(fortls.jsonrpc.TCPReadWriter method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.jsonrpc.ReadWriter">ReadWriter (class in fortls.jsonrpc)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.jsonrpc.ReadWriter">ReadWriter (class in fortls.jsonrpc)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.UseInfo.rename_map">rename_map (fortls.ftypes.UseInfo attribute)</a>
+        <li><a href="fortls.html#fortls.ftypes.UseInfo.rename_map">rename_map (fortls.ftypes.UseInfo attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.objects.Block.req_named_end">req_named_end() (fortls.objects.Block method)</a>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.objects.Block.req_named_end">req_named_end() (fortls.objects.Block method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.FortranObj.req_named_end">(fortls.objects.FortranObj method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.FortranObj.req_named_end">(fortls.objects.FortranObj method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.objects.FortranObj.require_inherit">require_inherit() (fortls.objects.FortranObj method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.objects.FortranObj.require_inherit">require_inherit() (fortls.objects.FortranObj method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.Submodule.require_inherit">(fortls.objects.Submodule method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.Submodule.require_inherit">(fortls.objects.Submodule method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Type.require_inherit">(fortls.objects.Type method)</a>
+          <li><a href="fortls.html#fortls.objects.Type.require_inherit">(fortls.objects.Type method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.objects.Associate.require_link">require_link() (fortls.objects.Associate method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.objects.Associate.require_link">require_link() (fortls.objects.Associate method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.FortranObj.require_link">(fortls.objects.FortranObj method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.FortranObj.require_link">(fortls.objects.FortranObj method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Interface.require_link">(fortls.objects.Interface method)</a>
+          <li><a href="fortls.html#fortls.objects.Interface.require_link">(fortls.objects.Interface method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Submodule.require_link">(fortls.objects.Submodule method)</a>
+          <li><a href="fortls.html#fortls.objects.Submodule.require_link">(fortls.objects.Submodule method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Subroutine.require_link">(fortls.objects.Subroutine method)</a>
+          <li><a href="fortls.html#fortls.objects.Subroutine.require_link">(fortls.objects.Subroutine method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Variable.require_link">(fortls.objects.Variable method)</a>
+          <li><a href="fortls.html#fortls.objects.Variable.require_link">(fortls.objects.Variable method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.objects.Subroutine.resolve_arg_link">resolve_arg_link() (fortls.objects.Subroutine method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.objects.Subroutine.resolve_arg_link">resolve_arg_link() (fortls.objects.Subroutine method)</a>
 </li>
-      <li><a href="fortls.html#fortls.helper_functions.resolve_globs">resolve_globs() (in module fortls.helper_functions)</a>
+        <li><a href="fortls.html#fortls.helper_functions.resolve_globs">resolve_globs() (in module fortls.helper_functions)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.FortranAST.resolve_includes">resolve_includes() (fortls.objects.FortranAST method)</a>
+        <li><a href="fortls.html#fortls.objects.FortranAST.resolve_includes">resolve_includes() (fortls.objects.FortranAST method)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.FortranObj.resolve_inherit">resolve_inherit() (fortls.objects.FortranObj method)</a>
+        <li><a href="fortls.html#fortls.objects.FortranObj.resolve_inherit">resolve_inherit() (fortls.objects.FortranObj method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.Submodule.resolve_inherit">(fortls.objects.Submodule method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.Submodule.resolve_inherit">(fortls.objects.Submodule method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Type.resolve_inherit">(fortls.objects.Type method)</a>
+          <li><a href="fortls.html#fortls.objects.Type.resolve_inherit">(fortls.objects.Type method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.objects.Associate.resolve_link">resolve_link() (fortls.objects.Associate method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.objects.Associate.resolve_link">resolve_link() (fortls.objects.Associate method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.FortranObj.resolve_link">(fortls.objects.FortranObj method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.FortranObj.resolve_link">(fortls.objects.FortranObj method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Function.resolve_link">(fortls.objects.Function method)</a>
+          <li><a href="fortls.html#fortls.objects.Function.resolve_link">(fortls.objects.Function method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Interface.resolve_link">(fortls.objects.Interface method)</a>
+          <li><a href="fortls.html#fortls.objects.Interface.resolve_link">(fortls.objects.Interface method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Method.resolve_link">(fortls.objects.Method method)</a>
+          <li><a href="fortls.html#fortls.objects.Method.resolve_link">(fortls.objects.Method method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Submodule.resolve_link">(fortls.objects.Submodule method)</a>
+          <li><a href="fortls.html#fortls.objects.Submodule.resolve_link">(fortls.objects.Submodule method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Subroutine.resolve_link">(fortls.objects.Subroutine method)</a>
+          <li><a href="fortls.html#fortls.objects.Subroutine.resolve_link">(fortls.objects.Subroutine method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Variable.resolve_link">(fortls.objects.Variable method)</a>
+          <li><a href="fortls.html#fortls.objects.Variable.resolve_link">(fortls.objects.Variable method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.objects.FortranAST.resolve_links">resolve_links() (fortls.objects.FortranAST method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.objects.FortranAST.resolve_links">resolve_links() (fortls.objects.FortranAST method)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.FunSig.result">result (fortls.ftypes.FunSig attribute)</a>
+        <li><a href="fortls.html#fortls.ftypes.FunSig.result">result (fortls.ftypes.FunSig attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.RESULT">RESULT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.RESULT">RESULT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.ResultSig">ResultSig (class in fortls.ftypes)</a>
+        <li><a href="fortls.html#fortls.ftypes.ResultSig">ResultSig (class in fortls.ftypes)</a>
 </li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.run">run() (fortls.langserver.LangServer method)</a>
+        <li><a href="fortls.html#fortls.langserver.LangServer.run">run() (fortls.langserver.LangServer method)</a>
 </li>
-  </ul></td>
-</tr></table>
+    </ul></td>
+  </tr></table>
+</section>
 
-<h2 id="S">S</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.objects.Scope">Scope (class in fortls.objects)</a>
+<section id="S" class="genindex-section">
+  <h2>S</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.objects.Scope">Scope (class in fortls.objects)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.SCOPE_DEF">SCOPE_DEF (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.SCOPE_DEF">SCOPE_DEF (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.IncludeInfo.scope_objs">scope_objs (fortls.ftypes.IncludeInfo attribute)</a>
+        <li><a href="fortls.html#fortls.ftypes.IncludeInfo.scope_objs">scope_objs (fortls.ftypes.IncludeInfo attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Select">Select (class in fortls.objects)</a>
+        <li><a href="fortls.html#fortls.objects.Select">Select (class in fortls.objects)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.SELECT">SELECT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.SELECT">SELECT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.SELECT_DEFAULT">SELECT_DEFAULT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.SELECT_DEFAULT">SELECT_DEFAULT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.SELECT_TYPE">SELECT_TYPE (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.SELECT_TYPE">SELECT_TYPE (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.SelectInfo">SelectInfo (class in fortls.ftypes)</a>
+        <li><a href="fortls.html#fortls.ftypes.SelectInfo">SelectInfo (class in fortls.ftypes)</a>
 </li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.send_diagnostics">send_diagnostics() (fortls.langserver.LangServer method)</a>
+        <li><a href="fortls.html#fortls.langserver.LangServer.send_diagnostics">send_diagnostics() (fortls.langserver.LangServer method)</a>
 </li>
-      <li><a href="fortls.html#fortls.jsonrpc.JSONRPC2Connection.send_notification">send_notification() (fortls.jsonrpc.JSONRPC2Connection method)</a>
+        <li><a href="fortls.html#fortls.jsonrpc.JSONRPC2Connection.send_notification">send_notification() (fortls.jsonrpc.JSONRPC2Connection method)</a>
 </li>
-      <li><a href="fortls.html#fortls.jsonrpc.JSONRPC2Connection.send_request">send_request() (fortls.jsonrpc.JSONRPC2Connection method)</a>
+        <li><a href="fortls.html#fortls.jsonrpc.JSONRPC2Connection.send_request">send_request() (fortls.jsonrpc.JSONRPC2Connection method)</a>
 </li>
-      <li><a href="fortls.html#fortls.jsonrpc.JSONRPC2Connection.send_request_batch">send_request_batch() (fortls.jsonrpc.JSONRPC2Connection method)</a>
+        <li><a href="fortls.html#fortls.jsonrpc.JSONRPC2Connection.send_request_batch">send_request_batch() (fortls.jsonrpc.JSONRPC2Connection method)</a>
 </li>
-      <li><a href="fortls.html#fortls.helper_functions.separate_def_list">separate_def_list() (in module fortls.helper_functions)</a>
+        <li><a href="fortls.html#fortls.helper_functions.separate_def_list">separate_def_list() (in module fortls.helper_functions)</a>
 </li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.serve_autocomplete">serve_autocomplete() (fortls.langserver.LangServer method)</a>
+        <li><a href="fortls.html#fortls.langserver.LangServer.serve_autocomplete">serve_autocomplete() (fortls.langserver.LangServer method)</a>
 </li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.serve_codeActions">serve_codeActions() (fortls.langserver.LangServer method)</a>
+        <li><a href="fortls.html#fortls.langserver.LangServer.serve_codeActions">serve_codeActions() (fortls.langserver.LangServer method)</a>
 </li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.serve_default">serve_default() (fortls.langserver.LangServer method)</a>
+        <li><a href="fortls.html#fortls.langserver.LangServer.serve_default">serve_default() (fortls.langserver.LangServer method)</a>
 </li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.serve_definition">serve_definition() (fortls.langserver.LangServer method)</a>
+        <li><a href="fortls.html#fortls.langserver.LangServer.serve_definition">serve_definition() (fortls.langserver.LangServer method)</a>
 </li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.serve_document_symbols">serve_document_symbols() (fortls.langserver.LangServer method)</a>
+        <li><a href="fortls.html#fortls.langserver.LangServer.serve_document_symbols">serve_document_symbols() (fortls.langserver.LangServer method)</a>
 </li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.serve_exit">serve_exit() (fortls.langserver.LangServer method)</a>
+        <li><a href="fortls.html#fortls.langserver.LangServer.serve_exit">serve_exit() (fortls.langserver.LangServer method)</a>
 </li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.serve_hover">serve_hover() (fortls.langserver.LangServer method)</a>
+        <li><a href="fortls.html#fortls.langserver.LangServer.serve_hover">serve_hover() (fortls.langserver.LangServer method)</a>
 </li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.serve_implementation">serve_implementation() (fortls.langserver.LangServer method)</a>
+        <li><a href="fortls.html#fortls.langserver.LangServer.serve_implementation">serve_implementation() (fortls.langserver.LangServer method)</a>
 </li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.serve_initialize">serve_initialize() (fortls.langserver.LangServer method)</a>
+        <li><a href="fortls.html#fortls.langserver.LangServer.serve_initialize">serve_initialize() (fortls.langserver.LangServer method)</a>
 </li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.serve_onChange">serve_onChange() (fortls.langserver.LangServer method)</a>
+        <li><a href="fortls.html#fortls.langserver.LangServer.serve_onChange">serve_onChange() (fortls.langserver.LangServer method)</a>
 </li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.serve_onClose">serve_onClose() (fortls.langserver.LangServer method)</a>
+        <li><a href="fortls.html#fortls.langserver.LangServer.serve_onClose">serve_onClose() (fortls.langserver.LangServer method)</a>
 </li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.serve_onOpen">serve_onOpen() (fortls.langserver.LangServer method)</a>
+        <li><a href="fortls.html#fortls.langserver.LangServer.serve_onOpen">serve_onOpen() (fortls.langserver.LangServer method)</a>
 </li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.serve_onSave">serve_onSave() (fortls.langserver.LangServer method)</a>
+        <li><a href="fortls.html#fortls.langserver.LangServer.serve_onSave">serve_onSave() (fortls.langserver.LangServer method)</a>
 </li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.serve_references">serve_references() (fortls.langserver.LangServer method)</a>
+        <li><a href="fortls.html#fortls.langserver.LangServer.serve_references">serve_references() (fortls.langserver.LangServer method)</a>
 </li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.serve_rename">serve_rename() (fortls.langserver.LangServer method)</a>
+        <li><a href="fortls.html#fortls.langserver.LangServer.serve_rename">serve_rename() (fortls.langserver.LangServer method)</a>
 </li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.serve_signature">serve_signature() (fortls.langserver.LangServer method)</a>
+        <li><a href="fortls.html#fortls.langserver.LangServer.serve_signature">serve_signature() (fortls.langserver.LangServer method)</a>
 </li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.serve_workspace_symbol">serve_workspace_symbol() (fortls.langserver.LangServer method)</a>
+        <li><a href="fortls.html#fortls.langserver.LangServer.serve_workspace_symbol">serve_workspace_symbol() (fortls.langserver.LangServer method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.parse_fortran.FortranFile.set_contents">set_contents() (fortls.parse_fortran.FortranFile method)</a>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.parse_fortran.FortranFile.set_contents">set_contents() (fortls.parse_fortran.FortranFile method)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.FortranObj.set_default_vis">set_default_vis() (fortls.objects.FortranObj method)</a>
+        <li><a href="fortls.html#fortls.objects.FortranObj.set_default_vis">set_default_vis() (fortls.objects.FortranObj method)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Variable.set_dim">set_dim() (fortls.objects.Variable method)</a>
+        <li><a href="fortls.html#fortls.objects.Variable.set_dim">set_dim() (fortls.objects.Variable method)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Variable.set_external_attr">set_external_attr() (fortls.objects.Variable method)</a>
+        <li><a href="fortls.html#fortls.objects.Variable.set_external_attr">set_external_attr() (fortls.objects.Variable method)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Scope.set_implicit">set_implicit() (fortls.objects.Scope method)</a>
+        <li><a href="fortls.html#fortls.objects.Scope.set_implicit">set_implicit() (fortls.objects.Scope method)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Scope.set_inherit">set_inherit() (fortls.objects.Scope method)</a>
+        <li><a href="fortls.html#fortls.objects.Scope.set_inherit">set_inherit() (fortls.objects.Scope method)</a>
 </li>
-      <li><a href="fortls.html#fortls.helper_functions.set_keyword_ordering">set_keyword_ordering() (in module fortls.helper_functions)</a>
+        <li><a href="fortls.html#fortls.helper_functions.set_keyword_ordering">set_keyword_ordering() (in module fortls.helper_functions)</a>
 </li>
-      <li><a href="fortls.html#fortls.intrinsics.set_lowercase_intrinsics">set_lowercase_intrinsics() (in module fortls.intrinsics)</a>
+        <li><a href="fortls.html#fortls.intrinsics.set_lowercase_intrinsics">set_lowercase_intrinsics() (in module fortls.intrinsics)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Variable.set_parameter_val">set_parameter_val() (fortls.objects.Variable method)</a>
+        <li><a href="fortls.html#fortls.objects.Variable.set_parameter_val">set_parameter_val() (fortls.objects.Variable method)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.FortranObj.set_parent">set_parent() (fortls.objects.FortranObj method)</a>
+        <li><a href="fortls.html#fortls.objects.FortranObj.set_parent">set_parent() (fortls.objects.FortranObj method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.Method.set_parent">(fortls.objects.Method method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.Method.set_parent">(fortls.objects.Method method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Scope.set_parent">(fortls.objects.Scope method)</a>
+          <li><a href="fortls.html#fortls.objects.Scope.set_parent">(fortls.objects.Scope method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.objects.FortranObj.set_visibility">set_visibility() (fortls.objects.FortranObj method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.objects.FortranObj.set_visibility">set_visibility() (fortls.objects.FortranObj method)</a>
 </li>
-      <li><a href="fortls.html#fortls.interface.SetAction">SetAction (class in fortls.interface)</a>
+        <li><a href="fortls.html#fortls.interface.SetAction">SetAction (class in fortls.interface)</a>
 </li>
-      <li><a href="fortls.html#fortls.constants.Severity">Severity (class in fortls.constants)</a>
+        <li><a href="fortls.html#fortls.constants.Severity">Severity (class in fortls.constants)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.SmodInfo">SmodInfo (class in fortls.ftypes)</a>
+        <li><a href="fortls.html#fortls.ftypes.SmodInfo">SmodInfo (class in fortls.ftypes)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.SQ_STRING">SQ_STRING (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.SQ_STRING">SQ_STRING (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.src_file_exts">src_file_exts() (in module fortls.regex_patterns)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.src_file_exts">src_file_exts() (in module fortls.regex_patterns)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.Range.start">start (fortls.ftypes.Range attribute)</a>
+        <li><a href="fortls.html#fortls.ftypes.Range.start">start (fortls.ftypes.Range attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.FortranAST.start_ppif">start_ppif() (fortls.objects.FortranAST method)</a>
+        <li><a href="fortls.html#fortls.objects.FortranAST.start_ppif">start_ppif() (fortls.objects.FortranAST method)</a>
 </li>
-      <li><a href="fortls.html#fortls.parse_fortran.FortranFile.strip_comment">strip_comment() (fortls.parse_fortran.FortranFile method)</a>
+        <li><a href="fortls.html#fortls.parse_fortran.FortranFile.strip_comment">strip_comment() (fortls.parse_fortran.FortranFile method)</a>
 </li>
-      <li><a href="fortls.html#fortls.helper_functions.strip_line_label">strip_line_label() (in module fortls.helper_functions)</a>
+        <li><a href="fortls.html#fortls.helper_functions.strip_line_label">strip_line_label() (in module fortls.helper_functions)</a>
 </li>
-      <li><a href="fortls.html#fortls.helper_functions.strip_strings">strip_strings() (in module fortls.helper_functions)</a>
+        <li><a href="fortls.html#fortls.helper_functions.strip_strings">strip_strings() (in module fortls.helper_functions)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.SUB">SUB (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.SUB">SUB (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.SUB_MOD">SUB_MOD (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.SUB_MOD">SUB_MOD (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.SUB_PAREN">SUB_PAREN (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.SUB_PAREN">SUB_PAREN (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.SubInfo">SubInfo (class in fortls.ftypes)</a>
+        <li><a href="fortls.html#fortls.ftypes.SubInfo">SubInfo (class in fortls.ftypes)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.SUBMOD">SUBMOD (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.SUBMOD">SUBMOD (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Submodule">Submodule (class in fortls.objects)</a>
+        <li><a href="fortls.html#fortls.objects.Submodule">Submodule (class in fortls.objects)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Subroutine">Subroutine (class in fortls.objects)</a>
+        <li><a href="fortls.html#fortls.objects.Subroutine">Subroutine (class in fortls.objects)</a>
 </li>
-      <li><a href="fortls.html#fortls.json_templates.symbol_json">symbol_json() (in module fortls.json_templates)</a>
+        <li><a href="fortls.html#fortls.json_templates.symbol_json">symbol_json() (in module fortls.json_templates)</a>
 </li>
-  </ul></td>
-</tr></table>
+    </ul></td>
+  </tr></table>
+</section>
 
-<h2 id="T">T</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.TATTR_LIST">TATTR_LIST (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+<section id="T" class="genindex-section">
+  <h2>T</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.TATTR_LIST">TATTR_LIST (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.jsonrpc.TCPReadWriter">TCPReadWriter (class in fortls.jsonrpc)</a>
+        <li><a href="fortls.html#fortls.jsonrpc.TCPReadWriter">TCPReadWriter (class in fortls.jsonrpc)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.THEN">THEN (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.THEN">THEN (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Type">Type (class in fortls.objects)</a>
+        <li><a href="fortls.html#fortls.objects.Type">Type (class in fortls.objects)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.ftypes.ResultSig.type">type (fortls.ftypes.ResultSig attribute)</a>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.ftypes.ResultSig.type">type (fortls.ftypes.ResultSig attribute)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.ftypes.SelectInfo.type">(fortls.ftypes.SelectInfo attribute)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.ftypes.SelectInfo.type">(fortls.ftypes.SelectInfo attribute)</a>
 </li>
-        <li><a href="fortls.html#fortls.ftypes.VisInfo.type">(fortls.ftypes.VisInfo attribute)</a>
+          <li><a href="fortls.html#fortls.ftypes.VisInfo.type">(fortls.ftypes.VisInfo attribute)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.TYPE_DEF">TYPE_DEF (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.TYPE_DEF">TYPE_DEF (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.TYPE_STMNT">TYPE_STMNT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.TYPE_STMNT">TYPE_STMNT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-  </ul></td>
-</tr></table>
+    </ul></td>
+  </tr></table>
+</section>
 
-<h2 id="U">U</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.objects.FortranObj.update_fqsn">update_fqsn() (fortls.objects.FortranObj method)</a>
+<section id="U" class="genindex-section">
+  <h2>U</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.objects.FortranObj.update_fqsn">update_fqsn() (fortls.objects.FortranObj method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.objects.Scope.update_fqsn">(fortls.objects.Scope method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.objects.Scope.update_fqsn">(fortls.objects.Scope method)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.Variable.update_fqsn">(fortls.objects.Variable method)</a>
+          <li><a href="fortls.html#fortls.objects.Variable.update_fqsn">(fortls.objects.Variable method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.update_workspace_file">update_workspace_file() (fortls.langserver.LangServer method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.langserver.LangServer.update_workspace_file">update_workspace_file() (fortls.langserver.LangServer method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.json_templates.uri_json">uri_json() (in module fortls.json_templates)</a>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.json_templates.uri_json">uri_json() (in module fortls.json_templates)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.USE">USE (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.USE">USE (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.USE_line">USE_line (class in fortls.objects)</a>
+        <li><a href="fortls.html#fortls.objects.USE_line">USE_line (class in fortls.objects)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.UseInfo">UseInfo (class in fortls.ftypes)</a>
+        <li><a href="fortls.html#fortls.ftypes.UseInfo">UseInfo (class in fortls.ftypes)</a>
 </li>
-  </ul></td>
-</tr></table>
+    </ul></td>
+  </tr></table>
+</section>
 
-<h2 id="V">V</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.objects.AssociateMap.var">var (fortls.objects.AssociateMap attribute)</a>
+<section id="V" class="genindex-section">
+  <h2>V</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.objects.AssociateMap.var">var (fortls.objects.AssociateMap attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.VAR">VAR (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.VAR">VAR (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.VarInfo.var_names">var_names (fortls.ftypes.VarInfo attribute)</a>
+        <li><a href="fortls.html#fortls.ftypes.VarInfo.var_names">var_names (fortls.ftypes.VarInfo attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.VarInfo.var_type">var_type (fortls.ftypes.VarInfo attribute)</a>
+        <li><a href="fortls.html#fortls.ftypes.VarInfo.var_type">var_type (fortls.ftypes.VarInfo attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.objects.Variable">Variable (class in fortls.objects)</a>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.objects.Variable">Variable (class in fortls.objects)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.VarInfo">VarInfo (class in fortls.ftypes)</a>
+        <li><a href="fortls.html#fortls.ftypes.VarInfo">VarInfo (class in fortls.ftypes)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.VIS">VIS (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.VIS">VIS (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.GenProcDefInfo.vis_flag">vis_flag (fortls.ftypes.GenProcDefInfo attribute)</a>
+        <li><a href="fortls.html#fortls.ftypes.GenProcDefInfo.vis_flag">vis_flag (fortls.ftypes.GenProcDefInfo attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.ftypes.VisInfo">VisInfo (class in fortls.ftypes)</a>
+        <li><a href="fortls.html#fortls.ftypes.VisInfo">VisInfo (class in fortls.ftypes)</a>
 </li>
-  </ul></td>
-</tr></table>
+    </ul></td>
+  </tr></table>
+</section>
 
-<h2 id="W">W</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.constants.Severity.warn">warn (fortls.constants.Severity attribute)</a>
+<section id="W" class="genindex-section">
+  <h2>W</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.constants.Severity.warn">warn (fortls.constants.Severity attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.objects.Where">Where (class in fortls.objects)</a>
+        <li><a href="fortls.html#fortls.objects.Where">Where (class in fortls.objects)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.WHERE">WHERE (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.WHERE">WHERE (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.WORD">WORD (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.WORD">WORD (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
-      <li><a href="fortls.html#fortls.langserver.LangServer.workspace_init">workspace_init() (fortls.langserver.LangServer method)</a>
+        <li><a href="fortls.html#fortls.langserver.LangServer.workspace_init">workspace_init() (fortls.langserver.LangServer method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fortls.html#fortls.jsonrpc.ReadWriter.write">write() (fortls.jsonrpc.ReadWriter method)</a>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.jsonrpc.ReadWriter.write">write() (fortls.jsonrpc.ReadWriter method)</a>
 
-      <ul>
-        <li><a href="fortls.html#fortls.jsonrpc.TCPReadWriter.write">(fortls.jsonrpc.TCPReadWriter method)</a>
+        <ul>
+          <li><a href="fortls.html#fortls.jsonrpc.TCPReadWriter.write">(fortls.jsonrpc.TCPReadWriter method)</a>
 </li>
-      </ul></li>
-      <li><a href="fortls.html#fortls.jsonrpc.JSONRPC2Connection.write_error">write_error() (fortls.jsonrpc.JSONRPC2Connection method)</a>
+        </ul></li>
+        <li><a href="fortls.html#fortls.jsonrpc.JSONRPC2Connection.write_error">write_error() (fortls.jsonrpc.JSONRPC2Connection method)</a>
 </li>
-      <li><a href="fortls.html#fortls.jsonrpc.JSONRPC2Connection.write_response">write_response() (fortls.jsonrpc.JSONRPC2Connection method)</a>
+        <li><a href="fortls.html#fortls.jsonrpc.JSONRPC2Connection.write_response">write_response() (fortls.jsonrpc.JSONRPC2Connection method)</a>
 </li>
-      <li><a href="fortls.html#fortls.jsonrpc.write_rpc_notification">write_rpc_notification() (in module fortls.jsonrpc)</a>
+        <li><a href="fortls.html#fortls.jsonrpc.write_rpc_notification">write_rpc_notification() (in module fortls.jsonrpc)</a>
 </li>
-      <li><a href="fortls.html#fortls.jsonrpc.write_rpc_request">write_rpc_request() (in module fortls.jsonrpc)</a>
+        <li><a href="fortls.html#fortls.jsonrpc.write_rpc_request">write_rpc_request() (in module fortls.jsonrpc)</a>
 </li>
-  </ul></td>
-</tr></table>
+    </ul></td>
+  </tr></table>
+</section>
 
 
-
-           </div>
-          </div>
-          <footer>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2021-2022, Giannis Nikiteas.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
-        </div>
+        </article>
       </div>
-    </section>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2021-2022, Giannis Nikiteas
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
   </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
-
-</body>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/scripts/furo.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/design-tabs.js"></script>
+    </body>
 </html>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="50.282166mm"
+   height="15.736053mm"
+   viewBox="0 0 50.282166 15.736053"
+   version="1.1"
+   id="svg996"
+   sodipodi:docname="logo.svg"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview998"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="3.0043662"
+     inkscape:cx="118.99348"
+     inkscape:cy="98.024001"
+     inkscape:window-width="1920"
+     inkscape:window-height="1023"
+     inkscape:window-x="924"
+     inkscape:window-y="1080"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <defs
+     id="defs993" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-53.047507,-96.478807)">
+    <g
+       id="g21395"
+       inkscape:export-filename="/home/gn/Code/Python/fortls/assets/logo.png"
+       inkscape:export-xdpi="300.22787"
+       inkscape:export-ydpi="300.22787"
+       transform="translate(41.612517,-34.029143)">
+      <rect
+         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.0914084;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect18694"
+         width="23.999231"
+         height="15.736053"
+         x="37.717922"
+         y="130.50795"
+         ry="2.9265988"
+         inkscape:export-filename="/home/gn/Code/TypeScript/vscode-fortran-support/assets/modern-fortran-logo.png"
+         inkscape:export-xdpi="150.11394"
+         inkscape:export-ydpi="150.11394" />
+      <rect
+         style="fill:#734f96;fill-opacity:1;stroke:none;stroke-width:0.107605;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect18696"
+         width="33.257595"
+         height="15.736053"
+         x="11.43499"
+         y="130.50795"
+         ry="2.9265988"
+         inkscape:export-filename="/home/gn/Code/TypeScript/vscode-fortran-support/assets/modern-fortran-logo.png"
+         inkscape:export-xdpi="150.11394"
+         inkscape:export-ydpi="150.11394" />
+      <text
+         xml:space="preserve"
+         style="font-size:14.1111px;line-height:1.25;font-family:Caladea;-inkscape-font-specification:Caladea;letter-spacing:0.590021px;word-spacing:0px;fill:#ffffff;stroke-width:0.0700042"
+         x="22.070086"
+         y="143.9781"
+         id="text18702"><tspan
+           sodipodi:role="line"
+           id="tspan18700"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14.1111px;font-family:Clarendon;-inkscape-font-specification:Clarendon;letter-spacing:0.590021px;fill:#ffffff;stroke-width:0.0700042"
+           x="22.070086"
+           y="143.9781"
+           dx="0">o<tspan
+   style="letter-spacing:0.590021px"
+   id="tspan18698">rt</tspan></tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16.2278px;line-height:1.25;font-family:Clarendon;-inkscape-font-specification:Clarendon;fill:#ffffff;stroke-width:0.264583"
+         x="12.420631"
+         y="144.21799"
+         id="text18706"><tspan
+           sodipodi:role="line"
+           id="tspan18704"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16.2278px;font-family:Clarendon;-inkscape-font-specification:Clarendon;fill:#ffffff;stroke-width:0.264583"
+           x="12.420631"
+           y="144.21799">F</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:16.2278px;line-height:1.25;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';stroke-width:0.264583"
+         x="44.405636"
+         y="144.05333"
+         id="text18710"><tspan
+           sodipodi:role="line"
+           id="tspan18708"
+           style="font-weight:bold;font-size:16.2278px;stroke-width:0.264583"
+           x="44.405636"
+           y="144.05333">LS</tspan></text>
+    </g>
+  </g>
+</svg>

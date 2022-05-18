@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="26.453466mm"
+   height="16.533251mm"
+   viewBox="0 0 26.453467 16.533251"
+   version="1.1"
+   id="svg23532"
+   sodipodi:docname="logo2-animated.svg"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview23534"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="8.4863924"
+     inkscape:cx="67.578775"
+     inkscape:cy="14.670545"
+     inkscape:window-width="1920"
+     inkscape:window-height="1053"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <defs
+     id="defs23529" />
+  <style
+     id="style4">
+      @keyframes cursor-blink {
+         0%  {opacity: 1;}
+         25% {opacity: 0;}
+         50% {opacity: 1;}
+      }
+
+      #cursor {
+         animation: cursor-blink 1.5s infinite;
+         animation-timing-function: ease-in-out;
+      }
+   </style>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-50.797219,-79.456839)">
+    <rect
+       style="fill:#1e1e1e;fill-opacity:1;stroke:#1e1e1e;stroke-width:0.317166;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect2268"
+       width="26.136299"
+       height="15.335978"
+       x="50.955803"
+       y="80.495529"
+       ry="0.067764252" />
+    <rect
+       style="fill:#094771;fill-opacity:1;stroke:#454545;stroke-width:0.22;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect27716"
+       width="16.411741"
+       height="4.6883922"
+       x="59.662621"
+       y="87.264824" />
+    <rect
+       style="fill:#252526;fill-opacity:1;stroke:none;stroke-width:0.118454;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect190284"
+       width="16.411741"
+       height="0.17200001"
+       x="59.662621"
+       y="91.783218"
+       ry="0" />
+    <text
+       xml:space="preserve"
+       style="font-size:3.50005px;line-height:1.25;font-family:Caladea;-inkscape-font-specification:Caladea;fill:#18a3ff;fill-opacity:1;stroke-width:0.656262"
+       x="66.320023"
+       y="88.746834"
+       id="text69430"
+       transform="scale(0.97145175,1.0293872)"><tspan
+         sodipodi:role="line"
+         id="tspan69428"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.50005px;font-family:Clarendon;-inkscape-font-specification:Clarendon;fill:#18a3ff;fill-opacity:1;stroke-width:0.656262"
+         x="66.320023"
+         y="88.746834"
+         dx="0 0 0 0.19842868">Fort</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:3.65019px;line-height:1.25;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#eef5f9;fill-opacity:1;stroke-width:0.059514"
+       x="73.789948"
+       y="88.761787"
+       id="text81726"
+       transform="scale(0.97145175,1.0293872)"><tspan
+         sodipodi:role="line"
+         id="tspan81724"
+         style="font-weight:bold;font-size:3.65019px;fill:#eef5f9;fill-opacity:1;stroke-width:0.059514"
+         x="73.789948"
+         y="88.761787">LS</tspan></text>
+    <path
+       fill="currentColor"
+       d="m 62.921918,90.020477 h 0.187439 l 0.704913,-0.74698 v -0.1989 l -0.353775,-0.37204 h -0.184813 l -0.4805,0.50631 h -1.320064 v -0.34969 l 0.491064,-0.51755 v -0.1989 l -0.528024,-0.55949 h -0.190066 l -1.056049,1.11901 v 0.1989 l 0.528027,0.55953 h 0.18744 l 0.300973,-0.32177 v 1.61982 l 0.131996,0.13966 h 1.227655 v 0.14554 l 0.351138,0.37489 h 0.18744 l 0.704912,-0.74693 v -0.1989 l -0.353774,-0.37206 h -0.184814 l -0.491061,0.51757 H 61.46188 v -1.11907 h 1.106208 v 0.13405 z m 0.446178,-1.02115 0.166332,0.17643 -0.528022,0.55952 -0.166332,-0.17643 z m 0,1.3988 0.166332,0.17643 -0.528022,0.5595 -0.166332,-0.17643 z m -2.555634,-1.23374 -0.340572,-0.36368 0.868599,-0.9204 0.343213,0.3609 z"
+       id="path2"
+       style="fill:#ee9d28;fill-opacity:1;stroke-width:0.271769" />
+    <text
+       xml:space="preserve"
+       style="font-size:3.50005px;line-height:1.25;font-family:Caladea;-inkscape-font-specification:Caladea;fill:#d4d4d4;fill-opacity:1;stroke-width:0.656262"
+       x="53.764133"
+       y="84.152611"
+       id="text195534"
+       transform="scale(0.97145175,1.0293872)"><tspan
+         sodipodi:role="line"
+         id="tspan195532"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.50005px;font-family:Clarendon;-inkscape-font-specification:Clarendon;fill:#d4d4d4;fill-opacity:1;stroke-width:0.656262"
+         x="53.764133"
+         y="84.152611"
+         dx="0 0 0 0.19842868">Fort</tspan></text>
+    <path
+       id="rect224117"
+       style="fill:none;stroke:#282828;stroke-width:0.207346;stroke-linecap:square;paint-order:markers stroke fill"
+       d="M 77.14556,87.051176 H 51.781841 V 83.667264 H 77.14556"
+       sodipodi:nodetypes="cccc" />
+    <path
+       style="fill:#aeafad;fill-opacity:1;stroke:#aeafad;stroke-width:0.20122;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 59.653227,87.159715 v -3.5987"
+       id="cursor" />
+    <g
+       id="g22415"
+       transform="translate(27.973565,75.283141)">
+      <rect
+         style="fill:#333333;fill-opacity:1;stroke:#333333;stroke-width:0.177537;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+         id="rect2270"
+         width="26.275463"
+         height="0.2450036"
+         x="22.912422"
+         y="5.0824447"
+         ry="0" />
+      <rect
+         style="fill:#333333;fill-opacity:1;stroke:#333333;stroke-width:0.339742;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+         id="rect22125"
+         width="26.113001"
+         height="0.90277708"
+         x="22.993525"
+         y="4.3435688"
+         ry="0.066498294" />
+    </g>
+    <g
+       id="g16561"
+       transform="translate(0.192802,-88.008971)">
+      <ellipse
+         style="fill:#52c22b;fill-opacity:1;stroke:none;stroke-width:0.207239;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;paint-order:markers stroke fill"
+         id="circle2009-3"
+         cx="53.077602"
+         cy="168.08707"
+         rx="0.31191254"
+         ry="0.3305144" />
+      <ellipse
+         style="fill:#e6bf28;fill-opacity:1;stroke:none;stroke-width:0.207239;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;paint-order:markers stroke fill"
+         id="circle2011-6"
+         cx="52.167198"
+         cy="168.08707"
+         rx="0.31191254"
+         ry="0.3305144" />
+      <ellipse
+         style="fill:#fe5a51;fill-opacity:1;stroke:none;stroke-width:0.207239;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;paint-order:markers stroke fill"
+         id="circle2013-7"
+         cx="51.256775"
+         cy="168.08707"
+         rx="0.31191254"
+         ry="0.3305144" />
+    </g>
+    <rect
+       style="fill:#252526;fill-opacity:1;stroke:none;stroke-width:0.048285;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect24953"
+       width="4.6903944"
+       height="0.1"
+       x="87.264824"
+       y="-76.074356"
+       ry="0"
+       transform="rotate(90)" />
+  </g>
+</svg>

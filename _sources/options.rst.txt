@@ -171,7 +171,7 @@ By default ``fortls`` will scan the project's directories for files with extensi
 files are external to the project, their locations can be specific via
 ``include_dirs``.
 
-.. note:: glob fnmatch style patterns  are allowed
+.. note:: glob fnmatch style patterns are allowed
 .. warning:: Source files detected in ``include_dirs`` will not be parsed for Fortran objects unless they are also included in ``source_dirs``.
 
 
