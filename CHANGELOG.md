@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 2.6.0
+
+### Changed
+
+- Redesigned the `fortls` website to be more aesthetically pleasing and user-friendly.
+
 ## 2.5.0
 
 ### Added
