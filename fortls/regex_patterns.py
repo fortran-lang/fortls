@@ -16,39 +16,38 @@ class FortranRegularExpressions:
     CONTAINS: Pattern = compile(r"[ ]*(CONTAINS)[ ]*$", I)
     IMPLICIT: Pattern = compile(r"[ ]*IMPLICIT[ ]+([a-z]*)", I)
     SUB_MOD: Pattern = compile(r"[ ]*\b(PURE|IMPURE|ELEMENTAL|RECURSIVE)\b", I)
-    SUB: Pattern = compile(r"[ ]*SUBROUTINE[ ]+([a-z0-9_]+)", I)
+    SUB: Pattern = compile(r"[ ]*SUBROUTINE[ ]+(\w+)", I)
     END_SUB: Pattern = compile(r"SUBROUTINE", I)
-    FUN: Pattern = compile(r"[ ]*FUNCTION[ ]+([a-z0-9_]+)", I)
-    RESULT: Pattern = compile(r"RESULT[ ]*\(([a-z0-9_]*)\)", I)
+    FUN: Pattern = compile(r"[ ]*FUNCTION[ ]+(\w+)", I)
+    RESULT: Pattern = compile(r"RESULT[ ]*\((\w*)\)", I)
     END_FUN: Pattern = compile(r"FUNCTION", I)
-    MOD: Pattern = compile(r"[ ]*MODULE[ ]+([a-z0-9_]+)", I)
+    MOD: Pattern = compile(r"[ ]*MODULE[ ]+(\w+)", I)
     END_MOD: Pattern = compile(r"MODULE", I)
     SUBMOD: Pattern = compile(r"[ ]*SUBMODULE[ ]*\(", I)
     END_SMOD: Pattern = compile(r"SUBMODULE", I)
     END_PRO: Pattern = compile(r"(MODULE)?[ ]*PROCEDURE", I)
-    BLOCK: Pattern = compile(r"[ ]*([a-z_][a-z0-9_]*[ ]*:[ ]*)?BLOCK(?![a-z0-9_])", I)
+    BLOCK: Pattern = compile(r"[ ]*([a-z_]\w*[ ]*:[ ]*)?BLOCK(?!\w)", I)
     END_BLOCK: Pattern = compile(r"BLOCK", I)
-    DO: Pattern = compile(r"[ ]*(?:[a-z_][a-z0-9_]*[ ]*:[ ]*)?DO([ ]+[0-9]*|$)", I)
+    DO: Pattern = compile(r"[ ]*(?:[a-z_]\w*[ ]*:[ ]*)?DO([ ]+[0-9]*|$)", I)
     END_DO: Pattern = compile(r"DO", I)
     WHERE: Pattern = compile(r"[ ]*WHERE[ ]*\(", I)
     END_WHERE: Pattern = compile(r"WHERE", I)
-    IF: Pattern = compile(r"[ ]*(?:[a-z_][a-z0-9_]*[ ]*:[ ]*)?IF[ ]*\(", I)
+    IF: Pattern = compile(r"[ ]*(?:[a-z_]\w*[ ]*:[ ]*)?IF[ ]*\(", I)
     THEN: Pattern = compile(r"\)[ ]*THEN$", I)
     END_IF: Pattern = compile(r"IF", I)
     ASSOCIATE: Pattern = compile(r"[ ]*ASSOCIATE[ ]*\(", I)
     END_ASSOCIATE: Pattern = compile(r"ASSOCIATE", I)
     END_FIXED: Pattern = compile(r"[ ]*([0-9]*)[ ]*CONTINUE", I)
     SELECT: Pattern = compile(
-        r"[ ]*(?:[a-z_][a-z0-9_]*[ ]*:[ ]*)?SELECT[ ]*"
-        r"(CASE|TYPE)[ ]*\(([a-z0-9_=> ]*)",
+        r"[ ]*(?:[a-z_]\w*[ ]*:[ ]*)?SELECT[ ]*" r"(CASE|TYPE)[ ]*\(([\w=> ]*)",
         I,
     )
-    SELECT_TYPE: Pattern = compile(r"[ ]*(TYPE|CLASS)[ ]+IS[ ]*\(([a-z0-9_ ]*)", I)
+    SELECT_TYPE: Pattern = compile(r"[ ]*(TYPE|CLASS)[ ]+IS[ ]*\(([\w ]*)", I)
     SELECT_DEFAULT: Pattern = compile(r"[ ]*CLASS[ ]+DEFAULT", I)
     END_SELECT: Pattern = compile(r"SELECT", I)
-    PROG: Pattern = compile(r"[ ]*PROGRAM[ ]+([a-z0-9_]+)", I)
+    PROG: Pattern = compile(r"[ ]*PROGRAM[ ]+(\w+)", I)
     END_PROG: Pattern = compile(r"PROGRAM", I)
-    INT: Pattern = compile(r"[ ]*(ABSTRACT)?[ ]*INTERFACE[ ]*([a-z0-9_]*)", I)
+    INT: Pattern = compile(r"[ ]*(ABSTRACT)?[ ]*INTERFACE[ ]*(\w*)", I)
     END_INT: Pattern = compile(r"INTERFACE", I)
     END_WORD: Pattern = compile(
         r"[ ]*END[ ]*(DO|WHERE|IF|BLOCK|ASSOCIATE|SELECT"
@@ -57,7 +56,7 @@ class FortranRegularExpressions:
         I,
     )
     TYPE_DEF: Pattern = compile(r"[ ]*(TYPE)[, :]+", I)
-    EXTENDS: Pattern = compile(r"EXTENDS[ ]*\(([a-z0-9_]*)\)", I)
+    EXTENDS: Pattern = compile(r"EXTENDS[ ]*\((\w*)\)", I)
     GENERIC_PRO: Pattern = compile(
         r"[ ]*(GENERIC)[, ]*(PRIVATE|PUBLIC)?[ ]*::[ ]*[a-z]", I
     )
@@ -71,7 +70,7 @@ class FortranRegularExpressions:
         r"|EXTERNAL|CLASS|TYPE)",  # external :: variable is handled by this
         I,
     )
-    KIND_SPEC: Pattern = compile(r"[ ]*([*]?\([ ]*[a-z0-9_*:]|\*[ ]*[0-9:]*)", I)
+    KIND_SPEC: Pattern = compile(r"[ ]*([*]?\([ ]*[\w*:]|\*[ ]*[0-9:]*)", I)
     KEYWORD_LIST: Pattern = compile(
         r"[ ]*,[ ]*(PUBLIC|PRIVATE|ALLOCATABLE|"
         r"POINTER|TARGET|DIMENSION[ ]*\(|"
@@ -82,22 +81,22 @@ class FortranRegularExpressions:
     )
     PARAMETER_VAL: Pattern = compile(r"\w*[\s\&]*=[\s\&]*([\w\.\*\-\+\\\'\"]*)", I)
     TATTR_LIST: Pattern = compile(
-        r"[ ]*,[ ]*(PUBLIC|PRIVATE|ABSTRACT|EXTENDS\([a-z0-9_]*\))", I
+        r"[ ]*,[ ]*(PUBLIC|PRIVATE|ABSTRACT|EXTENDS\(\w*\))", I
     )
     VIS: Pattern = compile(r"[ ]*\b(PUBLIC|PRIVATE)\b", I)
-    WORD: Pattern = compile(r"[a-z_][a-z0-9_]*", I)
+    WORD: Pattern = compile(r"[a-z_]\w*", I)
     NUMBER: Pattern = compile(
         r"[\+\-]?(\b\d+\.?\d*|\.\d+)(_\w+|d[\+\-]?\d+|e[\+\-]?\d+(_\w+)?)?(?!\w)",
         I,
     )
     LOGICAL: Pattern = compile(r".true.|.false.", I)
-    SUB_PAREN: Pattern = compile(r"\([a-z0-9_, ]*\)", I)
-    # KIND_SPEC_MATCH: Pattern = compile(r"\([a-z0-9_, =*]*\)", I)
+    SUB_PAREN: Pattern = compile(r"\([\w, ]*\)", I)
+    # KIND_SPEC_MATCH: Pattern = compile(r"\([\w, =*]*\)", I)
 
     SQ_STRING: Pattern = compile(r"\'[^\']*\'", I)
     DQ_STRING: Pattern = compile(r"\"[^\"]*\"", I)
     LINE_LABEL: Pattern = compile(r"[ ]*([0-9]+)[ ]+", I)
-    NON_DEF: Pattern = compile(r"[ ]*(CALL[ ]+[a-z_]|[a-z_][a-z0-9_%]*[ ]*=)", I)
+    NON_DEF: Pattern = compile(r"[ ]*(CALL[ ]+[a-z_]|[a-z_][\w%]*[ ]*=)", I)
     # Fixed format matching rules
     FIXED_COMMENT: Pattern = compile(r"([!cd*])", I)
     FIXED_CONT: Pattern = compile(r"( {5}[\S])")
@@ -110,14 +109,14 @@ class FortranRegularExpressions:
     FREE_OPENMP: Pattern = compile(r"[ ]*!\$OMP", I)
     FREE_FORMAT_TEST: Pattern = compile(r"[ ]{1,4}[a-z]", I)
     # Preprocessor matching rules
-    DEFINED: Pattern = compile(r"defined[ ]*\(?[ ]*([a-z_][a-z0-9_]*)[ ]*\)?", I)
+    DEFINED: Pattern = compile(r"defined[ ]*\(?[ ]*([a-z_]\w*)[ ]*\)?", I)
     PP_REGEX: Pattern = compile(r"#(if |ifdef|ifndef|else|elif|endif)")
     PP_DEF: Pattern = compile(r"#(define|undef)[ ]*([\w]+)(\((\w+(,[ ]*)?)+\))?", I)
-    PP_DEF_TEST: Pattern = compile(r"(![ ]*)?defined[ ]*\([ ]*([a-z0-9_]*)[ ]*\)$", I)
-    PP_INCLUDE: Pattern = compile(r"#include[ ]*([\"a-z0-9_\.]*)", I)
+    PP_DEF_TEST: Pattern = compile(r"(![ ]*)?defined[ ]*\([ ]*(\w*)[ ]*\)$", I)
+    PP_INCLUDE: Pattern = compile(r"#include[ ]*([\"\w\.]*)", I)
     PP_ANY: Pattern = compile(r"(^#:?\w+)")
     # Context matching rules
-    CALL: Pattern = compile(r"[ ]*CALL[ ]+[a-z0-9_%]*$", I)
+    CALL: Pattern = compile(r"[ ]*CALL[ ]+[\w%]*$", I)
     INT_STMNT: Pattern = compile(r"^[ ]*[a-z]*$", I)
     TYPE_STMNT: Pattern = compile(r"[ ]*(TYPE|CLASS)[ ]*(IS)?[ ]*$", I)
     PROCEDURE_STMNT: Pattern = compile(r"[ ]*(PROCEDURE)[ ]*$", I)
