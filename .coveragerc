@@ -1,5 +1,4 @@
 [run]
-dynamic_context = test_function
 omit =
     fortls/__init__.py
     fortls/version.py
@@ -10,3 +9,6 @@ exclude_lines =
     log.debug
     except:
     if not PY3K:
+
+[html]
+show_contexts = True

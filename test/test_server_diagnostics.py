@@ -391,3 +391,16 @@ def test_function():
             "severity": 1,
         }
     ]
+
+
+def test_submodule_scopes():
+    """Test that submodule procedures and functions with modifier keywords are correctly
+    parsed and their scopes correctly closed."""
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "diag")})
+    file_path = str(test_dir / "diag" / "test_scope_overreach.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
+    errcode, results = run_request(string, ["-n", "1"])
+    assert errcode == 0
+    assert results[1]["diagnostics"] == []
