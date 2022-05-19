@@ -134,7 +134,7 @@ fortls
 
 .. toctree::
     :hidden:
-    :caption: Dev
+    :caption: Development
 
     modules.rst
 
