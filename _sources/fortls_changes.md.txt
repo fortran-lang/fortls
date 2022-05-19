@@ -90,6 +90,8 @@
 
 ## Fixed
 
+- Fixed bug where submodule procedure scopes would terminate early if keyword modifiers were used
+  ([#119](https://github.com/gnikit/fortls/issues/119))
 - Fixed remote coverage report line diff
   ([#101](https://github.com/gnikit/fortls/issues/101))
 - Fixes GoTo Implementation error for intrinsics
