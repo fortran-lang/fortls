@@ -327,3 +327,24 @@ def test_hover_block():
     assert errcode == 0
     ref_results = ["REAL, DIMENSION(5)", "REAL"]
     validate_hover(results, ref_results)
+
+
+def test_hover_submodule_procedure():
+    """Test that submodule procedures and functions with modifier keywords
+    are correctly displayed when hovering.
+    """
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "diag")})
+    file_path = test_dir / "diag" / "test_scope_overreach.f90"
+    string += hover_req(file_path, 18, 37)
+    string += hover_req(file_path, 23, 37)
+    errcode, results = run_request(string, fortls_args=["-n", "1"])
+    assert errcode == 0
+    ref_results = [
+        """PURE RECURSIVE FUNCTION foo_sp(x) RESULT(fi)
+ REAL(sp), INTENT(IN) :: x
+ REAL(sp) :: fi""",
+        """PURE RECURSIVE FUNCTION foo_dp(x) RESULT(fi)
+ REAL(dp), INTENT(IN) :: x
+ REAL(dp) :: fi""",
+    ]
+    validate_hover(results, ref_results)

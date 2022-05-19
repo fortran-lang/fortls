@@ -532,7 +532,12 @@ def read_generic_def(line: str):
 
 
 def read_mod_def(line: str):
-    """Attempt to read MODULE and MODULE PROCEDURE definition lines"""
+    """Attempt to read MODULE and MODULE PROCEDURE, MODULE FUNCTION definition lines"""
+    # Get all the keyword modifier mathces
+    keywords = re.findall(FRegex.SUB_MOD, line)
+    # remove modifiers from line
+    line = re.sub(FRegex.SUB_MOD, "", line)
+
     mod_match = FRegex.MOD.match(line)
     if mod_match is None:
         return None
@@ -547,15 +552,19 @@ def read_mod_def(line: str):
         return "int_pro", pro_names
     # Check for submodule definition
     trailing_line = line[mod_match.start(1) :]
+    # module procedure
     sub_res = read_sub_def(trailing_line, mod_flag=True)
     if sub_res is not None:
         return sub_res
+    # module function
     fun_res = read_var_def(trailing_line, fun_only=True)
     if fun_res is not None:
         fun_res[1].mod_flag = True
-        return fun_res[0], fun_res[1]
+        fun_res[1].keywords = keywords
+        return fun_res
     fun_res = read_fun_def(trailing_line, mod_flag=True)
     if fun_res is not None:
+        fun_res[1].keywords = keywords
         return fun_res
     return "mod", name
 

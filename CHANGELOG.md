@@ -9,6 +9,11 @@
 - Redesigned the `fortls` website to be more aesthetically pleasing and user-friendly
   ([#112](https://github.com/gnikit/fortls/issues/112))
 
+### Fixed
+
+- Fixed bug where submodule procedure scopes would terminate early if keyword modifiers were used
+  ([#119](https://github.com/gnikit/fortls/issues/119))
+
 ## 2.5.0
 
 ### Added
