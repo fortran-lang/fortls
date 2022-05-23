@@ -54,7 +54,7 @@ def test_comp1():
 
 
 def test_comp2():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     file_path = test_dir / "subdir" / "test_submod.F90"
     string += comp_request(file_path, 30, 12)
     string += comp_request(file_path, 31, 8)
@@ -98,7 +98,7 @@ def test_comp3():
 
 
 def test_comp4():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     file_path = test_dir / "subdir" / "test_abstract.f90"
     string += comp_request(file_path, 7, 12)
     errcode, results = run_request(string, ["--use_signature_help"])
@@ -114,7 +114,7 @@ def test_comp4():
 
 
 def test_comp5():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     file_path = test_dir / "subdir" / "test_free.f90"
     string += comp_request(file_path, 10, 22)
     string += comp_request(file_path, 14, 27)
@@ -134,7 +134,7 @@ def test_comp5():
 
 
 def test_comp6():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     file_path = test_dir / "subdir" / "test_select.f90"
     string += comp_request(file_path, 21, 7)
     string += comp_request(file_path, 23, 7)
@@ -176,7 +176,7 @@ def test_comp7():
 
 
 def test_comp8():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     file_path = test_dir / "subdir" / "test_inherit.f90"
     string += comp_request(file_path, 10, 11)
     errcode, results = run_request(string, ["--use_signature_help"])
@@ -192,7 +192,7 @@ def test_comp8():
 
 
 def test_comp9():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     file_path = test_dir / "subdir" / "test_rename.F90"
     string += comp_request(file_path, 13, 5)
     string += comp_request(file_path, 14, 5)
@@ -210,7 +210,7 @@ def test_comp9():
 
 
 def test_comp10():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     file_path = test_dir / "subdir" / "test_vis.f90"
     string += comp_request(file_path, 8, 10)
     errcode, results = run_request(string, ["--use_signature_help"])
@@ -263,7 +263,7 @@ def test_comp_visibility_scopes():
 
 def test_comp_interface():
     """Test that the interface signature autocompletion, with placeholders, works."""
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     file_path = test_dir / "subdir" / "test_generic.f90"
     string += comp_request(file_path, 14, 10)
     errcode, results = run_request(string, ["--use_signature_help"])
@@ -306,7 +306,7 @@ def test_comp_no_signature_help():
 
 
 def test_comp_fixed():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     file_path = test_dir / "subdir" / "test_fixed.f"
     string += comp_request(file_path, 15, 8)
     string += comp_request(file_path, 15, 21)

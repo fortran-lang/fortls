@@ -45,7 +45,7 @@ def test_submodules_spaced():
 
 
 def test_end_named_variables():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "diag")})
     # Tests that variables named end do not close the scope prematurely
     file_path = str(test_dir / "diag" / "test_scope_end_name_var.f90")
     string += write_rpc_notification(
@@ -57,7 +57,7 @@ def test_end_named_variables():
 
 
 def test_external():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "diag")})
     # Test that externals can be split between multiple lines
     # and that diagnostics for multiple definitions of externals can account
     # for that
@@ -113,7 +113,7 @@ def test_external():
 
 
 def test_forall():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "diag")})
     # Checks that forall with end forall inside a case select does not cause
     # unexpected end of scope.
     file_path = str(test_dir / "diag" / "test_forall.f90")
@@ -126,7 +126,7 @@ def test_forall():
 
 
 def test_use_ordering():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "diag")})
     # Test USE directive ordering errors
     file_path = str(test_dir / "diag" / "test_use_ordering.f90")
     string += write_rpc_notification(
@@ -138,7 +138,7 @@ def test_use_ordering():
 
 
 def test_where():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "diag")})
     # Test where blocks
     file_path = str(test_dir / "diag" / "test_where.f90")
     string += write_rpc_notification(
@@ -150,7 +150,7 @@ def test_where():
 
 
 def test_multiline():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "diag")})
     # Test where semicolon (multi-line)
     file_path = str(test_dir / "diag" / "test_semicolon.f90")
     string += write_rpc_notification(
@@ -162,7 +162,7 @@ def test_multiline():
 
 
 def test_enum():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "diag")})
     # Test ENUM block
     file_path = str(test_dir / "diag" / "test_enum.f90")
     string += write_rpc_notification(
@@ -174,7 +174,7 @@ def test_enum():
 
 
 def test_module_procedure():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     # Test module procedure in submodules importing scopes
     file_path = str(test_dir / "subdir" / "test_submod.F90")
     string += write_rpc_notification(
@@ -216,7 +216,7 @@ def test_max_line_length():
 
 
 def test_implicit_none():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "diag")})
     # Test module procedure in submodules importing scopes
     file_path = str(test_dir / "diag" / "test_implicit_none.f90")
     string += write_rpc_notification(
@@ -237,7 +237,7 @@ def test_implicit_none():
 
 
 def test_contains():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "diag")})
     # Test module procedure in submodules importing scopes
     file_path = str(test_dir / "diag" / "test_contains.f90")
     string += write_rpc_notification(
@@ -274,7 +274,7 @@ def test_contains():
 
 
 def test_visibility():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "diag")})
     # Test module procedure in submodules importing scopes
     file_path = str(test_dir / "diag" / "test_visibility.f90")
     string += write_rpc_notification(
@@ -319,7 +319,7 @@ def test_visibility():
 
 
 def test_import():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "diag")})
     # Test module procedure in submodules importing scopes
     file_path = str(test_dir / "diag" / "test_import.f90")
     string += write_rpc_notification(
@@ -340,7 +340,7 @@ def test_import():
 
 
 def test_variable():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "diag")})
     # Test module procedure in submodules importing scopes
     file_path = str(test_dir / "diag" / "test_variable.f90")
     string += write_rpc_notification(
@@ -373,7 +373,7 @@ def test_variable():
 
 
 def test_function():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "diag")})
     # Test module procedure in submodules importing scopes
     file_path = str(test_dir / "diag" / "test_function.f90")
     string += write_rpc_notification(

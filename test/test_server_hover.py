@@ -20,7 +20,7 @@ def validate_hover(result_array: list, checks: list):
 
 def test_hover_abstract_int_procedure():
     """Tests that the binding of an abstract interface is correctly resolved"""
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     file_path = test_dir / "subdir" / "test_abstract.f90"
     string += hover_req(file_path, 7, 30)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
@@ -35,7 +35,7 @@ def test_hover_abstract_int_procedure():
 
 def test_hover_parameter_multiline():
     """Test that hover parameters display value correctly across lines"""
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
     file_path = test_dir / "hover" / "parameters.f90"
     string += hover_req(file_path, 2, 28)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
@@ -46,7 +46,7 @@ def test_hover_parameter_multiline():
 
 def test_hover_literal_num():
     """Test that hovering over literals shows their type INTEGER"""
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
     file_path = test_dir / "hover" / "parameters.f90"
     string += hover_req(file_path, 3, 28)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
@@ -57,7 +57,7 @@ def test_hover_literal_num():
 
 def test_hover_parameter():
     """Test that hover parameters display value correctly"""
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
     file_path = test_dir / "hover" / "parameters.f90"
     string += hover_req(file_path, 4, 28)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
@@ -68,7 +68,7 @@ def test_hover_parameter():
 
 def test_hover_parameter_nested():
     """Test that hover parameters using other parameter values works"""
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
     file_path = test_dir / "hover" / "parameters.f90"
     string += hover_req(file_path, 4, 41)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
@@ -79,7 +79,7 @@ def test_hover_parameter_nested():
 
 def test_hover_parameter_multiline_missing_type():
     """Test that hover parameters display correctly when type is split across lines"""
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
     file_path = test_dir / "hover" / "parameters.f90"
     string += hover_req(file_path, 6, 28)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
@@ -90,7 +90,7 @@ def test_hover_parameter_multiline_missing_type():
 
 def test_hover_literal_real():
     """Test that hovering over literals shows their values REAL"""
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
     file_path = test_dir / "hover" / "parameters.f90"
     string += hover_req(file_path, 7, 47)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
@@ -101,7 +101,7 @@ def test_hover_literal_real():
 
 def test_hover_parameter_double():
     """Test that hovering over parameters shows their type DOUBLE PRECISION"""
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
     file_path = test_dir / "hover" / "parameters.f90"
     string += hover_req(file_path, 7, 38)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
@@ -112,7 +112,7 @@ def test_hover_parameter_double():
 
 def test_hover_parameter_double_sf():
     """Test that hovering over parameters shows their type scientific notation"""
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
     file_path = test_dir / "hover" / "parameters.f90"
     string += hover_req(file_path, 7, 55)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
@@ -123,7 +123,7 @@ def test_hover_parameter_double_sf():
 
 def test_hover_parameter_bool():
     """Test that hovering over parameters shows their values LOGICAL"""
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
     file_path = test_dir / "hover" / "parameters.f90"
     string += hover_req(file_path, 8, 38)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
@@ -134,7 +134,7 @@ def test_hover_parameter_bool():
 
 def test_hover_literal_bool():
     """Test that hovering over literals shows their type LOGICAL"""
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
     file_path = test_dir / "hover" / "parameters.f90"
     string += hover_req(file_path, 8, 50)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
@@ -145,7 +145,7 @@ def test_hover_literal_bool():
 
 def test_hover_parameter_str_sq():
     """Test that hovering over parameters shows their value, single quote STRING"""
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
     file_path = test_dir / "hover" / "parameters.f90"
     string += hover_req(file_path, 9, 37)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
@@ -156,7 +156,7 @@ def test_hover_parameter_str_sq():
 
 def test_hover_literal_string_sq():
     """Test that hovering over literals shows their values single quote STRING"""
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
     file_path = test_dir / "hover" / "parameters.f90"
     string += hover_req(file_path, 9, 48)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
@@ -167,7 +167,7 @@ def test_hover_literal_string_sq():
 
 def test_hover_parameter_str_dq():
     """Test that hovering over parameters shows their value, double quote STRING"""
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
     file_path = test_dir / "hover" / "parameters.f90"
     string += hover_req(file_path, 10, 37)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
@@ -178,7 +178,7 @@ def test_hover_parameter_str_dq():
 
 def test_hover_literal_string_dq():
     """Test that hovering over literals shows their values double quote STRING"""
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
     file_path = test_dir / "hover" / "parameters.f90"
     string += hover_req(file_path, 10, 48)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
@@ -189,7 +189,7 @@ def test_hover_literal_string_dq():
 
 def test_hover_pointer_attr():
     """Test that hovering maintains the variable attributes e.g. POINTER"""
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
     file_path = test_dir / "hover" / "pointers.f90"
     string += hover_req(file_path, 1, 26)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
@@ -200,7 +200,7 @@ def test_hover_pointer_attr():
 
 def test_hover_functions():
     """Test that hovering over functions provides the expected results"""
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
     file_path = test_dir / "hover" / "functions.f90"
     string += hover_req(file_path, 1, 11)
     string += hover_req(file_path, 7, 19)
@@ -251,7 +251,7 @@ def test_hover_functions():
 
 
 def test_hover_spaced_keywords():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
     file_path = test_dir / "hover" / "spaced_keywords.f90"
     string += hover_req(file_path, 1, 45)
     string += hover_req(file_path, 2, 99)
@@ -266,7 +266,7 @@ def test_hover_spaced_keywords():
 
 
 def test_hover_recursive():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
     file_path = test_dir / "hover" / "recursive.f90"
     string += hover_req(file_path, 9, 40)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
@@ -281,7 +281,7 @@ def test_hover_recursive():
 
 
 def test_hover_subroutine():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     file_path = test_dir / "subdir" / "test_submod.F90"
     string += hover_req(file_path, 29, 24)
     string += hover_req(file_path, 34, 24)

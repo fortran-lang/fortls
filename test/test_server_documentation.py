@@ -66,7 +66,7 @@ def test_ford():
 
 
 def test_doc_overwrite_type_bound_procedure_sub():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     file_path = test_dir / "subdir" / "test_free.f90"
     # Test we can override method docstring e.g.
     # procedure :: name => name_imp !< Doc override
@@ -78,7 +78,7 @@ def test_doc_overwrite_type_bound_procedure_sub():
 
 
 def test_doc_type_bound_procedure_sub_implementation():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     file_path = test_dir / "subdir" / "test_free.f90"
     # procedure :: name => name_imp !< Doc override
     # Test that name_imp will yield the full docstring present in the implementation
@@ -89,7 +89,7 @@ def test_doc_type_bound_procedure_sub_implementation():
 
 
 def test_doc_variable():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     file_path = test_dir / "subdir" / "test_free.f90"
     # n !! Doc 5
     # Test that a variable can carry over documentation
@@ -100,19 +100,19 @@ def test_doc_variable():
 
 
 def test_doc_overwrite_type_bound_procedure_fun():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     file_path = test_dir / "subdir" / "test_free.f90"
     # Test we can override function docstring e.g.
     # procedure :: name => name_imp !< Doc override
     # We want to preserve the argument list docstring
     string += hover_request(file_path, 14, 17)
-    errcode, results = run_request(string)
+    errcode, results = run_request(string, ["-n", "1"])
     assert errcode == 0
     check_return(results[1], ((1, "!! Doc 2"),))
 
 
 def test_doc_type_bound_procedure_fun_implementation():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     file_path = test_dir / "subdir" / "test_free.f90"
     # procedure :: name => name_imp !< Doc override
     # Test that name_imp will yield the full docstring present in the implementation
@@ -123,7 +123,7 @@ def test_doc_type_bound_procedure_fun_implementation():
 
 
 def test_doc_empty_overwrite_type_bound_procedure_sub():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     file_path = test_dir / "subdir" / "test_free.f90"
     # Test we can ignore overriding method docstring  and return the original e.g.
     # procedure :: name => name_imp !<
@@ -137,7 +137,7 @@ def test_doc_empty_overwrite_type_bound_procedure_sub():
 
 
 def test_doc_empty_overwrite_type_bound_procedure_fun():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     file_path = test_dir / "subdir" / "test_free.f90"
     # procedure :: name => name_imp !< Doc
     # We want to preserve the procedure docstring but also fetch the empty
@@ -151,7 +151,7 @@ def test_doc_empty_overwrite_type_bound_procedure_fun():
 
 
 def test_doc_multiline_type_bound_procedure_arg_list():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     file_path = test_dir / "subdir" / "test_free.f90"
     # Check that inline docstrings can be input and carried over in multiple lines
     # for both the procedure pointer and the implementation

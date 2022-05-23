@@ -93,7 +93,7 @@ def test_def_type_nested_variable():
 
 def test_def_type_in_submod_function():
     """Test that going into the definition of a type bound function in a submodule"""
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     file_path = test_dir / "subdir" / "test_submod.F90"
     string += def_request(file_path, 31, 13)
     errcode, results = run_request(string)
@@ -106,7 +106,7 @@ def test_def_type_in_submod_function():
 
 def test_def_type_in_submod_procedure():
     """Test that going into the definition of a type bound procedure in a submodule"""
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     file_path = test_dir / "subdir" / "test_submod.F90"
     string += def_request(file_path, 36, 13)
     errcode, results = run_request(string)
@@ -173,7 +173,7 @@ def test_def_rename_only_variable():
     """Test that going to definition of a renamed list variable will take you
     to the original definition.
     """
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     file_path = test_dir / "subdir" / "test_rename.F90"
     string += def_request(file_path, 14, 6)
     errcode, results = run_request(string)
@@ -188,7 +188,7 @@ def test_def_rename_only_variable_nested():
     """Test that going to definition of a renamed list variable will take you
     to the original definition, tests the multiply renamed case.
     """
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "subdir")})
     file_path = test_dir / "subdir" / "test_rename.F90"
     string += def_request(file_path, 15, 6)
     errcode, results = run_request(string)
@@ -203,7 +203,7 @@ def test_def_function_implicit_result_variable():
     """Test that going to definition on the implicitly defined variable RESULT
     works.
     """
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
     file_path = test_dir / "hover" / "functions.f90"
     string += def_request(file_path, 4, 18)
     errcode, results = run_request(string)
