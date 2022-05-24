@@ -372,6 +372,19 @@ def get_keywords(keywords: list, keyword_info: dict = {}):
     return keyword_strings
 
 
+def parenthetic_contents(string: str):
+    """Generate parenthesized contents in string as pairs
+    (contents, start-position, level).
+    """
+    stack = []
+    for i, c in enumerate(string):
+        if c == "(":
+            stack.append(i)
+        elif c == ")" and stack:
+            start = stack.pop()
+            yield (string[start + 1 : i], start, len(stack))
+
+
 def get_paren_substring(string: str) -> str | None:
     """Get the contents enclosed by the first pair of parenthesis
 

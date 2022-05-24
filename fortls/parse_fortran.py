@@ -169,47 +169,58 @@ def parse_var_keywords(test_str: str) -> tuple[list[str], str]:
 
 def read_var_def(line: str, var_type: str = None, fun_only: bool = False):
     """Attempt to read variable definition line"""
+
+    def parse_kind(line: str):
+        match = FRegex.KIND_SPEC.match(line)
+        if not match:
+            return None, line
+        kind_str = match.group(1).replace(" ", "")
+        line = line[match.end(0) :]
+        if kind_str.find("(") >= 0:
+            match_char = find_paren_match(line)
+            if match_char < 0:  # this triggers while typing with autocomplete
+                raise ValueError("Incomplete kind specification")
+            kind_str += line[: match_char + 1].strip()
+            line = line[match_char + 1 :]
+        return kind_str, line
+
     if var_type is None:
         type_match = FRegex.VAR.match(line)
         if type_match is None:
             return None
-        else:
-            var_type = type_match.group(0).strip()
-            trailing_line = line[type_match.end(0) :]
+        var_type = type_match.group(0).strip()
+        trailing_line = line[type_match.end(0) :]
     else:
         trailing_line = line[len(var_type) :]
     var_type = var_type.upper()
     trailing_line = trailing_line.split("!")[0]
     if len(trailing_line) == 0:
         return None
-    #
-    kind_match = FRegex.KIND_SPEC.match(trailing_line)
-    if kind_match:
-        kind_str = kind_match.group(1).replace(" ", "")
-        var_type += kind_str
-        trailing_line = trailing_line[kind_match.end(0) :]
-        if kind_str.find("(") >= 0:
-            match_char = find_paren_match(trailing_line)
-            if match_char < 0:
-                return None  # Incomplete type spec
-            else:
-                kind_word = trailing_line[: match_char + 1].strip()
-                var_type += kind_word
-                trailing_line = trailing_line[match_char + 1 :]
-    else:
-        # Class and Type statements need a kind spec
-        if var_type in ("TYPE", "CLASS"):
-            return None
-        # Make sure next character is space or comma or colon
-        if not trailing_line[0] in (" ", ",", ":"):
-            return None
+
+    # Parse the global kind, if any, for the current line definition
+    # The global kind in some cases, like characters can be overriden by a locally
+    # defined kind
+    try:
+        kind_str, trailing_line = parse_kind(trailing_line)
+        var_type += kind_str  # XXX: see below
+    except ValueError:
+        return None
+    except TypeError:  # XXX: remove with explicit kind specification in VarInfo
+        pass
+
+    # Class and Type statements need a kind spec
+    if not kind_str and var_type in ("TYPE", "CLASS"):
+        return None
+    # Make sure next character is space or comma or colon
+    if not kind_str and not trailing_line[0] in (" ", ",", ":"):
+        return None
     #
     keywords, trailing_line = parse_var_keywords(trailing_line)
     # Check if this is a function definition
     fun_def = read_fun_def(trailing_line, ResultSig(type=var_type, keywords=keywords))
-    if (fun_def is not None) or fun_only:
+    if fun_def or fun_only:
         return fun_def
-    #
+    # Split the type and variable name
     line_split = trailing_line.split("::")
     if len(line_split) == 1:
         if len(keywords) > 0:
@@ -222,8 +233,8 @@ def read_var_def(line: str, var_type: str = None, fun_only: bool = False):
         var_words = separate_def_list(trailing_line.strip())
         if var_words is None:
             var_words = []
-    #
-    return "var", VarInfo(var_type, keywords, var_words)
+
+    return "var", VarInfo(var_type, keywords, var_words, kind_str)
 
 
 def get_procedure_modifiers(
@@ -1356,9 +1367,13 @@ class FortranFile:
                     procedure_def = True
                     link_name = get_paren_substring(desc_string)
                 for var_name in obj_info.var_names:
+                    desc = desc_string
                     link_name: str = None
                     if var_name.find("=>") > -1:
                         name_split = var_name.split("=>")
+                        # TODO: rename name_raw to name
+                        # TODO: rename name_stripped to name
+                        # TODO: rename desc_string to desc
                         name_raw = name_split[0]
                         link_name = name_split[1].split("(")[0].strip()
                         if link_name.lower() == "null":
@@ -1367,28 +1382,27 @@ class FortranFile:
                         name_raw = var_name.split("=")[0]
                     # Add dimension if specified
                     # TODO: turn into function and add support for co-arrays i.e. [*]
-                    key_tmp = obj_info.keywords[:]
-                    iparen = name_raw.find("(")
-                    if iparen == 0:
+                    # Copy global keywords to the individual variable
+                    var_keywords: list[str] = obj_info.keywords[:]
+                    # The name starts with (
+                    if name_raw.find("(") == 0:
                         continue
-                    elif iparen > 0:
-                        if name_raw[iparen - 1] == "*":
-                            iparen -= 1
-                            if desc_string.find("(") < 0:
-                                desc_string += f"*({get_paren_substring(name_raw)})"
-                        else:
-                            key_tmp.append(
-                                f"dimension({get_paren_substring(name_raw)})"
-                            )
-                        name_raw = name_raw[:iparen]
+                    name_raw, dims = self.parse_imp_dim(name_raw)
+                    name_raw, char_len = self.parse_imp_char(name_raw)
+                    if dims:
+                        var_keywords.append(dims)
+                    if char_len:
+                        desc += char_len
+
                     name_stripped = name_raw.strip()
-                    keywords, keyword_info = map_keywords(key_tmp)
+                    keywords, keyword_info = map_keywords(var_keywords)
+
                     if procedure_def:
                         new_var = Method(
                             file_ast,
                             line_no,
                             name_stripped,
-                            desc_string,
+                            desc,
                             keywords,
                             keyword_info=keyword_info,
                             link_obj=link_name,
@@ -1398,9 +1412,10 @@ class FortranFile:
                             file_ast,
                             line_no,
                             name_stripped,
-                            desc_string,
+                            desc,
                             keywords,
                             keyword_info=keyword_info,
+                            # kind=obj_info.var_kind,
                             link_obj=link_name,
                         )
                         # If the object is fortran_var and a parameter include
@@ -1413,7 +1428,7 @@ class FortranFile:
                                 new_var.set_parameter_val(var)
 
                         # Check if the "variable" is external and if so cycle
-                        if find_external(file_ast, desc_string, name_stripped, new_var):
+                        if find_external(file_ast, desc, name_stripped, new_var):
                             continue
 
                     # if not merge_external:
@@ -1642,6 +1657,37 @@ class FortranFile:
                 for error in file_ast.parse_errors:
                     log.debug(f"{error['range']}: {error['message']}")
         return file_ast
+
+    def parse_imp_dim(self, name: str):
+        regex = re.compile(r"[ ]*\w+[ ]*(\()", re.I)
+        # TODO: replace space
+        m = regex.match(name)
+        if not m:
+            return name, None
+        i = find_paren_match(name[m.end(1) :])
+        if i < 0:
+            return name, None  # triggers for autocomplete
+        dims = name[m.start(1) : m.end(1) + i + 1]
+        name = name[: m.start(1)] + name[m.end(1) + i + 1 :]
+        return name, f"dimension{dims}"
+
+    def parse_imp_char(self, name: str):
+        implicit_len = re.compile(r"(\w+)[ ]*\*[ ]*(\d+|\()", re.I)
+        # TODO: replace space in name
+        match = re.match(implicit_len, name)
+        if not match:
+            return name, None
+        if match.group(2) == "(":
+            i = find_paren_match(name[match.end(2) :])
+            if i < 0:
+                return name, None  # triggers for autocomplete
+            char_len = name[match.start(2) : match.end(2) + i + 1]
+        elif match.group(2).isdigit():
+            char_len = match.group(2)
+        else:
+            raise ValueError("No matching group(2) for implicit length")
+        name = match.group(1)
+        return name, f"*{char_len}"
 
     def parse_end_scope_word(
         self, line: str, ln: int, file_ast: FortranAST, match: re.Match
