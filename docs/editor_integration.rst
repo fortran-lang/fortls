@@ -159,12 +159,30 @@ to set ``fortls`` for Fortran files
 `EMACS <https://www.gnu.org/software/emacs/>`__
 -----------------------------------------------
 
+`LSP Mode <https://emacs-lsp.github.io/lsp-mode>`__
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Install the `lsp-mode`_ plugin. This should then allow for the variables
 `lsp-clients-fortls-args`_ and `lsp-clients-fortls-executable`_ to be defined in the ``~/.emacs`` configuration file.
 
 .. _lsp-mode: https://emacs-lsp.github.io/lsp-mode/page/installation
 .. _lsp-clients-fortls-args: https://emacs-lsp.github.io/lsp-mode/page/lsp-fortran/#lsp-clients-fortls-args
 .. _lsp-clients-fortls-executable: https://emacs-lsp.github.io/lsp-mode/page/lsp-fortran/#lsp-clients-fortls-executable
+
+
+`Eglot <https://github.com/joaotavora/eglot>`__
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Install the `eglot`_ package which supports fortls out of the box.
+This can be done in emacs version > 26.1 via ``M-x package-install RET eglot RET``.
+Arguments to ``fortls`` can be provided in the form
+
+.. code-block:: elisp
+
+    (add-to-list 'eglot-server-programs '(f90-mode . ("fortls" "--notify_init" "--nthreads=4")))
+
+.. _eglot: https://github.com/joaotavora/eglot
+
 
 Visual Studio 2017
 ------------------
