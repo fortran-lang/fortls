@@ -23,7 +23,7 @@ def test_hover_abstract_int_procedure():
     string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
     file_path = test_dir / "subdir" / "test_abstract.f90"
     string += hover_req(file_path, 7, 30)
-    errcode, results = run_request(string, fortls_args=["--sort_keywords"])
+    errcode, results = run_request(string, fortls_args=["--sort_keywords", "-n1"])
     assert errcode == 0
     ref_results = [
         """SUBROUTINE test(a, b)
@@ -346,5 +346,99 @@ def test_hover_submodule_procedure():
         """PURE RECURSIVE FUNCTION foo_dp(x) RESULT(fi)
  REAL(dp), INTENT(IN) :: x
  REAL(dp) :: fi""",
+    ]
+    validate_hover(results, ref_results)
+
+
+def test_var_type_kinds():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "parse")})
+    file_path = test_dir / "parse" / "test_kinds_and_dims.f90"
+    string += hover_req(file_path, 2, 24)
+    string += hover_req(file_path, 2, 27)
+    string += hover_req(file_path, 3, 15)
+    string += hover_req(file_path, 3, 19)
+    string += hover_req(file_path, 4, 20)
+    string += hover_req(file_path, 4, 25)
+    string += hover_req(file_path, 5, 23)
+    string += hover_req(file_path, 6, 25)
+    errcode, results = run_request(string, fortls_args=["-n", "1"])
+    assert errcode == 0
+    ref_results = [
+        "INTEGER(kind=4)",
+        "INTEGER(kind=4), DIMENSION(3,4)",
+        "INTEGER*8",
+        "INTEGER*8, DIMENSION(3,4)",
+        "INTEGER(8)",
+        "INTEGER(8), DIMENSION(3,4)",
+        "REAL(kind=r15)",
+        "REAL(kind(0.d0))",
+    ]
+    validate_hover(results, ref_results)
+
+
+def test_kind_function_result():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "parse")})
+    file_path = test_dir / "parse" / "test_kinds_and_dims.f90"
+    string += hover_req(file_path, 9, 18)
+    string += hover_req(file_path, 14, 25)
+    errcode, results = run_request(string, fortls_args=["-n", "1"])
+    assert errcode == 0
+    ref_results = [
+        """FUNCTION foo(val) RESULT(r)
+ REAL(8), INTENT(IN) :: val
+ REAL*8 :: r""",
+        """FUNCTION phi(val) RESULT(r)
+ REAL(8), INTENT(IN) :: val
+ REAL(kind=8) :: r""",
+    ]
+    validate_hover(results, ref_results)
+
+
+def test_var_type_asterisk():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "parse")})
+    file_path = test_dir / "parse" / "test_kinds_and_dims.f90"
+    string += hover_req(file_path, 2 + 19, 18)
+    string += hover_req(file_path, 2 + 19, 21)
+    string += hover_req(file_path, 2 + 19, 29)
+    string += hover_req(file_path, 3 + 19, 21)
+    string += hover_req(file_path, 4 + 19, 17)
+    string += hover_req(file_path, 5 + 19, 23)
+    errcode, results = run_request(string, fortls_args=["-n", "1"])
+    assert errcode == 0
+    ref_results = [
+        "CHARACTER*17",
+        "CHARACTER*17, DIMENSION(3,4)",
+        "CHARACTER*17, DIMENSION(9)",
+        "CHARACTER*(6+3)",
+        "CHARACTER*10, DIMENSION(3,4)",
+        "CHARACTER*(LEN(B)), DIMENSION(3,4)",
+    ]
+    validate_hover(results, ref_results)
+
+
+def test_var_name_asterisk():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "parse")})
+    file_path = test_dir / "parse" / "test_kinds_and_dims.f90"
+    string += hover_req(file_path, 26, 15)
+    string += hover_req(file_path, 26, 22)
+    string += hover_req(file_path, 26, 34)
+    string += hover_req(file_path, 27, 15)
+    string += hover_req(file_path, 28, 15)
+    string += hover_req(file_path, 29, 15)
+    string += hover_req(file_path, 31, 24)
+    string += hover_req(file_path, 32, 32)
+    # string += hover_req(file_path, 33, 32)  # FIXME: this is not displayed correctly
+    errcode, results = run_request(string, fortls_args=["-n", "1"])
+    assert errcode == 0
+    ref_results = [
+        "CHARACTER*17",
+        "CHARACTER*17, DIMENSION(3,4)",
+        "CHARACTER*17, DIMENSION(9)",
+        "CHARACTER*(6+3)",
+        "CHARACTER*(LEN(A))",
+        "CHARACTER*10, DIMENSION(*)",
+        "CHARACTER(LEN=200)",
+        "CHARACTER(KIND=4, LEN=200), DIMENSION(3,4)",
+        # "CHARACTER(KIND=4, LEN=100), DIMENSION(3,4)",
     ]
     validate_hover(results, ref_results)
