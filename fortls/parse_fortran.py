@@ -1658,36 +1658,59 @@ class FortranFile:
                     log.debug(f"{error['range']}: {error['message']}")
         return file_ast
 
-    def parse_imp_dim(self, name: str):
+    def parse_imp_dim(self, line: str):
+        """Parse the implicit dimension of an array e.g.
+        var(3,4), var_name(size(val,1)*10)
+
+        Parameters
+        ----------
+        line : str
+            line containing variable name
+
+        Returns
+        -------
+        tuple[str, str]
+            truncated line, dimension string
+        """
         regex = re.compile(r"[ ]*\w+[ ]*(\()", re.I)
         # TODO: replace space
-        m = regex.match(name)
+        m = regex.match(line)
         if not m:
-            return name, None
-        i = find_paren_match(name[m.end(1) :])
+            return line, None
+        i = find_paren_match(line[m.end(1) :])
         if i < 0:
-            return name, None  # triggers for autocomplete
-        dims = name[m.start(1) : m.end(1) + i + 1]
-        name = name[: m.start(1)] + name[m.end(1) + i + 1 :]
-        return name, f"dimension{dims}"
+            return line, None  # triggers for autocomplete
+        dims = line[m.start(1) : m.end(1) + i + 1]
+        line = line[: m.start(1)] + line[m.end(1) + i + 1 :]
+        return line, f"dimension{dims}"
 
-    def parse_imp_char(self, name: str):
+    def parse_imp_char(self, line: str):
+        """Parse the implicit character length from a variable e.g.
+        var_name*10 or var_name*(10), var_name*(size(val, 1))
+
+        Parameters
+        ----------
+        line : str
+            line containing potential variable
+
+        Returns
+        -------
+        tuple[str, str]
+            truncated line, character length
+        """
         implicit_len = re.compile(r"(\w+)[ ]*\*[ ]*(\d+|\()", re.I)
         # TODO: replace space in name
-        match = re.match(implicit_len, name)
+        match = implicit_len.match(line)
         if not match:
-            return name, None
+            return line, None
         if match.group(2) == "(":
-            i = find_paren_match(name[match.end(2) :])
+            i = find_paren_match(line[match.end(2) :])
             if i < 0:
-                return name, None  # triggers for autocomplete
-            char_len = name[match.start(2) : match.end(2) + i + 1]
+                return line, None  # triggers for autocomplete
+            char_len = line[match.start(2) : match.end(2) + i + 1]
         elif match.group(2).isdigit():
             char_len = match.group(2)
-        else:
-            raise ValueError("No matching group(2) for implicit length")
-        name = match.group(1)
-        return name, f"*{char_len}"
+        return match.group(1), f"*{char_len}"
 
     def parse_end_scope_word(
         self, line: str, ln: int, file_ast: FortranAST, match: re.Match
