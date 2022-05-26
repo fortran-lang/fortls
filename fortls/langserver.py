@@ -1540,14 +1540,13 @@ class LangServer:
         # with glob resolution
         source_dirs = config_dict.get("source_dirs", [])
         for path in source_dirs:
-            self.source_dirs.update(
-                set(
-                    only_dirs(
-                        resolve_globs(path, self.root_path),
-                        self.post_messages,
-                    )
-                )
-            )
+            try:
+                dirs = only_dirs(resolve_globs(path, self.root_path))
+                self.source_dirs.update(set(dirs))
+            except FileNotFoundError as e:
+                err = f"Directories input in Configuration file do not exit:\n{e}"
+                self.post_messages([Severity.warn, err])
+
         # Keep all directories present in source_dirs but not excl_paths
         self.source_dirs = {i for i in self.source_dirs if i not in self.excl_paths}
         self.incl_suffixes = config_dict.get("incl_suffixes", [])
@@ -1613,9 +1612,12 @@ class LangServer:
             self.pp_defs = {key: "" for key in self.pp_defs}
 
         for path in config_dict.get("include_dirs", set()):
-            self.include_dirs.update(
-                only_dirs(resolve_globs(path, self.root_path), self.post_messages)
-            )
+            try:
+                dirs = only_dirs(resolve_globs(path, self.root_path))
+                self.include_dirs.update(set(dirs))
+            except FileNotFoundError as e:
+                err = f"Directories input in Configuration file do not exit:\n{e}"
+                self.post_messages([Severity.warn, err])
 
     def _add_source_dirs(self) -> None:
         """Will recursively add all subdirectories that contain Fortran

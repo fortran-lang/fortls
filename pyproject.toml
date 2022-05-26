@@ -12,3 +12,8 @@ write_to = "fortls/_version.py"
 
 [tool.isort]
 profile = "black"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-v --cov=fortls --cov-report=html --cov-report=xml --cov-context=test --doctest-modules"
+testpaths = ["fortls", "test"]
