@@ -375,6 +375,11 @@ def get_keywords(keywords: list, keyword_info: dict = {}):
 def parenthetic_contents(string: str):
     """Generate parenthesized contents in string as pairs
     (contents, start-position, level).
+
+    Examples
+    --------
+    >>> list(parenthetic_contents('character*(10*size(val(1), 2)) :: name'))
+    [('1', 22, 2), ('val(1), 2', 18, 1), ('10*size(val(1), 2)', 10, 0)]
     """
     stack = []
     for i, c in enumerate(string):
