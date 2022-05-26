@@ -136,12 +136,12 @@ def separate_def_list(test_str: str) -> list[str] | None:
 
     Examples
     --------
-    >>> separate_def_list("var1, var2, var3")
-    ["var1", "var2", "var3"]
+    >>> separate_def_list('var1, var2, var3')
+    ['var1', 'var2', 'var3']
 
 
-    >>> separate_def_list("var, init_var(3) = [1,2,3], array(3,3)")
-    ["var", "init_var", "array"]
+    >>> separate_def_list('var, init_var(3) = [1,2,3], array(3,3)')
+    ['var', 'init_var(3) = [1,2,3]', 'array(3,3)']
     """
     stripped_str = strip_strings(test_str)
     paren_count = 0
@@ -208,17 +208,17 @@ def find_paren_match(string: str) -> int:
 
     Examples
     --------
-    >>> find_paren_match("a, b)")
+    >>> find_paren_match('a, b)')
     4
 
     Multiple parenthesis that are closed
 
-    >>> find_paren_match("a, (b, c), d)")
+    >>> find_paren_match('a, (b, c), d)')
     12
 
     If the outermost parenthesis is not closed function returns -1
 
-    >>> find_paren_match("a, (b, (c, d)")
+    >>> find_paren_match('a, (b, (c, d)')
     -1
     """
     paren_count = 1
@@ -401,12 +401,12 @@ def get_paren_substring(string: str) -> str | None:
 
     Examples
     --------
-    >>> get_paren_substring("some line(a, b, (c, d))")
-    "a, b, (c, d)"
+    >>> get_paren_substring('some line(a, b, (c, d))')
+    'a, b, (c, d)'
 
     If the line has incomplete parenthesis however, ``None`` is returned
-    >>> get_paren_substring("some line(a, b")
-    None
+    >>> get_paren_substring('some line(a, b') is None
+    True
     """
     i1 = string.find("(")
     i2 = string.rfind(")")
@@ -432,13 +432,13 @@ def get_paren_level(line: str) -> tuple[str, list[Range]]:
 
     Examples
     --------
-    >>> get_paren_level("CALL sub1(arg1,arg2")
+    >>> get_paren_level('CALL sub1(arg1,arg2')
     ('arg1,arg2', [Range(start=10, end=19)])
 
     If the range is interrupted by parenthesis, another Range variable is used
     to mark the ``start`` and ``end`` of the argument
 
-    >>> get_paren_level("CALL sub1(arg1(i),arg2")
+    >>> get_paren_level('CALL sub1(arg1(i),arg2')
     ('arg1,arg2', [Range(start=10, end=14), Range(start=17, end=22)])
 
     """
@@ -493,16 +493,16 @@ def get_var_stack(line: str) -> list[str]:
 
     Examples
     --------
-    >>> get_var_stack("myvar%foo%bar")
-    ["myvar", "foo", "bar"]
+    >>> get_var_stack('myvar%foo%bar')
+    ['myvar', 'foo', 'bar']
 
-    >>> get_var_stack("myarray(i)%foo%bar")
-    ["myarray", "foo", "bar"]
+    >>> get_var_stack('myarray(i)%foo%bar')
+    ['myarray', 'foo', 'bar']
 
-    In this case it will operate at the end of the string i.e. ``"this%foo"``
+    In this case it will operate at the end of the string i.e. ``'this%foo'``
 
-    >>> get_var_stack("CALL self%method(this%foo")
-    ["this", "foo"]
+    >>> get_var_stack('CALL self%method(this%foo')
+    ['this', 'foo']
     """
     if len(line) == 0:
         return [""]
