@@ -534,6 +534,22 @@ files as free format.</p>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)">bool</a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">detect_fixed_format</span><span class="p">([</span><span class="s1">' free format'</span><span class="p">])</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">detect_fixed_format</span><span class="p">([</span><span class="s1">' INTEGER, PARAMETER :: N = 10'</span><span class="p">])</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">detect_fixed_format</span><span class="p">([</span><span class="s1">'C Fixed format'</span><span class="p">])</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Lines wih ampersands are not fixed format
+&gt;&gt;&gt; detect_fixed_format([‘trailing line &amp; ! comment’])
+False</p>
 </dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.helper_functions.expand_name">
@@ -571,17 +587,17 @@ by forward search of the string, returns -1 if no match is found</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_paren_match</span><span class="p">(</span><span class="s2">"a, b)"</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_paren_match</span><span class="p">(</span><span class="s1">'a, b)'</span><span class="p">)</span>
 <span class="go">4</span>
 </pre></div>
 </div>
 <p>Multiple parenthesis that are closed</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_paren_match</span><span class="p">(</span><span class="s2">"a, (b, c), d)"</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_paren_match</span><span class="p">(</span><span class="s1">'a, (b, c), d)'</span><span class="p">)</span>
 <span class="go">12</span>
 </pre></div>
 </div>
 <p>If the outermost parenthesis is not closed function returns -1</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_paren_match</span><span class="p">(</span><span class="s2">"a, (b, (c, d)"</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_paren_match</span><span class="p">(</span><span class="s1">'a, (b, (c, d)'</span><span class="p">)</span>
 <span class="go">-1</span>
 </pre></div>
 </div>
@@ -631,6 +647,11 @@ Need this disable when hovering over string literals, by default True</p></li>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_line_prefix</span><span class="p">([</span><span class="s1">''</span><span class="p">],</span> <span class="s1">'#pragma once'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 </dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.helper_functions.get_paren_level">
@@ -649,14 +670,18 @@ via backward search up through the line.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_paren_level</span><span class="p">(</span><span class="s2">"CALL sub1(arg1,arg2"</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_paren_level</span><span class="p">(</span><span class="s1">'CALL sub1(arg1,arg2'</span><span class="p">)</span>
 <span class="go">('arg1,arg2', [Range(start=10, end=19)])</span>
 </pre></div>
 </div>
 <p>If the range is interrupted by parenthesis, another Range variable is used
 to mark the <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code> of the argument</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_paren_level</span><span class="p">(</span><span class="s2">"CALL sub1(arg1(i),arg2"</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_paren_level</span><span class="p">(</span><span class="s1">'CALL sub1(arg1(i),arg2'</span><span class="p">)</span>
 <span class="go">('arg1,arg2', [Range(start=10, end=14), Range(start=17, end=22)])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_paren_level</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span>
+<span class="go">('', [Range(start=0, end=0)])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -676,13 +701,13 @@ to mark the <code class="docutils literal notranslate"><span class="pre">start</
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_paren_substring</span><span class="p">(</span><span class="s2">"some line(a, b, (c, d))"</span><span class="p">)</span>
-<span class="go">"a, b, (c, d)"</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_paren_substring</span><span class="p">(</span><span class="s1">'some line(a, b, (c, d))'</span><span class="p">)</span>
+<span class="go">'a, b, (c, d)'</span>
 </pre></div>
 </div>
 <p>If the line has incomplete parenthesis however, <code class="docutils literal notranslate"><span class="pre">None</span></code> is returned
-&gt;&gt;&gt; get_paren_substring(“some line(a, b”)
-None</p>
+&gt;&gt;&gt; get_paren_substring(‘some line(a, b’) is None
+True</p>
 </dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.helper_functions.get_var_stack">
@@ -700,17 +725,21 @@ None</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_var_stack</span><span class="p">(</span><span class="s2">"myvar</span><span class="si">%f</span><span class="s2">oo%bar"</span><span class="p">)</span>
-<span class="go">["myvar", "foo", "bar"]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_var_stack</span><span class="p">(</span><span class="s1">'myvar</span><span class="si">%f</span><span class="s1">oo%bar'</span><span class="p">)</span>
+<span class="go">['myvar', 'foo', 'bar']</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_var_stack</span><span class="p">(</span><span class="s2">"myarray(i)</span><span class="si">%f</span><span class="s2">oo%bar"</span><span class="p">)</span>
-<span class="go">["myarray", "foo", "bar"]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_var_stack</span><span class="p">(</span><span class="s1">'myarray(i)</span><span class="si">%f</span><span class="s1">oo%bar'</span><span class="p">)</span>
+<span class="go">['myarray', 'foo', 'bar']</span>
 </pre></div>
 </div>
-<p>In this case it will operate at the end of the string i.e. <code class="docutils literal notranslate"><span class="pre">"this%foo"</span></code></p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_var_stack</span><span class="p">(</span><span class="s2">"CALL self%method(this</span><span class="si">%f</span><span class="s2">oo"</span><span class="p">)</span>
-<span class="go">["this", "foo"]</span>
+<p>In this case it will operate at the end of the string i.e. <code class="docutils literal notranslate"><span class="pre">'this%foo'</span></code></p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_var_stack</span><span class="p">(</span><span class="s1">'CALL self%method(this</span><span class="si">%f</span><span class="s1">oo'</span><span class="p">)</span>
+<span class="go">['this', 'foo']</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_var_stack</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span>
+<span class="go">['']</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -720,14 +749,11 @@ None</p>
 <dd></dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.helper_functions.only_dirs">
-<span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">only_dirs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">err_msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.only_dirs" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">only_dirs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paths</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.only_dirs" title="Permalink to this definition">#</a></dt>
 <dd><p>From a list of strings returns only paths that are directories</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>paths</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – A list containing the files and directories</p></li>
-<li><p><strong>err_msg</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>, </em><em>optional</em>) – A list to append error messages if any, else use log channel, by default []</p></li>
-</ul>
+<dd class="field-odd"><p><strong>paths</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – A list containing the files and directories</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A list containing only valid directories</p>
@@ -735,7 +761,22 @@ None</p>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)">list</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
 </dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.10/library/exceptions.html#FileNotFoundError" title="(in Python v3.10)"><strong>FileNotFoundError</strong></a> – A list containing all the non existing directories</p>
+</dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">only_dirs</span><span class="p">([</span><span class="s1">'./test/'</span><span class="p">,</span> <span class="s1">'./test/test_source/'</span><span class="p">,</span> <span class="s1">'./test/test_source/test.f90'</span><span class="p">])</span>
+<span class="go">['./test/', './test/test_source/']</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">only_dirs</span><span class="p">([</span><span class="s1">'/fake/dir/a'</span><span class="p">,</span> <span class="s1">'/fake/dir/b'</span><span class="p">,</span> <span class="s1">'/fake/dir/c'</span><span class="p">])</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="gr">FileNotFoundError</span>: <span class="n">/fake/dir/a</span>
+<span class="go">/fake/dir/b</span>
+<span class="go">/fake/dir/c</span>
+</pre></div>
+</div>
 </dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.helper_functions.resolve_globs">
@@ -759,6 +800,14 @@ Absolute paths are used to resolve any potential ambiguity</p>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)">list</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<p>Relative to a root path
+&gt;&gt;&gt; import os, pathlib
+&gt;&gt;&gt; resolve_globs(‘test’, os.getcwd()) == [str(pathlib.Path(os.getcwd()) / ‘test’)]
+True</p>
+<p>Absolute path resolution
+&gt;&gt;&gt; resolve_globs(‘test’) == [str(pathlib.Path(os.getcwd()) / ‘test’)]
+True</p>
 </dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.helper_functions.separate_def_list">
@@ -776,12 +825,12 @@ Absolute paths are used to resolve any potential ambiguity</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">separate_def_list</span><span class="p">(</span><span class="s2">"var1, var2, var3"</span><span class="p">)</span>
-<span class="go">["var1", "var2", "var3"]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">separate_def_list</span><span class="p">(</span><span class="s1">'var1, var2, var3'</span><span class="p">)</span>
+<span class="go">['var1', 'var2', 'var3']</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">separate_def_list</span><span class="p">(</span><span class="s2">"var, init_var(3) = [1,2,3], array(3,3)"</span><span class="p">)</span>
-<span class="go">["var", "init_var", "array"]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">separate_def_list</span><span class="p">(</span><span class="s1">'var, init_var(3) = [1,2,3], array(3,3)'</span><span class="p">)</span>
+<span class="go">['var', 'init_var(3) = [1,2,3]', 'array(3,3)']</span>
 </pre></div>
 </div>
 </dd></dl>
