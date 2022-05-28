@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from fortls.constants import KEYWORD_ID_DICT, KEYWORD_LIST, FRegex, log, sort_keywords
+from fortls.constants import KEYWORD_ID_DICT, KEYWORD_LIST, FRegex, sort_keywords
 from fortls.ftypes import Range
 
 
@@ -52,6 +52,22 @@ def detect_fixed_format(file_lines: list[str]) -> bool:
     -------
     bool
         True if file_lines are of Fixed Fortran style
+
+    Examples
+    --------
+
+    >>> detect_fixed_format([' free format'])
+    False
+
+    >>> detect_fixed_format([' INTEGER, PARAMETER :: N = 10'])
+    False
+
+    >>> detect_fixed_format(['C Fixed format'])
+    True
+
+    Lines wih ampersands are not fixed format
+    >>> detect_fixed_format(['trailing line & ! comment'])
+    False
     """
     for line in file_lines:
         if FRegex.FREE_FORMAT_TEST.match(line):
@@ -62,7 +78,7 @@ def detect_fixed_format(file_lines: list[str]) -> bool:
         # Trailing ampersand indicates free or intersection format
         if not FRegex.FIXED_COMMENT.match(line):
             line_end = line.split("!")[0].strip()
-            if len(line_end) > 0 and line_end[-1] == "&":
+            if len(line_end) > 0 and line_end.endswith("&"):
                 return False
     return True
 
@@ -139,18 +155,17 @@ def separate_def_list(test_str: str) -> list[str] | None:
     >>> separate_def_list('var1, var2, var3')
     ['var1', 'var2', 'var3']
 
-
     >>> separate_def_list('var, init_var(3) = [1,2,3], array(3,3)')
     ['var', 'init_var(3) = [1,2,3]', 'array(3,3)']
     """
     stripped_str = strip_strings(test_str)
     paren_count = 0
-    def_list = []
+    def_list: list[str] = []
     curr_str = ""
     for char in stripped_str:
-        if (char == "(") or (char == "["):
+        if char in ("(", "["):
             paren_count += 1
-        elif (char == ")") or (char == "]"):
+        elif char in (")", "]"):
             paren_count -= 1
         elif (char == ",") and (paren_count == 0):
             curr_str = curr_str.strip()
@@ -233,7 +248,9 @@ def find_paren_match(string: str) -> int:
     return ind
 
 
-def get_line_prefix(pre_lines: list, curr_line: str, col: int, qs: bool = True) -> str:
+def get_line_prefix(
+    pre_lines: list[str], curr_line: str, col: int, qs: bool = True
+) -> str:
     """Get code line prefix from current line and preceding continuation lines
 
     Parameters
@@ -252,6 +269,11 @@ def get_line_prefix(pre_lines: list, curr_line: str, col: int, qs: bool = True) 
     -------
     str
         part of the line including any relevant line continuations before ``col``
+
+    Examples
+    --------
+    >>> get_line_prefix([''], '#pragma once', 0) is None
+    True
     """
     if (curr_line is None) or (col > len(curr_line)) or (curr_line.startswith("#")):
         return None
@@ -293,47 +315,70 @@ def resolve_globs(glob_path: str, root_path: str = None) -> list[str]:
     list[str]
         Expanded glob patterns with absolute paths.
         Absolute paths are used to resolve any potential ambiguity
+
+    Examples
+    --------
+
+    Relative to a root path
+    >>> import os, pathlib
+    >>> resolve_globs('test', os.getcwd()) == [str(pathlib.Path(os.getcwd()) / 'test')]
+    True
+
+    Absolute path resolution
+    >>> resolve_globs('test') == [str(pathlib.Path(os.getcwd()) / 'test')]
+    True
     """
     # Resolve absolute paths i.e. not in our root_path
     if os.path.isabs(glob_path) or not root_path:
         p = Path(glob_path).resolve()
-        root = p.root
+        root = p.anchor  # drive letter + root path
         rel = str(p.relative_to(root))  # contains glob pattern
         return [str(p.resolve()) for p in Path(root).glob(rel)]
     else:
         return [str(p.resolve()) for p in Path(root_path).resolve().glob(glob_path)]
 
 
-def only_dirs(paths: list[str], err_msg: list = []) -> list[str]:
+def only_dirs(paths: list[str]) -> list[str]:
     """From a list of strings returns only paths that are directories
 
     Parameters
     ----------
     paths : list[str]
         A list containing the files and directories
-    err_msg : list, optional
-        A list to append error messages if any, else use log channel, by default []
 
     Returns
     -------
     list[str]
         A list containing only valid directories
+
+    Raises
+    ------
+    FileNotFoundError
+        A list containing all the non existing directories
+
+    Examples
+    --------
+
+    >>> only_dirs(['./test/', './test/test_source/', './test/test_source/test.f90'])
+    ['./test/', './test/test_source/']
+
+    >>> only_dirs(['/fake/dir/a', '/fake/dir/b', '/fake/dir/c'])
+    Traceback (most recent call last):
+    FileNotFoundError: /fake/dir/a
+    /fake/dir/b
+    /fake/dir/c
     """
     dirs: list[str] = []
+    errs: list[str] = []
     for p in paths:
         if os.path.isdir(p):
             dirs.append(p)
         elif os.path.isfile(p):
             continue
         else:
-            msg: str = (
-                f"Directory '{p}' specified in Configuration settings file does not"
-                " exist"
-            )
-            if err_msg:
-                err_msg.append([2, msg])
-            else:
-                log.warning(msg)
+            errs.append(p)
+    if errs:
+        raise FileNotFoundError("\n".join(errs))
     return dirs
 
 
@@ -446,6 +491,9 @@ def get_paren_level(line: str) -> tuple[str, list[Range]]:
     >>> get_paren_level('CALL sub1(arg1(i),arg2')
     ('arg1,arg2', [Range(start=10, end=14), Range(start=17, end=22)])
 
+    >>> get_paren_level('')
+    ('', [Range(start=0, end=0)])
+
     """
     if line == "":
         return "", [Range(0, 0)]
@@ -460,18 +508,18 @@ def get_paren_level(line: str) -> tuple[str, list[Range]]:
             if char == string_char:
                 in_string = False
             continue
-        if (char == "(") or (char == "["):
+        if char in ("(", "["):
             level -= 1
             if level == 0:
                 i1 = i
             elif level < 0:
                 sections.append(Range(i + 1, i1))
                 break
-        elif (char == ")") or (char == "]"):
+        elif char in (")", "]"):
             level += 1
             if level == 1:
                 sections.append(Range(i + 1, i1))
-        elif (char == "'") or (char == '"'):
+        elif char in ("'", '"'):
             in_string = True
             string_char = char
     if level == 0:
@@ -508,6 +556,9 @@ def get_var_stack(line: str) -> list[str]:
 
     >>> get_var_stack('CALL self%method(this%foo')
     ['this', 'foo']
+
+    >>> get_var_stack('')
+    ['']
     """
     if len(line) == 0:
         return [""]

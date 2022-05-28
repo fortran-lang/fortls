@@ -4,6 +4,11 @@
 
 ## 2.6.0
 
+### Added
+
+- Added doctests in the pytest test suite
+  ([#131](https://github.com/gnikit/fortls/issues/131))
+
 ### Changed
 
 - Redesigned the `fortls` website to be more aesthetically pleasing and user-friendly
