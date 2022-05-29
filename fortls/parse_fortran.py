@@ -706,9 +706,7 @@ def_tests = [
 ]
 
 
-def find_external_type(
-    file_ast: FortranAST, desc_string: str, name_stripped: str
-) -> bool:
+def find_external_type(file_ast: FortranAST, desc_string: str, name: str) -> bool:
     """Encountered a variable with EXTERNAL as its type
     Try and find an already defined variable with a
     NORMAL Fortran Type"""
@@ -717,7 +715,7 @@ def find_external_type(
     counter = 0
     # Definition without EXTERNAL has already been parsed
     for v in file_ast.variable_list:
-        if name_stripped == v.name:
+        if name == v.name:
             # If variable is already in external objs it has
             # been parsed correctly so exit
             if v in file_ast.external_objs:
@@ -733,9 +731,7 @@ def find_external_type(
         return False
 
 
-def find_external_attr(
-    file_ast: FortranAST, name_stripped: str, new_var: Variable
-) -> bool:
+def find_external_attr(file_ast: FortranAST, name: str, new_var: Variable) -> bool:
     """Check if this NORMAL Fortran variable is in the external_objs with only
     ``EXTERNAL`` as its type. Used to detect seperated ``EXTERNAL`` declarations.
 
@@ -743,7 +739,7 @@ def find_external_attr(
     ----------
     file_ast : fortran_ast
         AST file
-    name_stripped : str
+    name : str
         Variable name, stripped
     new_var : fortran_var
         Fortran variable to check against
@@ -756,7 +752,7 @@ def find_external_attr(
     """
     counter = 0
     for v in file_ast.external_objs:
-        if v.name != name_stripped:
+        if v.name != name:
             continue
         if v.desc.upper() != "EXTERNAL":
             continue
@@ -779,7 +775,7 @@ def find_external_attr(
 def find_external(
     file_ast: FortranAST,
     desc_string: str,
-    name_stripped: str,
+    name: str,
     new_var: Variable,
 ) -> bool:
     """Find a procedure, function, subroutine, etc. that has been defined as
@@ -808,7 +804,7 @@ def find_external(
         AST
     desc_string : str
         Variable type e.g. ``REAL``, ``INTEGER``, ``EXTERNAL``
-    name_stripped : str
+    name : str
         Variable name
     new_var : fortran_var
         The line variable that we are attempting to match with an ``EXTERNAL``
@@ -820,10 +816,10 @@ def find_external(
         True if the variable is ``EXTERNAL`` and we manage to link it to the
         rest of its components, else False
     """
-    if find_external_type(file_ast, desc_string, name_stripped):
+    if find_external_type(file_ast, desc_string, name):
         return True
     elif desc_string.upper() != "EXTERNAL":
-        if find_external_attr(file_ast, name_stripped, new_var):
+        if find_external_attr(file_ast, name, new_var):
             return True
     return False
 
@@ -1355,53 +1351,49 @@ class FortranFile:
             if obj_type == "var":
                 if obj_info.var_names is None:
                     continue
-                desc_string = obj_info.var_type
                 link_name: str = None
                 procedure_def = False
-                if desc_string[:3] == "PRO":
+                if obj_info.var_type[:3] == "PRO":
                     if file_ast.current_scope.get_type() == INTERFACE_TYPE_ID:
                         for var_name in obj_info.var_names:
                             file_ast.add_int_member(var_name)
                         log.debug("%s !!! INTERFACE-PRO - Ln:%d", line.strip(), line_no)
                         continue
                     procedure_def = True
-                    link_name = get_paren_substring(desc_string)
+                    link_name = get_paren_substring(obj_info.var_type)
                 for var_name in obj_info.var_names:
-                    desc = desc_string
+                    desc = obj_info.var_type
                     link_name: str = None
                     if var_name.find("=>") > -1:
                         name_split = var_name.split("=>")
-                        # TODO: rename name_raw to name
-                        # TODO: rename name_stripped to name
-                        # TODO: rename desc_string to desc
-                        name_raw = name_split[0]
+                        name = name_split[0]
                         link_name = name_split[1].split("(")[0].strip()
                         if link_name.lower() == "null":
                             link_name = None
                     else:
-                        name_raw = var_name.split("=")[0]
+                        name = var_name.split("=")[0]
                     # Add dimension if specified
                     # TODO: turn into function and add support for co-arrays i.e. [*]
                     # Copy global keywords to the individual variable
                     var_keywords: list[str] = obj_info.keywords[:]
                     # The name starts with (
-                    if name_raw.find("(") == 0:
+                    if name.find("(") == 0:
                         continue
-                    name_raw, dims = self.parse_imp_dim(name_raw)
-                    name_raw, char_len = self.parse_imp_char(name_raw)
+                    name, dims = self.parse_imp_dim(name)
+                    name, char_len = self.parse_imp_char(name)
                     if dims:
                         var_keywords.append(dims)
                     if char_len:
                         desc += char_len
 
-                    name_stripped = name_raw.strip()
+                    name = name.strip()
                     keywords, keyword_info = map_keywords(var_keywords)
 
                     if procedure_def:
                         new_var = Method(
                             file_ast,
                             line_no,
-                            name_stripped,
+                            name,
                             desc,
                             keywords,
                             keyword_info=keyword_info,
@@ -1411,7 +1403,7 @@ class FortranFile:
                         new_var = Variable(
                             file_ast,
                             line_no,
-                            name_stripped,
+                            name,
                             desc,
                             keywords,
                             keyword_info=keyword_info,
@@ -1421,14 +1413,14 @@ class FortranFile:
                         # If the object is fortran_var and a parameter include
                         #  the value in hover
                         if new_var.is_parameter():
-                            _, col = find_word_in_line(line, name_stripped)
+                            _, col = find_word_in_line(line, name)
                             match = FRegex.PARAMETER_VAL.match(line[col:])
                             if match:
                                 var = match.group(1).strip()
                                 new_var.set_parameter_val(var)
 
                         # Check if the "variable" is external and if so cycle
-                        if find_external(file_ast, desc, name_stripped, new_var):
+                        if find_external(file_ast, desc, name, new_var):
                             continue
 
                     # if not merge_external:
