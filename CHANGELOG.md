@@ -11,6 +11,8 @@
 
 ### Changed
 
+- Renamed variables to simplify parser
+  ([#131](https://github.com/gnikit/fortls/pull/131))
 - Redesigned parsing functions for short-hand declarations of array dimensions,
   character length and parsing of kind
   ([#130](https://github.com/gnikit/fortls/pull/130))
