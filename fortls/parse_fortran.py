@@ -1672,9 +1672,7 @@ class FortranFile:
         tuple[str, str]
             truncated line, dimension string
         """
-        regex = re.compile(r"[ ]*\w+[ ]*(\()", re.I)
-        # TODO: replace space
-        m = regex.match(line)
+        m = re.compile(r"[ ]*\w+[ ]*(\()", re.I).match(line)
         if not m:
             return line, None
         i = find_paren_match(line[m.end(1) :])
@@ -1698,9 +1696,7 @@ class FortranFile:
         tuple[str, str]
             truncated line, character length
         """
-        implicit_len = re.compile(r"(\w+)[ ]*\*[ ]*(\d+|\()", re.I)
-        # TODO: replace space in name
-        match = implicit_len.match(line)
+        match = re.compile(r"(\w+)[ ]*\*[ ]*(\d+|\()", re.I).match(line)
         if not match:
             return line, None
         if match.group(2) == "(":
