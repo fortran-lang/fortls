@@ -471,13 +471,18 @@ and ^= (xor_eq) operator is invalid in Fortran C++ preproc</p>
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="fortls.ftypes.VarInfo">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.ftypes.</span></span><span class="sig-name descname"><span class="pre">VarInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keywords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_names</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.ftypes.VarInfo" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.ftypes.</span></span><span class="sig-name descname"><span class="pre">VarInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keywords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.ftypes.VarInfo" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Holds information about a Fortran VARIABLE</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="fortls.ftypes.VarInfo.keywords">
 <span class="sig-name descname"><span class="pre">keywords</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fortls.ftypes.VarInfo.keywords" title="Permalink to this definition">#</a></dt>
 <dd><p>Keywords associated with variable</p>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fortls.ftypes.VarInfo.var_kind">
+<span class="sig-name descname"><span class="pre">var_kind</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#fortls.ftypes.VarInfo.var_kind" title="Permalink to this definition">#</a></dt>
+<dd><p>Kind of variable e.g. <code class="docutils literal notranslate"><span class="pre">INTEGER*4</span></code> etc.</p>
 </dd></dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="fortls.ftypes.VarInfo.var_names">
@@ -775,6 +780,17 @@ True</p>
 <span class="gr">FileNotFoundError</span>: <span class="n">/fake/dir/a</span>
 <span class="go">/fake/dir/b</span>
 <span class="go">/fake/dir/c</span>
+</pre></div>
+</div>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="fortls.helper_functions.parenthetic_contents">
+<span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">parenthetic_contents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.parenthetic_contents" title="Permalink to this definition">#</a></dt>
+<dd><p>Generate parenthesized contents in string as pairs
+(contents, start-position, level).</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">parenthetic_contents</span><span class="p">(</span><span class="s1">'character*(10*size(val(1), 2)) :: name'</span><span class="p">))</span>
+<span class="go">[('1', 22, 2), ('val(1), 2', 18, 1), ('10*size(val(1), 2)', 10, 0)]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -2322,6 +2338,40 @@ docstring continuations are detected with either <cite>!&gt;</cite>, <cite>!&lt;
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="fortls.parse_fortran.FortranFile.parse_imp_char">
+<span class="sig-name descname"><span class="pre">parse_imp_char</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.FortranFile.parse_imp_char" title="Permalink to this definition">#</a></dt>
+<dd><p>Parse the implicit character length from a variable e.g.
+var_name*10 or var_name*(10), var_name*(size(val, 1))</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – line containing potential variable</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>truncated line, character length</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="fortls.parse_fortran.FortranFile.parse_imp_dim">
+<span class="sig-name descname"><span class="pre">parse_imp_dim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.FortranFile.parse_imp_dim" title="Permalink to this definition">#</a></dt>
+<dd><p>Parse the implicit dimension of an array e.g.
+var(3,4), var_name(size(val,1)*10)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – line containing variable name</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>truncated line, dimension string</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
 </dd>
 </dl>
 </dd></dl>
