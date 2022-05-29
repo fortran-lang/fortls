@@ -80,6 +80,7 @@ extensions = [
     "sphinx_design",
     "sphinx_copybutton",
     "myst_parser",
+    "sphinx_sitemap",
 ]
 # For sphinx_design in Markdown
 myst_enable_extensions = ["colon_fence"]
@@ -106,12 +107,17 @@ html_theme = "furo"
 html_title = "fortls"
 html_logo = "../assets/logo.svg"
 html_favicon = "../assets/icon.svg"
+html_baseurl = "https://gnikit.github.io/fortls/"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 
+# Add any extra paths that contain custom files (such as robots.txt or
+# .htaccess) here, relative to this directory. These files are copied
+# directly to the root of the documentation.
+html_extra_path = ["html_extra"]
 
 display_toc = True
 # autodoc_default_flags = ["members"]

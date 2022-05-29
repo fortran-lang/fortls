@@ -15,3 +15,4 @@ fortls/_version.py
 *.log
 
 .coverage
+coverage.xml
