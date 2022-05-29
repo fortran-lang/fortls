@@ -6,7 +6,8 @@
     "excldir/**",
     "./diag/",
     "docs",
-    "rename"
+    "rename",
+    "parse"
   ]
 
 }

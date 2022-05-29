@@ -2,12 +2,20 @@
 
 ## Unreleased
 
-## 2.6.0
+## 2.7.0
 
 ### Added
 
 - Added doctests in the pytest test suite
   ([#131](https://github.com/gnikit/fortls/issues/131))
+
+### Changed
+
+- Redesigned parsing functions for short-hand declarations of array dimensions,
+  character length and parsing of kind
+  ([#130](https://github.com/gnikit/fortls/pull/130))
+
+## 2.6.0
 
 ### Changed
 

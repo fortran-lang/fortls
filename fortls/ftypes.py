@@ -15,6 +15,7 @@ class VarInfo:
     #: keywords associated with this variable e.g. SAVE, DIMENSION, etc.
     keywords: list[str]  #: Keywords associated with variable
     var_names: list[str]  #: Variable names
+    var_kind: str = field(default=None)  #: Kind of variable e.g. ``INTEGER*4`` etc.
 
 
 @dataclass
