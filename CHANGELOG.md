@@ -7,6 +7,7 @@
 ### Added
 
 - Added `sitemap.xml` to documentation webpage
+  ([#134](https://github.com/gnikit/fortls/pull/134))
 
 ## 2.7.0
 

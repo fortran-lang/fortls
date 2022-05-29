@@ -114,6 +114,10 @@ html_baseurl = "https://gnikit.github.io/fortls/"
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 
+# Add any extra paths that contain custom files (such as robots.txt or
+# .htaccess) here, relative to this directory. These files are copied
+# directly to the root of the documentation.
+html_extra_path = ["html_extra"]
 
 display_toc = True
 # autodoc_default_flags = ["members"]

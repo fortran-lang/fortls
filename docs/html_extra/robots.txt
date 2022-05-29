@@ -1,0 +1,3 @@
+User-agent: *
+Disallow:
+Sitemap: https://gnikit.github.io/fortls/sitemap.xml
