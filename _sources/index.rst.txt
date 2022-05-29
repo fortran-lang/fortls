@@ -158,7 +158,7 @@ fortls
 
         Features
 
-    .. grid-item-card:: :material-sharp:`settings;5em;sd-text-primary`
+    .. grid-item-card:: :material-outlined:`settings;5em;sd-text-primary`
         :link-type: doc
         :link: options
         :class-body: sd-text-center
