@@ -25,7 +25,7 @@ jobs:
         run: pip install .[dev]
 
       - name: Unittests
-        run: pytest
+        run: pytest --doctest-modules
 
       - name: Lint
         run: black --diff --check --verbose .
@@ -45,7 +45,7 @@ jobs:
       - name: Coverage report
         run: |
           pip install .[dev]
-          pytest
+          pytest --doctest-modules
         shell: bash
 
       - name: Upload coverage to Codecov
