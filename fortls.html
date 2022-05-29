@@ -2417,7 +2417,7 @@ var(3,4), var_name(size(val,1)*10)</p>
 </dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.parse_fortran.find_external">
-<span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">find_external</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_ast</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_stripped</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_var</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.find_external" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">find_external</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_ast</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_var</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.find_external" title="Permalink to this definition">#</a></dt>
 <dd><p>Find a procedure, function, subroutine, etc. that has been defined as
 <code class="docutils literal notranslate"><span class="pre">EXTERNAL</span></code>. <code class="docutils literal notranslate"><span class="pre">EXTERNAL``s</span> <span class="pre">are</span> <span class="pre">parsed</span> <span class="pre">as</span> <span class="pre">``fortran_var</span></code>, since there is no
 way of knowing if <code class="docutils literal notranslate"><span class="pre">real,</span> <span class="pre">external</span> <span class="pre">::</span> <span class="pre">val</span></code> is a function or a subroutine.</p>
@@ -2437,7 +2437,7 @@ lines e.g.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>file_ast</strong> (<em>fortran_ast</em>) – AST</p></li>
 <li><p><strong>desc_string</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Variable type e.g. <code class="docutils literal notranslate"><span class="pre">REAL</span></code>, <code class="docutils literal notranslate"><span class="pre">INTEGER</span></code>, <code class="docutils literal notranslate"><span class="pre">EXTERNAL</span></code></p></li>
-<li><p><strong>name_stripped</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Variable name</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Variable name</p></li>
 <li><p><strong>new_var</strong> (<em>fortran_var</em>) – The line variable that we are attempting to match with an <code class="docutils literal notranslate"><span class="pre">EXTERNAL</span></code>
 definition</p></li>
 </ul>
@@ -2453,14 +2453,14 @@ rest of its components, else False</p>
 </dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.parse_fortran.find_external_attr">
-<span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">find_external_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_ast</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_stripped</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_var</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.find_external_attr" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">find_external_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_ast</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_var</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.find_external_attr" title="Permalink to this definition">#</a></dt>
 <dd><p>Check if this NORMAL Fortran variable is in the external_objs with only
 <code class="docutils literal notranslate"><span class="pre">EXTERNAL</span></code> as its type. Used to detect seperated <code class="docutils literal notranslate"><span class="pre">EXTERNAL</span></code> declarations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>file_ast</strong> (<em>fortran_ast</em>) – AST file</p></li>
-<li><p><strong>name_stripped</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Variable name, stripped</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Variable name, stripped</p></li>
 <li><p><strong>new_var</strong> (<em>fortran_var</em>) – Fortran variable to check against</p></li>
 </ul>
 </dd>
@@ -2475,7 +2475,7 @@ for everything else, which will cause a diagnostic error to be raised</p>
 </dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.parse_fortran.find_external_type">
-<span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">find_external_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_ast</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_stripped</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.find_external_type" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">find_external_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_ast</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.find_external_type" title="Permalink to this definition">#</a></dt>
 <dd><p>Encountered a variable with EXTERNAL as its type
 Try and find an already defined variable with a
 NORMAL Fortran Type</p>
