@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 2.8.0
+
+### Added
+
+- Added `sitemap.xml` to documentation webpage
+
 ## 2.7.0
 
 ### Added
