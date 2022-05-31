@@ -1543,12 +1543,10 @@ class LangServer:
         # with glob resolution
         source_dirs = config_dict.get("source_dirs", [])
         for path in source_dirs:
-            try:
-                dirs = only_dirs(resolve_globs(path, self.root_path))
-                self.source_dirs.update(set(dirs))
-            except FileNotFoundError as e:
-                err = f"Directories input in Configuration file do not exit:\n{e}"
-                self.post_message(err, Severity.warn)
+            # resolve_globs filters any nonexisting directories so FileNotFoundError
+            # found inside only_dirs can never be raised
+            dirs = only_dirs(resolve_globs(path, self.root_path))
+            self.source_dirs.update(set(dirs))
 
         # Keep all directories present in source_dirs but not excl_paths
         self.source_dirs = {i for i in self.source_dirs if i not in self.excl_paths}
@@ -1615,12 +1613,10 @@ class LangServer:
             self.pp_defs = {key: "" for key in self.pp_defs}
 
         for path in config_dict.get("include_dirs", set()):
-            try:
-                dirs = only_dirs(resolve_globs(path, self.root_path))
-                self.include_dirs.update(set(dirs))
-            except FileNotFoundError as e:
-                err = f"Directories input in Configuration file do not exit:\n{e}"
-                self.post_message(err, Severity.warn)
+            # resolve_globs filters any nonexisting directories so FileNotFoundError
+            # found inside only_dirs can never be raised
+            dirs = only_dirs(resolve_globs(path, self.root_path))
+            self.include_dirs.update(set(dirs))
 
     def _add_source_dirs(self) -> None:
         """Will recursively add all subdirectories that contain Fortran
