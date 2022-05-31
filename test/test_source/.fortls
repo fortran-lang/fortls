@@ -1,7 +1,9 @@
 {
+  // Directories to be scanned for source files
   "source_dirs": [
     "**/"
   ],
+  // These are regular expressions, files and paths that can be ignored
   "excl_paths": [
     "excldir/**",
     "./diag/",
