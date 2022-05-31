@@ -1492,6 +1492,11 @@ class LangServer:
 
         # Check for config file
         config_path = os.path.join(self.root_path, self.config)
+        # NOTE: it would be better if we could distinguish between a user-defined
+        # and a default config file. If not user-defined then we can check for
+        # default names, currently only .fortls. If None are found return None
+        # if user-defined config we would want to throw an error if the file
+        # cannot be found
         if not os.path.isfile(config_path):
             return None
 
@@ -1521,14 +1526,12 @@ class LangServer:
                     self.debug_log = True
 
         except FileNotFoundError:
-            self.post_messages(
-                [Severity.error, f"Error settings file '{self.config}' not found"]
-            )
+            self.post_message(f"Configuration file '{self.config}' not found")
 
-        except ValueError:
-            self.post_messages(
-                [Severity.error, f"Error while parsing '{self.config}' settings file"]
-            )
+        # Erroneous json file syntax
+        except ValueError as e:
+            msg = f"Error: '{e}' while reading '{self.config}' Configuration file"
+            self.post_message(msg)
 
     def _load_config_file_dirs(self, config_dict: dict) -> None:
         # Exclude paths (directories & files)
@@ -1540,12 +1543,10 @@ class LangServer:
         # with glob resolution
         source_dirs = config_dict.get("source_dirs", [])
         for path in source_dirs:
-            try:
-                dirs = only_dirs(resolve_globs(path, self.root_path))
-                self.source_dirs.update(set(dirs))
-            except FileNotFoundError as e:
-                err = f"Directories input in Configuration file do not exit:\n{e}"
-                self.post_messages([Severity.warn, err])
+            # resolve_globs filters any nonexisting directories so FileNotFoundError
+            # found inside only_dirs can never be raised
+            dirs = only_dirs(resolve_globs(path, self.root_path))
+            self.source_dirs.update(set(dirs))
 
         # Keep all directories present in source_dirs but not excl_paths
         self.source_dirs = {i for i in self.source_dirs if i not in self.excl_paths}
@@ -1606,18 +1607,16 @@ class LangServer:
         )
 
     def _load_config_file_preproc(self, config_dict: dict) -> None:
-        self.pp_suffixes = config_dict.get("pp_suffixes", None)  # TODO: set def
-        self.pp_defs = config_dict.get("pp_defs", {})  # TODO: set other dif?
+        self.pp_suffixes = config_dict.get("pp_suffixes", None)
+        self.pp_defs = config_dict.get("pp_defs", {})
         if isinstance(self.pp_defs, list):
             self.pp_defs = {key: "" for key in self.pp_defs}
 
         for path in config_dict.get("include_dirs", set()):
-            try:
-                dirs = only_dirs(resolve_globs(path, self.root_path))
-                self.include_dirs.update(set(dirs))
-            except FileNotFoundError as e:
-                err = f"Directories input in Configuration file do not exit:\n{e}"
-                self.post_messages([Severity.warn, err])
+            # resolve_globs filters any nonexisting directories so FileNotFoundError
+            # found inside only_dirs can never be raised
+            dirs = only_dirs(resolve_globs(path, self.root_path))
+            self.include_dirs.update(set(dirs))
 
     def _add_source_dirs(self) -> None:
         """Will recursively add all subdirectories that contain Fortran

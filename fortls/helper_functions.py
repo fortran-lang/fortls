@@ -297,7 +297,8 @@ def get_line_prefix(
 
 
 def resolve_globs(glob_path: str, root_path: str = None) -> list[str]:
-    """Resolve paths (absolute and relative) and glob patterns
+    """Resolve paths (absolute and relative) and glob patterns while
+    nonexistent paths are ignored
 
     Parameters
     ----------
