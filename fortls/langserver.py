@@ -1607,8 +1607,8 @@ class LangServer:
         )
 
     def _load_config_file_preproc(self, config_dict: dict) -> None:
-        self.pp_suffixes = config_dict.get("pp_suffixes", None)  # TODO: set def
-        self.pp_defs = config_dict.get("pp_defs", {})  # TODO: set other dif?
+        self.pp_suffixes = config_dict.get("pp_suffixes", None)
+        self.pp_defs = config_dict.get("pp_defs", {})
         if isinstance(self.pp_defs, list):
             self.pp_defs = {key: "" for key in self.pp_defs}
 
