@@ -1492,6 +1492,11 @@ class LangServer:
 
         # Check for config file
         config_path = os.path.join(self.root_path, self.config)
+        # NOTE: it would be better if we could distinguish between a user-defined
+        # and a default config file. If not user-defined then we can check for
+        # default names, currently only .fortls. If None are found return None
+        # if user-defined config we would want to throw an error if the file
+        # cannot be found
         if not os.path.isfile(config_path):
             return None
 
@@ -1521,14 +1526,12 @@ class LangServer:
                     self.debug_log = True
 
         except FileNotFoundError:
-            self.post_messages(
-                [Severity.error, f"Error settings file '{self.config}' not found"]
-            )
+            self.post_message(f"Configuration file '{self.config}' not found")
 
-        except ValueError:
-            self.post_messages(
-                [Severity.error, f"Error while parsing '{self.config}' settings file"]
-            )
+        # Erroneous json file syntax
+        except ValueError as e:
+            msg = f"Error: '{e}' while reading '{self.config}' Configuration file"
+            self.post_message(msg)
 
     def _load_config_file_dirs(self, config_dict: dict) -> None:
         # Exclude paths (directories & files)
@@ -1545,7 +1548,7 @@ class LangServer:
                 self.source_dirs.update(set(dirs))
             except FileNotFoundError as e:
                 err = f"Directories input in Configuration file do not exit:\n{e}"
-                self.post_messages([Severity.warn, err])
+                self.post_message(err, Severity.warn)
 
         # Keep all directories present in source_dirs but not excl_paths
         self.source_dirs = {i for i in self.source_dirs if i not in self.excl_paths}
@@ -1617,7 +1620,7 @@ class LangServer:
                 self.include_dirs.update(set(dirs))
             except FileNotFoundError as e:
                 err = f"Directories input in Configuration file do not exit:\n{e}"
-                self.post_messages([Severity.warn, err])
+                self.post_message(err, Severity.warn)
 
     def _add_source_dirs(self) -> None:
         """Will recursively add all subdirectories that contain Fortran

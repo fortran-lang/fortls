@@ -9,6 +9,11 @@
 - Added `sitemap.xml` to documentation webpage
   ([#134](https://github.com/gnikit/fortls/pull/134))
 
+### Fixed
+
+- Fixed bug where error messages did not post correctly
+  ([#135](https://github.com/gnikit/fortls/issues/135))
+
 ## 2.7.0
 
 ### Added
