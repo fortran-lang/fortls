@@ -1,4 +1,3 @@
-# TODO: enable jsonc C-style comments
 from __future__ import annotations
 
 import json
@@ -14,6 +13,7 @@ from pathlib import Path
 from typing import Pattern
 from urllib.error import URLError
 
+import json5
 from packaging import version
 
 # Local modules
@@ -1502,12 +1502,7 @@ class LangServer:
 
         try:
             with open(config_path, "r") as jsonfile:
-                # Allow for jsonc C-style commnets
-                # jsondata = "".join(
-                #     line for line in jsonfile if not line.startswith("//")
-                # )
-                # config_dict = json.loads(jsondata)
-                config_dict = json.load(jsonfile)
+                config_dict = json5.load(jsonfile)
 
                 # Include and Exclude directories
                 self._load_config_file_dirs(config_dict)
@@ -1530,7 +1525,7 @@ class LangServer:
 
         # Erroneous json file syntax
         except ValueError as e:
-            msg = f"Error: '{e}' while reading '{self.config}' Configuration file"
+            msg = f'Error: "{e}" while reading "{self.config}" Configuration file'
             self.post_message(msg)
 
     def _load_config_file_dirs(self, config_dict: dict) -> None:

@@ -22,8 +22,8 @@ def test_config_file_non_existent_options():
     ref = {
         "type": 1,
         "message": (
-            "Error: 'Expecting ':' delimiter: line 2 column 18 (char 19)' while reading"
-            " 'wrong_syntax.json' Configuration file"
+            'Error: "<string>:2 Unexpected "," at column 18" while reading'
+            ' "wrong_syntax.json" Configuration file'
         ),
     }
     assert errcode == 0
