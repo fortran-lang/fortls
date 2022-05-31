@@ -99,6 +99,8 @@
 
 ## Fixed
 
+- Fixed bug where error messages did not post correctly
+  ([#135](https://github.com/gnikit/fortls/issues/135))
 - Fixed bug where submodule procedure scopes would terminate early if keyword modifiers were used
   ([#119](https://github.com/gnikit/fortls/issues/119))
 - Fixed remote coverage report line diff
