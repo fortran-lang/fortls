@@ -114,6 +114,8 @@ def commandline_args(name: str = "fortls") -> argparse.ArgumentParser:
         "--incl_suffixes",
         type=str,
         nargs="*",
+        default=set(),
+        action=SetAction,
         metavar="SUFFIXES",
         help=(
             "Consider additional file extensions to the default (default: "

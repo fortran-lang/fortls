@@ -191,6 +191,7 @@ class LangServer:
         self.source_dirs.add(self.root_path)
 
         self._load_config_file()
+        self._resolve_globs_in_paths()
         self._config_logger(request)
         self._load_intrinsics()
         self._add_source_dirs()
@@ -1529,26 +1530,12 @@ class LangServer:
             self.post_message(msg)
 
     def _load_config_file_dirs(self, config_dict: dict) -> None:
-        # Exclude paths (directories & files)
-        # with glob resolution
-        for path in config_dict.get("excl_paths", []):
-            self.excl_paths.update(set(resolve_globs(path, self.root_path)))
-
-        # Source directory paths (directories)
-        # with glob resolution
-        source_dirs = config_dict.get("source_dirs", [])
-        for path in source_dirs:
-            # resolve_globs filters any nonexisting directories so FileNotFoundError
-            # found inside only_dirs can never be raised
-            dirs = only_dirs(resolve_globs(path, self.root_path))
-            self.source_dirs.update(set(dirs))
-
-        # Keep all directories present in source_dirs but not excl_paths
-        self.source_dirs = {i for i in self.source_dirs if i not in self.excl_paths}
-        self.incl_suffixes = config_dict.get("incl_suffixes", [])
+        self.excl_paths = set(config_dict.get("excl_paths", self.excl_paths))
+        self.source_dirs = set(config_dict.get("source_dirs", self.source_dirs))
+        self.incl_suffixes = set(config_dict.get("incl_suffixes", self.incl_suffixes))
         # Update the source file REGEX
         self.FORTRAN_SRC_EXT_REGEX = src_file_exts(self.incl_suffixes)
-        self.excl_suffixes = set(config_dict.get("excl_suffixes", []))
+        self.excl_suffixes = set(config_dict.get("excl_suffixes", self.excl_suffixes))
 
     def _load_config_file_general(self, config_dict: dict) -> None:
         # General options ------------------------------------------------------
@@ -1607,11 +1594,36 @@ class LangServer:
         if isinstance(self.pp_defs, list):
             self.pp_defs = {key: "" for key in self.pp_defs}
 
-        for path in config_dict.get("include_dirs", set()):
+        self.include_dirs = set(config_dict.get("include_dirs", self.include_dirs))
+
+    def _resolve_globs_in_paths(self) -> None:
+        """Resolves glob patterns in `excl_paths`, `source_dirs` and `include_dirs`.
+        Also performs the exclusion of `excl_paths` from `source_dirs`.
+        """
+        # Exclude paths (directories & files) with glob resolution
+        excl_paths = set()
+        for path in self.excl_paths:
+            excl_paths.update(set(resolve_globs(path, self.root_path)))
+        self.excl_paths = excl_paths.copy()
+
+        # Source directory paths (directories) with glob resolution
+        source_dirs = set()
+        for path in self.source_dirs:
             # resolve_globs filters any nonexisting directories so FileNotFoundError
             # found inside only_dirs can never be raised
-            dirs = only_dirs(resolve_globs(path, self.root_path))
-            self.include_dirs.update(set(dirs))
+            source_dirs.update(set(only_dirs(resolve_globs(path, self.root_path))))
+        self.source_dirs = source_dirs.copy()
+
+        # Keep all directories present in source_dirs but not excl_paths
+        self.source_dirs = {i for i in self.source_dirs if i not in self.excl_paths}
+
+        # Preprocessor includes
+        include_dirs = set()
+        for path in self.include_dirs:
+            # resolve_globs filters any nonexisting directories so FileNotFoundError
+            # found inside only_dirs can never be raised
+            include_dirs.update(set(only_dirs(resolve_globs(path, self.root_path))))
+        self.include_dirs = include_dirs.copy()
 
     def _add_source_dirs(self) -> None:
         """Will recursively add all subdirectories that contain Fortran
