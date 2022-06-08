@@ -6,10 +6,10 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Configuration options" href="options.html" /><link rel="prev" title="Features" href="features.html" />
         <link rel="canonical" href="https://gnikit.github.io/fortls/editor_integration.html" />
 
-    <link rel="shortcut icon" href="_static/icon.svg"/><meta name="generator" content="sphinx-4.5.0, furo 2022.04.07"/>
+    <link rel="shortcut icon" href="_static/icon.svg"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
         <title>Editor Integration - fortls</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=68f4518137b9aefe99b631505a2064c3c42c9852" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
@@ -204,7 +204,8 @@
           </svg>
           <span>Back to top</span>
         </a>
-        <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
@@ -227,13 +228,13 @@ Install <code class="docutils literal notranslate"><span class="pre">fortls</spa
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>Make sure that <code class="docutils literal notranslate"><span class="pre">fortls</span></code> is reachable in your <code class="docutils literal notranslate"><span class="pre">$PATH</span></code>. If not you can specify the option
-<code class="docutils literal notranslate"><span class="pre">"fortran.fortls.path":</span> <span class="pre">"/custom/path/to/fortls"</span></code></p>
+<code class="docutils literal notranslate"><span class="pre">&quot;fortran.fortls.path&quot;:</span> <span class="pre">&quot;/custom/path/to/fortls&quot;</span></code></p>
 </div>
 </section>
 <section id="atom">
 <h2><a class="reference external" href="https://atom.io/">Atom</a><a class="headerlink" href="#atom" title="Permalink to this headline">#</a></h2>
-<p>Firstly <code class="docutils literal notranslate"><span class="pre">fortls</span></code> then install the <a class="reference external" href="https://atom.io/packages/language-fortran">language-fortran</a> plugin by <a class="reference external" href="https://github.com/dparkins">@dparkins</a> to get Fortran syntax highlighting.
-Finally, install either <a class="reference external" href="https://atom.io/packages/fortran-lsp">fortran-lsp</a> by <a class="reference external" href="https://github.com/gnikit">@gnikit</a> or <a class="reference external" href="https://atom.io/packages/ide-fortran">ide-fortran</a> by <a class="reference external" href="https://github.com/hansec">@hansec</a></p>
+<p>Firstly <code class="docutils literal notranslate"><span class="pre">fortls</span></code> then install the <a class="reference external" href="https://atom.io/packages/language-fortran">language-fortran</a> plugin by <a class="reference external" href="https://github.com/dparkins">&#64;dparkins</a> to get Fortran syntax highlighting.
+Finally, install either <a class="reference external" href="https://atom.io/packages/fortran-lsp">fortran-lsp</a> by <a class="reference external" href="https://github.com/gnikit">&#64;gnikit</a> or <a class="reference external" href="https://atom.io/packages/ide-fortran">ide-fortran</a> by <a class="reference external" href="https://github.com/hansec">&#64;hansec</a></p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p><a class="reference external" href="https://atom.io/packages/fortran-lsp">fortran-lsp</a> has been created solely for the <code class="docutils literal notranslate"><span class="pre">fortls</span></code> Language Server, hence it natively interfaces with <code class="docutils literal notranslate"><span class="pre">fortls</span></code>.
@@ -246,11 +247,11 @@ available through the extension are not representative of <code class="docutils 
 <p>Firstly, install <code class="docutils literal notranslate"><span class="pre">fortls</span></code> then install the <a class="reference external" href="https://github.com/sublimelsp/LSP">LSP</a> package from package control.
 Finally, install the <a class="reference external" href="https://packagecontrol.io/packages/Fortran">Fortran</a> package and add the following in your configuration</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">"clients"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">"fortls"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">"enabled"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">"command"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"fortls"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--notify_init"</span><span class="p">],</span><span class="w"></span>
-<span class="w">            </span><span class="nt">"selector"</span><span class="p">:</span><span class="w"> </span><span class="s2">"source.modern-fortran | source.fixedform-fortran"</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;clients&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;fortls&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;fortls&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--notify_init&quot;</span><span class="p">],</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;selector&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;source.modern-fortran | source.fixedform-fortran&quot;</span><span class="w"></span>
 <span class="w">        </span><span class="p">}</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
@@ -268,18 +269,18 @@ Finally, install the <a class="reference external" href="https://packagecontrol.
 To enable the native LSP functionality install the <a class="reference external" href="https://github.com/neovim/nvim-lspconfig">lspconfig</a> plugin with your
 favourite plugin manager.</p>
 <p>Then in your configuration file (i.e. <code class="docutils literal notranslate"><span class="pre">init.lua</span></code>) add the following:</p>
-<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="nb">require</span><span class="s1">'lspconfig'</span><span class="p">.</span><span class="n">fortls</span><span class="p">.</span><span class="n">setup</span><span class="p">{}</span>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="nb">require</span><span class="s1">&#39;lspconfig&#39;</span><span class="p">.</span><span class="n">fortls</span><span class="p">.</span><span class="n">setup</span><span class="p">{}</span>
 </pre></div>
 </div>
 <p>If additional <code class="docutils literal notranslate"><span class="pre">fortls</span></code> options need to be passed to you can do that through
 the <code class="docutils literal notranslate"><span class="pre">cmd</span></code> option in <code class="docutils literal notranslate"><span class="pre">setup{}</span></code></p>
-<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="nb">require</span><span class="s1">'lspconfig'</span><span class="p">.</span><span class="n">fortls</span><span class="p">.</span><span class="n">setup</span><span class="p">{</span>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="nb">require</span><span class="s1">&#39;lspconfig&#39;</span><span class="p">.</span><span class="n">fortls</span><span class="p">.</span><span class="n">setup</span><span class="p">{</span>
     <span class="n">cmd</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">'fortls'</span><span class="p">,</span>
-        <span class="s1">'--lowercase_intrisics'</span><span class="p">,</span>
-        <span class="s1">'--hover_signature'</span><span class="p">,</span>
-        <span class="s1">'--hover_language=fortran'</span><span class="p">,</span>
-        <span class="s1">'--use_signature_help'</span>
+        <span class="s1">&#39;fortls&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;--lowercase_intrisics&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;--hover_signature&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;--hover_language=fortran&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;--use_signature_help&#39;</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -302,14 +303,14 @@ is a popular Vim plugin and code-completion engine that also provides an LSP int
 You can therefore use it to register Language Servers like <code class="docutils literal notranslate"><span class="pre">fortls</span></code>.</p>
 <p>For more information about configuring an arbitrary Language Server in YouCompleteMe,
 <a class="reference external" href="https://ycm-core.github.io/YouCompleteMe/#plugging-an-arbitrary-lsp-server">see here</a>.</p>
-<div class="highlight-vim notranslate"><div class="highlight"><pre><span></span><span class="c">" YouCompleteMe configuration options</span>
+<div class="highlight-vim notranslate"><div class="highlight"><pre><span></span><span class="c">&quot; YouCompleteMe configuration options</span>
 <span class="k">let</span> <span class="k">g</span>:ycm_language_server <span class="p">=</span>
     \[
     \   {
-    \       <span class="s1">'name'</span>: <span class="s1">'fortls'</span><span class="p">,</span>
-    \       <span class="s1">'cmdline'</span>: [<span class="s1">'fortls'</span><span class="p">,</span> <span class="s1">'--hover_language'</span><span class="p">,</span> <span class="s1">'fortran'</span><span class="p">,</span> <span class="s1">'--notify_init'</span><span class="p">,</span> <span class="s1">'--hover_signature'</span><span class="p">,</span> <span class="s1">'--use_signature_help'</span>]<span class="p">,</span>
-    \       <span class="s1">'filetypes'</span>: [<span class="s1">'fortran'</span>]<span class="p">,</span>
-    \       <span class="s1">'project_root_files'</span>: [<span class="s1">'.fortls'</span>]<span class="p">,</span>
+    \       <span class="s1">&#39;name&#39;</span>: <span class="s1">&#39;fortls&#39;</span><span class="p">,</span>
+    \       <span class="s1">&#39;cmdline&#39;</span>: [<span class="s1">&#39;fortls&#39;</span><span class="p">,</span> <span class="s1">&#39;--hover_language&#39;</span><span class="p">,</span> <span class="s1">&#39;fortran&#39;</span><span class="p">,</span> <span class="s1">&#39;--notify_init&#39;</span><span class="p">,</span> <span class="s1">&#39;--hover_signature&#39;</span><span class="p">,</span> <span class="s1">&#39;--use_signature_help&#39;</span>]<span class="p">,</span>
+    \       <span class="s1">&#39;filetypes&#39;</span>: [<span class="s1">&#39;fortran&#39;</span>]<span class="p">,</span>
+    \       <span class="s1">&#39;project_root_files&#39;</span>: [<span class="s1">&#39;.fortls&#39;</span>]<span class="p">,</span>
     \   }<span class="p">,</span>
     \]
 nmap <span class="p">&lt;</span>leader<span class="p">&gt;</span>yfw <span class="p">&lt;</span>Plug<span class="p">&gt;(</span>YCMFindSymbolInWorkspace<span class="p">)</span>
@@ -321,15 +322,15 @@ nmap <span class="p">&lt;</span>leader<span class="p">&gt;</span>yfd <span class
 <h3><a class="reference external" href="https://github.com/autozimu/LanguageClient-neovim">LanguageClient-neovim</a><a class="headerlink" href="#languageclient-neovim" title="Permalink to this headline">#</a></h3>
 <p>Firstly install the plugin <a class="reference external" href="https://github.com/autozimu/LanguageClient-neovim">LanguageClient-neovim</a>. Then edit your <code class="docutils literal notranslate"><span class="pre">~/.vimrc</span></code> settings file
 to set <code class="docutils literal notranslate"><span class="pre">fortls</span></code> for Fortran files</p>
-<div class="highlight-vim notranslate"><div class="highlight"><pre><span></span><span class="c">" Required for operations modifying multiple buffers like rename. set hidden</span>
+<div class="highlight-vim notranslate"><div class="highlight"><pre><span></span><span class="c">&quot; Required for operations modifying multiple buffers like rename. set hidden</span>
 <span class="k">let</span> <span class="k">g</span>:LanguageClient_serverCommands <span class="p">=</span> {
-<span class="c">    " Add any default arguments you want fortls to have inside []</span>
-    \ <span class="s1">'fortran'</span>: [<span class="s1">'fortls'</span><span class="p">,</span> <span class="s1">'--hover_signature'</span><span class="p">,</span> <span class="s1">'--hover_language'</span><span class="p">,</span> <span class="s1">'fortran'</span><span class="p">,</span> <span class="s1">'--use_signature_help'</span>]<span class="p">,</span>
+<span class="c">    &quot; Add any default arguments you want fortls to have inside []</span>
+    \ <span class="s1">&#39;fortran&#39;</span>: [<span class="s1">&#39;fortls&#39;</span><span class="p">,</span> <span class="s1">&#39;--hover_signature&#39;</span><span class="p">,</span> <span class="s1">&#39;--hover_language&#39;</span><span class="p">,</span> <span class="s1">&#39;fortran&#39;</span><span class="p">,</span> <span class="s1">&#39;--use_signature_help&#39;</span>]<span class="p">,</span>
     \ }
 
-<span class="c">" note that if you are using Plug mapping you should not use `noremap` mappings.</span>
+<span class="c">&quot; note that if you are using Plug mapping you should not use `noremap` mappings.</span>
 nmap <span class="p">&lt;</span>F5<span class="p">&gt;</span> <span class="p">&lt;</span>Plug<span class="p">&gt;(</span>lcn<span class="p">-</span>menu<span class="p">)</span>
-<span class="c">" Or map each action separately</span>
+<span class="c">&quot; Or map each action separately</span>
 nmap <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt;</span>K <span class="p">&lt;</span>Plug<span class="p">&gt;(</span>lcn<span class="p">-</span>hover<span class="p">)</span>
 nmap <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt;</span> <span class="nb">gd</span> <span class="p">&lt;</span>Plug<span class="p">&gt;(</span>lcn<span class="p">-</span>definition<span class="p">)</span>
 nmap <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt;</span> <span class="p">&lt;</span>F2<span class="p">&gt;</span> <span class="p">&lt;</span>Plug<span class="p">&gt;(</span>lcn<span class="p">-</span>rename<span class="p">)</span>
@@ -351,10 +352,10 @@ nmap <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt
 <p>Install <a class="reference external" href="https://github.com/kak-lsp/">kak-lsp</a>.</p>
 <p>Edit the <code class="docutils literal notranslate"><span class="pre">kak-lsp.toml</span></code> config file to include:</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>language.fortran<span class="o">]</span>
-<span class="nv">filetypes</span> <span class="o">=</span> <span class="o">[</span><span class="s2">"fortran"</span><span class="o">]</span>
-<span class="nv">roots</span> <span class="o">=</span> <span class="o">[</span><span class="s2">".git"</span>, <span class="s2">".fortls"</span><span class="o">]</span>
-<span class="nb">command</span> <span class="o">=</span> <span class="s2">"fortls"</span>
-<span class="nv">args</span> <span class="o">=</span> <span class="o">[</span><span class="s2">"--symbol_skip_mem"</span>, <span class="s2">"--incremental_sync"</span>, <span class="s2">"--autocomplete_no_prefix"</span>, <span class="s2">"--lowercase_intrisics"</span><span class="o">]</span>
+<span class="nv">filetypes</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&quot;fortran&quot;</span><span class="o">]</span>
+<span class="nv">roots</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&quot;.git&quot;</span>, <span class="s2">&quot;.fortls&quot;</span><span class="o">]</span>
+<span class="nb">command</span> <span class="o">=</span> <span class="s2">&quot;fortls&quot;</span>
+<span class="nv">args</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&quot;--symbol_skip_mem&quot;</span>, <span class="s2">&quot;--incremental_sync&quot;</span>, <span class="s2">&quot;--autocomplete_no_prefix&quot;</span>, <span class="s2">&quot;--lowercase_intrisics&quot;</span><span class="o">]</span>
 </pre></div>
 </div>
 <p>Edit your <code class="docutils literal notranslate"><span class="pre">kakrc</span></code> config to enable <code class="docutils literal notranslate"><span class="pre">kak-lsp</span></code>, adding <code class="docutils literal notranslate"><span class="pre">fortran</span></code> as a filetype:</p>

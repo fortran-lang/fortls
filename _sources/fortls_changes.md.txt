@@ -52,6 +52,11 @@
 
 ## Changed
 
+- Changed the default value of the following options when a mix the command line
+  interface and the `json` interface are used. Instead of having the `json` interface
+  default the values to an empty set it now defaults to the values of the
+  command line: `excl_paths`, `source_dirs`, `incl_suffixes`, `excl_suffixes`, `include_dirs`
+  ([#143](https://github.com/gnikit/fortls/issues/143))
 - Renamed variables to simplify parser
   ([#133](https://github.com/gnikit/fortls/pull/133))
 - Redesigned parsing functions for short-hand declarations of array dimensions,
@@ -101,6 +106,8 @@
 
 ## Fixed
 
+- Fixed glob pattern resolution for command line arguments
+  ([#142](https://github.com/gnikit/fortls/issues/142))
 - Fixed bug where error messages did not post correctly
   ([#135](https://github.com/gnikit/fortls/issues/135))
 - Fixed bug where submodule procedure scopes would terminate early if keyword modifiers were used

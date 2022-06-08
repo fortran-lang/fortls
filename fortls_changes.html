@@ -6,10 +6,10 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Contributing to fortls" href="contributing.html" /><link rel="prev" title="Configuration options" href="options.html" />
         <link rel="canonical" href="https://gnikit.github.io/fortls/fortls_changes.html" />
 
-    <link rel="shortcut icon" href="_static/icon.svg"/><meta name="generator" content="sphinx-4.5.0, furo 2022.04.07"/>
+    <link rel="shortcut icon" href="_static/icon.svg"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
         <title>Unique fortls features (not in fortran-language-server) - fortls</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=68f4518137b9aefe99b631505a2064c3c42c9852" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
@@ -204,7 +204,8 @@
           </svg>
           <span>Back to top</span>
         </a>
-        <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
@@ -275,6 +276,11 @@
 <section id="changed">
 <h2>Changed<a class="headerlink" href="#changed" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
+<li><p>Changed the default value of the following options when a mix the command line
+interface and the <code class="docutils literal notranslate"><span class="pre">json</span></code> interface are used. Instead of having the <code class="docutils literal notranslate"><span class="pre">json</span></code> interface
+default the values to an empty set it now defaults to the values of the
+command line: <code class="docutils literal notranslate"><span class="pre">excl_paths</span></code>, <code class="docutils literal notranslate"><span class="pre">source_dirs</span></code>, <code class="docutils literal notranslate"><span class="pre">incl_suffixes</span></code>, <code class="docutils literal notranslate"><span class="pre">excl_suffixes</span></code>, <code class="docutils literal notranslate"><span class="pre">include_dirs</span></code>
+(<a class="reference external" href="https://github.com/gnikit/fortls/issues/143">#143</a>)</p></li>
 <li><p>Renamed variables to simplify parser
 (<a class="reference external" href="https://github.com/gnikit/fortls/pull/133">#133</a>)</p></li>
 <li><p>Redesigned parsing functions for short-hand declarations of array dimensions,
@@ -328,6 +334,8 @@ handle their dependencies through <code class="docutils literal notranslate"><sp
 <section id="fixed">
 <h2>Fixed<a class="headerlink" href="#fixed" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
+<li><p>Fixed glob pattern resolution for command line arguments
+(<a class="reference external" href="https://github.com/gnikit/fortls/issues/142">#142</a>)</p></li>
 <li><p>Fixed bug where error messages did not post correctly
 (<a class="reference external" href="https://github.com/gnikit/fortls/issues/135">#135</a>)</p></li>
 <li><p>Fixed bug where submodule procedure scopes would terminate early if keyword modifiers were used
