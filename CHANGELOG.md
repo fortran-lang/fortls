@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+## 2.9.0
+
+### Fixed
+
+- Fixed glob pattern resolution for command line arguments
+  ([#142](https://github.com/gnikit/fortls/issues/142))
+
+### Changed
+
+- Changed the default value of the following options when a mix the command line
+  interface and the `json` interface are used. Instead of having the `json` interface
+  default the values to an empty set it now defaults to the values of the
+  command line: `excl_paths`, `source_dirs`, `incl_suffixes`, `excl_suffixes`, `include_dirs`
+  ([#143](https://github.com/gnikit/fortls/issues/143))
+
 ## 2.8.0
 
 ### Added
