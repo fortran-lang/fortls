@@ -1,12 +1,12 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Unique fortls features (not in fortran-language-server)" href="fortls_changes.html" /><link rel="prev" title="Editor Integration" href="editor_integration.html" />
         <link rel="canonical" href="https://gnikit.github.io/fortls/options.html" />
 
-    <link rel="shortcut icon" href="_static/icon.svg"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
+    <link rel="shortcut icon" href="_static/icon.svg"/><meta name="generator" content="sphinx-5.0.2, furo 2022.06.04.1"/>
         <title>Configuration options - fortls</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -220,7 +220,7 @@
         </div>
         <article role="main">
           <section id="configuration-options">
-<h1>Configuration options<a class="headerlink" href="#configuration-options" title="Permalink to this headline">#</a></h1>
+<h1>Configuration options<a class="headerlink" href="#configuration-options" title="Permalink to this heading">#</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">fortls</span></code> can be configured through the command line interface and/or
 through a configuration file (by default named <code class="docutils literal notranslate"><span class="pre">.fortls</span></code>).
 The options available from the command line and through the configuration file
@@ -231,14 +231,14 @@ are identical and interchangeable.</p>
 </div>
 <p>The following sections discuss the available settings in detail.</p>
 <section id="configuration-using-the-command-line">
-<span id="cmd-interface"></span><h2>Configuration using the command line<a class="headerlink" href="#configuration-using-the-command-line" title="Permalink to this headline">#</a></h2>
+<span id="cmd-interface"></span><h2>Configuration using the command line<a class="headerlink" href="#configuration-using-the-command-line" title="Permalink to this heading">#</a></h2>
 <p><p>fortls - Fortran Language Server</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">fortls</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="p">[</span><span class="n">debug</span> <span class="n">options</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="Named Arguments">
-<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">#</a></h3>
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this heading">#</a></h3>
 <dl class="option-list">
 <dt><kbd>-v, --version</kbd></dt>
 <dd><p>Print server version number and exit</p>
@@ -270,7 +270,7 @@ are identical and interchangeable.</p>
 </dl>
 </section>
 <section id="Sources file parsing options">
-<h3>Sources file parsing options<a class="headerlink" href="#Sources file parsing options" title="Permalink to this headline">#</a></h3>
+<h3>Sources file parsing options<a class="headerlink" href="#Sources file parsing options" title="Permalink to this heading">#</a></h3>
 <dl class="option-list">
 <dt><kbd>--source_dirs</kbd></dt>
 <dd><p>Folders containing source files (default: set())</p>
@@ -287,7 +287,7 @@ are identical and interchangeable.</p>
 </dl>
 </section>
 <section id="Autocomplete options">
-<h3>Autocomplete options<a class="headerlink" href="#Autocomplete options" title="Permalink to this headline">#</a></h3>
+<h3>Autocomplete options<a class="headerlink" href="#Autocomplete options" title="Permalink to this heading">#</a></h3>
 <dl class="option-list">
 <dt><kbd>--autocomplete_no_prefix</kbd></dt>
 <dd><p>Do not filter autocomplete results by variable prefix</p>
@@ -307,7 +307,7 @@ are identical and interchangeable.</p>
 </dl>
 </section>
 <section id="Hover options">
-<h3>Hover options<a class="headerlink" href="#Hover options" title="Permalink to this headline">#</a></h3>
+<h3>Hover options<a class="headerlink" href="#Hover options" title="Permalink to this heading">#</a></h3>
 <dl class="option-list">
 <dt><kbd>--variable_hover</kbd></dt>
 <dd><p>DEPRECATED: This option is always on. Show hover information for variables</p>
@@ -321,7 +321,7 @@ are identical and interchangeable.</p>
 </dl>
 </section>
 <section id="Diagnostic options (error swigles)">
-<h3>Diagnostic options (error swigles)<a class="headerlink" href="#Diagnostic options (error swigles)" title="Permalink to this headline">#</a></h3>
+<h3>Diagnostic options (error swigles)<a class="headerlink" href="#Diagnostic options (error swigles)" title="Permalink to this heading">#</a></h3>
 <dl class="option-list">
 <dt><kbd>--max_line_length</kbd></dt>
 <dd><p>Maximum line length (default: -1)</p>
@@ -335,7 +335,7 @@ are identical and interchangeable.</p>
 </dl>
 </section>
 <section id="Preprocessor options">
-<h3>Preprocessor options<a class="headerlink" href="#Preprocessor options" title="Permalink to this headline">#</a></h3>
+<h3>Preprocessor options<a class="headerlink" href="#Preprocessor options" title="Permalink to this heading">#</a></h3>
 <dl class="option-list">
 <dt><kbd>--pp_suffixes</kbd></dt>
 <dd><p>File extensions to be parsed ONLY for preprocessor commands (default: all uppercase source file suffixes)</p>
@@ -349,7 +349,7 @@ are identical and interchangeable.</p>
 </dl>
 </section>
 <section id="Symbols options">
-<h3>Symbols options<a class="headerlink" href="#Symbols options" title="Permalink to this headline">#</a></h3>
+<h3>Symbols options<a class="headerlink" href="#Symbols options" title="Permalink to this heading">#</a></h3>
 <dl class="option-list">
 <dt><kbd>--symbol_skip_mem</kbd></dt>
 <dd><p>Do not include type members in document symbol results</p>
@@ -357,7 +357,7 @@ are identical and interchangeable.</p>
 </dl>
 </section>
 <section id="CodeActions options [limited]">
-<h3>CodeActions options [limited]<a class="headerlink" href="#CodeActions options [limited]" title="Permalink to this headline">#</a></h3>
+<h3>CodeActions options [limited]<a class="headerlink" href="#CodeActions options [limited]" title="Permalink to this heading">#</a></h3>
 <dl class="option-list">
 <dt><kbd>--enable_code_actions</kbd></dt>
 <dd><p>Enable experimental code actions (default: false)</p>
@@ -368,7 +368,7 @@ are identical and interchangeable.</p>
 </p>
 </section>
 <section id="configuration-using-a-file">
-<h2>Configuration using a file<a class="headerlink" href="#configuration-using-a-file" title="Permalink to this headline">#</a></h2>
+<h2>Configuration using a file<a class="headerlink" href="#configuration-using-a-file" title="Permalink to this heading">#</a></h2>
 <p>A configuration file is a JSON style file that contains project specific
 settings for <code class="docutils literal notranslate"><span class="pre">fortls</span></code>. By default the name of the filepath is assumed to be
 <code class="docutils literal notranslate"><span class="pre">root_path/.fortls</span></code> but different files can be used through the command line
@@ -377,7 +377,7 @@ interface e.g. <code class="docutils literal notranslate"><span class="pre">fort
 the ones available through the command line interface having removed the leading
 <code class="docutils literal notranslate"><span class="pre">--</span></code> characters. For the command line interface see <a class="reference internal" href="#cmd-interface"><span class="std std-ref">Configuration using the command line</span></a>.</p>
 <section id="available-options">
-<h3>Available options<a class="headerlink" href="#available-options" title="Permalink to this headline">#</a></h3>
+<h3>Available options<a class="headerlink" href="#available-options" title="Permalink to this heading">#</a></h3>
 <p>All the <code class="docutils literal notranslate"><span class="pre">fortls</span></code> settings with their default arguments can be found below</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;nthreads&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"></span>
@@ -417,9 +417,9 @@ the ones available through the command line interface having removed the leading
 </div>
 </section>
 <section id="sources-file-parsing">
-<h3>Sources file parsing<a class="headerlink" href="#sources-file-parsing" title="Permalink to this headline">#</a></h3>
+<h3>Sources file parsing<a class="headerlink" href="#sources-file-parsing" title="Permalink to this heading">#</a></h3>
 <section id="source-dirs">
-<h4>source_dirs<a class="headerlink" href="#source-dirs" title="Permalink to this headline">#</a></h4>
+<h4>source_dirs<a class="headerlink" href="#source-dirs" title="Permalink to this heading">#</a></h4>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;source_dirs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;./**&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;/external/fortran/src&quot;</span><span class="p">]</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
@@ -434,7 +434,7 @@ for <code class="docutils literal notranslate"><span class="pre">fortls</span></
 </div>
 </section>
 <section id="incl-suffixes">
-<h4>incl_suffixes<a class="headerlink" href="#incl-suffixes" title="Permalink to this headline">#</a></h4>
+<h4>incl_suffixes<a class="headerlink" href="#incl-suffixes" title="Permalink to this heading">#</a></h4>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;incl_suffixes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;.h&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;.FYP&quot;</span><span class="p">]</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
@@ -450,7 +450,7 @@ Additional source file extensions can be defined in <code class="docutils litera
 </div>
 </section>
 <section id="excl-suffixes">
-<h4>excl_suffixes<a class="headerlink" href="#excl-suffixes" title="Permalink to this headline">#</a></h4>
+<h4>excl_suffixes<a class="headerlink" href="#excl-suffixes" title="Permalink to this heading">#</a></h4>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;excl_suffixes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;_tmp.f90&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;_hdf5.F90&quot;</span><span class="p">]</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
@@ -460,7 +460,7 @@ Additional source file extensions can be defined in <code class="docutils litera
 deffining <code class="docutils literal notranslate"><span class="pre">excl_suffixes</span></code></p>
 </section>
 <section id="excl-paths">
-<h4>excl_paths<a class="headerlink" href="#excl-paths" title="Permalink to this headline">#</a></h4>
+<h4>excl_paths<a class="headerlink" href="#excl-paths" title="Permalink to this heading">#</a></h4>
 <p>Entire directories can be excluded from parsing by including them in <code class="docutils literal notranslate"><span class="pre">excl_paths</span></code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -476,9 +476,9 @@ its subdirectories from being parsed you should define it like so</p>
 </section>
 </section>
 <section id="preprocessor">
-<h3>Preprocessor<a class="headerlink" href="#preprocessor" title="Permalink to this headline">#</a></h3>
+<h3>Preprocessor<a class="headerlink" href="#preprocessor" title="Permalink to this heading">#</a></h3>
 <section id="pp-suffixes">
-<h4>pp_suffixes<a class="headerlink" href="#pp-suffixes" title="Permalink to this headline">#</a></h4>
+<h4>pp_suffixes<a class="headerlink" href="#pp-suffixes" title="Permalink to this heading">#</a></h4>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;pp_suffixes&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;.h&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;.F90&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;.fpp&quot;</span><span class="p">]</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
@@ -489,7 +489,7 @@ with uppercase extensions e.g. <code class="docutils literal notranslate"><span 
 default behaviour can be overriden by defining <code class="docutils literal notranslate"><span class="pre">pp_defs</span></code>.</p>
 </section>
 <section id="include-dirs">
-<h4>include_dirs<a class="headerlink" href="#include-dirs" title="Permalink to this headline">#</a></h4>
+<h4>include_dirs<a class="headerlink" href="#include-dirs" title="Permalink to this heading">#</a></h4>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;include_dirs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;include&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;preprocessor&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;/usr/include&quot;</span><span class="p">]</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
@@ -509,7 +509,7 @@ files are external to the project, their locations can be specific via
 </div>
 </section>
 <section id="pp-defs">
-<h4>pp_defs<a class="headerlink" href="#pp-defs" title="Permalink to this headline">#</a></h4>
+<h4>pp_defs<a class="headerlink" href="#pp-defs" title="Permalink to this heading">#</a></h4>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;pp_defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;HAVE_PETSC&quot;</span><span class="p">:</span><span class="w"> </span><span class="nt">&quot;&quot;</span><span class="w"></span>
@@ -526,7 +526,7 @@ files are external to the project, their locations can be specific via
 </div>
 </section>
 <section id="limitations">
-<h4>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">#</a></h4>
+<h4>Limitations<a class="headerlink" href="#limitations" title="Permalink to this heading">#</a></h4>
 <ul>
 <li><p>Recursive substitution is not available e.g.</p>
 <blockquote>
@@ -541,7 +541,7 @@ files are external to the project, their locations can be specific via
 </section>
 </section>
 <section id="debug-options-command-line-only">
-<h2>Debug Options (command line only)<a class="headerlink" href="#debug-options-command-line-only" title="Permalink to this headline">#</a></h2>
+<h2>Debug Options (command line only)<a class="headerlink" href="#debug-options-command-line-only" title="Permalink to this heading">#</a></h2>
 <p>Options for debugging language server</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">--debug_filepath</span> <span class="pre">DEBUG_FILEPATH</span></code>         File path for language server tests</p></li>
@@ -667,6 +667,7 @@ files are external to the project, their locations can be specific via
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/scripts/furo.js"></script>
     <script src="_static/clipboard.min.js"></script>
