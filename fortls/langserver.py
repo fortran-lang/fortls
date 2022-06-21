@@ -147,6 +147,7 @@ class LangServer:
             "textDocument/codeAction": self.serve_codeActions,
             "initialized": noop,
             "workspace/didChangeWatchedFiles": noop,
+            "workspace/didChangeConfiguration": noop,
             "workspace/symbol": self.serve_workspace_symbol,
             "$/cancelRequest": noop,
             "$/setTrace": noop,

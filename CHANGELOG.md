@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 2.10.0
+
+### Fixed
+
+- Fixed `workspace/didChangeConfiguration` requests that caused errors in VS Code logs
+  ([#114](https://github.com/gnikit/fortls/issues/114))
+
 ## 2.9.0
 
 ### Fixed
