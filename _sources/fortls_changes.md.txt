@@ -106,6 +106,8 @@
 
 ## Fixed
 
+- Fixed `workspace/didChangeConfiguration` requests that caused errors in VS Code logs
+  ([#114](https://github.com/gnikit/fortls/issues/114))
 - Fixed glob pattern resolution for command line arguments
   ([#142](https://github.com/gnikit/fortls/issues/142))
 - Fixed bug where error messages did not post correctly
