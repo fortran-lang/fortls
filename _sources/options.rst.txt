@@ -18,7 +18,7 @@ Configuration using the command line
 
 .. argparse::
    :module: fortls
-   :func: commandline_args
+   :func: cli
    :prog: fortls
    :nodefault:
 
