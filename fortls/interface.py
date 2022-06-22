@@ -10,7 +10,7 @@ class SetAction(argparse.Action):
         setattr(namespace, self.dest, set(values))
 
 
-def commandline_args(name: str = "fortls") -> argparse.ArgumentParser:
+def cli(name: str = "fortls") -> argparse.ArgumentParser:
     """Parses the command line arguments to the Language Server
 
     Returns

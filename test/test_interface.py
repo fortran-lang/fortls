@@ -4,9 +4,9 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from fortls.interface import commandline_args  # noqa: E402
+from fortls.interface import cli  # noqa: E402
 
-parser = commandline_args("fortls")
+parser = cli("fortls")
 
 
 def test_command_line_general_options():
@@ -87,7 +87,7 @@ def unittest_server_init():
     from fortls.langserver import LangServer
 
     root = (Path(__file__).parent / "test_source").resolve()
-    parser = commandline_args("fortls")
+    parser = cli("fortls")
     args = parser.parse_args("-c f90_config.json".split())
 
     server = LangServer(None, vars(args))
@@ -170,7 +170,7 @@ def test_version_update_pypi():
     from fortls.jsonrpc import JSONRPC2Connection, ReadWriter
     from fortls.langserver import LangServer
 
-    parser = commandline_args("fortls")
+    parser = cli("fortls")
     args = parser.parse_args("-c f90_config.json".split())
     args = vars(args)
     args["disable_autoupdate"] = False

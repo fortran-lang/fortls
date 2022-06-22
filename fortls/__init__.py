@@ -7,7 +7,7 @@ import sys
 from multiprocessing import freeze_support
 
 from .helper_functions import only_dirs, resolve_globs
-from .interface import commandline_args
+from .interface import cli
 from .jsonrpc import JSONRPC2Connection, ReadWriter, path_from_uri
 from .langserver import LangServer
 from .parse_fortran import FortranFile
@@ -24,7 +24,7 @@ def error_exit(error_str: str):
 def main():
     #
     freeze_support()
-    args = commandline_args(__name__).parse_args()
+    args = cli(__name__).parse_args()
 
     if args.version:
         print(__version__)
