@@ -106,6 +106,8 @@
 
 ## Fixed
 
+- Fixed bug thorowing diagnostic errors if arguments were named `pure`, `elemental`, etc.
+  ([#157](https://github.com/gnikit/fortls/issues/157))
 - Fixed `workspace/didChangeConfiguration` requests that caused errors in VS Code logs
   ([#114](https://github.com/gnikit/fortls/issues/114))
 - Fixed glob pattern resolution for command line arguments
