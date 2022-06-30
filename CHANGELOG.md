@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 2.11.0
+
+### Fixed
+
+- Fixed bug thorowing diagnostic errors if arguments were named `pure`, `elemental`, etc.
+  ([#157](https://github.com/gnikit/fortls/issues/157))
+
 ## 2.10.0
 
 ### Fixed

@@ -15,7 +15,11 @@ class FortranRegularExpressions:
     INCLUDE: Pattern = compile(r"[ ]*INCLUDE[ :]*[\'\"]([^\'\"]*)", I)
     CONTAINS: Pattern = compile(r"[ ]*(CONTAINS)[ ]*$", I)
     IMPLICIT: Pattern = compile(r"[ ]*IMPLICIT[ ]+([a-z]*)", I)
-    SUB_MOD: Pattern = compile(r"[ ]*\b(PURE|IMPURE|ELEMENTAL|RECURSIVE)\b", I)
+    #: Parse procedure keywords but not if they start with , or ( or end with , or )
+    #: This is to avoid parsing as keywords variables named pure, impure, etc.
+    SUB_MOD: Pattern = compile(
+        r"[ ]*(?!<[,\()][ ]*)\b(PURE|IMPURE|ELEMENTAL|RECURSIVE)\b(?![,\)][ ]*)", I
+    )
     SUB: Pattern = compile(r"[ ]*SUBROUTINE[ ]+(\w+)", I)
     END_SUB: Pattern = compile(r"SUBROUTINE", I)
     FUN: Pattern = compile(r"[ ]*FUNCTION[ ]+(\w+)", I)

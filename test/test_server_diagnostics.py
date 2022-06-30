@@ -404,3 +404,15 @@ def test_submodule_scopes():
     errcode, results = run_request(string, ["-n", "1"])
     assert errcode == 0
     assert results[1]["diagnostics"] == []
+
+
+def test_keyword_arg_list_var_names():
+    """Test argument list variables named as keywords are correctly parsed."""
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "diag")})
+    file_path = str(test_dir / "diag" / "test_function_arg_list.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
+    errcode, results = run_request(string, ["-n", "1"])
+    assert errcode == 0
+    assert results[1]["diagnostics"] == []
