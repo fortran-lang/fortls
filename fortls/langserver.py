@@ -1764,6 +1764,7 @@ class LangServer:
                             "install",
                             "fortls",
                             "--upgrade",
+                            "--user",
                         ],
                         capture_output=True,
                     )
