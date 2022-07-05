@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 2.12.0
+
+### Fixed
+
+- Fixed issue where `pip` would install without `--user` and fail
+  ([#163](https://github.com/gnikit/fortls/issues/163))
+
 ## 2.11.0
 
 ### Fixed
