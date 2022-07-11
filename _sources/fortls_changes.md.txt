@@ -2,6 +2,8 @@
 
 ## Added
 
+- Added pre-commit.ci to `fortls`
+  ([#168](https://github.com/gnikit/fortls/issues/168))
 - Added support for comments in the `json` configuration files
   ([#137](https://github.com/gnikit/fortls/issues/137))
 - Added `sitemap.xml` to documentation webpage
