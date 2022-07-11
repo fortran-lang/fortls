@@ -444,8 +444,8 @@ def test_var_name_asterisk():
     validate_hover(results, ref_results)
 
 def test_intent():
-    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "parse")})
-    file_path = test_dir / "parse" / "intent.f90"
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    file_path = test_dir / "hover" / "intent.f90"
     string += hover_req(file_path, 2, 31)
     string += hover_req(file_path, 3, 29)
     string += hover_req(file_path, 4, 34)
