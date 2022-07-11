@@ -78,7 +78,7 @@ class FortranRegularExpressions:
     KEYWORD_LIST: Pattern = compile(
         r"[ ]*,[ ]*(PUBLIC|PRIVATE|ALLOCATABLE|"
         r"POINTER|TARGET|DIMENSION[ ]*\(|"
-        r"OPTIONAL|INTENT[ ]*\([ ]*(?:IN|OUT|INOUT)[ ]*\)|DEFERRED|NOPASS|"
+        r"OPTIONAL|INTENT[ ]*\([ ]*(?:IN|OUT|IN[ ]*OUT)[ ]*\)|DEFERRED|NOPASS|"
         r"PASS[ ]*\(\w*\)|SAVE|PARAMETER|EXTERNAL|"
         r"CONTIGUOUS)",
         I,
