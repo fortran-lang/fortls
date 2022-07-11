@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 2.13.0
+
+### Fixed
+
+- Fixed `intent(in out)` not being parsed correctly
+  ([#160](https://github.com/gnikit/fortls/issues/160))
+
 ## 2.12.0
 
 ### Fixed
