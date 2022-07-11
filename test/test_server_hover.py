@@ -443,6 +443,7 @@ def test_var_name_asterisk():
     ]
     validate_hover(results, ref_results)
 
+
 def test_intent():
     string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
     file_path = test_dir / "hover" / "intent.f90"
