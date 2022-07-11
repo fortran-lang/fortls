@@ -4,6 +4,11 @@
 
 ## 2.13.0
 
+### Added
+
+- Added pre-commit.ci to `fortls`
+  ([#168](https://github.com/gnikit/fortls/issues/168))
+
 ### Fixed
 
 - Fixed `intent(in out)` not being parsed correctly
