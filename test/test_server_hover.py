@@ -442,3 +442,23 @@ def test_var_name_asterisk():
         # "CHARACTER(KIND=4, LEN=100), DIMENSION(3,4)",
     ]
     validate_hover(results, ref_results)
+
+
+def test_intent():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    file_path = test_dir / "hover" / "intent.f90"
+    string += hover_req(file_path, 2, 31)
+    string += hover_req(file_path, 3, 29)
+    string += hover_req(file_path, 4, 34)
+    string += hover_req(file_path, 5, 35)
+    string += hover_req(file_path, 6, 35)
+    errcode, results = run_request(string, fortls_args=["-n", "1"])
+    assert errcode == 0
+    ref_results = [
+        """INTEGER(4), INTENT(IN)""",
+        """INTEGER, INTENT(OUT)""",
+        """INTEGER(4), INTENT(INOUT)""",
+        """INTEGER(4), INTENT(IN OUT)""",
+        """REAL, OPTIONAL, INTENT(IN)""",
+    ]
+    validate_hover(results, ref_results)
