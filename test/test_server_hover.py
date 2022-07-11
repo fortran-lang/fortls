@@ -446,10 +446,18 @@ def test_var_name_asterisk():
 def test_intent():
     string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "parse")})
     file_path = test_dir / "parse" / "intent.f90"
-    string += hover_req(file_path, 3, 31)
-    errcode, results = run_request(string, fortls_args=["--sort_keywords"])
+    string += hover_req(file_path, 2, 31)
+    string += hover_req(file_path, 3, 29)
+    string += hover_req(file_path, 4, 34)
+    string += hover_req(file_path, 5, 35)
+    string += hover_req(file_path, 6, 35)
+    errcode, results = run_request(string, fortls_args=["-n", "1"])
     assert errcode == 0
     ref_results = [
         """INTEGER(4), INTENT(IN)""",
+        """INTEGER, INTENT(OUT)""",
+        """INTEGER(4), INTENT(INOUT)""",
+        """INTEGER(4), INTENT(IN OUT)""",
+        """REAL, OPTIONAL, INTENT(IN)""",
     ]
     validate_hover(results, ref_results)
