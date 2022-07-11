@@ -442,3 +442,14 @@ def test_var_name_asterisk():
         # "CHARACTER(KIND=4, LEN=100), DIMENSION(3,4)",
     ]
     validate_hover(results, ref_results)
+
+def test_intent():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "parse")})
+    file_path = test_dir / "parse" / "intent.f90"
+    string += hover_req(file_path, 3, 45)
+    errcode, results = run_request(string, fortls_args=["--sort_keywords"])
+    assert errcode == 0
+    ref_results = [
+        """INTEGER(4), INTENT(IN)""",
+    ]
+    validate_hover(results, ref_results)
