@@ -172,6 +172,11 @@ If you want to support this project you can do it through
 When [filing bugs](https://github.com/gnikit/fortls/issues/new)
 please provide example code to reproduce the observed issue.
 
+## Security Policy
+
+To report a security vulnerability please follow the instructions in our
+[Security page](https://github.com/gnikit/fortls/security/policy).
+
 ## License
 
 This project is made available under the [MIT License](https://github.com/gnikit/fortls/blob/master/LICENSE).
