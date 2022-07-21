@@ -118,6 +118,8 @@ html_static_path = ["_static"]
 # .htaccess) here, relative to this directory. These files are copied
 # directly to the root of the documentation.
 html_extra_path = ["html_extra"]
+# Default is {version}{lang}{link}
+sitemap_url_scheme = "{link}"
 
 display_toc = True
 # autodoc_default_flags = ["members"]
