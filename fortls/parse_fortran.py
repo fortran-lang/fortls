@@ -872,9 +872,13 @@ class FortranFile:
             return "Could not read/decode file", None
         else:
             # Check if files are the same
-            hash = hashlib.md5(
-                contents.encode("utf-8"), usedforsecurity=False
-            ).hexdigest()
+            try:
+                hash = hashlib.md5(
+                    contents.encode("utf-8"), usedforsecurity=False
+                ).hexdigest()
+            except:
+                hash = hashlib.md5(contents.encode("utf-8")).hexdigest()
+
             if hash == self.hash:
                 return None, False
 
