@@ -2,6 +2,8 @@
 
 ## Added
 
+- Added coverage testing for multiple Python versions
+  ([#168](https://github.com/gnikit/fortls/pull/178))
 - Added pre-commit.ci to `fortls`
   ([#168](https://github.com/gnikit/fortls/issues/168))
 - Added support for comments in the `json` configuration files
