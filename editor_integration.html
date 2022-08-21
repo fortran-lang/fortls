@@ -340,8 +340,20 @@ nmap <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt
 </section>
 <section id="emacs">
 <h2><a class="reference external" href="https://www.gnu.org/software/emacs/">EMACS</a><a class="headerlink" href="#emacs" title="Permalink to this heading">#</a></h2>
+<section id="lsp-mode">
+<h3><a class="reference external" href="https://emacs-lsp.github.io/lsp-mode">LSP Mode</a><a class="headerlink" href="#lsp-mode" title="Permalink to this heading">#</a></h3>
 <p>Install the <a class="reference external" href="https://emacs-lsp.github.io/lsp-mode/page/installation">lsp-mode</a> plugin. This should then allow for the variables
 <a class="reference external" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-fortran/#lsp-clients-fortls-args">lsp-clients-fortls-args</a> and <a class="reference external" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-fortran/#lsp-clients-fortls-executable">lsp-clients-fortls-executable</a> to be defined in the <code class="docutils literal notranslate"><span class="pre">~/.emacs</span></code> configuration file.</p>
+</section>
+<section id="eglot">
+<h3><a class="reference external" href="https://github.com/joaotavora/eglot">Eglot</a><a class="headerlink" href="#eglot" title="Permalink to this heading">#</a></h3>
+<p>Install the <a class="reference external" href="https://github.com/joaotavora/eglot">eglot</a> package which supports fortls out of the box.
+This can be done in emacs version &gt; 26.1 via <code class="docutils literal notranslate"><span class="pre">M-x</span> <span class="pre">package-install</span> <span class="pre">RET</span> <span class="pre">eglot</span> <span class="pre">RET</span></code>.
+Arguments to <code class="docutils literal notranslate"><span class="pre">fortls</span></code> can be provided in the form</p>
+<div class="highlight-elisp notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nv">add-to-list</span><span class="w"> </span><span class="ss">&#39;eglot-server-programs</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">f90-mode</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;fortls&quot;</span><span class="w"> </span><span class="s">&quot;--notify_init&quot;</span><span class="w"> </span><span class="s">&quot;--nthreads=4&quot;</span><span class="p">)))</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="visual-studio-2017">
 <h2>Visual Studio 2017<a class="headerlink" href="#visual-studio-2017" title="Permalink to this heading">#</a></h2>
@@ -436,7 +448,11 @@ hook global WinSetOption <span class="nv">filetype</span><span class="o">=(</spa
 <li><a class="reference internal" href="#languageclient-neovim">LanguageClient-neovim</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#emacs">EMACS</a></li>
+<li><a class="reference internal" href="#emacs">EMACS</a><ul>
+<li><a class="reference internal" href="#lsp-mode">LSP Mode</a></li>
+<li><a class="reference internal" href="#eglot">Eglot</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#visual-studio-2017">Visual Studio 2017</a></li>
 <li><a class="reference internal" href="#kakoune">Kakoune</a></li>
 </ul>
