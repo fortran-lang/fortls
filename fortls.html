@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Documentation" href="modules.html" />
         <link rel="canonical" href="https://gnikit.github.io/fortls/fortls.html" />
 
@@ -12,7 +12,7 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -564,10 +564,10 @@ and ^= (xor_eq) operator is invalid in Fortran C++ preproc</p>
 <span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></em><a class="headerlink" href="#fortls.ftypes.VisInfo.type" title="Permalink to this definition">#</a></dt>
 <dd><p>PRIVATE TODO: convert to boolean</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Visibility type 0</p>
 </dd>
-<dt class="field-even">Type</dt>
+<dt class="field-even">Type<span class="colon">:</span></dt>
 <dd class="field-even"><p>PUBLIC 1</p>
 </dd>
 </dl>
@@ -585,13 +585,13 @@ and ^= (xor_eq) operator is invalid in Fortran C++ preproc</p>
 and variable declarations before column 6. Treat intersection format
 files as free format.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>file_lines</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – List of consecutive file lines</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if file_lines are of Fixed Fortran style</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)">bool</a></p>
 </dd>
 </dl>
@@ -618,16 +618,16 @@ False</p>
 <span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">expand_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">char_pos</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.expand_name" title="Permalink to this definition">#</a></dt>
 <dd><p>Get full word containing given cursor position</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Text line</p></li>
 <li><p><strong>char_pos</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Column position along the line</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Word regex match for the input column</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a></p>
 </dd>
 </dl>
@@ -639,13 +639,13 @@ False</p>
 <dd><p>Find matching closing parenthesis <strong>from an already open parenthesis scope</strong>
 by forward search of the string, returns -1 if no match is found</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>string</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Input string</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The index of the matching <code class="docutils literal notranslate"><span class="pre">)</span></code> character in the string</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)">int</a></p>
 </dd>
 </dl>
@@ -671,17 +671,17 @@ by forward search of the string, returns -1 if no match is found</p>
 <span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">find_word_in_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">word</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.find_word_in_line" title="Permalink to this definition">#</a></dt>
 <dd><p>Find Fortran word in line</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Text line</p></li>
 <li><p><strong>word</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – word to find in line</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>start and end positions (indices) of the word if not found it returns
 -1, len(word) -1</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#fortls.ftypes.Range" title="fortls.ftypes.Range">Range</a></p>
 </dd>
 </dl>
@@ -697,7 +697,7 @@ by forward search of the string, returns -1 if no match is found</p>
 <span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">get_line_prefix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pre_lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curr_line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.get_line_prefix" title="Permalink to this definition">#</a></dt>
 <dd><p>Get code line prefix from current line and preceding continuation lines</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pre_lines</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a>) – for multiline cases get all the previous, relevant lines</p></li>
 <li><p><strong>curr_line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – the current line</p></li>
@@ -706,10 +706,10 @@ by forward search of the string, returns -1 if no match is found</p>
 Need this disable when hovering over string literals, by default True</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>part of the line including any relevant line continuations before <code class="docutils literal notranslate"><span class="pre">col</span></code></p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a></p>
 </dd>
 </dl>
@@ -726,13 +726,13 @@ Need this disable when hovering over string literals, by default True</p></li>
 <dd><p>Get sub-string corresponding to a single parenthesis level,
 via backward search up through the line.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Document line</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Arguments as a string and a list of Ranges for the arguments against <code class="docutils literal notranslate"><span class="pre">line</span></code></p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)">list</a>[<a class="reference internal" href="#fortls.ftypes.Range" title="fortls.ftypes.Range">Range</a>]]</p>
 </dd>
 </dl>
@@ -758,13 +758,13 @@ to mark the <code class="docutils literal notranslate"><span class="pre">start</
 <span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">get_paren_substring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.get_paren_substring" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the contents enclosed by the first pair of parenthesis</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>string</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – A string</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The part of the string enclosed in parenthesis e.g.  or None</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a> | None</p>
 </dd>
 </dl>
@@ -783,13 +783,13 @@ True</p>
 <span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">get_var_stack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.get_var_stack" title="Permalink to this definition">#</a></dt>
 <dd><p>Get user-defined type field sequence terminating the given line</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Document line</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>list of objects split by <code class="docutils literal notranslate"><span class="pre">%</span></code></p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)">list</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
 </dd>
 </dl>
@@ -823,16 +823,16 @@ True</p>
 <span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">only_dirs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paths</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.only_dirs" title="Permalink to this definition">#</a></dt>
 <dd><p>From a list of strings returns only paths that are directories</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>paths</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – A list containing the files and directories</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A list containing only valid directories</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)">list</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.10/library/exceptions.html#FileNotFoundError" title="(in Python v3.10)"><strong>FileNotFoundError</strong></a> – A list containing all the non existing directories</p>
 </dd>
 </dl>
@@ -868,7 +868,7 @@ True</p>
 <dd><p>Resolve paths (absolute and relative) and glob patterns while
 nonexistent paths are ignored</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>glob_path</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Path containing the glob pattern follows
 <code class="docutils literal notranslate"><span class="pre">fnmatch</span></code> glob pattern, can include relative paths, etc.
@@ -877,11 +877,11 @@ see fnmatch: <a class="reference external" href="https://docs.python.org/3/libra
 extracted from the glob_path, by default None</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Expanded glob patterns with absolute paths.
 Absolute paths are used to resolve any potential ambiguity</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)">list</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
 </dd>
 </dl>
@@ -900,13 +900,13 @@ True</p>
 <span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">separate_def_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.separate_def_list" title="Permalink to this definition">#</a></dt>
 <dd><p>Separate definition lists, skipping parenthesis and bracket groups</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>test_str</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Text string</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>[description]</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)">list</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>] | None</p>
 </dd>
 </dl>
@@ -931,13 +931,13 @@ True</p>
 <span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">strip_line_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.strip_line_label" title="Permalink to this definition">#</a></dt>
 <dd><p>Strip leading numeric line label</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Text line</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Output string, Line label returns None if no line label present</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a> | None]</p>
 </dd>
 </dl>
@@ -948,16 +948,16 @@ True</p>
 <span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">strip_strings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maintain_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.strip_strings" title="Permalink to this definition">#</a></dt>
 <dd><p>Strips string literals from code line</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>in_line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Text string</p></li>
 <li><p><strong>maintain_len</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – Maintain the len(in_line) in the output string, by default False</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Stripped string</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a></p>
 </dd>
 </dl>
@@ -977,10 +977,10 @@ True</p>
 <span class="sig-prename descclassname"><span class="pre">fortls.interface.</span></span><span class="sig-name descname"><span class="pre">cli</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fortls'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.interface.cli" title="Permalink to this definition">#</a></dt>
 <dd><p>Parses the command line arguments to the Language Server</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>command line arguments</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.10/library/argparse.html#argparse.ArgumentParser" title="(in Python v3.10)">argparse.ArgumentParser</a></p>
 </dd>
 </dl>
@@ -1175,7 +1175,7 @@ otherwise you will leak a thread.</p>
 <dt class="sig sig-object py" id="fortls.jsonrpc.path_from_uri">
 <span class="sig-prename descclassname"><span class="pre">fortls.jsonrpc.</span></span><span class="sig-name descname"><span class="pre">path_from_uri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.jsonrpc.path_from_uri" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
 </dd>
 </dl>
@@ -1185,7 +1185,7 @@ otherwise you will leak a thread.</p>
 <dt class="sig sig-object py" id="fortls.jsonrpc.path_to_uri">
 <span class="sig-prename descclassname"><span class="pre">fortls.jsonrpc.</span></span><span class="sig-name descname"><span class="pre">path_to_uri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.jsonrpc.path_to_uri" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
 </dd>
 </dl>
@@ -1224,7 +1224,7 @@ otherwise you will leak a thread.</p>
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">file_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pp_defs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pp_suffixes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_dirs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.langserver.LangServer.file_init" title="Permalink to this definition">#</a></dt>
 <dd><p>Initialise a Fortran file</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filepath</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Path to file</p></li>
 <li><p><strong>pp_defs</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#dict" title="(in Python v3.10)"><em>dict</em></a>) – Preprocessor definitions</p></li>
@@ -1233,10 +1233,10 @@ otherwise you will leak a thread.</p>
 <li><p><strong>sort</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a>) – Whether or not keywords should be sorted</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A Fortran file object or a string containing the error message</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>fortran_file | <a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a></p>
 </dd>
 </dl>
@@ -1253,7 +1253,7 @@ otherwise you will leak a thread.</p>
 <dd><p>Return the Fortran object for the definition that matches the
 Fortran file, line number, column number</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>def_file</strong> (<em>fortran_file</em>) – File to query</p></li>
 <li><p><strong>def_line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Line position in the file</p></li>
@@ -1261,10 +1261,10 @@ Fortran file, line number, column number</p>
 <li><p><strong>hover_req</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – Flag to enable if calling from a hover request, by default False</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Fortran object</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>fortran_var | fortran_include | None</p>
 </dd>
 </dl>
@@ -1310,10 +1310,10 @@ Fortran file, line number, column number</p>
 <span class="sig-name descname"><span class="pre">serve_default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.langserver.LangServer.serve_default" title="Permalink to this definition">#</a></dt>
 <dd><p>Raise an error in the Language Server</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>request</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#dict" title="(in Python v3.10)"><em>dict</em></a>) – client dictionary with requests</p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#fortls.langserver.JSONRPC2Error" title="fortls.langserver.JSONRPC2Error"><strong>JSONRPC2Error</strong></a> – error with code -32601</p>
 </dd>
 </dl>
@@ -1333,7 +1333,7 @@ Fortran file, line number, column number</p>
 <dt class="sig sig-object py" id="fortls.langserver.LangServer.serve_exit">
 <span class="sig-name descname"><span class="pre">serve_exit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.langserver.LangServer.serve_exit" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
@@ -1421,7 +1421,7 @@ Fortran file, line number, column number</p>
 that contains the information of the mapping from the parent scope to the
 ASSOCIATE block scope.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>file_ast</strong> (<em>fortran_ast</em>) – AST file</p></li>
 <li><p><strong>line_number</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Line number</p></li>
@@ -1429,10 +1429,10 @@ ASSOCIATE block scope.</p>
 <li><p><strong>link_name</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Name of the parent scope variable</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Variable object holding the ASSOCIATE block variable, pending resolution</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>fortran_var</p>
 </dd>
 </dl>
@@ -1570,7 +1570,7 @@ ASSOCIATE block scope.</p>
 <dd><p>Add a Diagnostic error, encountered during parsing, for a range
 in the document.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Error message</p></li>
 <li><p><strong>sev</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Severity, Error, Warning, Notification</p></li>
@@ -1876,17 +1876,17 @@ TYPE, [RESULT_MODIFIERS] :: RESULT_VAR</p>
 <p>short form, used when functions are arguments in functions and subroutines:</p>
 <p>FUNCTION NAME([ARGS]) :: ARG_LIST_NAME</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>long</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – toggle between long and short hover results, by default False</p></li>
 <li><p><strong>include_doc</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – if to include any documentation, by default True</p></li>
 <li><p><strong>drop_arg</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – Ignore argument at position <cite>drop_arg</cite> in the argument list, by default -1</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>String representative of the hover message and the <cite>long</cite> flag used</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)">bool</a>]</p>
 </dd>
 </dl>
@@ -2497,7 +2497,7 @@ TYPE, [RESULT_MODIFIERS] :: RESULT_VAR</p>
 <span class="sig-name descname"><span class="pre">apply_change</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">change</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.FortranFile.apply_change" title="Permalink to this definition">#</a></dt>
 <dd><p>Apply a change to the file.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
 </dd>
 </dl>
@@ -2513,7 +2513,7 @@ TYPE, [RESULT_MODIFIERS] :: RESULT_VAR</p>
 <span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.FortranFile.copy" title="Permalink to this definition">#</a></dt>
 <dd><p>Copy content to new file object (does not copy objects)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#fortls.parse_fortran.FortranFile" title="fortls.parse_fortran.FortranFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">FortranFile</span></code></a></p>
 </dd>
 </dl>
@@ -2540,7 +2540,7 @@ TYPE, [RESULT_MODIFIERS] :: RESULT_VAR</p>
 <span class="sig-name descname"><span class="pre">get_docstring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ln</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">docs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.FortranFile.get_docstring" title="Permalink to this definition">#</a></dt>
 <dd><p>Extract entire documentation strings from the current file position</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ln</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Line number</p></li>
 <li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Document line, not necessarily produced by <cite>get_line()</cite></p></li>
@@ -2548,12 +2548,12 @@ TYPE, [RESULT_MODIFIERS] :: RESULT_VAR</p>
 <li><p><strong>docs</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – Docstrings that are pending processing e.g. single line docstrings</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The new line number at the end of the docstring, the docstring and
 a boolean flag indicating whether the docstring precedes the AST node
 (Doxygen style) or succeeds it (traditional FORD style)</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)">int</a>, <a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)">list</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>], <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)">bool</a>]</p>
 </dd>
 </dl>
@@ -2569,7 +2569,7 @@ a boolean flag indicating whether the docstring precedes the AST node
 <span class="sig-name descname"><span class="pre">get_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line_no</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pp_content</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.FortranFile.get_line" title="Permalink to this definition">#</a></dt>
 <dd><p>Get single line from file</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
 </dd>
 </dl>
@@ -2581,14 +2581,14 @@ a boolean flag indicating whether the docstring precedes the AST node
 <dd><p>Get a docstring of a single line. This is the same for both Legacy
 and Modern Fortran</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Line of code</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A list containing the docstring. List will be empty if there is no
 match or the match is an empty string itself</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)">list</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
 </dd>
 </dl>
@@ -2600,11 +2600,11 @@ match or the match is an empty string itself</p>
 <dd><p>Read file from disk or update file contents only if they have changed
 A MD5 hash is used to determine that</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">str</span></code> : string containing IO error message else None
 <code class="docutils literal notranslate"><span class="pre">bool</span></code>: boolean indicating if the file has changed</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>|None, <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)">bool</a>|None]</p>
 </dd>
 </dl>
@@ -2616,17 +2616,17 @@ A MD5 hash is used to determine that</p>
 <dd><p>Parse Fortran file contents of a fortran_file object and build an
 Abstract Syntax Tree (AST)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>debug</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – Set to true to enable debugging, by default False</p></li>
 <li><p><strong>pp_defs</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#dict" title="(in Python v3.10)"><em>dict</em></a><em>, </em><em>optional</em>) – Preprocessor definitions and their values, by default None</p></li>
 <li><p><strong>include_dirs</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#set" title="(in Python v3.10)"><em>set</em></a><em>, </em><em>optional</em>) – Preprocessor include directories, by default None</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An Abstract Syntax Tree</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>fortran_ast</p>
 </dd>
 </dl>
@@ -2637,17 +2637,17 @@ Abstract Syntax Tree (AST)</p>
 <span class="sig-name descname"><span class="pre">parse_contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ln</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_ast</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.FortranFile.parse_contains" title="Permalink to this definition">#</a></dt>
 <dd><p>Parse contain statements</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Document line</p></li>
 <li><p><strong>ln</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Line number</p></li>
 <li><p><strong>file_ast</strong> (<em>fortran_ast</em>) – AST object</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if a contains is present, False otherwise</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)">bool</a></p>
 </dd>
 </dl>
@@ -2665,7 +2665,7 @@ Abstract Syntax Tree (AST)</p>
 Multiline docstrings are detected if the first comment starts with <cite>!&gt;</cite>
 docstring continuations are detected with either <cite>!&gt;</cite>, <cite>!&lt;</cite> or <cite>!!</cite></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Document line</p></li>
 <li><p><strong>ln</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Line number</p></li>
@@ -2681,7 +2681,7 @@ docstring continuations are detected with either <cite>!&gt;</cite>, <cite>!&lt;
 <span class="sig-name descname"><span class="pre">parse_end_scope_word</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ln</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_ast</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.FortranFile.parse_end_scope_word" title="Permalink to this definition">#</a></dt>
 <dd><p>Parses END keyword marking the end of scopes</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Document line</p></li>
 <li><p><strong>ln</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Line number</p></li>
@@ -2689,10 +2689,10 @@ docstring continuations are detected with either <cite>!&gt;</cite>, <cite>!&lt;
 <li><p><strong>match</strong> (<em>re.Match</em>) – END word regular expression match</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if a AST scope is closed, False otherwise</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)">bool</a></p>
 </dd>
 </dl>
@@ -2704,13 +2704,13 @@ docstring continuations are detected with either <cite>!&gt;</cite>, <cite>!&lt;
 <dd><p>Parse the implicit character length from a variable e.g.
 var_name*10 or var_name*(10), var_name*(size(val, 1))</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – line containing potential variable</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>truncated line, character length</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
 </dd>
 </dl>
@@ -2722,13 +2722,13 @@ var_name*10 or var_name*(10), var_name*(size(val, 1))</p>
 <dd><p>Parse the implicit dimension of an array e.g.
 var(3,4), var_name(size(val,1)*10)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – line containing variable name</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>truncated line, dimension string</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
 </dd>
 </dl>
@@ -2739,17 +2739,17 @@ var(3,4), var_name(size(val,1)*10)</p>
 <span class="sig-name descname"><span class="pre">parse_implicit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ln</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_ast</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.FortranFile.parse_implicit" title="Permalink to this definition">#</a></dt>
 <dd><p>Parse implicit statements from a line</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Document line</p></li>
 <li><p><strong>ln</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Line number</p></li>
 <li><p><strong>file_ast</strong> (<em>fortran_ast</em>) – AST object</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if an IMPLICIT statements present, False otherwise</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)">bool</a></p>
 </dd>
 </dl>
@@ -2771,7 +2771,7 @@ var(3,4), var_name(size(val,1)*10)</p>
 <span class="sig-name descname"><span class="pre">strip_comment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.FortranFile.strip_comment" title="Permalink to this definition">#</a></dt>
 <dd><p>Strip comment from line</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
 </dd>
 </dl>
@@ -2797,7 +2797,7 @@ lines e.g.</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>file_ast</strong> (<em>fortran_ast</em>) – AST</p></li>
 <li><p><strong>desc_string</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Variable type e.g. <code class="docutils literal notranslate"><span class="pre">REAL</span></code>, <code class="docutils literal notranslate"><span class="pre">INTEGER</span></code>, <code class="docutils literal notranslate"><span class="pre">EXTERNAL</span></code></p></li>
@@ -2806,11 +2806,11 @@ lines e.g.</p>
 definition</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if the variable is <code class="docutils literal notranslate"><span class="pre">EXTERNAL</span></code> and we manage to link it to the
 rest of its components, else False</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)">bool</a></p>
 </dd>
 </dl>
@@ -2822,18 +2822,18 @@ rest of its components, else False</p>
 <dd><p>Check if this NORMAL Fortran variable is in the external_objs with only
 <code class="docutils literal notranslate"><span class="pre">EXTERNAL</span></code> as its type. Used to detect seperated <code class="docutils literal notranslate"><span class="pre">EXTERNAL</span></code> declarations.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>file_ast</strong> (<em>fortran_ast</em>) – AST file</p></li>
 <li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Variable name, stripped</p></li>
 <li><p><strong>new_var</strong> (<em>fortran_var</em>) – Fortran variable to check against</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if only a single <code class="docutils literal notranslate"><span class="pre">EXTERNAL</span></code> definition is encountered False
 for everything else, which will cause a diagnostic error to be raised</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)">bool</a></p>
 </dd>
 </dl>
@@ -2846,7 +2846,7 @@ for everything else, which will cause a diagnostic error to be raised</p>
 Try and find an already defined variable with a
 NORMAL Fortran Type</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
 </dd>
 </dl>
@@ -2857,15 +2857,15 @@ NORMAL Fortran Type</p>
 <span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">get_line_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.get_line_context" title="Permalink to this definition">#</a></dt>
 <dd><p>Get context of ending position in line (for completion)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – file line</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Possible string values:
 <cite>var_key</cite>, <cite>pro_line</cite>, <cite>var_only</cite>, <cite>mod_mems</cite>, <cite>mod_only</cite>, <cite>pro_link</cite>,
 <cite>skip</cite>, <cite>import</cite>, <cite>vis</cite>, <cite>call</cite>, <cite>type_only</cite>, <cite>int_only</cite>, <cite>first</cite>, <cite>default</cite></p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, None]</p>
 </dd>
 </dl>
@@ -2876,16 +2876,16 @@ NORMAL Fortran Type</p>
 <span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">get_procedure_modifiers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.get_procedure_modifiers" title="Permalink to this definition">#</a></dt>
 <dd><p>Attempt to match procedure modifiers for FUNCTIONS and SUBROUTINES</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – document line</p></li>
 <li><p><strong>regex</strong> (<em>Pattern</em>) – regular expression to use e.g. Function or Subroutine sig</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>procedure name, arguments, trailing line</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>] | <a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[None, None, None]</p>
 </dd>
 </dl>
@@ -2918,10 +2918,10 @@ NORMAL Fortran Type</p>
 <span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">read_do_def</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.read_do_def" title="Permalink to this definition">#</a></dt>
 <dd><p>Attempt to read a DO loop</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tuple with “do” and a fixed format tag if present</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[Literal[“do”], str] | None</p>
 </dd>
 </dl>
@@ -2940,17 +2940,17 @@ NORMAL Fortran Type</p>
 <p>To infer the <cite>result</cite> <cite>type</cite> and <cite>name</cite> the variable definition is called
 with the function only flag</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – file line</p></li>
 <li><p><strong>result</strong> (<em>RESULT_sig</em><em>, </em><em>optional</em>) – a dataclass containing the result signature of the function</p></li>
 <li><p><strong>mod_flag</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – flag for module and module procedure parsing, by default False</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>a named tuple</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[Literal[“fun”], FUN_sig] | None</p>
 </dd>
 </dl>
@@ -2967,10 +2967,10 @@ with the function only flag</p>
 <span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">read_if_def</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.read_if_def" title="Permalink to this definition">#</a></dt>
 <dd><p>Attempt to read an IF conditional</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A Literal “if” and None tuple</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[Literal[“if”], None] | None</p>
 </dd>
 </dl>
@@ -3017,16 +3017,16 @@ with the function only flag</p>
 <span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">read_sub_def</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mod_flag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.read_sub_def" title="Permalink to this definition">#</a></dt>
 <dd><p>Attempt to read a SUBROUTINE definition line</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – document line</p></li>
 <li><p><strong>mod_flag</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – flag for module and module procedure parsing, by default False</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>a SUB_info dataclass object</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[Literal[“sub”], SUB_info] | None</p>
 </dd>
 </dl>
@@ -3067,10 +3067,10 @@ with the function only flag</p>
 <span class="sig-prename descclassname"><span class="pre">fortls.parse_fortran.</span></span><span class="sig-name descname"><span class="pre">read_where_def</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.parse_fortran.read_where_def" title="Permalink to this definition">#</a></dt>
 <dd><p>Attempt to read a WHERE block</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tuple with “where” and a boolean indicating if labelled on unlabelled</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[Literal[“where”], bool] | None</p>
 </dd>
 </dl>
@@ -3509,14 +3509,14 @@ This is to avoid parsing as keywords variables named pure, impure, etc.</p>
 Default extensions are
 F F03 F05 F08 F18 F77 F90 F95 FOR FPP f f03 f05 f08 f18 f77 f90 f95 for fpp</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>input_exts</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em><em>, </em><em>optional</em>) – Additional Fortran, by default []</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A compiled regular expression, by default
 ‘.(F|F03|F05|F08|F18|F77|F90|F95|FOR|FPP|f|f03|f05|f08|f18|f77|f90|f95|for|fpp)?’</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Pattern[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
 </dd>
 </dl>
