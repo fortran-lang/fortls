@@ -2,17 +2,14 @@
 
 ## Unreleased
 
-## 2.14.0
-
-### Added
-
-- Added coverage testing for multiple Python versions
-  ([#168](https://github.com/gnikit/fortls/pull/178))
-
 ## 2.13.0
 
 ### Added
 
+- Added additional default configuration file names `.fortlsrc`, `.fortls.json`
+  ([#184](https://github.com/gnikit/fortls/issues/184))
+- Added coverage testing for multiple Python versions
+  ([#168](https://github.com/gnikit/fortls/pull/178))
 - Added pre-commit.ci to `fortls`
   ([#168](https://github.com/gnikit/fortls/issues/168))
 
