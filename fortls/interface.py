@@ -26,7 +26,8 @@ def cli(name: str = "fortls") -> argparse.ArgumentParser:
         formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=60),
         epilog=(
             "All options starting with '--' can also be set in a configuration file, by"
-            " default named '.fortls' (other names/paths can specified via -c or"
+            " default named '.fortlsrc', '.fortls.json' or '.fortls'"
+            " (other names/paths can specified via -c or"
             " --config). For more details see our documentation:"
             " https://gnikit.github.io/fortls/options.html#available-options"
         ),
@@ -43,8 +44,11 @@ def cli(name: str = "fortls") -> argparse.ArgumentParser:
         "-c",
         "--config",
         type=str,
-        default=".fortls",
-        help="Configuration options file (default file name: %(default)s)",
+        default=".fortlsrc",
+        help=(
+            "Configuration options file (default file name: %(default)s, other"
+            " default supported names: .fortls.json, .fortls)"
+        ),
     )
     parser.add_argument(
         "-n",

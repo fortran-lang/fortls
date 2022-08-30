@@ -1492,15 +1492,20 @@ class LangServer:
     def _load_config_file(self) -> None:
         """Loads the configuration file for the Language Server"""
 
-        # Check for config file
-        config_path = os.path.join(self.root_path, self.config)
-        # NOTE: it would be better if we could distinguish between a user-defined
-        # and a default config file. If not user-defined then we can check for
-        # default names, currently only .fortls. If None are found return None
-        # if user-defined config we would want to throw an error if the file
-        # cannot be found
-        if not os.path.isfile(config_path):
+        # Check for config files
+        default_conf_files = [self.config, ".fortlsrc", ".fortls.json", ".fortls"]
+        present_conf_files = [
+            os.path.isfile(os.path.join(self.root_path, f)) for f in default_conf_files
+        ]
+        if not any(present_conf_files):
             return None
+
+        # Load the first config file found
+        for f, present in zip(default_conf_files, present_conf_files):
+            if not present:
+                continue
+            config_path = os.path.join(self.root_path, f)
+            break
 
         try:
             with open(config_path, "r") as jsonfile:
