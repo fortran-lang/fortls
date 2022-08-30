@@ -39,7 +39,7 @@ If applicable, add screenshots or GIF/MP4 animations to help explain your proble
  - the Fortran extension for the code editor and its version [e.g. Modern Fortran v3.0.0] (if applicable)
 
 **Configuration information (please complete the following information):**
-- Your `.fortls` configuration file OR any other JSON config being used (if any)
+- Your `.fortlsrc` or `.fortls.json` or `.fortls` configuration file OR any other JSON config being used (if any)
 - Any settings specified through your extension [e.g. for VS Code settings from `settings.json`]
 
 **Additional context**

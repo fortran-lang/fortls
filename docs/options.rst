@@ -25,10 +25,12 @@ Configuration using the command line
 Configuration using a file
 --------------------------
 
-A configuration file is a JSON style file that contains project specific
-settings for ``fortls``. By default the name of the filepath is assumed to be
-``root_path/.fortls`` but different files can be used through the command line
-interface e.g. ``fortls --config my_project.json``.
+A configuration file is a JSONC (JSON with comments) file that contains project specific
+settings for ``fortls``. By default, the Language Server will recognise 3 default
+names ``.fortlsrc``, ``.fortls.json`` and ``.fortls`` (in that order)
+under the ``root_path`` of the project, e.g. ``root_path/.fortlsrc``.
+A different configuration file name can be passed with the command line
+interface options ``--config`` e.g. ``fortls --config my_project.json``.
 
 The settings that can be specified in the configuration file are identical to
 the ones available through the command line interface having removed the leading
