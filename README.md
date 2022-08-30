@@ -2,16 +2,19 @@
 
 # fortls - Fortran Language Server
 
-![PyPI](https://img.shields.io/pypi/v/fortls)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fortls)
-[![Tests](https://github.com/gnikit/fortls/actions/workflows/main.yml/badge.svg)](https://github.com/gnikit/fortls/actions/workflows/main.yml)
-[![Documentation](https://github.com/gnikit/fortls/actions/workflows/docs.yml/badge.svg)](https://github.com/gnikit/fortls/actions/workflows/docs.yml)
-[![codecov](https://codecov.io/gh/gnikit/fortls/branch/master/graph/badge.svg?token=ZEXUX0R65M)](https://codecov.io/gh/gnikit/fortls)
-[![GitHub license](https://img.shields.io/github/license/gnikit/fortls)](https://github.com/gnikit/fortls/blob/master/LICENSE)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+![PyPI](https://img.shields.io/pypi/v/fortls?style=flat-square)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fortls?style=flat-square)
+[![PyPi Downloads via PePy](https://img.shields.io/badge/dynamic/json?style=flat-square&color&maxAge=86400&label=PyPi%20Downloads&query=%24.total_downloads&url=https%3A%2F%2Fapi.pepy.tech%2Fapi%2Fprojects%2Ffortls)](https://pepy.tech/project/fortls)
+![Conda](https://img.shields.io/conda/dn/conda-forge/fortls?label=Anaconda&style=flat-square)
+![GitHub License](https://img.shields.io/github/license/gnikit/fortls?style=flat-square)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/gnikit/fortls/Tests/master?label=CI&style=flat-square)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/gnikit/fortls/Docs/master?label=Docs&style=flat-square)
+![Codecov](https://img.shields.io/codecov/c/github/gnikit/fortls?style=flat-square)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
+![GitHub Repo stars](https://img.shields.io/github/stars/gnikit/fortls?color=yellow&style=flat-square)
 
-[![GitHub Sponsor](https://img.shields.io/static/v1?style=social&label=Sponsor&message=%E2%9D%A4&logo=GitHub&color&link=%3Curl%3E)](https://github.com/sponsors/gnikit)
-[![PayPal](https://img.shields.io/static/v1?style=social&label=Donate&message=%E2%9D%A4&logo=Paypal&color&link=%3Curl%3E)](https://paypal.me/inikit)
+[<img alt="https://github.com/sponsors/gnikit" src="https://img.shields.io/static/v1?style=social&label=Sponsor&message=%E2%9D%A4&logo=GitHub&color&link=%3Curl%3E" height="30" />](https://github.com/sponsors/gnikit)
+[<img alt="https://paypal.me/inikit" src="https://img.shields.io/static/v1?style=social&label=Donate&message=%E2%9D%A4&logo=Paypal&color&link=%3Curl%3E" height="30" />](https://paypal.me/inikit)
 
 ![alt](https://raw.githubusercontent.com/gnikit/fortls/master/assets/animations/intro-demo.gif)
 
