@@ -244,7 +244,7 @@ are identical and interchangeable.</p>
 <dd><p>Print server version number and exit</p>
 </dd>
 <dt><kbd>-c, --config</kbd></dt>
-<dd><p>Configuration options file (default file name: “.fortls”)</p>
+<dd><p>Configuration options file (default file name: “.fortlsrc”, other default supported names: .fortls.json, .fortls)</p>
 </dd>
 <dt><kbd>-n, --nthreads</kbd></dt>
 <dd><p>Number of threads to use during workspace initialization (default: 4)</p>
@@ -364,15 +364,17 @@ are identical and interchangeable.</p>
 </dd>
 </dl>
 </section>
-<p><p>All options starting with ‘–’ can also be set in a configuration file, by default named ‘.fortls’ (other names/paths can specified via -c or –config). For more details see our documentation: <a class="reference external" href="https://gnikit.github.io/fortls/options.html#available-options">https://gnikit.github.io/fortls/options.html#available-options</a></p>
+<p><p>All options starting with ‘–’ can also be set in a configuration file, by default named ‘.fortlsrc’, ‘.fortls.json’ or ‘.fortls’ (other names/paths can specified via -c or –config). For more details see our documentation: <a class="reference external" href="https://gnikit.github.io/fortls/options.html#available-options">https://gnikit.github.io/fortls/options.html#available-options</a></p>
 </p>
 </section>
 <section id="configuration-using-a-file">
 <h2>Configuration using a file<a class="headerlink" href="#configuration-using-a-file" title="Permalink to this heading">#</a></h2>
-<p>A configuration file is a JSON style file that contains project specific
-settings for <code class="docutils literal notranslate"><span class="pre">fortls</span></code>. By default the name of the filepath is assumed to be
-<code class="docutils literal notranslate"><span class="pre">root_path/.fortls</span></code> but different files can be used through the command line
-interface e.g. <code class="docutils literal notranslate"><span class="pre">fortls</span> <span class="pre">--config</span> <span class="pre">my_project.json</span></code>.</p>
+<p>A configuration file is a JSONC (JSON with comments) file that contains project specific
+settings for <code class="docutils literal notranslate"><span class="pre">fortls</span></code>. By default, the Language Server will recognise 3 default
+names <code class="docutils literal notranslate"><span class="pre">.fortlsrc</span></code>, <code class="docutils literal notranslate"><span class="pre">.fortls.json</span></code> and <code class="docutils literal notranslate"><span class="pre">.fortls</span></code> (in that order)
+under the <code class="docutils literal notranslate"><span class="pre">root_path</span></code> of the project, e.g. <code class="docutils literal notranslate"><span class="pre">root_path/.fortlsrc</span></code>.
+A different configuration file name can be passed with the command line
+interface options <code class="docutils literal notranslate"><span class="pre">--config</span></code> e.g. <code class="docutils literal notranslate"><span class="pre">fortls</span> <span class="pre">--config</span> <span class="pre">my_project.json</span></code>.</p>
 <p>The settings that can be specified in the configuration file are identical to
 the ones available through the command line interface having removed the leading
 <code class="docutils literal notranslate"><span class="pre">--</span></code> characters. For the command line interface see <a class="reference internal" href="#cmd-interface"><span class="std std-ref">Configuration using the command line</span></a>.</p>
