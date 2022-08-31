@@ -1,0 +1,15 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: fortls - Fortran Language Server
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - family-names: Nikiteas
+    name-suffix: Ioannis
+    email: gnikit@duck.com
+    affiliation: Imperial College London
+    orcid: 'https://orcid.org/0000-0001-9811-9250'
