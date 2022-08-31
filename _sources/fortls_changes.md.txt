@@ -2,6 +2,7 @@
 
 ## Added
 
+- Added `CITATION.cff` file to project roots
 - Added additional default configuration file names `.fortlsrc`, `.fortls.json`
   ([#184](https://github.com/gnikit/fortls/issues/184))
 - Added coverage testing for multiple Python versions
