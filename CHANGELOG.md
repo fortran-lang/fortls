@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 2.14.0
+
+### Added
+
+- Added `CITATION.cff` file to project roots
+
 ## 2.13.0
 
 ### Added
