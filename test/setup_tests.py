@@ -26,7 +26,8 @@ def check_post_msg(result: dict, msg: str, severity: int):
 def run_request(request, fortls_args: list[str] = None):
     command = [
         sys.executable,
-        str(root_dir / "fortls.py"),
+        "-m",
+        "fortls",
         "--incremental_sync",
     ]
     if fortls_args:
