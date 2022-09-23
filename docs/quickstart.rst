@@ -41,6 +41,15 @@ The project is available for download through the **PyPi** and **Anaconda** pack
 
         .. _conda-forge/fortls: https://github.com/conda-forge/fortls-feedstock#about-fortls
 
+    .. tab-item:: Brew
+
+        .. code-block:: sh
+
+            brew install fortls
+
+        For more installation instructions, see `brew/fortls`_.
+
+        .. _brew/fortls: https://formulae.brew.sh/formula/fortls
 
     .. tab-item:: Source
 
