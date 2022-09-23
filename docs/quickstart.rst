@@ -40,7 +40,7 @@ The project is available for download through the **PyPi** and **Anaconda** pack
         For more installation instructions, see `conda-forge/fortls`_.
 
         .. _conda-forge/fortls: https://github.com/conda-forge/fortls-feedstock#about-fortls
-        
+
     .. tab-item:: Brew
 
         .. code-block:: sh
