@@ -2,14 +2,14 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Documentation" href="modules.html" />
         <link rel="canonical" href="https://gnikit.github.io/fortls/fortls.html" />
 
-    <link rel="shortcut icon" href="_static/icon.svg"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="_static/icon.svg"/><meta name="generator" content="sphinx-5.2.3, furo 2022.09.29"/>
         <title>fortls package - fortls</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -205,7 +205,8 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          <div class="theme-toggle-container theme-toggle-content">
+          
+<div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
@@ -3582,17 +3583,598 @@ F F03 F05 F08 F18 F77 F90 F95 FOR FPP f f03 f05 f08 f18 f77 f90 f95 for fpp</p>
             <ul>
 <li><a class="reference internal" href="#">fortls package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-fortls.constants">fortls.constants module</a></li>
-<li><a class="reference internal" href="#module-fortls.ftypes">fortls.ftypes module</a></li>
-<li><a class="reference internal" href="#module-fortls.helper_functions">fortls.helper_functions module</a></li>
-<li><a class="reference internal" href="#module-fortls.interface">fortls.interface module</a></li>
-<li><a class="reference internal" href="#module-fortls.intrinsics">fortls.intrinsics module</a></li>
-<li><a class="reference internal" href="#module-fortls.json_templates">fortls.json_templates module</a></li>
-<li><a class="reference internal" href="#module-fortls.jsonrpc">fortls.jsonrpc module</a></li>
-<li><a class="reference internal" href="#module-fortls.langserver">fortls.langserver module</a></li>
-<li><a class="reference internal" href="#module-fortls.objects">fortls.objects module</a></li>
-<li><a class="reference internal" href="#module-fortls.parse_fortran">fortls.parse_fortran module</a></li>
-<li><a class="reference internal" href="#module-fortls.regex_patterns">fortls.regex_patterns module</a></li>
+<li><a class="reference internal" href="#module-fortls.constants">fortls.constants module</a><ul>
+<li><a class="reference internal" href="#fortls.constants.FORTRAN_LITERAL"><code class="docutils literal notranslate"><span class="pre">FORTRAN_LITERAL</span></code></a></li>
+<li><a class="reference internal" href="#fortls.constants.Severity"><code class="docutils literal notranslate"><span class="pre">Severity</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.constants.Severity.error"><code class="docutils literal notranslate"><span class="pre">Severity.error</span></code></a></li>
+<li><a class="reference internal" href="#fortls.constants.Severity.info"><code class="docutils literal notranslate"><span class="pre">Severity.info</span></code></a></li>
+<li><a class="reference internal" href="#fortls.constants.Severity.warn"><code class="docutils literal notranslate"><span class="pre">Severity.warn</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-fortls.ftypes">fortls.ftypes module</a><ul>
+<li><a class="reference internal" href="#fortls.ftypes.ClassInfo"><code class="docutils literal notranslate"><span class="pre">ClassInfo</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.ftypes.ClassInfo.keywords"><code class="docutils literal notranslate"><span class="pre">ClassInfo.keywords</span></code></a></li>
+<li><a class="reference internal" href="#fortls.ftypes.ClassInfo.name"><code class="docutils literal notranslate"><span class="pre">ClassInfo.name</span></code></a></li>
+<li><a class="reference internal" href="#fortls.ftypes.ClassInfo.parent"><code class="docutils literal notranslate"><span class="pre">ClassInfo.parent</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.ftypes.FunSig"><code class="docutils literal notranslate"><span class="pre">FunSig</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.ftypes.FunSig.result"><code class="docutils literal notranslate"><span class="pre">FunSig.result</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.ftypes.GenProcDefInfo"><code class="docutils literal notranslate"><span class="pre">GenProcDefInfo</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.ftypes.GenProcDefInfo.bound_name"><code class="docutils literal notranslate"><span class="pre">GenProcDefInfo.bound_name</span></code></a></li>
+<li><a class="reference internal" href="#fortls.ftypes.GenProcDefInfo.pro_links"><code class="docutils literal notranslate"><span class="pre">GenProcDefInfo.pro_links</span></code></a></li>
+<li><a class="reference internal" href="#fortls.ftypes.GenProcDefInfo.vis_flag"><code class="docutils literal notranslate"><span class="pre">GenProcDefInfo.vis_flag</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.ftypes.IncludeInfo"><code class="docutils literal notranslate"><span class="pre">IncludeInfo</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.ftypes.IncludeInfo.file"><code class="docutils literal notranslate"><span class="pre">IncludeInfo.file</span></code></a></li>
+<li><a class="reference internal" href="#fortls.ftypes.IncludeInfo.line_number"><code class="docutils literal notranslate"><span class="pre">IncludeInfo.line_number</span></code></a></li>
+<li><a class="reference internal" href="#fortls.ftypes.IncludeInfo.path"><code class="docutils literal notranslate"><span class="pre">IncludeInfo.path</span></code></a></li>
+<li><a class="reference internal" href="#fortls.ftypes.IncludeInfo.scope_objs"><code class="docutils literal notranslate"><span class="pre">IncludeInfo.scope_objs</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.ftypes.InterInfo"><code class="docutils literal notranslate"><span class="pre">InterInfo</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.ftypes.InterInfo.abstract"><code class="docutils literal notranslate"><span class="pre">InterInfo.abstract</span></code></a></li>
+<li><a class="reference internal" href="#fortls.ftypes.InterInfo.name"><code class="docutils literal notranslate"><span class="pre">InterInfo.name</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.ftypes.Range"><code class="docutils literal notranslate"><span class="pre">Range</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.ftypes.Range.end"><code class="docutils literal notranslate"><span class="pre">Range.end</span></code></a></li>
+<li><a class="reference internal" href="#fortls.ftypes.Range.start"><code class="docutils literal notranslate"><span class="pre">Range.start</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.ftypes.ResultSig"><code class="docutils literal notranslate"><span class="pre">ResultSig</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.ftypes.ResultSig.keywords"><code class="docutils literal notranslate"><span class="pre">ResultSig.keywords</span></code></a></li>
+<li><a class="reference internal" href="#fortls.ftypes.ResultSig.name"><code class="docutils literal notranslate"><span class="pre">ResultSig.name</span></code></a></li>
+<li><a class="reference internal" href="#fortls.ftypes.ResultSig.type"><code class="docutils literal notranslate"><span class="pre">ResultSig.type</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.ftypes.SelectInfo"><code class="docutils literal notranslate"><span class="pre">SelectInfo</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.ftypes.SelectInfo.binding"><code class="docutils literal notranslate"><span class="pre">SelectInfo.binding</span></code></a></li>
+<li><a class="reference internal" href="#fortls.ftypes.SelectInfo.desc"><code class="docutils literal notranslate"><span class="pre">SelectInfo.desc</span></code></a></li>
+<li><a class="reference internal" href="#fortls.ftypes.SelectInfo.type"><code class="docutils literal notranslate"><span class="pre">SelectInfo.type</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.ftypes.SmodInfo"><code class="docutils literal notranslate"><span class="pre">SmodInfo</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.ftypes.SmodInfo.name"><code class="docutils literal notranslate"><span class="pre">SmodInfo.name</span></code></a></li>
+<li><a class="reference internal" href="#fortls.ftypes.SmodInfo.parent"><code class="docutils literal notranslate"><span class="pre">SmodInfo.parent</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.ftypes.SubInfo"><code class="docutils literal notranslate"><span class="pre">SubInfo</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.ftypes.SubInfo.args"><code class="docutils literal notranslate"><span class="pre">SubInfo.args</span></code></a></li>
+<li><a class="reference internal" href="#fortls.ftypes.SubInfo.keywords"><code class="docutils literal notranslate"><span class="pre">SubInfo.keywords</span></code></a></li>
+<li><a class="reference internal" href="#fortls.ftypes.SubInfo.mod_flag"><code class="docutils literal notranslate"><span class="pre">SubInfo.mod_flag</span></code></a></li>
+<li><a class="reference internal" href="#fortls.ftypes.SubInfo.name"><code class="docutils literal notranslate"><span class="pre">SubInfo.name</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.ftypes.UseInfo"><code class="docutils literal notranslate"><span class="pre">UseInfo</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.ftypes.UseInfo.mod_name"><code class="docutils literal notranslate"><span class="pre">UseInfo.mod_name</span></code></a></li>
+<li><a class="reference internal" href="#fortls.ftypes.UseInfo.only_list"><code class="docutils literal notranslate"><span class="pre">UseInfo.only_list</span></code></a></li>
+<li><a class="reference internal" href="#fortls.ftypes.UseInfo.rename_map"><code class="docutils literal notranslate"><span class="pre">UseInfo.rename_map</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.ftypes.VarInfo"><code class="docutils literal notranslate"><span class="pre">VarInfo</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.ftypes.VarInfo.keywords"><code class="docutils literal notranslate"><span class="pre">VarInfo.keywords</span></code></a></li>
+<li><a class="reference internal" href="#fortls.ftypes.VarInfo.var_kind"><code class="docutils literal notranslate"><span class="pre">VarInfo.var_kind</span></code></a></li>
+<li><a class="reference internal" href="#fortls.ftypes.VarInfo.var_names"><code class="docutils literal notranslate"><span class="pre">VarInfo.var_names</span></code></a></li>
+<li><a class="reference internal" href="#fortls.ftypes.VarInfo.var_type"><code class="docutils literal notranslate"><span class="pre">VarInfo.var_type</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.ftypes.VisInfo"><code class="docutils literal notranslate"><span class="pre">VisInfo</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.ftypes.VisInfo.obj_names"><code class="docutils literal notranslate"><span class="pre">VisInfo.obj_names</span></code></a></li>
+<li><a class="reference internal" href="#fortls.ftypes.VisInfo.type"><code class="docutils literal notranslate"><span class="pre">VisInfo.type</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-fortls.helper_functions">fortls.helper_functions module</a><ul>
+<li><a class="reference internal" href="#fortls.helper_functions.detect_fixed_format"><code class="docutils literal notranslate"><span class="pre">detect_fixed_format()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.helper_functions.expand_name"><code class="docutils literal notranslate"><span class="pre">expand_name()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.helper_functions.find_paren_match"><code class="docutils literal notranslate"><span class="pre">find_paren_match()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.helper_functions.find_word_in_line"><code class="docutils literal notranslate"><span class="pre">find_word_in_line()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.helper_functions.get_keywords"><code class="docutils literal notranslate"><span class="pre">get_keywords()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.helper_functions.get_line_prefix"><code class="docutils literal notranslate"><span class="pre">get_line_prefix()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.helper_functions.get_paren_level"><code class="docutils literal notranslate"><span class="pre">get_paren_level()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.helper_functions.get_paren_substring"><code class="docutils literal notranslate"><span class="pre">get_paren_substring()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.helper_functions.get_var_stack"><code class="docutils literal notranslate"><span class="pre">get_var_stack()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.helper_functions.map_keywords"><code class="docutils literal notranslate"><span class="pre">map_keywords()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.helper_functions.only_dirs"><code class="docutils literal notranslate"><span class="pre">only_dirs()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.helper_functions.parenthetic_contents"><code class="docutils literal notranslate"><span class="pre">parenthetic_contents()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.helper_functions.resolve_globs"><code class="docutils literal notranslate"><span class="pre">resolve_globs()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.helper_functions.separate_def_list"><code class="docutils literal notranslate"><span class="pre">separate_def_list()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.helper_functions.set_keyword_ordering"><code class="docutils literal notranslate"><span class="pre">set_keyword_ordering()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.helper_functions.strip_line_label"><code class="docutils literal notranslate"><span class="pre">strip_line_label()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.helper_functions.strip_strings"><code class="docutils literal notranslate"><span class="pre">strip_strings()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-fortls.interface">fortls.interface module</a><ul>
+<li><a class="reference internal" href="#fortls.interface.SetAction"><code class="docutils literal notranslate"><span class="pre">SetAction</span></code></a></li>
+<li><a class="reference internal" href="#fortls.interface.cli"><code class="docutils literal notranslate"><span class="pre">cli()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-fortls.intrinsics">fortls.intrinsics module</a><ul>
+<li><a class="reference internal" href="#fortls.intrinsics.Intrinsic"><code class="docutils literal notranslate"><span class="pre">Intrinsic</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.intrinsics.Intrinsic.get_desc"><code class="docutils literal notranslate"><span class="pre">Intrinsic.get_desc()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.intrinsics.Intrinsic.get_hover"><code class="docutils literal notranslate"><span class="pre">Intrinsic.get_hover()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.intrinsics.Intrinsic.get_signature"><code class="docutils literal notranslate"><span class="pre">Intrinsic.get_signature()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.intrinsics.Intrinsic.get_snippet"><code class="docutils literal notranslate"><span class="pre">Intrinsic.get_snippet()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.intrinsics.Intrinsic.get_type"><code class="docutils literal notranslate"><span class="pre">Intrinsic.get_type()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.intrinsics.Intrinsic.is_callable"><code class="docutils literal notranslate"><span class="pre">Intrinsic.is_callable()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.intrinsics.get_intrinsic_keywords"><code class="docutils literal notranslate"><span class="pre">get_intrinsic_keywords()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.intrinsics.load_intrinsics"><code class="docutils literal notranslate"><span class="pre">load_intrinsics()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.intrinsics.set_lowercase_intrinsics"><code class="docutils literal notranslate"><span class="pre">set_lowercase_intrinsics()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-fortls.json_templates">fortls.json_templates module</a><ul>
+<li><a class="reference internal" href="#fortls.json_templates.change_json"><code class="docutils literal notranslate"><span class="pre">change_json()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.json_templates.diagnostic_json"><code class="docutils literal notranslate"><span class="pre">diagnostic_json()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.json_templates.location_json"><code class="docutils literal notranslate"><span class="pre">location_json()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.json_templates.range_json"><code class="docutils literal notranslate"><span class="pre">range_json()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.json_templates.symbol_json"><code class="docutils literal notranslate"><span class="pre">symbol_json()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.json_templates.uri_json"><code class="docutils literal notranslate"><span class="pre">uri_json()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-fortls.jsonrpc">fortls.jsonrpc module</a><ul>
+<li><a class="reference internal" href="#fortls.jsonrpc.JSONRPC2Connection"><code class="docutils literal notranslate"><span class="pre">JSONRPC2Connection</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.jsonrpc.JSONRPC2Connection.read_message"><code class="docutils literal notranslate"><span class="pre">JSONRPC2Connection.read_message()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.jsonrpc.JSONRPC2Connection.send_notification"><code class="docutils literal notranslate"><span class="pre">JSONRPC2Connection.send_notification()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.jsonrpc.JSONRPC2Connection.send_request"><code class="docutils literal notranslate"><span class="pre">JSONRPC2Connection.send_request()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.jsonrpc.JSONRPC2Connection.send_request_batch"><code class="docutils literal notranslate"><span class="pre">JSONRPC2Connection.send_request_batch()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.jsonrpc.JSONRPC2Connection.write_error"><code class="docutils literal notranslate"><span class="pre">JSONRPC2Connection.write_error()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.jsonrpc.JSONRPC2Connection.write_response"><code class="docutils literal notranslate"><span class="pre">JSONRPC2Connection.write_response()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.jsonrpc.JSONRPC2ProtocolError"><code class="docutils literal notranslate"><span class="pre">JSONRPC2ProtocolError</span></code></a></li>
+<li><a class="reference internal" href="#fortls.jsonrpc.ReadWriter"><code class="docutils literal notranslate"><span class="pre">ReadWriter</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.jsonrpc.ReadWriter.read"><code class="docutils literal notranslate"><span class="pre">ReadWriter.read()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.jsonrpc.ReadWriter.readline"><code class="docutils literal notranslate"><span class="pre">ReadWriter.readline()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.jsonrpc.ReadWriter.write"><code class="docutils literal notranslate"><span class="pre">ReadWriter.write()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.jsonrpc.TCPReadWriter"><code class="docutils literal notranslate"><span class="pre">TCPReadWriter</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.jsonrpc.TCPReadWriter.read"><code class="docutils literal notranslate"><span class="pre">TCPReadWriter.read()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.jsonrpc.TCPReadWriter.readline"><code class="docutils literal notranslate"><span class="pre">TCPReadWriter.readline()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.jsonrpc.TCPReadWriter.write"><code class="docutils literal notranslate"><span class="pre">TCPReadWriter.write()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.jsonrpc.deque_find_and_pop"><code class="docutils literal notranslate"><span class="pre">deque_find_and_pop()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.jsonrpc.path_from_uri"><code class="docutils literal notranslate"><span class="pre">path_from_uri()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.jsonrpc.path_to_uri"><code class="docutils literal notranslate"><span class="pre">path_to_uri()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.jsonrpc.read_rpc_messages"><code class="docutils literal notranslate"><span class="pre">read_rpc_messages()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.jsonrpc.write_rpc_notification"><code class="docutils literal notranslate"><span class="pre">write_rpc_notification()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.jsonrpc.write_rpc_request"><code class="docutils literal notranslate"><span class="pre">write_rpc_request()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-fortls.langserver">fortls.langserver module</a><ul>
+<li><a class="reference internal" href="#fortls.langserver.JSONRPC2Error"><code class="docutils literal notranslate"><span class="pre">JSONRPC2Error</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer"><code class="docutils literal notranslate"><span class="pre">LangServer</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.file_init"><code class="docutils literal notranslate"><span class="pre">LangServer.file_init()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.get_all_references"><code class="docutils literal notranslate"><span class="pre">LangServer.get_all_references()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.get_definition"><code class="docutils literal notranslate"><span class="pre">LangServer.get_definition()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.get_diagnostics"><code class="docutils literal notranslate"><span class="pre">LangServer.get_diagnostics()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.handle"><code class="docutils literal notranslate"><span class="pre">LangServer.handle()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.post_message"><code class="docutils literal notranslate"><span class="pre">LangServer.post_message()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.run"><code class="docutils literal notranslate"><span class="pre">LangServer.run()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.send_diagnostics"><code class="docutils literal notranslate"><span class="pre">LangServer.send_diagnostics()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.serve_autocomplete"><code class="docutils literal notranslate"><span class="pre">LangServer.serve_autocomplete()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.serve_codeActions"><code class="docutils literal notranslate"><span class="pre">LangServer.serve_codeActions()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.serve_default"><code class="docutils literal notranslate"><span class="pre">LangServer.serve_default()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.serve_definition"><code class="docutils literal notranslate"><span class="pre">LangServer.serve_definition()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.serve_document_symbols"><code class="docutils literal notranslate"><span class="pre">LangServer.serve_document_symbols()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.serve_exit"><code class="docutils literal notranslate"><span class="pre">LangServer.serve_exit()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.serve_hover"><code class="docutils literal notranslate"><span class="pre">LangServer.serve_hover()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.serve_implementation"><code class="docutils literal notranslate"><span class="pre">LangServer.serve_implementation()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.serve_initialize"><code class="docutils literal notranslate"><span class="pre">LangServer.serve_initialize()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.serve_onChange"><code class="docutils literal notranslate"><span class="pre">LangServer.serve_onChange()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.serve_onClose"><code class="docutils literal notranslate"><span class="pre">LangServer.serve_onClose()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.serve_onOpen"><code class="docutils literal notranslate"><span class="pre">LangServer.serve_onOpen()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.serve_onSave"><code class="docutils literal notranslate"><span class="pre">LangServer.serve_onSave()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.serve_references"><code class="docutils literal notranslate"><span class="pre">LangServer.serve_references()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.serve_rename"><code class="docutils literal notranslate"><span class="pre">LangServer.serve_rename()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.serve_signature"><code class="docutils literal notranslate"><span class="pre">LangServer.serve_signature()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.serve_workspace_symbol"><code class="docutils literal notranslate"><span class="pre">LangServer.serve_workspace_symbol()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.update_workspace_file"><code class="docutils literal notranslate"><span class="pre">LangServer.update_workspace_file()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.langserver.LangServer.workspace_init"><code class="docutils literal notranslate"><span class="pre">LangServer.workspace_init()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-fortls.objects">fortls.objects module</a><ul>
+<li><a class="reference internal" href="#fortls.objects.Associate"><code class="docutils literal notranslate"><span class="pre">Associate</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.objects.Associate.create_binding_variable"><code class="docutils literal notranslate"><span class="pre">Associate.create_binding_variable()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Associate.get_desc"><code class="docutils literal notranslate"><span class="pre">Associate.get_desc()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Associate.get_type"><code class="docutils literal notranslate"><span class="pre">Associate.get_type()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Associate.require_link"><code class="docutils literal notranslate"><span class="pre">Associate.require_link()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Associate.resolve_link"><code class="docutils literal notranslate"><span class="pre">Associate.resolve_link()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.objects.AssociateMap"><code class="docutils literal notranslate"><span class="pre">AssociateMap</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.objects.AssociateMap.bind_name"><code class="docutils literal notranslate"><span class="pre">AssociateMap.bind_name</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.AssociateMap.link_name"><code class="docutils literal notranslate"><span class="pre">AssociateMap.link_name</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.AssociateMap.var"><code class="docutils literal notranslate"><span class="pre">AssociateMap.var</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.objects.Block"><code class="docutils literal notranslate"><span class="pre">Block</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.objects.Block.get_children"><code class="docutils literal notranslate"><span class="pre">Block.get_children()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Block.get_desc"><code class="docutils literal notranslate"><span class="pre">Block.get_desc()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Block.get_type"><code class="docutils literal notranslate"><span class="pre">Block.get_type()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Block.req_named_end"><code class="docutils literal notranslate"><span class="pre">Block.req_named_end()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.objects.Diagnostic"><code class="docutils literal notranslate"><span class="pre">Diagnostic</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.objects.Diagnostic.add_related"><code class="docutils literal notranslate"><span class="pre">Diagnostic.add_related()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Diagnostic.build"><code class="docutils literal notranslate"><span class="pre">Diagnostic.build()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.objects.Do"><code class="docutils literal notranslate"><span class="pre">Do</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.objects.Do.get_desc"><code class="docutils literal notranslate"><span class="pre">Do.get_desc()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Do.get_type"><code class="docutils literal notranslate"><span class="pre">Do.get_type()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.objects.Enum"><code class="docutils literal notranslate"><span class="pre">Enum</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.objects.Enum.get_desc"><code class="docutils literal notranslate"><span class="pre">Enum.get_desc()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Enum.get_type"><code class="docutils literal notranslate"><span class="pre">Enum.get_type()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.objects.FortranAST"><code class="docutils literal notranslate"><span class="pre">FortranAST</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.objects.FortranAST.add_doc"><code class="docutils literal notranslate"><span class="pre">FortranAST.add_doc()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranAST.add_error"><code class="docutils literal notranslate"><span class="pre">FortranAST.add_error()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranAST.add_include"><code class="docutils literal notranslate"><span class="pre">FortranAST.add_include()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranAST.add_int_member"><code class="docutils literal notranslate"><span class="pre">FortranAST.add_int_member()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranAST.add_private"><code class="docutils literal notranslate"><span class="pre">FortranAST.add_private()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranAST.add_public"><code class="docutils literal notranslate"><span class="pre">FortranAST.add_public()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranAST.add_scope"><code class="docutils literal notranslate"><span class="pre">FortranAST.add_scope()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranAST.add_use"><code class="docutils literal notranslate"><span class="pre">FortranAST.add_use()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranAST.add_variable"><code class="docutils literal notranslate"><span class="pre">FortranAST.add_variable()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranAST.check_file"><code class="docutils literal notranslate"><span class="pre">FortranAST.check_file()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranAST.close_file"><code class="docutils literal notranslate"><span class="pre">FortranAST.close_file()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranAST.create_none_scope"><code class="docutils literal notranslate"><span class="pre">FortranAST.create_none_scope()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranAST.end_ppif"><code class="docutils literal notranslate"><span class="pre">FortranAST.end_ppif()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranAST.end_scope"><code class="docutils literal notranslate"><span class="pre">FortranAST.end_scope()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranAST.get_enc_scope_name"><code class="docutils literal notranslate"><span class="pre">FortranAST.get_enc_scope_name()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranAST.get_inner_scope"><code class="docutils literal notranslate"><span class="pre">FortranAST.get_inner_scope()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranAST.get_object"><code class="docutils literal notranslate"><span class="pre">FortranAST.get_object()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranAST.get_scopes"><code class="docutils literal notranslate"><span class="pre">FortranAST.get_scopes()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranAST.resolve_includes"><code class="docutils literal notranslate"><span class="pre">FortranAST.resolve_includes()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranAST.resolve_links"><code class="docutils literal notranslate"><span class="pre">FortranAST.resolve_links()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranAST.start_ppif"><code class="docutils literal notranslate"><span class="pre">FortranAST.start_ppif()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj"><code class="docutils literal notranslate"><span class="pre">FortranObj</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.add_doc"><code class="docutils literal notranslate"><span class="pre">FortranObj.add_doc()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.check_definition"><code class="docutils literal notranslate"><span class="pre">FortranObj.check_definition()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.check_valid_parent"><code class="docutils literal notranslate"><span class="pre">FortranObj.check_valid_parent()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.end"><code class="docutils literal notranslate"><span class="pre">FortranObj.end()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.get_actions"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_actions()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.get_ancestors"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_ancestors()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.get_children"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_children()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.get_desc"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_desc()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.get_diagnostics"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_diagnostics()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.get_documentation"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_documentation()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.get_hover"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_hover()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.get_implicit"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_implicit()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.get_interface"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_interface()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.get_placeholders"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_placeholders()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.get_signature"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_signature()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.get_snippet"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_snippet()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.get_type"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_type()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.get_type_obj"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_type_obj()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.is_abstract"><code class="docutils literal notranslate"><span class="pre">FortranObj.is_abstract()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.is_callable"><code class="docutils literal notranslate"><span class="pre">FortranObj.is_callable()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.is_external_int"><code class="docutils literal notranslate"><span class="pre">FortranObj.is_external_int()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.is_mod_scope"><code class="docutils literal notranslate"><span class="pre">FortranObj.is_mod_scope()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.is_optional"><code class="docutils literal notranslate"><span class="pre">FortranObj.is_optional()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.req_named_end"><code class="docutils literal notranslate"><span class="pre">FortranObj.req_named_end()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.require_inherit"><code class="docutils literal notranslate"><span class="pre">FortranObj.require_inherit()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.require_link"><code class="docutils literal notranslate"><span class="pre">FortranObj.require_link()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.resolve_inherit"><code class="docutils literal notranslate"><span class="pre">FortranObj.resolve_inherit()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.resolve_link"><code class="docutils literal notranslate"><span class="pre">FortranObj.resolve_link()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.set_default_vis"><code class="docutils literal notranslate"><span class="pre">FortranObj.set_default_vis()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.set_parent"><code class="docutils literal notranslate"><span class="pre">FortranObj.set_parent()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.set_visibility"><code class="docutils literal notranslate"><span class="pre">FortranObj.set_visibility()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.update_fqsn"><code class="docutils literal notranslate"><span class="pre">FortranObj.update_fqsn()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.objects.Function"><code class="docutils literal notranslate"><span class="pre">Function</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.objects.Function.copy_interface"><code class="docutils literal notranslate"><span class="pre">Function.copy_interface()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Function.get_desc"><code class="docutils literal notranslate"><span class="pre">Function.get_desc()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Function.get_hover"><code class="docutils literal notranslate"><span class="pre">Function.get_hover()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Function.get_interface"><code class="docutils literal notranslate"><span class="pre">Function.get_interface()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Function.get_type"><code class="docutils literal notranslate"><span class="pre">Function.get_type()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Function.is_callable"><code class="docutils literal notranslate"><span class="pre">Function.is_callable()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Function.resolve_link"><code class="docutils literal notranslate"><span class="pre">Function.resolve_link()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.objects.If"><code class="docutils literal notranslate"><span class="pre">If</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.objects.If.get_desc"><code class="docutils literal notranslate"><span class="pre">If.get_desc()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.If.get_type"><code class="docutils literal notranslate"><span class="pre">If.get_type()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.objects.Include"><code class="docutils literal notranslate"><span class="pre">Include</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.objects.Include.get_desc"><code class="docutils literal notranslate"><span class="pre">Include.get_desc()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.objects.Interface"><code class="docutils literal notranslate"><span class="pre">Interface</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.objects.Interface.get_desc"><code class="docutils literal notranslate"><span class="pre">Interface.get_desc()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Interface.get_type"><code class="docutils literal notranslate"><span class="pre">Interface.get_type()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Interface.is_abstract"><code class="docutils literal notranslate"><span class="pre">Interface.is_abstract()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Interface.is_callable"><code class="docutils literal notranslate"><span class="pre">Interface.is_callable()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Interface.is_external_int"><code class="docutils literal notranslate"><span class="pre">Interface.is_external_int()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Interface.require_link"><code class="docutils literal notranslate"><span class="pre">Interface.require_link()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Interface.resolve_link"><code class="docutils literal notranslate"><span class="pre">Interface.resolve_link()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.objects.Method"><code class="docutils literal notranslate"><span class="pre">Method</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.objects.Method.check_definition"><code class="docutils literal notranslate"><span class="pre">Method.check_definition()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Method.get_documentation"><code class="docutils literal notranslate"><span class="pre">Method.get_documentation()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Method.get_hover"><code class="docutils literal notranslate"><span class="pre">Method.get_hover()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Method.get_interface"><code class="docutils literal notranslate"><span class="pre">Method.get_interface()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Method.get_signature"><code class="docutils literal notranslate"><span class="pre">Method.get_signature()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Method.get_snippet"><code class="docutils literal notranslate"><span class="pre">Method.get_snippet()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Method.get_type"><code class="docutils literal notranslate"><span class="pre">Method.get_type()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Method.is_callable"><code class="docutils literal notranslate"><span class="pre">Method.is_callable()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Method.resolve_link"><code class="docutils literal notranslate"><span class="pre">Method.resolve_link()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Method.set_parent"><code class="docutils literal notranslate"><span class="pre">Method.set_parent()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.objects.Module"><code class="docutils literal notranslate"><span class="pre">Module</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.objects.Module.check_valid_parent"><code class="docutils literal notranslate"><span class="pre">Module.check_valid_parent()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Module.get_desc"><code class="docutils literal notranslate"><span class="pre">Module.get_desc()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Module.get_type"><code class="docutils literal notranslate"><span class="pre">Module.get_type()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.objects.Program"><code class="docutils literal notranslate"><span class="pre">Program</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.objects.Program.get_desc"><code class="docutils literal notranslate"><span class="pre">Program.get_desc()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.objects.Scope"><code class="docutils literal notranslate"><span class="pre">Scope</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.objects.Scope.add_child"><code class="docutils literal notranslate"><span class="pre">Scope.add_child()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Scope.add_member"><code class="docutils literal notranslate"><span class="pre">Scope.add_member()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Scope.add_subroutine"><code class="docutils literal notranslate"><span class="pre">Scope.add_subroutine()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Scope.add_use"><code class="docutils literal notranslate"><span class="pre">Scope.add_use()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Scope.check_definitions"><code class="docutils literal notranslate"><span class="pre">Scope.check_definitions()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Scope.check_use"><code class="docutils literal notranslate"><span class="pre">Scope.check_use()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Scope.copy_from"><code class="docutils literal notranslate"><span class="pre">Scope.copy_from()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Scope.get_children"><code class="docutils literal notranslate"><span class="pre">Scope.get_children()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Scope.mark_contains"><code class="docutils literal notranslate"><span class="pre">Scope.mark_contains()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Scope.set_implicit"><code class="docutils literal notranslate"><span class="pre">Scope.set_implicit()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Scope.set_inherit"><code class="docutils literal notranslate"><span class="pre">Scope.set_inherit()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Scope.set_parent"><code class="docutils literal notranslate"><span class="pre">Scope.set_parent()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Scope.update_fqsn"><code class="docutils literal notranslate"><span class="pre">Scope.update_fqsn()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.objects.Select"><code class="docutils literal notranslate"><span class="pre">Select</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.objects.Select.create_binding_variable"><code class="docutils literal notranslate"><span class="pre">Select.create_binding_variable()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Select.get_desc"><code class="docutils literal notranslate"><span class="pre">Select.get_desc()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Select.get_type"><code class="docutils literal notranslate"><span class="pre">Select.get_type()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Select.is_type_binding"><code class="docutils literal notranslate"><span class="pre">Select.is_type_binding()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Select.is_type_region"><code class="docutils literal notranslate"><span class="pre">Select.is_type_region()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.objects.Submodule"><code class="docutils literal notranslate"><span class="pre">Submodule</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.objects.Submodule.get_ancestors"><code class="docutils literal notranslate"><span class="pre">Submodule.get_ancestors()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Submodule.get_desc"><code class="docutils literal notranslate"><span class="pre">Submodule.get_desc()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Submodule.get_type"><code class="docutils literal notranslate"><span class="pre">Submodule.get_type()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Submodule.require_inherit"><code class="docutils literal notranslate"><span class="pre">Submodule.require_inherit()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Submodule.require_link"><code class="docutils literal notranslate"><span class="pre">Submodule.require_link()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Submodule.resolve_inherit"><code class="docutils literal notranslate"><span class="pre">Submodule.resolve_inherit()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Submodule.resolve_link"><code class="docutils literal notranslate"><span class="pre">Submodule.resolve_link()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.objects.Subroutine"><code class="docutils literal notranslate"><span class="pre">Subroutine</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.objects.Subroutine.check_valid_parent"><code class="docutils literal notranslate"><span class="pre">Subroutine.check_valid_parent()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Subroutine.copy_interface"><code class="docutils literal notranslate"><span class="pre">Subroutine.copy_interface()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Subroutine.get_children"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_children()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Subroutine.get_desc"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_desc()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Subroutine.get_diagnostics"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_diagnostics()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Subroutine.get_docs_full"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_docs_full()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Subroutine.get_hover"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_hover()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Subroutine.get_interface"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_interface()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Subroutine.get_interface_array"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_interface_array()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Subroutine.get_signature"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_signature()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Subroutine.get_snippet"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_snippet()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Subroutine.get_type"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_type()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Subroutine.is_callable"><code class="docutils literal notranslate"><span class="pre">Subroutine.is_callable()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Subroutine.is_mod_scope"><code class="docutils literal notranslate"><span class="pre">Subroutine.is_mod_scope()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Subroutine.require_link"><code class="docutils literal notranslate"><span class="pre">Subroutine.require_link()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Subroutine.resolve_arg_link"><code class="docutils literal notranslate"><span class="pre">Subroutine.resolve_arg_link()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Subroutine.resolve_link"><code class="docutils literal notranslate"><span class="pre">Subroutine.resolve_link()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.objects.Type"><code class="docutils literal notranslate"><span class="pre">Type</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.objects.Type.check_valid_parent"><code class="docutils literal notranslate"><span class="pre">Type.check_valid_parent()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Type.get_actions"><code class="docutils literal notranslate"><span class="pre">Type.get_actions()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Type.get_children"><code class="docutils literal notranslate"><span class="pre">Type.get_children()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Type.get_desc"><code class="docutils literal notranslate"><span class="pre">Type.get_desc()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Type.get_diagnostics"><code class="docutils literal notranslate"><span class="pre">Type.get_diagnostics()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Type.get_overridden"><code class="docutils literal notranslate"><span class="pre">Type.get_overridden()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Type.get_type"><code class="docutils literal notranslate"><span class="pre">Type.get_type()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Type.require_inherit"><code class="docutils literal notranslate"><span class="pre">Type.require_inherit()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Type.resolve_inherit"><code class="docutils literal notranslate"><span class="pre">Type.resolve_inherit()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.objects.USE_line"><code class="docutils literal notranslate"><span class="pre">USE_line</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Variable"><code class="docutils literal notranslate"><span class="pre">Variable</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.objects.Variable.check_definition"><code class="docutils literal notranslate"><span class="pre">Variable.check_definition()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Variable.get_desc"><code class="docutils literal notranslate"><span class="pre">Variable.get_desc()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Variable.get_hover"><code class="docutils literal notranslate"><span class="pre">Variable.get_hover()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Variable.get_keywords"><code class="docutils literal notranslate"><span class="pre">Variable.get_keywords()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Variable.get_snippet"><code class="docutils literal notranslate"><span class="pre">Variable.get_snippet()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Variable.get_type"><code class="docutils literal notranslate"><span class="pre">Variable.get_type()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Variable.get_type_obj"><code class="docutils literal notranslate"><span class="pre">Variable.get_type_obj()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Variable.is_callable"><code class="docutils literal notranslate"><span class="pre">Variable.is_callable()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Variable.is_optional"><code class="docutils literal notranslate"><span class="pre">Variable.is_optional()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Variable.is_parameter"><code class="docutils literal notranslate"><span class="pre">Variable.is_parameter()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Variable.require_link"><code class="docutils literal notranslate"><span class="pre">Variable.require_link()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Variable.resolve_link"><code class="docutils literal notranslate"><span class="pre">Variable.resolve_link()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Variable.set_dim"><code class="docutils literal notranslate"><span class="pre">Variable.set_dim()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Variable.set_external_attr"><code class="docutils literal notranslate"><span class="pre">Variable.set_external_attr()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Variable.set_parameter_val"><code class="docutils literal notranslate"><span class="pre">Variable.set_parameter_val()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Variable.update_fqsn"><code class="docutils literal notranslate"><span class="pre">Variable.update_fqsn()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.objects.Where"><code class="docutils literal notranslate"><span class="pre">Where</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.objects.Where.get_desc"><code class="docutils literal notranslate"><span class="pre">Where.get_desc()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Where.get_type"><code class="docutils literal notranslate"><span class="pre">Where.get_type()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.objects.climb_type_tree"><code class="docutils literal notranslate"><span class="pre">climb_type_tree()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.find_in_scope"><code class="docutils literal notranslate"><span class="pre">find_in_scope()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.find_in_workspace"><code class="docutils literal notranslate"><span class="pre">find_in_workspace()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.get_use_tree"><code class="docutils literal notranslate"><span class="pre">get_use_tree()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-fortls.parse_fortran">fortls.parse_fortran module</a><ul>
+<li><a class="reference internal" href="#fortls.parse_fortran.FortranFile"><code class="docutils literal notranslate"><span class="pre">FortranFile</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.parse_fortran.FortranFile.apply_change"><code class="docutils literal notranslate"><span class="pre">FortranFile.apply_change()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.FortranFile.check_file"><code class="docutils literal notranslate"><span class="pre">FortranFile.check_file()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.FortranFile.copy"><code class="docutils literal notranslate"><span class="pre">FortranFile.copy()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.FortranFile.find_word_in_code_line"><code class="docutils literal notranslate"><span class="pre">FortranFile.find_word_in_code_line()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.FortranFile.get_code_line"><code class="docutils literal notranslate"><span class="pre">FortranFile.get_code_line()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.FortranFile.get_comment_regexs"><code class="docutils literal notranslate"><span class="pre">FortranFile.get_comment_regexs()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.FortranFile.get_docstring"><code class="docutils literal notranslate"><span class="pre">FortranFile.get_docstring()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.FortranFile.get_fortran_definition"><code class="docutils literal notranslate"><span class="pre">FortranFile.get_fortran_definition()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.FortranFile.get_line"><code class="docutils literal notranslate"><span class="pre">FortranFile.get_line()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.FortranFile.get_single_line_docstring"><code class="docutils literal notranslate"><span class="pre">FortranFile.get_single_line_docstring()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.FortranFile.load_from_disk"><code class="docutils literal notranslate"><span class="pre">FortranFile.load_from_disk()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.FortranFile.parse"><code class="docutils literal notranslate"><span class="pre">FortranFile.parse()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.FortranFile.parse_contains"><code class="docutils literal notranslate"><span class="pre">FortranFile.parse_contains()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.FortranFile.parse_do_fixed_format"><code class="docutils literal notranslate"><span class="pre">FortranFile.parse_do_fixed_format()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.FortranFile.parse_docs"><code class="docutils literal notranslate"><span class="pre">FortranFile.parse_docs()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.FortranFile.parse_end_scope_word"><code class="docutils literal notranslate"><span class="pre">FortranFile.parse_end_scope_word()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.FortranFile.parse_imp_char"><code class="docutils literal notranslate"><span class="pre">FortranFile.parse_imp_char()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.FortranFile.parse_imp_dim"><code class="docutils literal notranslate"><span class="pre">FortranFile.parse_imp_dim()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.FortranFile.parse_implicit"><code class="docutils literal notranslate"><span class="pre">FortranFile.parse_implicit()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.FortranFile.preprocess"><code class="docutils literal notranslate"><span class="pre">FortranFile.preprocess()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.FortranFile.set_contents"><code class="docutils literal notranslate"><span class="pre">FortranFile.set_contents()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.FortranFile.strip_comment"><code class="docutils literal notranslate"><span class="pre">FortranFile.strip_comment()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.parse_fortran.find_external"><code class="docutils literal notranslate"><span class="pre">find_external()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.find_external_attr"><code class="docutils literal notranslate"><span class="pre">find_external_attr()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.find_external_type"><code class="docutils literal notranslate"><span class="pre">find_external_type()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.get_line_context"><code class="docutils literal notranslate"><span class="pre">get_line_context()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.get_procedure_modifiers"><code class="docutils literal notranslate"><span class="pre">get_procedure_modifiers()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.parse_var_keywords"><code class="docutils literal notranslate"><span class="pre">parse_var_keywords()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.preprocess_file"><code class="docutils literal notranslate"><span class="pre">preprocess_file()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.read_associate_def"><code class="docutils literal notranslate"><span class="pre">read_associate_def()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.read_block_def"><code class="docutils literal notranslate"><span class="pre">read_block_def()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.read_do_def"><code class="docutils literal notranslate"><span class="pre">read_do_def()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.read_enum_def"><code class="docutils literal notranslate"><span class="pre">read_enum_def()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.read_fun_def"><code class="docutils literal notranslate"><span class="pre">read_fun_def()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.read_generic_def"><code class="docutils literal notranslate"><span class="pre">read_generic_def()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.read_if_def"><code class="docutils literal notranslate"><span class="pre">read_if_def()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.read_imp_stmt"><code class="docutils literal notranslate"><span class="pre">read_imp_stmt()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.read_inc_stmt"><code class="docutils literal notranslate"><span class="pre">read_inc_stmt()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.read_int_def"><code class="docutils literal notranslate"><span class="pre">read_int_def()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.read_mod_def"><code class="docutils literal notranslate"><span class="pre">read_mod_def()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.read_prog_def"><code class="docutils literal notranslate"><span class="pre">read_prog_def()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.read_select_def"><code class="docutils literal notranslate"><span class="pre">read_select_def()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.read_sub_def"><code class="docutils literal notranslate"><span class="pre">read_sub_def()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.read_submod_def"><code class="docutils literal notranslate"><span class="pre">read_submod_def()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.read_type_def"><code class="docutils literal notranslate"><span class="pre">read_type_def()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.read_use_stmt"><code class="docutils literal notranslate"><span class="pre">read_use_stmt()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.read_var_def"><code class="docutils literal notranslate"><span class="pre">read_var_def()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.read_vis_stmnt"><code class="docutils literal notranslate"><span class="pre">read_vis_stmnt()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.parse_fortran.read_where_def"><code class="docutils literal notranslate"><span class="pre">read_where_def()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-fortls.regex_patterns">fortls.regex_patterns module</a><ul>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions</span></code></a><ul>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.ASSOCIATE"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.ASSOCIATE</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.BLOCK"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.BLOCK</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.CALL"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.CALL</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.CLASS_VAR"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.CLASS_VAR</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.CONTAINS"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.CONTAINS</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.DEFINED"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.DEFINED</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.DEF_KIND"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.DEF_KIND</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.DO"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.DO</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.DQ_STRING"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.DQ_STRING</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.END"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.END</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.END_ASSOCIATE"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.END_ASSOCIATE</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.END_BLOCK"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.END_BLOCK</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.END_DO"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.END_DO</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.END_ENUMD"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.END_ENUMD</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.END_FIXED"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.END_FIXED</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.END_FUN"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.END_FUN</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.END_IF"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.END_IF</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.END_INT"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.END_INT</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.END_MOD"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.END_MOD</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.END_PRO"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.END_PRO</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.END_PROG"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.END_PROG</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.END_SELECT"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.END_SELECT</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.END_SMOD"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.END_SMOD</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.END_SUB"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.END_SUB</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.END_TYPED"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.END_TYPED</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.END_WHERE"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.END_WHERE</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.END_WORD"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.END_WORD</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.ENUM_DEF"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.ENUM_DEF</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.EXTENDS"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.EXTENDS</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.FIXED_COMMENT"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.FIXED_COMMENT</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.FIXED_CONT"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.FIXED_CONT</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.FIXED_DOC"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.FIXED_DOC</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.FIXED_OPENMP"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.FIXED_OPENMP</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.FREE_COMMENT"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.FREE_COMMENT</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.FREE_CONT"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.FREE_CONT</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.FREE_DOC"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.FREE_DOC</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.FREE_FORMAT_TEST"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.FREE_FORMAT_TEST</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.FREE_OPENMP"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.FREE_OPENMP</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.FUN"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.FUN</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.GENERIC_PRO"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.GENERIC_PRO</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.GEN_ASSIGN"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.GEN_ASSIGN</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.IF"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.IF</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.IMPLICIT"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.IMPLICIT</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.IMPORT"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.IMPORT</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.INCLUDE"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.INCLUDE</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.INT"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.INT</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.INT_STMNT"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.INT_STMNT</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.KEYWORD_LIST"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.KEYWORD_LIST</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.KIND_SPEC"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.KIND_SPEC</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.LINE_LABEL"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.LINE_LABEL</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.LOGICAL"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.LOGICAL</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.MOD"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.MOD</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.NON_DEF"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.NON_DEF</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.NUMBER"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.NUMBER</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.OBJBREAK"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.OBJBREAK</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.PARAMETER_VAL"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.PARAMETER_VAL</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.PP_ANY"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.PP_ANY</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.PP_DEF"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.PP_DEF</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.PP_DEF_TEST"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.PP_DEF_TEST</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.PP_INCLUDE"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.PP_INCLUDE</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.PP_REGEX"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.PP_REGEX</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.PROCEDURE_STMNT"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.PROCEDURE_STMNT</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.PROG"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.PROG</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.PRO_LINK"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.PRO_LINK</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.RESULT"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.RESULT</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.SCOPE_DEF"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.SCOPE_DEF</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.SELECT"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.SELECT</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.SELECT_DEFAULT"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.SELECT_DEFAULT</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.SELECT_TYPE"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.SELECT_TYPE</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.SQ_STRING"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.SQ_STRING</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.SUB"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.SUB</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.SUBMOD"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.SUBMOD</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.SUB_MOD"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.SUB_MOD</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.SUB_PAREN"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.SUB_PAREN</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.TATTR_LIST"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.TATTR_LIST</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.THEN"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.THEN</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.TYPE_DEF"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.TYPE_DEF</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.TYPE_STMNT"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.TYPE_STMNT</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.USE"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.USE</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.VAR"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.VAR</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.VIS"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.VIS</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.WHERE"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.WHERE</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.WORD"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.WORD</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fortls.regex_patterns.src_file_exts"><code class="docutils literal notranslate"><span class="pre">src_file_exts()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-fortls.version">fortls.version module</a></li>
 <li><a class="reference internal" href="#module-fortls">Module contents</a></li>
 </ul>
@@ -3611,6 +4193,7 @@ F F03 F05 F08 F18 F77 F90 F95 FOR FPP f f03 f05 f08 f18 f77 f90 f95 for fpp</p>
     <script src="_static/underscore.js"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>
