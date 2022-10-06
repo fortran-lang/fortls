@@ -1,6 +1,7 @@
 *.pyc
 .vscode
 *.egg-info
+venv/
 dist/
 build/
 docs/_build/
