@@ -1508,7 +1508,7 @@ class LangServer:
             break
 
         try:
-            with open(config_path, "r") as jsonfile:
+            with open(config_path) as jsonfile:
                 config_dict = json5.load(jsonfile)
 
                 # Include and Exclude directories

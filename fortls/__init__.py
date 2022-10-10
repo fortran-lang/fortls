@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import json
 import os
 import pprint
@@ -467,7 +465,7 @@ def debug_server_parser(args):
         config_exists = os.path.isfile(config_path)
         if config_exists:
             try:
-                with open(config_path, "r") as fhandle:
+                with open(config_path) as fhandle:
                     config_dict = json.load(fhandle)
                     pp_suffixes = config_dict.get("pp_suffixes", None)
                     pp_defs = config_dict.get("pp_defs", {})

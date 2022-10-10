@@ -140,7 +140,7 @@ def load_intrinsics():
         os.path.dirname(os.path.abspath(__file__)), "statements.json"
     )
     statements = {"var_def": [], "int_stmnts": []}
-    with open(json_file, "r", encoding="utf-8") as fid:
+    with open(json_file, encoding="utf-8") as fid:
         intrin_file = json.load(fid)
         for key in statements:
             for name, json_obj in sorted(intrin_file[key].items()):
@@ -151,7 +151,7 @@ def load_intrinsics():
         os.path.dirname(os.path.abspath(__file__)), "keywords.json"
     )
     keywords = {"var_def": [], "arg": [], "type_mem": [], "vis": [], "param": []}
-    with open(json_file, "r", encoding="utf-8") as fid:
+    with open(json_file, encoding="utf-8") as fid:
         intrin_file = json.load(fid)
         for key in keywords:
             for name, json_obj in sorted(intrin_file[key].items()):
@@ -162,7 +162,7 @@ def load_intrinsics():
         os.path.dirname(os.path.abspath(__file__)), "intrinsic_funs.json"
     )
     int_funs = []
-    with open(json_file, "r", encoding="utf-8") as fid:
+    with open(json_file, encoding="utf-8") as fid:
         intrin_file = json.load(fid)
         for name, json_obj in sorted(intrin_file.items()):
             int_funs.append(create_int_object(name, json_obj, json_obj["type"]))
@@ -173,7 +173,7 @@ def load_intrinsics():
         os.path.dirname(os.path.abspath(__file__)), "intrinsic_mods.json"
     )
     int_mods = []
-    with open(json_file, "r", encoding="utf-8") as fid:
+    with open(json_file, encoding="utf-8") as fid:
         intrin_file = json.load(fid)
         for key, json_obj in intrin_file.items():
             fort_obj = create_object(json_obj)
