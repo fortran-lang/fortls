@@ -866,7 +866,7 @@ class FortranFile:
         """
         contents: str
         try:
-            with open(self.path, "r", encoding="utf-8", errors="replace") as f:
+            with open(self.path, encoding="utf-8", errors="replace") as f:
                 contents = re.sub(r"\t", r" ", f.read())
         except OSError:
             return "Could not read/decode file", None

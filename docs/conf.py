@@ -19,7 +19,7 @@ from fortls import __version__  # noqa: E402
 
 # Generate the agglomerated changes (from the CHANGELOG) between fortls
 # and the fortran-language-server project
-with open("../CHANGELOG.md", "r") as f:
+with open("../CHANGELOG.md") as f:
     lns = f.readlines()
 
 lns = lns[0 : lns.index("## 1.12.0\n")]
