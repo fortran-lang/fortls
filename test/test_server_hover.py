@@ -538,3 +538,20 @@ def test_intrinsics():
         intrinsics = json.load(f)
     ref_results = ["\n-----\n" + intrinsics["SIZE"]]
     validate_hover(results, ref_results)
+
+
+def test_types():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
+    file_path = test_dir / "hover" / "types.f90"
+    string += hover_req(file_path, 3, 25)
+    string += hover_req(file_path, 6, 44)
+    string += hover_req(file_path, 9, 35)
+
+    errcode, results = run_request(string, fortls_args=["-n", "1"])
+    assert errcode == 0
+    ref_results = [
+        "```fortran90\nTYPE, ABSTRACT :: base_t\n```",
+        "```fortran90\nTYPE, ABSTRACT, EXTENDS(base_t) :: extends_t\n```",
+        "```fortran90\nTYPE, EXTENDS(extends_t) :: a_t\n```",
+    ]
+    validate_hover(results, ref_results)
