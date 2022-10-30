@@ -13,7 +13,7 @@ try:
 except ImportError:
     from typing_extensions import Literal
 
-from re import Pattern, Match
+from re import Match, Pattern
 
 from fortls.constants import (
     DO_TYPE_ID,
