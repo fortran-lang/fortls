@@ -490,9 +490,10 @@ class LangServer:
             comp_obj["detail"] = candidate.get_desc()
             if call_sig is not None:
                 comp_obj["detail"] += " " + call_sig
-            doc_str, _ = candidate.get_hover()
-            if doc_str is not None:
-                comp_obj["documentation"] = doc_str
+            # TODO: doc_str should probably be appended, see LSP standard
+            hover_msg, doc_str, _ = candidate.get_hover()
+            if hover_msg is not None:
+                comp_obj["documentation"] = hover_msg
             return comp_obj
 
         # Get parameters from request
@@ -1035,11 +1036,13 @@ class LangServer:
         return None
 
     def serve_hover(self, request: dict):
-        def create_hover(string: str, highlight: bool):
-            if highlight:
-                return {"language": self.hover_language, "value": string}
-            else:
-                return string
+        def create_hover(string: str, docs: str | None, fortran: bool):
+            msg = string
+            if fortran:
+                msg = f"```{self.hover_language}\n{string}\n```"
+            if docs:  # if docs is not None or ""
+                msg += f"\n-----\n{docs}"
+            return msg
 
         def create_signature_hover():
             sig_request = request.copy()
@@ -1057,7 +1060,8 @@ class LangServer:
                             f"{arg_doc[:doc_split]} :: "
                             f"{arg_info['label']}{arg_doc[doc_split:]}"
                         )
-                    return create_hover(arg_string, True)
+                    # TODO: check if correct. I think it's not
+                    return create_hover(arg_string, None, True)
             except:
                 pass
 
@@ -1066,7 +1070,7 @@ class LangServer:
         uri: str = params["textDocument"]["uri"]
         def_line: int = params["position"]["line"]
         def_char: int = params["position"]["character"]
-        path = path_from_uri(uri)
+        path: str = path_from_uri(uri)
         file_obj = self.workspace.get(path)
         if file_obj is None:
             return None
@@ -1075,41 +1079,40 @@ class LangServer:
         if var_obj is None:
             return None
         # Construct hover information
-        var_type = var_obj.get_type()
+        var_type: int = var_obj.get_type()
         hover_array = []
         if var_type in (SUBROUTINE_TYPE_ID, FUNCTION_TYPE_ID):
-            hover_str, highlight = var_obj.get_hover(long=True)
-            hover_array.append(create_hover(hover_str, highlight))
+            hover_str, docs, highlight = var_obj.get_hover(long=True)
+            hover_array.append(create_hover(hover_str, docs, highlight))
         elif var_type == INTERFACE_TYPE_ID:
             for member in var_obj.mems:
-                hover_str, highlight = member.get_hover(long=True)
+                hover_str, docs, highlight = member.get_hover(long=True)
                 if hover_str is not None:
-                    hover_array.append(create_hover(hover_str, highlight))
+                    hover_array.append(create_hover(hover_str, docs, highlight))
         elif var_type == VAR_TYPE_ID:
             # Unless we have a Fortran literal include the desc in the hover msg
             # See get_definition for an explanation about this default name
             if not var_obj.desc.startswith(FORTRAN_LITERAL):
-                hover_str, highlight = var_obj.get_hover()
-                hover_array.append(create_hover(hover_str, highlight))
+                hover_str, docs, highlight = var_obj.get_hover()
+                hover_array.append(create_hover(hover_str, docs, highlight))
             # Hover for Literal variables
             elif var_obj.desc.endswith("REAL"):
-                hover_array.append(create_hover("REAL", True))
+                hover_array.append(create_hover("REAL", None, True))
             elif var_obj.desc.endswith("INTEGER"):
-                hover_array.append(create_hover("INTEGER", True))
+                hover_array.append(create_hover("INTEGER", None, True))
             elif var_obj.desc.endswith("LOGICAL"):
-                hover_array.append(create_hover("LOGICAL", True))
+                hover_array.append(create_hover("LOGICAL", None, True))
             elif var_obj.desc.endswith("STRING"):
                 hover_str = f"CHARACTER(LEN={len(var_obj.name)-2})"
-                hover_array.append(create_hover(hover_str, True))
+                hover_array.append(create_hover(hover_str, None, True))
 
             # Include the signature if one is present e.g. if in an argument list
             if self.hover_signature:
-                hover_str = create_signature_hover()
+                hover_str: str | None = create_signature_hover()
                 if hover_str is not None:
                     hover_array.append(hover_str)
-        #
         if len(hover_array) > 0:
-            return {"contents": hover_array}
+            return {"contents": {"kind": "markdown", "value": "\n".join(hover_array)}}
         return None
 
     def serve_implementation(self, request: dict):

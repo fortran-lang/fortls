@@ -17,7 +17,7 @@ def test_hover():
     def check_return(result_array, checks):
         assert len(result_array) == len(checks)
         for (i, check) in enumerate(checks):
-            assert result_array[i]["contents"][0]["value"] == check
+            assert result_array[i]["contents"]["value"] == check
 
     root_dir = test_dir / "pp"
     string = write_rpc_request(1, "initialize", {"rootPath": str(root_dir)})
@@ -36,13 +36,19 @@ def test_hover():
 
     # Reference solution
     ref_results = (
-        "#define PCType character*(80)",
-        "#define PETSC_ERR_INT_OVERFLOW 84",
-        "#define varVar 55",
-        "#define ewrite if (priority <= 3) write((priority), format)",
-        "#define ewrite2 if (priority <= 3) write((priority), format)",
-        "#define SUCCESS .true.",
-        "REAL, CONTIGUOUS, POINTER, DIMENSION(:)",
+        "```fortran90\n#define PCType character*(80)\n```",
+        "```fortran90\n#define PETSC_ERR_INT_OVERFLOW 84\n```",
+        "```fortran90\n#define varVar 55\n```",
+        (
+            "```fortran90\n#define ewrite if (priority <= 3) write((priority),"
+            " format)\n```"
+        ),
+        (
+            "```fortran90\n#define ewrite2 if (priority <= 3) write((priority),"
+            " format)\n```"
+        ),
+        "```fortran90\n#define SUCCESS .true.\n```",
+        "```fortran90\nREAL, CONTIGUOUS, POINTER, DIMENSION(:) :: var1\n```",
     )
     assert len(ref_results) == len(results) - 1
     check_return(results[1:], ref_results)

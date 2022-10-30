@@ -409,8 +409,8 @@ class FortranObj:
     def get_documentation(self):
         return self.doc_str
 
-    def get_hover(self, long=False, include_doc=True, drop_arg=-1):
-        return None, False
+    def get_hover(self, long=False, drop_arg=-1) -> tuple[str | None, str | None, bool]:
+        return None, None, False
 
     def get_signature(self, drop_arg=-1):
         return None, None, None
@@ -920,30 +920,52 @@ class Subroutine(Scope):
     def get_desc(self):
         return "SUBROUTINE"
 
-    def get_hover(self, long=False, include_doc=True, drop_arg=-1):
+    def get_hover(self, long=False, drop_arg=-1):
         sub_sig, _ = self.get_snippet(drop_arg=drop_arg)
         keyword_list = get_keywords(self.keywords)
         keyword_list.append(f"{self.get_desc()} ")
         hover_array = [" ".join(keyword_list) + sub_sig]
-        hover_array = self.get_docs_full(hover_array, long, include_doc, drop_arg)
-        return "\n ".join(hover_array), long
+        hover_array, docs = self.get_docs_full(hover_array, long, drop_arg)
+        return "\n ".join(hover_array), "   \n".join(docs), long
 
     def get_docs_full(
-        self, hover_array: list[str], long=False, include_doc=True, drop_arg=-1
-    ):
+        self, hover_array: list[str], long=False, drop_arg=-1
+    ) -> tuple[list[str], list[str]]:
+        """Construct the full documentation with the code signature and the
+        documentation string + the documentation of any arguments.
+
+        Parameters
+        ----------
+        hover_array : list[str]
+            The list of strings to append the documentation to.
+        long : bool, optional
+            Whether or not to fetch the docs of the arguments, by default False
+        drop_arg : int, optional
+            Whether or not to drop certain arguments from the results, by default -1
+
+        Returns
+        -------
+        tuple[list[str], list[str]]
+            Tuple containing the Fortran signature that should be in code blocks
+            and the documentation string that should be in normal Markdown.
+        """
+        doc_strs: list[str] = []
         doc_str = self.get_documentation()
-        if include_doc and doc_str is not None:
-            hover_array[0] += "\n" + doc_str
+        if doc_str is not None:
+            doc_strs.append(doc_str)
         if long:
+            has_args = True
             for i, arg_obj in enumerate(self.arg_objs):
                 if arg_obj is None or i == drop_arg:
                     continue
-                arg_doc, _ = arg_obj.get_hover(include_doc=False)
-                hover_array.append(f"{arg_doc} :: {arg_obj.name}")
-                doc_str = arg_obj.get_documentation()
-                if include_doc and (doc_str is not None):
-                    hover_array += doc_str.splitlines()
-        return hover_array
+                arg, doc_str, _ = arg_obj.get_hover()
+                hover_array.append(arg)
+                if doc_str:  # If doc_str is not None or ""
+                    if has_args:
+                        doc_strs.append("\n**Parameters:**  ")
+                        has_args = False
+                    doc_strs.append(f"`{arg_obj.name}` {doc_str}")
+        return hover_array, doc_strs
 
     def get_signature(self, drop_arg=-1):
         arg_sigs = []
@@ -964,6 +986,7 @@ class Subroutine(Scope):
         call_sig, _ = self.get_snippet()
         return call_sig, self.get_documentation(), arg_sigs
 
+    # TODO: fix this
     def get_interface_array(
         self, keywords: list[str], signature: str, change_arg=-1, change_strings=None
     ):
@@ -971,7 +994,7 @@ class Subroutine(Scope):
         for i, arg_obj in enumerate(self.arg_objs):
             if arg_obj is None:
                 return None
-            arg_doc, _ = arg_obj.get_hover(include_doc=False)
+            arg_doc, docs, _ = arg_obj.get_hover()
             if i == change_arg:
                 i0 = arg_doc.lower().find(change_strings[0].lower())
                 if i0 >= 0:
@@ -1087,8 +1110,8 @@ class Function(Subroutine):
         return False
 
     def get_hover(
-        self, long: bool = False, include_doc: bool = True, drop_arg: int = -1
-    ) -> tuple[str, bool]:
+        self, long: bool = False, drop_arg: int = -1
+    ) -> tuple[str, str, bool]:
         """Construct the hover message for a FUNCTION.
         Two forms are produced here the `long` i.e. the normal for hover requests
 
@@ -1107,8 +1130,6 @@ class Function(Subroutine):
         ----------
         long : bool, optional
             toggle between long and short hover results, by default False
-        include_doc : bool, optional
-            if to include any documentation, by default True
         drop_arg : int, optional
             Ignore argument at position `drop_arg` in the argument list, by default -1
 
@@ -1124,17 +1145,21 @@ class Function(Subroutine):
         keyword_list.append("FUNCTION")
 
         hover_array = [f"{' '.join(keyword_list)} {fun_sig}"]
-        hover_array = self.get_docs_full(hover_array, long, include_doc, drop_arg)
+        hover_array, docs = self.get_docs_full(hover_array, long, drop_arg)
         # Only append the return value if using long form
         if self.result_obj and long:
-            arg_doc, _ = self.result_obj.get_hover(include_doc=False)
-            hover_array.append(f"{arg_doc} :: {self.result_obj.name}")
+            # Parse the documentation from the result variable
+            arg_doc, doc_str, _ = self.result_obj.get_hover()
+            if doc_str is not None:
+                docs.append(f"\n**Return:**  \n`{self.result_obj.name}`{doc_str}")
+            hover_array.append(arg_doc)
         # intrinsic functions, where the return type is missing but can be inferred
         elif self.result_type and long:
             # prepend type to function signature
             hover_array[0] = f"{self.result_type} {hover_array[0]}"
-        return "\n ".join(hover_array), long
+        return "\n ".join(hover_array), "  \n".join(docs), long
 
+    # TODO: fix this
     def get_interface(self, name_replace=None, change_arg=-1, change_strings=None):
         fun_sig, _ = self.get_snippet(name_replace=name_replace)
         fun_sig += f" RESULT({self.result_name})"
@@ -1149,7 +1174,7 @@ class Function(Subroutine):
             keyword_list, fun_sig, change_arg, change_strings
         )
         if self.result_obj is not None:
-            arg_doc, _ = self.result_obj.get_hover(include_doc=False)
+            arg_doc, docs, _ = self.result_obj.get_hover()
             interface_array.append(f"{arg_doc} :: {self.result_obj.name}")
         name = self.name
         if name_replace is not None:
@@ -1656,18 +1681,17 @@ class Variable(FortranObj):
         # Normal variable
         return None, None
 
-    def get_hover(self, long=False, include_doc=True, drop_arg=-1):
+    def get_hover(self, long=False, drop_arg=-1) -> tuple[str, str, bool]:
         doc_str = self.get_documentation()
         # In associated blocks we need to fetch the desc and keywords of the
         # linked object
         hover_str = ", ".join([self.get_desc()] + self.get_keywords())
-        # TODO: at this stage we can mae this lowercase
-        # Add parameter value in the output
+        # If this is not a preprocessor variable, we can append the variable name
+        if not hover_str.startswith("#"):
+            hover_str += f" :: {self.name}"
         if self.is_parameter() and self.param_val:
-            hover_str += f" :: {self.name} = {self.param_val}"
-        if include_doc and (doc_str is not None):
-            hover_str += "\n {}".format("\n ".join(doc_str.splitlines()))
-        return hover_str, True
+            hover_str += f" = {self.param_val}"
+        return hover_str, doc_str, True
 
     def get_keywords(self):
         # TODO: if local keywords are set they should take precedence over link_obj
@@ -1803,45 +1827,34 @@ class Method(Variable):  # i.e. TypeBound procedure
             return self.link_obj.get_documentation()
         return self.doc_str
 
-    def get_hover(self, long=False, include_doc=True, drop_arg=-1):
-        doc_str = self.get_documentation()
-        if long:
-            if self.link_obj is None:
-                sub_sig, _ = self.get_snippet()
-                hover_str = f"{self.get_desc()} {sub_sig}"
-                if include_doc and (doc_str is not None):
-                    hover_str += f"\n{doc_str}"
-            else:
-                link_hover, _ = self.link_obj.get_hover(
-                    long=True, include_doc=include_doc, drop_arg=self.drop_arg
-                )
-                hover_split = link_hover.splitlines()
-                call_sig = hover_split[0]
-                paren_start = call_sig.rfind("(")
-                link_name_len = len(self.link_obj.name)
-                call_sig = (
-                    call_sig[: paren_start - link_name_len]
-                    + self.name
-                    + call_sig[paren_start:]
-                )
-                hover_split = hover_split[1:]
-                if include_doc and (self.doc_str is not None):
-                    # Replace linked docs with current object's docs
-                    if (len(hover_split) > 0) and (hover_split[0].count("!!") > 0):
-                        for (i, hover_line) in enumerate(hover_split):
-                            if hover_line.count("!!") == 0:
-                                hover_split = hover_split[i:]
-                                break
-                        else:  # All lines are docs
-                            hover_split = []
-                    hover_split = [self.doc_str] + hover_split
-                hover_str = "\n".join([call_sig] + hover_split)
-            return hover_str, True
-        else:
+    def get_hover(self, long=False, drop_arg=-1) -> tuple[str, str, bool]:
+        docs = self.get_documentation()
+        if not long:
             hover_str = ", ".join([self.desc] + get_keywords(self.keywords))
-            if include_doc and (doc_str is not None):
-                hover_str += f"\n{doc_str}"
-            return hover_str, True
+            return hover_str, docs, True
+        # Long hover message
+        if self.link_obj is None:
+            sub_sig, _ = self.get_snippet()
+            hover_str = f"{self.get_desc()} {sub_sig}"
+        else:
+            link_msg, link_docs, _ = self.link_obj.get_hover(
+                long=True, drop_arg=self.drop_arg
+            )
+            # Replace the name of the linked object with the name of this object
+            hover_str = link_msg.replace(self.link_obj.name, self.name, 1)
+            if isinstance(link_docs, str):
+                # Get just the docstring of the link, if any, no args
+                link_doc_top = self.link_obj.get_documentation()
+                # Replace the linked objects topmost documentation with the
+                # documentation of the procedure pointer if one is present
+                if link_doc_top is not None:
+                    docs = link_docs.replace(link_doc_top, docs, 1)
+                # If no top docstring is present at the linked object but there
+                # are docstrings for the arguments, add them to the end of the
+                # documentation for this object
+                elif link_docs:
+                    docs += "  \n" + link_docs
+        return hover_str, docs, True
 
     def get_signature(self, drop_arg=-1):
         if self.link_obj is not None:

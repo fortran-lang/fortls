@@ -13,7 +13,7 @@ try:
 except ImportError:
     from typing_extensions import Literal
 
-from re import Pattern
+from re import Pattern, Match
 
 from fortls.constants import (
     DO_TYPE_ID,
@@ -1858,8 +1858,8 @@ class FortranFile:
 
         def format(docs: list[str]) -> str:
             if len(docs) == 1:
-                return f"!! {docs[0]}"
-            return "!! " + "\n!! ".join(docs)
+                return f"{docs[0]}"
+            return "\n".join(docs)
 
         def add_line_comment(file_ast: FortranAST, docs: list[str]):
             # Handle dangling comments from previous line
@@ -1891,7 +1891,7 @@ class FortranFile:
         return ln
 
     def get_docstring(
-        self, ln: int, line: str, match: Pattern, docs: list[str]
+        self, ln: int, line: str, match: Match[str], docs: list[str]
     ) -> tuple[int, list[str], bool]:
         """Extract entire documentation strings from the current file position
 
@@ -1901,7 +1901,7 @@ class FortranFile:
             Line number
         line : str
             Document line, not necessarily produced by `get_line()`
-        match : Pattern
+        match : Match[str]
             Regular expression DOC match
         docs : list[str]
             Docstrings that are pending processing e.g. single line docstrings
