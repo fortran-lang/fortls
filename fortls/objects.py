@@ -804,6 +804,11 @@ class Module(Scope):
     def get_desc(self):
         return "MODULE"
 
+    def get_hover(self, long=False, drop_arg=-1) -> tuple[str, str]:
+        hover = f"{self.get_desc()} {self.name}"
+        doc_str = self.get_documentation()
+        return hover, doc_str
+
     def check_valid_parent(self):
         if self.parent is not None:
             return False
@@ -1287,7 +1292,7 @@ class Type(Scope):
         self.inherit_var = None
         self.inherit_tmp = None
         self.inherit_version = -1
-        if keywords.count(KEYWORD_ID_DICT["abstract"]) > 0:
+        if self.keywords.count(KEYWORD_ID_DICT["abstract"]) > 0:
             self.abstract = True
         else:
             self.abstract = False
@@ -1435,6 +1440,17 @@ class Type(Scope):
                 }
             ]
         return actions
+
+    def get_hover(self, long=False, drop_arg=-1) -> tuple[str, str]:
+        keywords = [self.get_desc()]
+        if self.abstract:
+            keywords.append("ABSTRACT")
+        if self.inherit:
+            keywords.append(f"EXTENDS({self.inherit})")
+        decl = ", ".join(keywords)
+        hover = f"{decl} :: {self.name}"
+        doc_str = self.get_documentation()
+        return hover, doc_str
 
 
 class Block(Scope):
