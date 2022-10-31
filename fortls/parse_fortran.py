@@ -13,7 +13,7 @@ try:
 except ImportError:
     from typing_extensions import Literal
 
-from re import Match, Pattern
+from re import Pattern, Match
 
 from fortls.constants import (
     DO_TYPE_ID,
@@ -1980,7 +1980,7 @@ class FortranFile:
         doc = line[match.end(0) :].strip()
         return [doc] if doc else []
 
-    def get_comment_regexs(self) -> tuple[Pattern, Pattern]:
+    def get_comment_regexs(self) -> tuple[Pattern[str], Pattern[str]]:
         if self.fixed:
             return FRegex.FIXED_COMMENT, FRegex.FIXED_DOC
         return FRegex.FREE_COMMENT, FRegex.FREE_DOC
