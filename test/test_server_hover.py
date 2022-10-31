@@ -1,7 +1,7 @@
-from setup_tests import run_request, test_dir, write_rpc_request
+from setup_tests import run_request, test_dir, write_rpc_request, Path
 
 
-def hover_req(file_path: str, ln: int, col: int) -> str:
+def hover_req(file_path: Path, ln: int, col: int) -> str:
     return write_rpc_request(
         1,
         "textDocument/hover",
@@ -336,7 +336,7 @@ def test_hover_interface_as_argument():
     string += hover_req(file_path, 19, 14)
     errcode, results = run_request(string, fortls_args=["--sort_keywords", "-n1"])
     assert errcode == 0
-    ref_results = (
+    ref_results = [
         # Could be subject to change
         """```fortran90
 FUNCTION foo2(f, g, h) RESULT(arg3)
@@ -345,7 +345,7 @@ FUNCTION foo2(f, g, h) RESULT(arg3)
  FUNCTION h(x)
  REAL :: arg3
 ```""",
-    )
+    ]
     validate_hover(results, ref_results)
 
 
