@@ -75,7 +75,7 @@ def test_subroutine_markdown():
         1, "initialize", {"rootPath": str(test_dir / "signature")}
     )
     file_path = test_dir / "signature" / "help.f90"
-    string += sigh_request(file_path, 22, 18)
+    string += sigh_request(file_path, 23, 18)
     errcode, results = run_request(
         string, ["--hover_signature", "--use_signature_help", "-n1"]
     )
