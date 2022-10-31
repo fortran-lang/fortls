@@ -415,6 +415,7 @@ class FortranObj:
         return self.doc_str
 
     def get_hover(self, long=False, drop_arg=-1) -> tuple[str | None, str | None, bool]:
+        return None, None, False
 
     def get_hover_md(self, long=False, drop_arg=-1) -> str:
         return ""
@@ -1591,6 +1592,7 @@ class Variable(FortranObj):
         var_desc: str,
         keywords: list,
         keyword_info: dict = None,
+        # kind: int | str = None,
         link_obj=None,
     ):
         super().__init__()
@@ -1612,6 +1614,7 @@ class Variable(FortranObj):
         self.is_external: bool = False
         self.param_val: str = None
         self.link_name: str = None
+        # self.kind: int | str = kind
         self.FQSN: str = self.name.lower()
         if link_obj is not None:
             self.link_name = link_obj.lower()
