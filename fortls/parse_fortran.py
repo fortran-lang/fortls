@@ -1857,9 +1857,36 @@ class FortranFile:
         """
 
         def format(docs: list[str]) -> str:
+            """Format docstrings and parse for Doxygen tags"""
             if len(docs) == 1:
                 return f"{docs[0]}"
-            return "\n".join(docs)
+            docstr = ""
+            has_args = True
+            idx_args = -1
+            for (i, line) in enumerate(docs):
+                if line.startswith("@brief"):
+                    docstr += line.replace("@brief", "", 1).strip() + "\n"
+                elif line.startswith("@param"):
+                    if has_args:
+                        docstr += "\n**Parameters:**  \n"
+                        has_args = False
+                        idx_args = len(docstr)
+                    docstr += re.sub(
+                        r"[@\\]param(?:[\[\(]\s*[\w,]+\s*[\]\)])?\s+(.*?)\s+",
+                        r"  \n`\1` - ",
+                        line + " ",
+                    )
+                elif line.startswith("@return"):
+                    docstr += "\n**Returns:**  \n"
+                    docstr += line.replace("@return", "", 1).strip() + "\n"
+                else:
+                    docstr += line.strip() + "\n"
+            # Remove new line characters from 1st @param line
+            if idx_args > 0:
+                docstr = docstr[: idx_args - 3] + docstr[idx_args:].replace(
+                    "  \n ", "", 1
+                )
+            return docstr
 
         def add_line_comment(file_ast: FortranAST, docs: list[str]):
             # Handle dangling comments from previous line

@@ -964,7 +964,8 @@ class Subroutine(Scope):
                     if has_args:
                         doc_strs.append("\n**Parameters:**  ")
                         has_args = False
-                    doc_strs.append(f"`{arg_obj.name}` {doc_str}")
+                    # stripping prevents multiple \n characters from the parser
+                    doc_strs.append(f"`{arg_obj.name}` {doc_str}".strip())
         return hover_array, doc_strs
 
     def get_signature(self, drop_arg=-1):
@@ -1853,6 +1854,8 @@ class Method(Variable):  # i.e. TypeBound procedure
                 # are docstrings for the arguments, add them to the end of the
                 # documentation for this object
                 elif link_docs:
+                    if docs is None:
+                        docs = ""
                     docs += "  \n" + link_docs
         return hover_str, docs, True
 
