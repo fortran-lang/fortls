@@ -1,4 +1,4 @@
-from setup_tests import run_request, test_dir, write_rpc_request, Path
+from setup_tests import Path, run_request, test_dir, write_rpc_request
 
 
 def hover_req(file_path: Path, ln: int, col: int) -> str:

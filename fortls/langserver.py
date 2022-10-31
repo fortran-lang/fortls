@@ -33,13 +33,13 @@ from fortls.constants import (
 )
 from fortls.helper_functions import (
     expand_name,
+    fortran_md,
     get_line_prefix,
     get_paren_level,
     get_var_stack,
     only_dirs,
     resolve_globs,
     set_keyword_ordering,
-    fortran_md
 )
 from fortls.intrinsics import (
     Intrinsic,
