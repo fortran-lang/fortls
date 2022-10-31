@@ -27,7 +27,12 @@ from fortls.constants import (
     FRegex,
 )
 from fortls.ftypes import IncludeInfo, UseInfo
-from fortls.helper_functions import get_keywords, get_paren_substring, get_var_stack
+from fortls.helper_functions import (
+    fortran_md,
+    get_keywords,
+    get_paren_substring,
+    get_var_stack,
+)
 from fortls.json_templates import diagnostic_json, location_json, range_json
 from fortls.jsonrpc import path_to_uri
 
@@ -410,7 +415,9 @@ class FortranObj:
         return self.doc_str
 
     def get_hover(self, long=False, drop_arg=-1) -> tuple[str | None, str | None, bool]:
-        return None, None, False
+
+    def get_hover_md(self, long=False, drop_arg=-1) -> str:
+        return ""
 
     def get_signature(self, drop_arg=-1):
         return None, None, None
@@ -928,6 +935,9 @@ class Subroutine(Scope):
         hover_array, docs = self.get_docs_full(hover_array, long, drop_arg)
         return "\n ".join(hover_array), "   \n".join(docs), long
 
+    def get_hover_md(self, long=False, drop_arg=-1):
+        return fortran_md(*self.get_hover(long, drop_arg))
+
     def get_docs_full(
         self, hover_array: list[str], long=False, drop_arg=-1
     ) -> tuple[list[str], list[str]]:
@@ -981,9 +991,10 @@ class Subroutine(Scope):
                     label = f"{arg_obj.name.lower()}={arg_obj.name.lower()}"
                 else:
                     label = arg_obj.name.lower()
-                arg_sigs.append(
-                    {"label": label, "documentation": arg_obj.get_hover()[0]}
-                )
+                msg = arg_obj.get_hover_md()
+                # Create MarkupContent object
+                msg = {"kind": "markdown", "value": msg}
+                arg_sigs.append({"label": label, "documentation": msg})
         call_sig, _ = self.get_snippet()
         return call_sig, self.get_documentation(), arg_sigs
 
@@ -1693,6 +1704,9 @@ class Variable(FortranObj):
         if self.is_parameter() and self.param_val:
             hover_str += f" = {self.param_val}"
         return hover_str, doc_str, True
+
+    def get_hover_md(self, long=False, drop_arg=-1):
+        return fortran_md(*self.get_hover(long, drop_arg))
 
     def get_keywords(self):
         # TODO: if local keywords are set they should take precedence over link_obj

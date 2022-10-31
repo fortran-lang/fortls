@@ -39,6 +39,7 @@ from fortls.helper_functions import (
     only_dirs,
     resolve_globs,
     set_keyword_ordering,
+    fortran_md
 )
 from fortls.intrinsics import (
     Intrinsic,
@@ -1037,12 +1038,9 @@ class LangServer:
 
     def serve_hover(self, request: dict):
         def create_hover(string: str, docs: str | None, fortran: bool):
-            msg = string
-            if fortran:
-                msg = f"```{self.hover_language}\n{string}\n```"
-            if docs:  # if docs is not None or ""
-                msg += f"\n-----\n{docs}"
-            return msg
+            # This does not account for Fixed Form Fortran, but it should be
+            # okay for 99% of cases
+            return fortran_md(string, docs, fortran, self.hover_language)
 
         def create_signature_hover():
             sig_request = request.copy()
@@ -1082,8 +1080,7 @@ class LangServer:
         var_type: int = var_obj.get_type()
         hover_array = []
         if var_type in (SUBROUTINE_TYPE_ID, FUNCTION_TYPE_ID):
-            hover_str, docs, highlight = var_obj.get_hover(long=True)
-            hover_array.append(create_hover(hover_str, docs, highlight))
+            hover_array.append(var_obj.get_hover_md(long=True))
         elif var_type == INTERFACE_TYPE_ID:
             for member in var_obj.mems:
                 hover_str, docs, highlight = member.get_hover(long=True)
@@ -1093,8 +1090,7 @@ class LangServer:
             # Unless we have a Fortran literal include the desc in the hover msg
             # See get_definition for an explanation about this default name
             if not var_obj.desc.startswith(FORTRAN_LITERAL):
-                hover_str, docs, highlight = var_obj.get_hover()
-                hover_array.append(create_hover(hover_str, docs, highlight))
+                hover_array.append(var_obj.get_hover_md(long=True))
             # Hover for Literal variables
             elif var_obj.desc.endswith("REAL"):
                 hover_array.append(create_hover("REAL", None, True))

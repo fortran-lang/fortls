@@ -580,3 +580,31 @@ def get_var_stack(line: str) -> list[str]:
         return final_op_split[-1].split("%")
     else:
         return None
+
+
+def fortran_md(code: str, docs: str | None, highlight: bool, langid: str = "fortran90"):
+    """Convert Fortran code to markdown
+
+    Parameters
+    ----------
+    code : str
+        Fortran code
+    docs : str | None
+        Documentation string, only makes sense if ``highlight`` is ``True``
+    highlight : bool
+        Whether to highlight the code
+    langid : str, optional
+        Language ID, by default 'fortran90'
+
+    Returns
+    -------
+    str
+        Markdown string
+    """
+    msg = code
+    if highlight:
+        msg = f"```{langid}\n{code}\n```"
+    # Add documentation
+    if docs:  # if docs is not None or ""
+        msg += f"\n-----\n{docs}"
+    return msg
