@@ -1448,7 +1448,7 @@ class LangServer:
             result_obj = result.get()
             if isinstance(result_obj, str):
                 self.post_message(
-                    f"Initialization failed for file '{path}': {result_obj}"
+                    f"Initialization failed for file {path}: {result_obj}"
                 )
                 continue
             self.workspace[path] = result_obj
