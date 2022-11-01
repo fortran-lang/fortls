@@ -505,3 +505,20 @@ def test_intent():
         """```fortran90\nREAL, OPTIONAL, INTENT(IN) :: arg5\n```""",
     ]
     validate_hover(results, ref_results)
+
+
+def test_multiline_func_args():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
+    file_path = test_dir / "hover" / "functions.f90"
+    string += hover_req(file_path, 58, 22)
+    string += hover_req(file_path, 59, 22)
+    string += hover_req(file_path, 60, 22)
+
+    errcode, results = run_request(string, fortls_args=["-n", "1"])
+    assert errcode == 0
+    ref_results = [
+        "```fortran90\nINTEGER, INTENT(IN) :: val1\n```",
+        "```fortran90\nINTEGER, INTENT(IN) :: val2\n```",
+        "```fortran90\nREAL :: val4\n```",
+    ]
+    validate_hover(results, ref_results)

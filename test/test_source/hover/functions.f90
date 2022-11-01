@@ -55,3 +55,9 @@ function fun7() result(val)
     type(c_ptr) :: val
     val = c_loc(ar)
 end function fun7
+
+real function foobar(val1, &
+                     val2) &
+              result(val4)
+integer, intent(in) :: val1, val2
+end function foobar

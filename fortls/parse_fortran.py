@@ -1260,6 +1260,7 @@ class FortranFile:
             pp_defines = []
 
         line_no = 0
+        line_no_end = 0
         block_id_stack = []
         docs: list[str] = []  # list used to temporarily store docstrings
         counters = Counter(
@@ -1271,13 +1272,16 @@ class FortranFile:
         )
         multi_lines = deque()
         self.COMMENT_LINE_MATCH, self.DOC_COMMENT_MATCH = self.get_comment_regexs()
-        while (line_no < self.nLines) or multi_lines:
+        while (line_no_end < self.nLines) or multi_lines:
             # Get next line
             # Get a normal line, i.e. the stack is empty
             if not multi_lines:
+                # Check if we need to advance the line number due to `&` continuation
+                line_no = line_no_end if line_no_end > line_no else line_no
                 # get_line has a 0-based index
                 line = self.get_line(line_no, pp_content=True)
-                line_no += 1
+                line_no += 1  # Move to next line
+                line_no_end = line_no
                 get_full = True
             # Line is part of a multi-line construct, i.e. contained ';'
             else:
@@ -1292,6 +1296,7 @@ class FortranFile:
             idx = self.parse_docs(line, line_no, file_ast, docs)
             if idx:
                 line_no = idx
+                line_no_end = line_no
                 continue
             # Handle preprocessing regions
             do_skip = False
@@ -1309,7 +1314,9 @@ class FortranFile:
                 _, line, post_lines = self.get_code_line(
                     line_no - 1, backward=False, pp_content=True
                 )
-                line_no += len(post_lines)
+                # Save the end of the line for the next iteration.
+                # Need to keep the line number for registering start of Scopes
+                line_no_end += len(post_lines)
                 line = "".join([line] + post_lines)
             line, line_label = strip_line_label(line)
             line_stripped = strip_strings(line, maintain_len=True)
