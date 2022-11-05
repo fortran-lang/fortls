@@ -1042,27 +1042,6 @@ class LangServer:
             # okay for 99% of cases
             return fortran_md(string, docs, fortran, self.hover_language)
 
-        def create_signature_hover():
-            sig_request = request.copy()
-            sig_result = self.serve_signature(sig_request)
-            try:
-                arg_id = sig_result.get("activeParameter")
-                if arg_id is not None:
-                    arg_info = sig_result["signatures"][0]["parameters"][arg_id]
-                    arg_doc = arg_info["documentation"]
-                    doc_split = arg_doc.find("\n !!")
-                    if doc_split < 0:
-                        arg_string = f"{arg_doc} :: {arg_info['label']}"
-                    else:
-                        arg_string = (
-                            f"{arg_doc[:doc_split]} :: "
-                            f"{arg_info['label']}{arg_doc[doc_split:]}"
-                        )
-                    # TODO: check if correct. I think it's not
-                    return create_hover(arg_string, None, True)
-            except:
-                pass
-
         # Get parameters from request
         params: dict = request["params"]
         uri: str = params["textDocument"]["uri"]
@@ -1102,11 +1081,6 @@ class LangServer:
                 hover_str = f"CHARACTER(LEN={len(var_obj.name)-2})"
                 hover_array.append(create_hover(hover_str, None, True))
 
-            # Include the signature if one is present e.g. if in an argument list
-            if self.hover_signature:
-                hover_str: str | None = create_signature_hover()
-                if hover_str is not None:
-                    hover_array.append(hover_str)
         if len(hover_array) > 0:
             return {"contents": {"kind": "markdown", "value": "\n".join(hover_array)}}
         return None
