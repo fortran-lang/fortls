@@ -894,7 +894,7 @@ class LangServer:
             param_num = opt_num
         signature = {"label": label, "parameters": params}
         if doc_str is not None:
-            signature["documentation"] = doc_str
+            signature["documentation"] = {"kind": "markdown", "value": doc_str}
         req_dict = {"signatures": [signature], "activeParameter": param_num}
         return req_dict
 

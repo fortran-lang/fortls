@@ -107,7 +107,7 @@ def test_subroutine_markdown():
                         },
                     },
                 ],
-                "documentation": "Top level Doc",
+                "documentation": {"kind": "markdown", "value": "Top level Doc"},
             }
         ],
         "activeParameter": 0,
