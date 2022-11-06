@@ -689,6 +689,28 @@ by forward search of the string, returns -1 if no match is found</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="fortls.helper_functions.fortran_md">
+<span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">fortran_md</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highlight</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">langid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fortran90'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.fortran_md" title="Permalink to this definition">#</a></dt>
+<dd><p>Convert Fortran code to markdown</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>code</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Fortran code</p></li>
+<li><p><strong>docs</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em> | </em><em>None</em>) – Documentation string, only makes sense if <code class="docutils literal notranslate"><span class="pre">highlight</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+<li><p><strong>highlight</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a>) – Whether to highlight the code</p></li>
+<li><p><strong>langid</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – Language ID, by default ‘fortran90’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Markdown string</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="fortls.helper_functions.get_keywords">
 <span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">get_keywords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keywords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keyword_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.get_keywords" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
@@ -1738,8 +1760,23 @@ in the document.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.objects.FortranObj.get_hover">
-<span class="sig-name descname"><span class="pre">get_hover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_doc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.FortranObj.get_hover" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">get_hover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.FortranObj.get_hover" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a> | None, <a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a> | None, <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)">bool</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fortls.objects.FortranObj.get_hover_md">
+<span class="sig-name descname"><span class="pre">get_hover_md</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.FortranObj.get_hover_md" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.objects.FortranObj.get_implicit">
@@ -1864,7 +1901,7 @@ in the document.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.objects.Function.get_hover">
-<span class="sig-name descname"><span class="pre">get_hover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_doc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Function.get_hover" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_hover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Function.get_hover" title="Permalink to this definition">#</a></dt>
 <dd><p>Construct the hover message for a FUNCTION.
 Two forms are produced here the <cite>long</cite> i.e. the normal for hover requests</p>
 <dl class="simple">
@@ -1880,7 +1917,6 @@ TYPE, [RESULT_MODIFIERS] :: RESULT_VAR</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>long</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – toggle between long and short hover results, by default False</p></li>
-<li><p><strong>include_doc</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – if to include any documentation, by default True</p></li>
 <li><p><strong>drop_arg</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – Ignore argument at position <cite>drop_arg</cite> in the argument list, by default -1</p></li>
 </ul>
 </dd>
@@ -1999,7 +2035,7 @@ TYPE, [RESULT_MODIFIERS] :: RESULT_VAR</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.objects.Method.get_hover">
-<span class="sig-name descname"><span class="pre">get_hover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_doc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Method.get_hover" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_hover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Method.get_hover" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -2246,12 +2282,35 @@ TYPE, [RESULT_MODIFIERS] :: RESULT_VAR</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.objects.Subroutine.get_docs_full">
-<span class="sig-name descname"><span class="pre">get_docs_full</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hover_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_doc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Subroutine.get_docs_full" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">get_docs_full</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hover_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Subroutine.get_docs_full" title="Permalink to this definition">#</a></dt>
+<dd><p>Construct the full documentation with the code signature and the
+documentation string + the documentation of any arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hover_array</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – The list of strings to append the documentation to.</p></li>
+<li><p><strong>long</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether or not to fetch the docs of the arguments, by default False</p></li>
+<li><p><strong>drop_arg</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – Whether or not to drop certain arguments from the results, by default -1</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple containing the Fortran signature that should be in code blocks
+and the documentation string that should be in normal Markdown.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)">list</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>], <a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)">list</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.objects.Subroutine.get_hover">
-<span class="sig-name descname"><span class="pre">get_hover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_doc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Subroutine.get_hover" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_hover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Subroutine.get_hover" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fortls.objects.Subroutine.get_hover_md">
+<span class="sig-name descname"><span class="pre">get_hover_md</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Subroutine.get_hover_md" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -2379,7 +2438,12 @@ TYPE, [RESULT_MODIFIERS] :: RESULT_VAR</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.objects.Variable.get_hover">
-<span class="sig-name descname"><span class="pre">get_hover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_doc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Variable.get_hover" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_hover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Variable.get_hover" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fortls.objects.Variable.get_hover_md">
+<span class="sig-name descname"><span class="pre">get_hover_md</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Variable.get_hover_md" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -2545,7 +2609,7 @@ TYPE, [RESULT_MODIFIERS] :: RESULT_VAR</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ln</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Line number</p></li>
 <li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Document line, not necessarily produced by <cite>get_line()</cite></p></li>
-<li><p><strong>match</strong> (<em>Pattern</em>) – Regular expression DOC match</p></li>
+<li><p><strong>match</strong> (<em>Match</em><em>[</em><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – Regular expression DOC match</p></li>
 <li><p><strong>docs</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – Docstrings that are pending processing e.g. single line docstrings</p></li>
 </ul>
 </dd>
@@ -3676,6 +3740,7 @@ F F03 F05 F08 F18 F77 F90 F95 FOR FPP f f03 f05 f08 f18 f77 f90 f95 for fpp</p>
 <li><a class="reference internal" href="#fortls.helper_functions.expand_name"><code class="docutils literal notranslate"><span class="pre">expand_name()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.helper_functions.find_paren_match"><code class="docutils literal notranslate"><span class="pre">find_paren_match()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.helper_functions.find_word_in_line"><code class="docutils literal notranslate"><span class="pre">find_word_in_line()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.helper_functions.fortran_md"><code class="docutils literal notranslate"><span class="pre">fortran_md()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.helper_functions.get_keywords"><code class="docutils literal notranslate"><span class="pre">get_keywords()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.helper_functions.get_line_prefix"><code class="docutils literal notranslate"><span class="pre">get_line_prefix()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.helper_functions.get_paren_level"><code class="docutils literal notranslate"><span class="pre">get_paren_level()</span></code></a></li>
@@ -3858,6 +3923,7 @@ F F03 F05 F08 F18 F77 F90 F95 FOR FPP f f03 f05 f08 f18 f77 f90 f95 for fpp</p>
 <li><a class="reference internal" href="#fortls.objects.FortranObj.get_diagnostics"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_diagnostics()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.FortranObj.get_documentation"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_documentation()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.FortranObj.get_hover"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_hover()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.FortranObj.get_hover_md"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_hover_md()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.FortranObj.get_implicit"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_implicit()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.FortranObj.get_interface"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_interface()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.FortranObj.get_placeholders"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_placeholders()</span></code></a></li>
@@ -3975,6 +4041,7 @@ F F03 F05 F08 F18 F77 F90 F95 FOR FPP f f03 f05 f08 f18 f77 f90 f95 for fpp</p>
 <li><a class="reference internal" href="#fortls.objects.Subroutine.get_diagnostics"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_diagnostics()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.Subroutine.get_docs_full"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_docs_full()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.Subroutine.get_hover"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_hover()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Subroutine.get_hover_md"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_hover_md()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.Subroutine.get_interface"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_interface()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.Subroutine.get_interface_array"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_interface_array()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.Subroutine.get_signature"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_signature()</span></code></a></li>
@@ -4004,6 +4071,7 @@ F F03 F05 F08 F18 F77 F90 F95 FOR FPP f f03 f05 f08 f18 f77 f90 f95 for fpp</p>
 <li><a class="reference internal" href="#fortls.objects.Variable.check_definition"><code class="docutils literal notranslate"><span class="pre">Variable.check_definition()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.Variable.get_desc"><code class="docutils literal notranslate"><span class="pre">Variable.get_desc()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.Variable.get_hover"><code class="docutils literal notranslate"><span class="pre">Variable.get_hover()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Variable.get_hover_md"><code class="docutils literal notranslate"><span class="pre">Variable.get_hover_md()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.Variable.get_keywords"><code class="docutils literal notranslate"><span class="pre">Variable.get_keywords()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.Variable.get_snippet"><code class="docutils literal notranslate"><span class="pre">Variable.get_snippet()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.Variable.get_type"><code class="docutils literal notranslate"><span class="pre">Variable.get_type()</span></code></a></li>
