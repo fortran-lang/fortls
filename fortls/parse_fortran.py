@@ -13,7 +13,7 @@ try:
 except ImportError:
     from typing_extensions import Literal
 
-from re import Pattern
+from re import Match, Pattern
 
 from fortls.constants import (
     DO_TYPE_ID,
@@ -1260,6 +1260,7 @@ class FortranFile:
             pp_defines = []
 
         line_no = 0
+        line_no_end = 0
         block_id_stack = []
         docs: list[str] = []  # list used to temporarily store docstrings
         counters = Counter(
@@ -1271,13 +1272,16 @@ class FortranFile:
         )
         multi_lines = deque()
         self.COMMENT_LINE_MATCH, self.DOC_COMMENT_MATCH = self.get_comment_regexs()
-        while (line_no < self.nLines) or multi_lines:
+        while (line_no_end < self.nLines) or multi_lines:
             # Get next line
             # Get a normal line, i.e. the stack is empty
             if not multi_lines:
+                # Check if we need to advance the line number due to `&` continuation
+                line_no = line_no_end if line_no_end > line_no else line_no
                 # get_line has a 0-based index
                 line = self.get_line(line_no, pp_content=True)
-                line_no += 1
+                line_no += 1  # Move to next line
+                line_no_end = line_no
                 get_full = True
             # Line is part of a multi-line construct, i.e. contained ';'
             else:
@@ -1292,6 +1296,7 @@ class FortranFile:
             idx = self.parse_docs(line, line_no, file_ast, docs)
             if idx:
                 line_no = idx
+                line_no_end = line_no
                 continue
             # Handle preprocessing regions
             do_skip = False
@@ -1309,7 +1314,9 @@ class FortranFile:
                 _, line, post_lines = self.get_code_line(
                     line_no - 1, backward=False, pp_content=True
                 )
-                line_no += len(post_lines)
+                # Save the end of the line for the next iteration.
+                # Need to keep the line number for registering start of Scopes
+                line_no_end += len(post_lines)
                 line = "".join([line] + post_lines)
             line, line_label = strip_line_label(line)
             line_stripped = strip_strings(line, maintain_len=True)
@@ -1857,9 +1864,36 @@ class FortranFile:
         """
 
         def format(docs: list[str]) -> str:
+            """Format docstrings and parse for Doxygen tags"""
             if len(docs) == 1:
-                return f"!! {docs[0]}"
-            return "!! " + "\n!! ".join(docs)
+                return f"{docs[0]}"
+            docstr = ""
+            has_args = True
+            idx_args = -1
+            for (i, line) in enumerate(docs):
+                if line.startswith("@brief"):
+                    docstr += line.replace("@brief", "", 1).strip() + "\n"
+                elif line.startswith("@param"):
+                    if has_args:
+                        docstr += "\n**Parameters:**  \n"
+                        has_args = False
+                        idx_args = len(docstr)
+                    docstr += re.sub(
+                        r"[@\\]param(?:[\[\(]\s*[\w,]+\s*[\]\)])?\s+(.*?)\s+",
+                        r"  \n`\1` - ",
+                        line + " ",
+                    )
+                elif line.startswith("@return"):
+                    docstr += "\n**Returns:**  \n"
+                    docstr += line.replace("@return", "", 1).strip() + "\n"
+                else:
+                    docstr += line.strip() + "\n"
+            # Remove new line characters from 1st @param line
+            if idx_args > 0:
+                docstr = docstr[: idx_args - 3] + docstr[idx_args:].replace(
+                    "  \n ", "", 1
+                )
+            return docstr
 
         def add_line_comment(file_ast: FortranAST, docs: list[str]):
             # Handle dangling comments from previous line
@@ -1891,7 +1925,7 @@ class FortranFile:
         return ln
 
     def get_docstring(
-        self, ln: int, line: str, match: Pattern, docs: list[str]
+        self, ln: int, line: str, match: Match[str], docs: list[str]
     ) -> tuple[int, list[str], bool]:
         """Extract entire documentation strings from the current file position
 
@@ -1901,7 +1935,7 @@ class FortranFile:
             Line number
         line : str
             Document line, not necessarily produced by `get_line()`
-        match : Pattern
+        match : Match[str]
             Regular expression DOC match
         docs : list[str]
             Docstrings that are pending processing e.g. single line docstrings
@@ -1953,7 +1987,7 @@ class FortranFile:
         doc = line[match.end(0) :].strip()
         return [doc] if doc else []
 
-    def get_comment_regexs(self) -> tuple[Pattern, Pattern]:
+    def get_comment_regexs(self) -> tuple[Pattern[str], Pattern[str]]:
         if self.fixed:
             return FRegex.FIXED_COMMENT, FRegex.FIXED_DOC
         return FRegex.FREE_COMMENT, FRegex.FREE_DOC

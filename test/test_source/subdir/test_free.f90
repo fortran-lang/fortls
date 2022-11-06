@@ -13,7 +13,7 @@ TYPE :: vector
 CONTAINS
   PROCEDURE :: create => vector_create !< Doc 1
   PROCEDURE :: norm => vector_norm !< Doc 2
-  PROCEDURE, PASS(self) :: bound_pass => bound_pass
+  PROCEDURE, PASS(self) :: bound_pass => bound_pass   !< Doc 3
 END TYPE vector
 !
 TYPE, EXTENDS(vector) :: scaled_vector
@@ -48,14 +48,14 @@ norm = SQRT(DOT_PRODUCT(self%v,self%v))
 END FUNCTION vector_norm
 !> Doc 7
 SUBROUTINE scaled_vector_set(self, scale)
-CLASS(scaled_vector), INTENT(inout) :: self
+CLASS(scaled_vector), INTENT(inout) :: self ! no documentation
 REAL(8), INTENT(in) :: scale !< Doc 8
 self%scale%val = scale
 END SUBROUTINE scaled_vector_set
-!>
+!> Top level docstring
 FUNCTION scaled_vector_norm(self) RESULT(norm)
-CLASS(scaled_vector), INTENT(in) :: self
-REAL(8) :: norm
+CLASS(scaled_vector), INTENT(in) :: self  !< self value docstring
+REAL(8) :: norm !< return value docstring
 norm = self%scale%val*SQRT(DOT_PRODUCT(self%v,self%v))
 END FUNCTION scaled_vector_norm
 !
