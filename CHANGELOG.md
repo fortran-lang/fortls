@@ -8,6 +8,18 @@
 
 - Added `CITATION.cff` file to project roots
 
+### Changed
+
+- Changed hover messages and signature help to use Markdown
+  ([#45](https://github.com/gnikit/fortls/issues/45))
+
+### Fixed
+
+- Fixed name mangling of type-bound procedure pointers while hovering
+  ([#214](https://github.com/gnikit/fortls/issues/214))
+- Fixed parsing start of multilines into AST
+  ([#217](https://github.com/gnikit/fortls/issues/217))
+
 ## 2.13.0
 
 ### Added
