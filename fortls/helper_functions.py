@@ -599,7 +599,7 @@ def fortran_md(code: str, docs: str | None, langid: str = "fortran90"):
     str
         Markdown string
     """
-    msg = code
+    msg = ""
     if code:
         msg = f"```{langid}\n{code}\n```"
     # Add documentation

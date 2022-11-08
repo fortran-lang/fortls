@@ -418,7 +418,8 @@ class FortranObj:
         return None, None
 
     def get_hover_md(self, long=False, drop_arg=-1) -> str:
-        return ""
+        msg, docs = self.get_hover(long, drop_arg)
+        return fortran_md(msg, docs)
 
     def get_signature(self, drop_arg=-1):
         return None, None, None
