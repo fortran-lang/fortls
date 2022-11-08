@@ -488,12 +488,15 @@ class LangServer:
             comp_obj["kind"] = map_types(candidate.get_type())
             if is_member and (comp_obj["kind"] == 3):
                 comp_obj["kind"] = 2
+            # Detail label shown above documentation, also shown when
+            # documentation is collapsed i.e. short form completions
             comp_obj["detail"] = candidate.get_desc()
             if call_sig is not None:
                 comp_obj["detail"] += " " + call_sig
-            # TODO: doc_str should probably be appended, see LSP standard
-            hover_msg, doc_str, _ = candidate.get_hover()
-            if hover_msg is not None:
+            # Use the full markdown documentation
+            hover_msg = candidate.get_hover_md(long=True)
+            if hover_msg:
+                hover_msg = {"kind": "markdown", "value": hover_msg}
                 comp_obj["documentation"] = hover_msg
             return comp_obj
 
