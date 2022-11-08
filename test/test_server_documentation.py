@@ -1,10 +1,17 @@
 from setup_tests import run_request, test_dir, write_rpc_request
 
 
-def check_return(result_array, checks):
+def check_return(result_array, checks, only_docs=False):
     comm_lines = []
-    for (i, hover_line) in enumerate(result_array["contents"][0]["value"].splitlines()):
-        if hover_line.count("!!") > 0:
+    found_docs = False
+    idx = 0
+    for (i, hover_line) in enumerate(result_array["contents"]["value"].splitlines()):
+        if hover_line == "-----":
+            found_docs = True
+        if found_docs and only_docs:
+            comm_lines.append((idx, hover_line))
+            idx += 1
+        elif not only_docs:
             comm_lines.append((i, hover_line))
     assert len(comm_lines) == len(checks)
     for i in range(len(checks)):
@@ -27,23 +34,35 @@ def test_doxygen():
     string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "docs")})
     file_path = test_dir / "docs" / "test_doxygen.f90"
     string += hover_request(file_path, 15, 17)
-    errcode, results = run_request(string)
+    errcode, results = run_request(string, ["-n1"])
     assert errcode == 0
     ref = (
-        (1, "!! @brief inserts a value into an ordered array"),
-        (2, "!! "),
+        (0, "```fortran90"),
+        (1, "SUBROUTINE insert(list, n, max_size, new_entry)"),
+        (2, " REAL, DIMENSION(:), INTENT(INOUT) :: list"),
+        (3, " INTEGER, INTENT(IN) :: n"),
+        (4, " INTEGER, INTENT(IN) :: max_size"),
+        (5, " REAL, INTENT(IN) :: new_entry"),
+        (6, "```"),
+        (7, "-----"),
+        (8, "inserts a value into an ordered array"),
+        (9, ""),
         (
-            3,
-            '!! An array "list" consisting of n ascending ordered values. The method'
-            " insert a",
+            10,
+            (
+                'An array "list" consisting of n ascending ordered values. The method'
+                " insert a"
+            ),
         ),
-        (4, '!! "new_entry" into the array.'),
-        (5, "!! hint: use cshift and eo-shift"),
-        (6, "!! "),
-        (7, "!! @param[in,out]   list    a real array, size: max_size"),
-        (8, "!! @param[in]       n       current values in the array"),
-        (9, "!! @param[in]       max_size    size if the array"),
-        (10, "!! @param[in]       new_entry   the value to insert"),
+        (11, '"new_entry" into the array.'),
+        (12, "hint: use cshift and eo-shift"),
+        (13, ""),
+        (14, ""),
+        (15, "**Parameters:**  "),
+        (16, "`list` - a real array, size: max_size   "),
+        (17, "`n` - current values in the array   "),
+        (18, "`max_size` - size if the array   "),
+        (19, "`new_entry` - the value to insert "),
     )
     check_return(results[1], ref)
 
@@ -55,12 +74,23 @@ def test_ford():
     errcode, results = run_request(string)
     assert errcode == 0
     ref = (
-        (1, "!! Feeds your cats and dogs, if enough food is available. If not enough"),
-        (2, "!! food is available, some of your pets will get angry."),
-        (4, " !! The number of cats to keep track of."),
-        (6, " !! The number of dogs to keep track of."),
-        (8, " !! The amount of pet food (in kilograms) which you have on hand."),
-        (10, " !! The number of pets angry because they weren't fed."),
+        (0, "```fortran90"),
+        (1, "SUBROUTINE feed_pets(cats, dogs, food, angry)"),
+        (2, " INTEGER, INTENT(IN) :: cats"),
+        (3, " INTEGER, INTENT(IN) :: dogs"),
+        (4, " REAL, INTENT(INOUT) :: food"),
+        (5, " INTEGER, INTENT(OUT) :: angry"),
+        (6, "```"),
+        (7, "-----"),
+        (8, "Feeds your cats and dogs, if enough food is available. If not enough"),
+        (9, "food is available, some of your pets will get angry."),
+        (10, "   "),
+        (11, ""),
+        (12, "**Parameters:**     "),
+        (13, "`cats` The number of cats to keep track of.   "),
+        (14, "`dogs` The number of dogs to keep track of.   "),
+        (15, "`food` The amount of pet food (in kilograms) which you have on hand.   "),
+        (16, "`angry` The number of pets angry because they weren't fed."),
     )
     check_return(results[1], ref)
 
@@ -74,7 +104,17 @@ def test_doc_overwrite_type_bound_procedure_sub():
     string += hover_request(file_path, 13, 19)
     errcode, results = run_request(string)
     assert errcode == 0
-    check_return(results[1], ((1, "!! Doc 1"), (3, " !! Doc 5")))
+    check_return(
+        results[1],
+        (
+            (0, "-----"),
+            (1, "Doc 1   "),
+            (2, ""),
+            (3, "**Parameters:**     "),
+            (4, "`n` Doc 5"),
+        ),
+        True,
+    )
 
 
 def test_doc_type_bound_procedure_sub_implementation():
@@ -85,7 +125,17 @@ def test_doc_type_bound_procedure_sub_implementation():
     string += hover_request(file_path, 13, 31)
     errcode, results = run_request(string)
     assert errcode == 0
-    check_return(results[1], ((1, "!! Doc 4"), (4, " !! Doc 5")))
+    check_return(
+        results[1],
+        (
+            (0, "-----"),
+            (1, "Doc 4   "),
+            (2, ""),
+            (3, "**Parameters:**     "),
+            (4, "`n` Doc 5"),
+        ),
+        True,
+    )
 
 
 def test_doc_variable():
@@ -96,7 +146,14 @@ def test_doc_variable():
     string += hover_request(file_path, 37, 26)
     errcode, results = run_request(string)
     assert errcode == 0
-    check_return(results[1], ((1, " !! Doc 5"),))
+    check_return(
+        results[1],
+        (
+            (0, "-----"),
+            (1, "Doc 5"),
+        ),
+        True,
+    )
 
 
 def test_doc_overwrite_type_bound_procedure_fun():
@@ -108,7 +165,14 @@ def test_doc_overwrite_type_bound_procedure_fun():
     string += hover_request(file_path, 14, 17)
     errcode, results = run_request(string)
     assert errcode == 0
-    check_return(results[1], ((1, "!! Doc 2"),))
+    check_return(
+        results[1],
+        (
+            (0, "-----"),
+            (1, "Doc 2"),
+        ),
+        True,
+    )
 
 
 def test_doc_type_bound_procedure_fun_implementation():
@@ -119,7 +183,14 @@ def test_doc_type_bound_procedure_fun_implementation():
     string += hover_request(file_path, 14, 28)
     errcode, results = run_request(string)
     assert errcode == 0
-    check_return(results[1], ((1, "!! Doc 6"),))
+    check_return(
+        results[1],
+        (
+            (0, "-----"),
+            (1, "Doc 6"),
+        ),
+        True,
+    )
 
 
 def test_doc_empty_overwrite_type_bound_procedure_sub():
@@ -128,12 +199,34 @@ def test_doc_empty_overwrite_type_bound_procedure_sub():
     # Test we can ignore overriding method docstring  and return the original e.g.
     # procedure :: name => name_imp !<
     # We want to preserve the argument list docstring
+    # the self argument in the second request is not included because it is
+    # missing a doc string
     string += hover_request(file_path, 21, 18)
     string += hover_request(file_path, 21, 37)
     errcode, results = run_request(string)
     assert errcode == 0
-    check_return(results[1], ((1, "!! Doc 7"), (3, " !! Doc 8")))
-    check_return(results[2], ((1, "!! Doc 7"), (4, " !! Doc 8")))
+    check_return(
+        results[1],
+        (
+            (0, "-----"),
+            (1, "Doc 7   "),
+            (2, ""),
+            (3, "**Parameters:**     "),
+            (4, "`scale` Doc 8"),
+        ),
+        True,
+    )
+    check_return(
+        results[2],
+        (
+            (0, "-----"),
+            (1, "Doc 7   "),
+            (2, ""),
+            (3, "**Parameters:**     "),
+            (4, "`scale` Doc 8"),
+        ),
+        True,
+    )
 
 
 def test_doc_empty_overwrite_type_bound_procedure_fun():
@@ -146,8 +239,31 @@ def test_doc_empty_overwrite_type_bound_procedure_fun():
     string += hover_request(file_path, 22, 32)
     errcode, results = run_request(string)
     assert errcode == 0
-    check_return(results[1], ((1, "!! Doc 3"),))
-    check_return(results[2], ())
+    check_return(
+        results[1],
+        (
+            (0, "-----"),
+            (1, "Doc 3  "),
+            (2, ""),
+            (3, "**Return:**  "),
+            (4, "`norm`return value docstring"),
+        ),
+        True,
+    )
+    check_return(
+        results[2],
+        (
+            (0, "-----"),
+            (1, "Top level docstring  "),
+            (2, ""),
+            (3, "**Parameters:**    "),
+            (4, "`self` self value docstring  "),
+            (5, ""),
+            (6, "**Return:**  "),
+            (7, "`norm`return value docstring"),
+        ),
+        True,
+    )
 
 
 def test_doc_multiline_type_bound_procedure_arg_list():
@@ -159,8 +275,28 @@ def test_doc_multiline_type_bound_procedure_arg_list():
     string += hover_request(file_path, 15, 47)
     errcode, results = run_request(string)
     assert errcode == 0
-    check_return(results[1], ((2, " !! Doc 9"), (3, " !! Doc 10")))
+    check_return(
+        results[1],
+        (
+            (0, "-----"),
+            (1, "Doc 3  "),
+            (2, ""),
+            (3, "**Parameters:**     "),
+            (4, "`arg1` Doc 9"),
+            (5, "Doc 10"),
+        ),
+        True,
+    )
     check_return(
         results[2],
-        ((2, " !! Doc 9"), (3, " !! Doc 10"), (5, " !! Doc 11"), (6, " !! Doc 12")),
+        (
+            (0, "-----"),
+            (1, ""),
+            (2, "**Parameters:**     "),
+            (3, "`arg1` Doc 9"),
+            (4, "Doc 10   "),
+            (5, "`self` Doc 11"),
+            (6, "Doc 12"),
+        ),
+        True,
     )

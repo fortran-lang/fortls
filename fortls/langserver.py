@@ -33,6 +33,7 @@ from fortls.constants import (
 )
 from fortls.helper_functions import (
     expand_name,
+    fortran_md,
     get_line_prefix,
     get_paren_level,
     get_var_stack,
@@ -490,9 +491,10 @@ class LangServer:
             comp_obj["detail"] = candidate.get_desc()
             if call_sig is not None:
                 comp_obj["detail"] += " " + call_sig
-            doc_str, _ = candidate.get_hover()
-            if doc_str is not None:
-                comp_obj["documentation"] = doc_str
+            # TODO: doc_str should probably be appended, see LSP standard
+            hover_msg, doc_str, _ = candidate.get_hover()
+            if hover_msg is not None:
+                comp_obj["documentation"] = hover_msg
             return comp_obj
 
         # Get parameters from request
@@ -892,7 +894,7 @@ class LangServer:
             param_num = opt_num
         signature = {"label": label, "parameters": params}
         if doc_str is not None:
-            signature["documentation"] = doc_str
+            signature["documentation"] = {"kind": "markdown", "value": doc_str}
         req_dict = {"signatures": [signature], "activeParameter": param_num}
         return req_dict
 
@@ -1035,38 +1037,17 @@ class LangServer:
         return None
 
     def serve_hover(self, request: dict):
-        def create_hover(string: str, highlight: bool):
-            if highlight:
-                return {"language": self.hover_language, "value": string}
-            else:
-                return string
-
-        def create_signature_hover():
-            sig_request = request.copy()
-            sig_result = self.serve_signature(sig_request)
-            try:
-                arg_id = sig_result.get("activeParameter")
-                if arg_id is not None:
-                    arg_info = sig_result["signatures"][0]["parameters"][arg_id]
-                    arg_doc = arg_info["documentation"]
-                    doc_split = arg_doc.find("\n !!")
-                    if doc_split < 0:
-                        arg_string = f"{arg_doc} :: {arg_info['label']}"
-                    else:
-                        arg_string = (
-                            f"{arg_doc[:doc_split]} :: "
-                            f"{arg_info['label']}{arg_doc[doc_split:]}"
-                        )
-                    return create_hover(arg_string, True)
-            except:
-                pass
+        def create_hover(string: str, docs: str | None, fortran: bool):
+            # This does not account for Fixed Form Fortran, but it should be
+            # okay for 99% of cases
+            return fortran_md(string, docs, fortran, self.hover_language)
 
         # Get parameters from request
         params: dict = request["params"]
         uri: str = params["textDocument"]["uri"]
         def_line: int = params["position"]["line"]
         def_char: int = params["position"]["character"]
-        path = path_from_uri(uri)
+        path: str = path_from_uri(uri)
         file_obj = self.workspace.get(path)
         if file_obj is None:
             return None
@@ -1075,41 +1056,33 @@ class LangServer:
         if var_obj is None:
             return None
         # Construct hover information
-        var_type = var_obj.get_type()
+        var_type: int = var_obj.get_type()
         hover_array = []
         if var_type in (SUBROUTINE_TYPE_ID, FUNCTION_TYPE_ID):
-            hover_str, highlight = var_obj.get_hover(long=True)
-            hover_array.append(create_hover(hover_str, highlight))
+            hover_array.append(var_obj.get_hover_md(long=True))
         elif var_type == INTERFACE_TYPE_ID:
             for member in var_obj.mems:
-                hover_str, highlight = member.get_hover(long=True)
+                hover_str, docs, highlight = member.get_hover(long=True)
                 if hover_str is not None:
-                    hover_array.append(create_hover(hover_str, highlight))
+                    hover_array.append(create_hover(hover_str, docs, highlight))
         elif var_type == VAR_TYPE_ID:
             # Unless we have a Fortran literal include the desc in the hover msg
             # See get_definition for an explanation about this default name
             if not var_obj.desc.startswith(FORTRAN_LITERAL):
-                hover_str, highlight = var_obj.get_hover()
-                hover_array.append(create_hover(hover_str, highlight))
+                hover_array.append(var_obj.get_hover_md(long=True))
             # Hover for Literal variables
             elif var_obj.desc.endswith("REAL"):
-                hover_array.append(create_hover("REAL", True))
+                hover_array.append(create_hover("REAL", None, True))
             elif var_obj.desc.endswith("INTEGER"):
-                hover_array.append(create_hover("INTEGER", True))
+                hover_array.append(create_hover("INTEGER", None, True))
             elif var_obj.desc.endswith("LOGICAL"):
-                hover_array.append(create_hover("LOGICAL", True))
+                hover_array.append(create_hover("LOGICAL", None, True))
             elif var_obj.desc.endswith("STRING"):
                 hover_str = f"CHARACTER(LEN={len(var_obj.name)-2})"
-                hover_array.append(create_hover(hover_str, True))
+                hover_array.append(create_hover(hover_str, None, True))
 
-            # Include the signature if one is present e.g. if in an argument list
-            if self.hover_signature:
-                hover_str = create_signature_hover()
-                if hover_str is not None:
-                    hover_array.append(hover_str)
-        #
         if len(hover_array) > 0:
-            return {"contents": hover_array}
+            return {"contents": {"kind": "markdown", "value": "\n".join(hover_array)}}
         return None
 
     def serve_implementation(self, request: dict):
@@ -1449,7 +1422,7 @@ class LangServer:
             result_obj = result.get()
             if isinstance(result_obj, str):
                 self.post_message(
-                    f"Initialization failed for file '{path}': {result_obj}"
+                    f"Initialization failed for file {path}: {result_obj}"
                 )
                 continue
             self.workspace[path] = result_obj

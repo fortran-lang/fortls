@@ -25,6 +25,7 @@ contains
     !!  \f$\cos \theta = \frac{ \vec v \cdot \vec w}{\abs{v}\abs{w}}\f$.
     !!
     !! @param[in]   \f$v,w\f$   real vectors
+    !!                      size: n
     !! @return  a real value describing the angle. 0 if \f$\abs v\f$ or \f$\abs w\f$ below a
     !!          threshold.
     pure function calc_angle(v, w) result (theta)

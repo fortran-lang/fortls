@@ -1,7 +1,7 @@
-from setup_tests import run_request, test_dir, write_rpc_request
+from setup_tests import Path, run_request, test_dir, write_rpc_request
 
 
-def hover_req(file_path: str, ln: int, col: int) -> str:
+def hover_req(file_path: Path, ln: int, col: int) -> str:
     return write_rpc_request(
         1,
         "textDocument/hover",
@@ -15,7 +15,7 @@ def hover_req(file_path: str, ln: int, col: int) -> str:
 def validate_hover(result_array: list, checks: list):
     assert len(result_array) - 1 == len(checks)
     for (i, check) in enumerate(checks):
-        assert result_array[i + 1]["contents"][0]["value"] == check
+        assert result_array[i + 1]["contents"]["value"] == check
 
 
 def test_hover_abstract_int_procedure():
@@ -26,9 +26,11 @@ def test_hover_abstract_int_procedure():
     errcode, results = run_request(string, fortls_args=["--sort_keywords", "-n1"])
     assert errcode == 0
     ref_results = [
-        """SUBROUTINE test(a, b)
+        """```fortran90
+SUBROUTINE test(a, b)
  INTEGER(4), DIMENSION(3,6), INTENT(IN) :: a
- REAL(8), DIMENSION(4), INTENT(OUT) :: b"""
+ REAL(8), DIMENSION(4), INTENT(OUT) :: b
+```"""
     ]
     validate_hover(results, ref_results)
 
@@ -40,7 +42,7 @@ def test_hover_parameter_multiline():
     string += hover_req(file_path, 2, 28)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
     assert errcode == 0
-    ref_results = ["INTEGER, PARAMETER :: var = 1000"]
+    ref_results = ["```fortran90\nINTEGER, PARAMETER :: var = 1000\n```"]
     validate_hover(results, ref_results)
 
 
@@ -51,7 +53,7 @@ def test_hover_literal_num():
     string += hover_req(file_path, 3, 28)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
     assert errcode == 0
-    ref_results = ["INTEGER"]
+    ref_results = ["```fortran90\nINTEGER\n```"]
     validate_hover(results, ref_results)
 
 
@@ -62,7 +64,7 @@ def test_hover_parameter():
     string += hover_req(file_path, 4, 28)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
     assert errcode == 0
-    ref_results = ["INTEGER, PARAMETER :: var2 = 23"]
+    ref_results = ["```fortran90\nINTEGER, PARAMETER :: var2 = 23\n```"]
     validate_hover(results, ref_results)
 
 
@@ -73,7 +75,7 @@ def test_hover_parameter_nested():
     string += hover_req(file_path, 4, 41)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
     assert errcode == 0
-    ref_results = ["INTEGER, PARAMETER :: var3 = var*var2"]
+    ref_results = ["```fortran90\nINTEGER, PARAMETER :: var3 = var*var2\n```"]
     validate_hover(results, ref_results)
 
 
@@ -84,7 +86,7 @@ def test_hover_parameter_multiline_missing_type():
     string += hover_req(file_path, 6, 28)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
     assert errcode == 0
-    ref_results = ["INTEGER, PARAMETER :: var4 = 123"]
+    ref_results = ["```fortran90\nINTEGER, PARAMETER :: var4 = 123\n```"]
     validate_hover(results, ref_results)
 
 
@@ -95,7 +97,7 @@ def test_hover_literal_real():
     string += hover_req(file_path, 7, 47)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
     assert errcode == 0
-    ref_results = ["REAL"]
+    ref_results = ["```fortran90\nREAL\n```"]
     validate_hover(results, ref_results)
 
 
@@ -106,7 +108,7 @@ def test_hover_parameter_double():
     string += hover_req(file_path, 7, 38)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
     assert errcode == 0
-    ref_results = ["DOUBLE PRECISION, PARAMETER :: somevar = 23.12"]
+    ref_results = ["```fortran90\nDOUBLE PRECISION, PARAMETER :: somevar = 23.12\n```"]
     validate_hover(results, ref_results)
 
 
@@ -117,7 +119,7 @@ def test_hover_parameter_double_sf():
     string += hover_req(file_path, 7, 55)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
     assert errcode == 0
-    ref_results = ["DOUBLE PRECISION, PARAMETER :: some = 1e-19"]
+    ref_results = ["```fortran90\nDOUBLE PRECISION, PARAMETER :: some = 1e-19\n```"]
     validate_hover(results, ref_results)
 
 
@@ -128,7 +130,9 @@ def test_hover_parameter_bool():
     string += hover_req(file_path, 8, 38)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
     assert errcode == 0
-    ref_results = ["LOGICAL(kind=8), PARAMETER :: long_bool = .true."]
+    ref_results = [
+        "```fortran90\nLOGICAL(kind=8), PARAMETER :: long_bool = .true.\n```"
+    ]
     validate_hover(results, ref_results)
 
 
@@ -139,7 +143,7 @@ def test_hover_literal_bool():
     string += hover_req(file_path, 8, 50)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
     assert errcode == 0
-    ref_results = ["LOGICAL"]
+    ref_results = ["```fortran90\nLOGICAL\n```"]
     validate_hover(results, ref_results)
 
 
@@ -150,7 +154,7 @@ def test_hover_parameter_str_sq():
     string += hover_req(file_path, 9, 37)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
     assert errcode == 0
-    ref_results = ["CHARACTER(len=5), PARAMETER :: sq_str = '12345'"]
+    ref_results = ["```fortran90\nCHARACTER(len=5), PARAMETER :: sq_str = '12345'\n```"]
     validate_hover(results, ref_results)
 
 
@@ -161,7 +165,7 @@ def test_hover_literal_string_sq():
     string += hover_req(file_path, 9, 48)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
     assert errcode == 0
-    ref_results = ["CHARACTER(LEN=5)"]
+    ref_results = ["```fortran90\nCHARACTER(LEN=5)\n```"]
     validate_hover(results, ref_results)
 
 
@@ -172,7 +176,7 @@ def test_hover_parameter_str_dq():
     string += hover_req(file_path, 10, 37)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
     assert errcode == 0
-    ref_results = ['CHARACTER(len=5), PARAMETER :: dq_str = "12345"']
+    ref_results = ['```fortran90\nCHARACTER(len=5), PARAMETER :: dq_str = "12345"\n```']
     validate_hover(results, ref_results)
 
 
@@ -183,7 +187,7 @@ def test_hover_literal_string_dq():
     string += hover_req(file_path, 10, 48)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
     assert errcode == 0
-    ref_results = ["CHARACTER(LEN=5)"]
+    ref_results = ["```fortran90\nCHARACTER(LEN=5)\n```"]
     validate_hover(results, ref_results)
 
 
@@ -194,7 +198,7 @@ def test_hover_pointer_attr():
     string += hover_req(file_path, 1, 26)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
     assert errcode == 0
-    ref_results = ["INTEGER, POINTER"]
+    ref_results = ["```fortran90\nINTEGER, POINTER :: val1\n```"]
     validate_hover(results, ref_results)
 
 
@@ -216,36 +220,56 @@ def test_hover_functions():
     assert errcode == 0
 
     ref_results = [
-        """FUNCTION fun1(arg) RESULT(fun1)
+        """```fortran90
+FUNCTION fun1(arg) RESULT(fun1)
  INTEGER, INTENT(IN) :: arg
- INTEGER :: fun1""",
-        """FUNCTION fun2(arg) RESULT(fun2)
+ INTEGER :: fun1
+```""",
+        """```fortran90
+FUNCTION fun2(arg) RESULT(fun2)
  INTEGER, INTENT(IN) :: arg
- INTEGER :: fun2""",
-        """FUNCTION fun3(arg) RESULT(retval)
+ INTEGER :: fun2
+```""",
+        """```fortran90
+FUNCTION fun3(arg) RESULT(retval)
  INTEGER, INTENT(IN) :: arg
- INTEGER :: retval""",
-        """FUNCTION fun4(arg) RESULT(retval)
+ INTEGER :: retval
+```""",
+        """```fortran90
+FUNCTION fun4(arg) RESULT(retval)
  INTEGER, INTENT(IN) :: arg
- INTEGER :: retval""",
+ INTEGER :: retval
+```""",
         # Notice that the order of the modifiers does not match the source code
         # This is part of the test, ideally they would be identical but previously
         # any modifiers before the type would be discarded
-        """PURE ELEMENTAL FUNCTION fun5(arg) RESULT(retval)
+        """```fortran90
+PURE ELEMENTAL FUNCTION fun5(arg) RESULT(retval)
  INTEGER, INTENT(IN) :: arg
- INTEGER :: retval""",
-        """FUNCTION fun6(arg) RESULT(retval)
+ INTEGER :: retval
+```""",
+        """```fortran90
+FUNCTION fun6(arg) RESULT(retval)
  INTEGER, INTENT(IN) :: arg
- INTEGER, DIMENSION(10,10) :: retval""",
-        """PURE FUNCTION outer_product(x, y) RESULT(outer_product)
+ INTEGER, DIMENSION(10,10) :: retval
+```""",
+        """```fortran90
+PURE FUNCTION outer_product(x, y) RESULT(outer_product)
  REAL, DIMENSION(:), INTENT(IN) :: x
  REAL, DIMENSION(:), INTENT(IN) :: y
- REAL, DIMENSION(SIZE(X), SIZE(Y)) :: outer_product""",
-        """FUNCTION dlamch(cmach) RESULT(dlamch)
- CHARACTER :: CMACH""",
-        """FUNCTION fun7() RESULT(val)
- TYPE(c_ptr) :: val""",
-        """TYPE(c_ptr) FUNCTION c_loc(x) RESULT(c_loc)""",
+ REAL, DIMENSION(SIZE(X), SIZE(Y)) :: outer_product
+```""",
+        """```fortran90
+FUNCTION dlamch(cmach) RESULT(dlamch)
+ CHARACTER :: CMACH
+```""",
+        """```fortran90
+FUNCTION fun7() RESULT(val)
+ TYPE(c_ptr) :: val
+```""",
+        """```fortran90
+TYPE(c_ptr) FUNCTION c_loc(x) RESULT(c_loc)
+```""",
     ]
     validate_hover(results, ref_results)
 
@@ -258,9 +282,9 @@ def test_hover_spaced_keywords():
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
     assert errcode == 0
     ref_results = [
-        """REAL, DIMENSION(:, :), INTENT(IN)""",
-        """REAL, DIMENSION( SIZE(ARG1, 1), MAXVAL([SIZE(ARG1, 2), """
-        """SIZE(ARG1, 1)]) ), INTENT(OUT)""",
+        """```fortran90\nREAL, DIMENSION(:, :), INTENT(IN) :: arg1\n```""",
+        """```fortran90\nREAL, DIMENSION( SIZE(ARG1, 1), MAXVAL([SIZE(ARG1, 2), """
+        """SIZE(ARG1, 1)]) ), INTENT(OUT) :: arg2\n```""",
     ]
     validate_hover(results, ref_results)
 
@@ -272,10 +296,12 @@ def test_hover_recursive():
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
     assert errcode == 0
     ref_results = [
-        """RECURSIVE SUBROUTINE recursive_assign_descending(node, vector, current_loc)
+        """```fortran90
+RECURSIVE SUBROUTINE recursive_assign_descending(node, vector, current_loc)
  TYPE(tree_inode), POINTER, INTENT(IN) :: node
  INTEGER, DIMENSION(:), INTENT(INOUT) :: vector
- INTEGER, INTENT(INOUT) :: current_loc"""
+ INTEGER, INTENT(INOUT) :: current_loc
+```"""
     ]
     validate_hover(results, ref_results)
 
@@ -288,14 +314,18 @@ def test_hover_subroutine():
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
     assert errcode == 0
     ref_results = [
-        """FUNCTION point_dist(a, b) RESULT(distance)
+        """```fortran90
+FUNCTION point_dist(a, b) RESULT(distance)
  TYPE(point), INTENT(IN) :: a
  TYPE(point), INTENT(IN) :: b
- REAL :: distance""",
-        """FUNCTION is_point_equal_a(a, b) RESULT(is_point_equal_a)
+ REAL :: distance
+```""",
+        """```fortran90
+FUNCTION is_point_equal_a(a, b) RESULT(is_point_equal_a)
  TYPE(point), INTENT(IN) :: a
  TYPE(point), INTENT(IN) :: b
- LOGICAL :: is_point_equal_a""",
+ LOGICAL :: is_point_equal_a
+```""",
     ]
     validate_hover(results, ref_results)
 
@@ -304,16 +334,18 @@ def test_hover_interface_as_argument():
     string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
     file_path = test_dir / "test_diagnostic_int.f90"
     string += hover_req(file_path, 19, 14)
-    errcode, results = run_request(string, fortls_args=["--sort_keywords"])
+    errcode, results = run_request(string, fortls_args=["--sort_keywords", "-n1"])
     assert errcode == 0
-    ref_results = (
+    ref_results = [
         # Could be subject to change
-        """FUNCTION foo2(f, g, h) RESULT(arg3)
- FUNCTION f(x) :: f
- FUNCTION g(x) :: g
- FUNCTION h(x) :: h
- REAL :: arg3""",
-    )
+        """```fortran90
+FUNCTION foo2(f, g, h) RESULT(arg3)
+ FUNCTION f(x)
+ FUNCTION g(x)
+ FUNCTION h(x)
+ REAL :: arg3
+```""",
+    ]
     validate_hover(results, ref_results)
 
 
@@ -325,7 +357,10 @@ def test_hover_block():
     # string += hover_req(file_path, 10, 11)    # slice of array
     errcode, results = run_request(string, fortls_args=["--sort_keywords", "-n", "1"])
     assert errcode == 0
-    ref_results = ["REAL, DIMENSION(5)", "REAL"]
+    ref_results = [
+        "```fortran90\nREAL, DIMENSION(5) :: X\n```",
+        "```fortran90\nREAL :: Y\n```",
+    ]
     validate_hover(results, ref_results)
 
 
@@ -340,12 +375,16 @@ def test_hover_submodule_procedure():
     errcode, results = run_request(string, fortls_args=["-n", "1"])
     assert errcode == 0
     ref_results = [
-        """PURE RECURSIVE FUNCTION foo_sp(x) RESULT(fi)
+        """```fortran90
+PURE RECURSIVE FUNCTION foo_sp(x) RESULT(fi)
  REAL(sp), INTENT(IN) :: x
- REAL(sp) :: fi""",
-        """PURE RECURSIVE FUNCTION foo_dp(x) RESULT(fi)
+ REAL(sp) :: fi
+```""",
+        """```fortran90
+PURE RECURSIVE FUNCTION foo_dp(x) RESULT(fi)
  REAL(dp), INTENT(IN) :: x
- REAL(dp) :: fi""",
+ REAL(dp) :: fi
+```""",
     ]
     validate_hover(results, ref_results)
 
@@ -364,14 +403,14 @@ def test_var_type_kinds():
     errcode, results = run_request(string, fortls_args=["-n", "1"])
     assert errcode == 0
     ref_results = [
-        "INTEGER(kind=4)",
-        "INTEGER(kind=4), DIMENSION(3,4)",
-        "INTEGER*8",
-        "INTEGER*8, DIMENSION(3,4)",
-        "INTEGER(8)",
-        "INTEGER(8), DIMENSION(3,4)",
-        "REAL(kind=r15)",
-        "REAL(kind(0.d0))",
+        "```fortran90\nINTEGER(kind=4) :: a\n```",
+        "```fortran90\nINTEGER(kind=4), DIMENSION(3,4) :: b\n```",
+        "```fortran90\nINTEGER*8 :: aa\n```",
+        "```fortran90\nINTEGER*8, DIMENSION(3,4) :: bb\n```",
+        "```fortran90\nINTEGER(8) :: aaa\n```",
+        "```fortran90\nINTEGER(8), DIMENSION(3,4) :: bbb\n```",
+        "```fortran90\nREAL(kind=r15) :: r\n```",
+        "```fortran90\nREAL(kind(0.d0)) :: rr\n```",
     ]
     validate_hover(results, ref_results)
 
@@ -384,12 +423,16 @@ def test_kind_function_result():
     errcode, results = run_request(string, fortls_args=["-n", "1"])
     assert errcode == 0
     ref_results = [
-        """FUNCTION foo(val) RESULT(r)
+        """```fortran90
+FUNCTION foo(val) RESULT(r)
  REAL(8), INTENT(IN) :: val
- REAL*8 :: r""",
-        """FUNCTION phi(val) RESULT(r)
+ REAL*8 :: r
+```""",
+        """```fortran90
+FUNCTION phi(val) RESULT(r)
  REAL(8), INTENT(IN) :: val
- REAL(kind=8) :: r""",
+ REAL(kind=8) :: r
+```""",
     ]
     validate_hover(results, ref_results)
 
@@ -406,12 +449,12 @@ def test_var_type_asterisk():
     errcode, results = run_request(string, fortls_args=["-n", "1"])
     assert errcode == 0
     ref_results = [
-        "CHARACTER*17",
-        "CHARACTER*17, DIMENSION(3,4)",
-        "CHARACTER*17, DIMENSION(9)",
-        "CHARACTER*(6+3)",
-        "CHARACTER*10, DIMENSION(3,4)",
-        "CHARACTER*(LEN(B)), DIMENSION(3,4)",
+        "```fortran90\nCHARACTER*17 :: A\n```",
+        "```fortran90\nCHARACTER*17, DIMENSION(3,4) :: B\n```",
+        "```fortran90\nCHARACTER*17, DIMENSION(9) :: V\n```",
+        "```fortran90\nCHARACTER*(6+3) :: C\n```",
+        "```fortran90\nCHARACTER*10, DIMENSION(3,4) :: D\n```",
+        "```fortran90\nCHARACTER*(LEN(B)), DIMENSION(3,4) :: DD\n```",
     ]
     validate_hover(results, ref_results)
 
@@ -431,14 +474,14 @@ def test_var_name_asterisk():
     errcode, results = run_request(string, fortls_args=["-n", "1"])
     assert errcode == 0
     ref_results = [
-        "CHARACTER*17",
-        "CHARACTER*17, DIMENSION(3,4)",
-        "CHARACTER*17, DIMENSION(9)",
-        "CHARACTER*(6+3)",
-        "CHARACTER*(LEN(A))",
-        "CHARACTER*10, DIMENSION(*)",
-        "CHARACTER(LEN=200)",
-        "CHARACTER(KIND=4, LEN=200), DIMENSION(3,4)",
+        "```fortran90\nCHARACTER*17 :: AA\n```",
+        "```fortran90\nCHARACTER*17, DIMENSION(3,4) :: BB\n```",
+        "```fortran90\nCHARACTER*17, DIMENSION(9) :: VV\n```",
+        "```fortran90\nCHARACTER*(6+3) :: CC\n```",
+        "```fortran90\nCHARACTER*(LEN(A)) :: AAA\n```",
+        "```fortran90\nCHARACTER*10, DIMENSION(*) :: INPUT\n```",
+        "```fortran90\nCHARACTER(LEN=200) :: F\n```",
+        "```fortran90\nCHARACTER(KIND=4, LEN=200), DIMENSION(3,4) :: FF\n```",
         # "CHARACTER(KIND=4, LEN=100), DIMENSION(3,4)",
     ]
     validate_hover(results, ref_results)
@@ -455,10 +498,27 @@ def test_intent():
     errcode, results = run_request(string, fortls_args=["-n", "1"])
     assert errcode == 0
     ref_results = [
-        """INTEGER(4), INTENT(IN)""",
-        """INTEGER, INTENT(OUT)""",
-        """INTEGER(4), INTENT(INOUT)""",
-        """INTEGER(4), INTENT(IN OUT)""",
-        """REAL, OPTIONAL, INTENT(IN)""",
+        """```fortran90\nINTEGER(4), INTENT(IN) :: arg1\n```""",
+        """```fortran90\nINTEGER, INTENT(OUT) :: arg2\n```""",
+        """```fortran90\nINTEGER(4), INTENT(INOUT) :: arg3\n```""",
+        """```fortran90\nINTEGER(4), INTENT(IN OUT) :: arg4\n```""",
+        """```fortran90\nREAL, OPTIONAL, INTENT(IN) :: arg5\n```""",
+    ]
+    validate_hover(results, ref_results)
+
+
+def test_multiline_func_args():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
+    file_path = test_dir / "hover" / "functions.f90"
+    string += hover_req(file_path, 58, 22)
+    string += hover_req(file_path, 59, 22)
+    string += hover_req(file_path, 60, 22)
+
+    errcode, results = run_request(string, fortls_args=["-n", "1"])
+    assert errcode == 0
+    ref_results = [
+        "```fortran90\nINTEGER, INTENT(IN) :: val1\n```",
+        "```fortran90\nINTEGER, INTENT(IN) :: val2\n```",
+        "```fortran90\nREAL :: val4\n```",
     ]
     validate_hover(results, ref_results)

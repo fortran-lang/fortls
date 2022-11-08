@@ -71,7 +71,7 @@ class Intrinsic(FortranObj):
         return call_sig, self.doc_str, arg_sigs
 
     def get_hover(self, long=False):
-        return self.doc_str, False
+        return self.doc_str, None, False
 
     def is_callable(self):
         if self.type == 2:
