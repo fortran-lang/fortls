@@ -1040,10 +1040,10 @@ class LangServer:
         return None
 
     def serve_hover(self, request: dict):
-        def create_hover(string: str, docs: str | None, fortran: bool):
+        def create_hover(string: str, docs: str | None):
             # This does not account for Fixed Form Fortran, but it should be
             # okay for 99% of cases
-            return fortran_md(string, docs, fortran, self.hover_language)
+            return fortran_md(string, docs, self.hover_language)
 
         # Get parameters from request
         params: dict = request["params"]
@@ -1065,9 +1065,9 @@ class LangServer:
             hover_array.append(var_obj.get_hover_md(long=True))
         elif var_type == INTERFACE_TYPE_ID:
             for member in var_obj.mems:
-                hover_str, docs, highlight = member.get_hover(long=True)
+                hover_str, docs = member.get_hover(long=True)
                 if hover_str is not None:
-                    hover_array.append(create_hover(hover_str, docs, highlight))
+                    hover_array.append(create_hover(hover_str, docs))
         elif var_type == VAR_TYPE_ID:
             # Unless we have a Fortran literal include the desc in the hover msg
             # See get_definition for an explanation about this default name
@@ -1075,14 +1075,14 @@ class LangServer:
                 hover_array.append(var_obj.get_hover_md(long=True))
             # Hover for Literal variables
             elif var_obj.desc.endswith("REAL"):
-                hover_array.append(create_hover("REAL", None, True))
+                hover_array.append(create_hover("REAL", None))
             elif var_obj.desc.endswith("INTEGER"):
-                hover_array.append(create_hover("INTEGER", None, True))
+                hover_array.append(create_hover("INTEGER", None))
             elif var_obj.desc.endswith("LOGICAL"):
-                hover_array.append(create_hover("LOGICAL", None, True))
+                hover_array.append(create_hover("LOGICAL", None))
             elif var_obj.desc.endswith("STRING"):
                 hover_str = f"CHARACTER(LEN={len(var_obj.name)-2})"
-                hover_array.append(create_hover(hover_str, None, True))
+                hover_array.append(create_hover(hover_str, None))
 
         if len(hover_array) > 0:
             return {"contents": {"kind": "markdown", "value": "\n".join(hover_array)}}
