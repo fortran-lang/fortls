@@ -4,3 +4,9 @@ updates:
   directory: "/"
   schedule:
     interval: "daily"
+
+# Check for updates Python updates via pip in case we pin a dependency
+- package-ecosystem: "pip"
+  directory: "/"
+  schedule:
+    interval: "weekly"
