@@ -451,6 +451,22 @@ def debug_server_parser(args):
     args : Namespace
         The arguments parsed from the `ArgumentParser`
     """
+
+    def locate_config(root: str) -> str | None:
+        default_conf_files = [args.config, ".fortlsrc", ".fortls.json", ".fortls"]
+        present_conf_files = [
+            os.path.isfile(os.path.join(root, f)) for f in default_conf_files
+        ]
+        if not any(present_conf_files):
+            return None
+
+        # Load the first config file found
+        for f, present in zip(default_conf_files, present_conf_files):
+            if not present:
+                continue
+            config_path = os.path.join(root, f)
+            return config_path
+
     if args.debug_filepath is None:
         error_exit("'debug_filepath' not specified for parsing test")
     file_exists = os.path.isfile(args.debug_filepath)
@@ -461,7 +477,8 @@ def debug_server_parser(args):
     pp_defs = {}
     include_dirs = set()
     if args.debug_rootpath:
-        config_path = os.path.join(args.debug_rootpath, args.config)
+        # Check for config files
+        config_path = locate_config(args.debug_rootpath)
         config_exists = os.path.isfile(config_path)
         if config_exists:
             try:
@@ -479,7 +496,7 @@ def debug_server_parser(args):
                         pp_defs = {key: "" for key in pp_defs}
             except:
                 print(f"Error while parsing '{args.config}' settings file")
-    #
+
     print("\nTesting parser")
     print('  File = "{}"'.format(args.debug_filepath))
     file_obj = FortranFile(args.debug_filepath, pp_suffixes)
