@@ -20,6 +20,8 @@
 
 ### Fixed
 
+- Fixed debug interface parser not loading all configuration files
+  ([#221](https://github.com/gnikit/fortls/issues/221))
 - Fixed name mangling of type-bound procedure pointers while hovering
   ([#214](https://github.com/gnikit/fortls/issues/214))
 - Fixed parsing start of multilines into AST
