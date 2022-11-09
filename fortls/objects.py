@@ -414,11 +414,12 @@ class FortranObj:
     def get_documentation(self):
         return self.doc_str
 
-    def get_hover(self, long=False, drop_arg=-1) -> tuple[str | None, str | None, bool]:
-        return None, None, False
+    def get_hover(self, long=False, drop_arg=-1) -> tuple[str | None, str | None]:
+        return None, None
 
     def get_hover_md(self, long=False, drop_arg=-1) -> str:
-        return ""
+        msg, docs = self.get_hover(long, drop_arg)
+        return fortran_md(msg, docs)
 
     def get_signature(self, drop_arg=-1):
         return None, None, None
@@ -934,7 +935,7 @@ class Subroutine(Scope):
         keyword_list.append(f"{self.get_desc()} ")
         hover_array = [" ".join(keyword_list) + sub_sig]
         hover_array, docs = self.get_docs_full(hover_array, long, drop_arg)
-        return "\n ".join(hover_array), "   \n".join(docs), long
+        return "\n ".join(hover_array), "   \n".join(docs)
 
     def get_hover_md(self, long=False, drop_arg=-1):
         return fortran_md(*self.get_hover(long, drop_arg))
@@ -969,7 +970,7 @@ class Subroutine(Scope):
             for i, arg_obj in enumerate(self.arg_objs):
                 if arg_obj is None or i == drop_arg:
                     continue
-                arg, doc_str, _ = arg_obj.get_hover()
+                arg, doc_str = arg_obj.get_hover()
                 hover_array.append(arg)
                 if doc_str:  # If doc_str is not None or ""
                     if has_args:
@@ -1007,7 +1008,7 @@ class Subroutine(Scope):
         for i, arg_obj in enumerate(self.arg_objs):
             if arg_obj is None:
                 return None
-            arg_doc, docs, _ = arg_obj.get_hover()
+            arg_doc, docs = arg_obj.get_hover()
             if i == change_arg:
                 i0 = arg_doc.lower().find(change_strings[0].lower())
                 if i0 >= 0:
@@ -1122,9 +1123,7 @@ class Function(Subroutine):
     def is_callable(self):
         return False
 
-    def get_hover(
-        self, long: bool = False, drop_arg: int = -1
-    ) -> tuple[str, str, bool]:
+    def get_hover(self, long: bool = False, drop_arg: int = -1) -> tuple[str, str]:
         """Construct the hover message for a FUNCTION.
         Two forms are produced here the `long` i.e. the normal for hover requests
 
@@ -1162,7 +1161,7 @@ class Function(Subroutine):
         # Only append the return value if using long form
         if self.result_obj and long:
             # Parse the documentation from the result variable
-            arg_doc, doc_str, _ = self.result_obj.get_hover()
+            arg_doc, doc_str = self.result_obj.get_hover()
             if doc_str is not None:
                 docs.append(f"\n**Return:**  \n`{self.result_obj.name}`{doc_str}")
             hover_array.append(arg_doc)
@@ -1170,7 +1169,7 @@ class Function(Subroutine):
         elif self.result_type and long:
             # prepend type to function signature
             hover_array[0] = f"{self.result_type} {hover_array[0]}"
-        return "\n ".join(hover_array), "  \n".join(docs), long
+        return "\n ".join(hover_array), "  \n".join(docs)
 
     # TODO: fix this
     def get_interface(self, name_replace=None, change_arg=-1, change_strings=None):
@@ -1187,7 +1186,7 @@ class Function(Subroutine):
             keyword_list, fun_sig, change_arg, change_strings
         )
         if self.result_obj is not None:
-            arg_doc, docs, _ = self.result_obj.get_hover()
+            arg_doc, docs = self.result_obj.get_hover()
             interface_array.append(f"{arg_doc} :: {self.result_obj.name}")
         name = self.name
         if name_replace is not None:
@@ -1696,7 +1695,7 @@ class Variable(FortranObj):
         # Normal variable
         return None, None
 
-    def get_hover(self, long=False, drop_arg=-1) -> tuple[str, str, bool]:
+    def get_hover(self, long=False, drop_arg=-1) -> tuple[str, str]:
         doc_str = self.get_documentation()
         # In associated blocks we need to fetch the desc and keywords of the
         # linked object
@@ -1706,7 +1705,7 @@ class Variable(FortranObj):
             hover_str += f" :: {self.name}"
         if self.is_parameter() and self.param_val:
             hover_str += f" = {self.param_val}"
-        return hover_str, doc_str, True
+        return hover_str, doc_str
 
     def get_hover_md(self, long=False, drop_arg=-1):
         return fortran_md(*self.get_hover(long, drop_arg))
@@ -1845,17 +1844,14 @@ class Method(Variable):  # i.e. TypeBound procedure
             return self.link_obj.get_documentation()
         return self.doc_str
 
-    def get_hover(self, long=False, drop_arg=-1) -> tuple[str, str, bool]:
+    def get_hover(self, long=False, drop_arg=-1) -> tuple[str, str]:
         docs = self.get_documentation()
-        if not long:
-            hover_str = ", ".join([self.desc] + get_keywords(self.keywords))
-            return hover_str, docs, True
         # Long hover message
         if self.link_obj is None:
             sub_sig, _ = self.get_snippet()
             hover_str = f"{self.get_desc()} {sub_sig}"
         else:
-            link_msg, link_docs, _ = self.link_obj.get_hover(
+            link_msg, link_docs = self.link_obj.get_hover(
                 long=True, drop_arg=self.drop_arg
             )
             # Replace the name of the linked object with the name of this object
@@ -1874,7 +1870,7 @@ class Method(Variable):  # i.e. TypeBound procedure
                     if docs is None:
                         docs = ""
                     docs += "  \n" + link_docs
-        return hover_str, docs, True
+        return hover_str, docs
 
     def get_signature(self, drop_arg=-1):
         if self.link_obj is not None:

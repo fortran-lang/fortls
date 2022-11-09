@@ -522,3 +522,17 @@ def test_multiline_func_args():
         "```fortran90\nREAL :: val4\n```",
     ]
     validate_hover(results, ref_results)
+
+
+def test_intrinsics():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
+    file_path = test_dir / "hover" / "functions.f90"
+    string += hover_req(file_path, 39, 23)
+    errcode, results = run_request(string, fortls_args=["-n", "1"])
+    assert errcode == 0
+    ref_results = [
+        "\n-----\nSIZE(ARRAY,DIM=dim,KIND=kind) determines the extent of ARRAY along a"
+        " specified dimension DIM, or the total number of elements in ARRAY if DIM is"
+        " absent."
+    ]
+    validate_hover(results, ref_results)

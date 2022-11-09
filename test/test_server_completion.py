@@ -321,3 +321,59 @@ def test_comp_fixed():
     assert len(exp_results) == len(results) - 1
     for i, ref in enumerate(exp_results):
         validate_comp(results[i + 1], ref)
+
+
+def test_comp_documentation():
+    """Test that "documentation" is returned for autocomplete results."""
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    file_path = test_dir / "subdir" / "test_free.f90"
+    string += comp_request(file_path, 21, 37)
+    errcode, results = run_request(
+        string,
+    )
+    assert errcode == 0
+
+    exp_results = [
+        {
+            "label": "scaled_vector_set",
+            "kind": 3,
+            "detail": "SUBROUTINE",
+            "documentation": {
+                "kind": "markdown",
+                "value": (
+                    "```fortran90\n"
+                    "SUBROUTINE scaled_vector_set(self, scale)\n"
+                    " CLASS(scaled_vector), INTENT(INOUT) :: self\n"
+                    " REAL(8), INTENT(IN) :: scale\n"
+                    "```\n"
+                    "-----\n"
+                    "Doc 7   \n\n"
+                    "**Parameters:**     \n"
+                    "`scale` Doc 8"
+                ),
+            },
+        },
+        {
+            "label": "scaled_vector_norm",
+            "kind": 3,
+            "detail": "REAL(8) FUNCTION",
+            "documentation": {
+                "kind": "markdown",
+                "value": (
+                    "```fortran90\n"
+                    "FUNCTION scaled_vector_norm(self) RESULT(norm)\n"
+                    " CLASS(scaled_vector), INTENT(IN) :: self\n"
+                    " REAL(8) :: norm\n"
+                    "```\n"
+                    "-----\n"
+                    "Top level docstring  \n\n"
+                    "**Parameters:**    \n"
+                    "`self` self value docstring  \n\n"
+                    "**Return:**  \n"
+                    "`norm`return value docstring"
+                ),
+            },
+        },
+    ]
+    assert len(exp_results) == len(results[1])
+    assert exp_results == results[1]

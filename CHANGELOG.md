@@ -10,6 +10,9 @@
 
 ### Changed
 
+- Changed the completion signature to include the full Markdown documentation
+  for the completion item.
+  ([#219](https://github.com/gnikit/fortls/issues/219))
 - Changed hover messages and signature help to use Markdown
   ([#45](https://github.com/gnikit/fortls/issues/45))
 

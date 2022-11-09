@@ -582,7 +582,7 @@ def get_var_stack(line: str) -> list[str]:
         return None
 
 
-def fortran_md(code: str, docs: str | None, highlight: bool, langid: str = "fortran90"):
+def fortran_md(code: str, docs: str | None, langid: str = "fortran90"):
     """Convert Fortran code to markdown
 
     Parameters
@@ -590,9 +590,7 @@ def fortran_md(code: str, docs: str | None, highlight: bool, langid: str = "fort
     code : str
         Fortran code
     docs : str | None
-        Documentation string, only makes sense if ``highlight`` is ``True``
-    highlight : bool
-        Whether to highlight the code
+        Documentation string
     langid : str, optional
         Language ID, by default 'fortran90'
 
@@ -601,8 +599,8 @@ def fortran_md(code: str, docs: str | None, highlight: bool, langid: str = "fort
     str
         Markdown string
     """
-    msg = code
-    if highlight:
+    msg = ""
+    if code:
         msg = f"```{langid}\n{code}\n```"
     # Add documentation
     if docs:  # if docs is not None or ""
