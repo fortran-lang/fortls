@@ -4,7 +4,7 @@ import copy
 import os
 import re
 from dataclasses import dataclass, replace
-from typing import Pattern, TYPE_CHECKING
+from typing import TYPE_CHECKING, Pattern
 
 if TYPE_CHECKING:
     from fortls.parse_fortran import FortranFile
