@@ -250,7 +250,7 @@ def find_paren_match(string: str) -> int:
 
 def get_line_prefix(
     pre_lines: list[str], curr_line: str, col: int, qs: bool = True
-) -> str:
+) -> str | None:
     """Get code line prefix from current line and preceding continuation lines
 
     Parameters
@@ -296,7 +296,7 @@ def get_line_prefix(
     return line_prefix
 
 
-def resolve_globs(glob_path: str, root_path: str = None) -> list[str]:
+def resolve_globs(glob_path: str, root_path: str | None = None) -> list[str]:
     """Resolve paths (absolute and relative) and glob patterns while
     nonexistent paths are ignored
 
@@ -388,7 +388,7 @@ def set_keyword_ordering(sorted):
     sort_keywords = sorted
 
 
-def map_keywords(keywords: list[str]):
+def map_keywords(keywords: list[str]) -> tuple[list[int], dict[str, str]]:
     mapped_keywords = []
     keyword_info = {}
     for keyword in keywords:
@@ -524,7 +524,7 @@ def get_paren_level(line: str) -> tuple[str, list[Range]]:
             in_string = True
             string_char = char
     if level == 0:
-        sections.append(Range(i, i1))
+        sections.append(Range(0, i1))
     sections.reverse()
     out_string = ""
     for section in sections:
@@ -544,6 +544,11 @@ def get_var_stack(line: str) -> list[str]:
     -------
     list[str]
         list of objects split by ``%``
+
+    Raises
+    ------
+    TypeError
+        When no variable stack can be found
 
     Examples
     --------
@@ -578,8 +583,7 @@ def get_var_stack(line: str) -> list[str]:
     if final_var is not None:
         final_op_split: list[str] = FRegex.OBJBREAK.split(final_var)
         return final_op_split[-1].split("%")
-    else:
-        return None
+    raise TypeError("final_var is None")
 
 
 def fortran_md(code: str, docs: str | None, langid: str = "fortran90"):

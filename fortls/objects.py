@@ -4,7 +4,10 @@ import copy
 import os
 import re
 from dataclasses import dataclass, replace
-from typing import Pattern
+from typing import Pattern, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from fortls.parse_fortran import FortranFile
 
 from fortls.constants import (
     ASSOC_TYPE_ID,
@@ -41,30 +44,23 @@ def get_use_tree(
     scope: Scope,
     use_dict: dict[str, UseInfo],
     obj_tree: dict,
-    only_list: list[str] = None,
-    rename_map: dict[str, str] = None,
-    curr_path: list[str] = None,
+    only_list: list[str] = [],
+    rename_map: dict[str, str] = {},
+    curr_path: list[str] = [],
 ):
-    def intersect_only(use_stmnt):
+    def intersect_only(use: USE_line):
         tmp_list = []
         tmp_map = rename_map.copy()
         for val1 in only_list:
             mapped1 = tmp_map.get(val1, val1)
-            if mapped1 in use_stmnt.only_list:
+            if mapped1 in use.only_list:
                 tmp_list.append(val1)
-                new_rename = use_stmnt.rename_map.get(mapped1, None)
+                new_rename = use.rename_map.get(mapped1, None)
                 if new_rename is not None:
                     tmp_map[val1] = new_rename
             else:
                 tmp_map.pop(val1, None)
         return tmp_list, tmp_map
-
-    if only_list is None:
-        only_list = []
-    if rename_map is None:
-        rename_map = {}
-    if curr_path is None:
-        curr_path = []
 
     # Detect and break circular references
     if scope.FQSN in curr_path:
@@ -127,13 +123,13 @@ def find_in_scope(
     obj_tree: dict,
     interface: bool = False,
     local_only: bool = False,
-    var_line_number: int = None,
+    var_line_number: int | None = None,
 ):
     def check_scope(
         local_scope: Scope,
         var_name_lower: str,
         filter_public: bool = False,
-        var_line_number: int = None,
+        var_line_number: int | None = None,
     ):
         for child in local_scope.get_children():
             if child.name.startswith("#GEN_INT"):
@@ -283,8 +279,8 @@ class USE_line:
         self,
         mod_name: str,
         line_number: int,
-        only_list: list = None,
-        rename_map: dict = None,
+        only_list: list | None = None,
+        rename_map: dict[str, str] | None = None,
     ):
         self.mod_name: str = mod_name.lower()
         self.line_number: int = line_number
@@ -305,12 +301,16 @@ class AssociateMap:
 
 class Diagnostic:
     def __init__(
-        self, sline: int, message: str, severity: int = 1, find_word: str = None
+        self,
+        sline: int,
+        message: str,
+        severity: int = 1,
+        find_word: str | None = None,
     ):
         self.sline: int = sline
         self.message: str = message
         self.severity: int = severity
-        self.find_word: str = find_word
+        self.find_word: str | None = find_word
         self.has_related: bool = False
         self.related_path = None
         self.related_line = None
@@ -351,10 +351,10 @@ class FortranObj:
     def __init__(self):
         self.vis: int = 0
         self.def_vis: int = 0
-        self.doc_str: str = None
-        self.parent = None
+        self.doc_str: str | None = None
+        self.parent: Scope | None = None
         self.eline: int = -1
-        self.implicit_vars = None
+        self.implicit_vars: bool | None = None
 
     def set_default_vis(self, new_vis: int):
         self.def_vis = new_vis
@@ -362,13 +362,13 @@ class FortranObj:
     def set_visibility(self, new_vis: int):
         self.vis = new_vis
 
-    def set_parent(self, parent_obj):
+    def set_parent(self, parent_obj: Scope):
         self.parent = parent_obj
 
     def add_doc(self, doc_str: str):
         self.doc_str = doc_str
 
-    def update_fqsn(self, enc_scope=None):
+    def update_fqsn(self, enc_scope: str | None = None):
         return None
 
     def end(self, line_number: int):
@@ -469,14 +469,18 @@ class FortranObj:
     def check_valid_parent(self):
         return True
 
-    def check_definition(self, obj_tree, known_types: dict = None, interface=False):
-        if known_types is None:
-            known_types = {}
+    def check_definition(self, obj_tree, known_types: dict = {}, interface=False):
         return None, known_types
 
 
 class Scope(FortranObj):
-    def __init__(self, file_ast, line_number: int, name: str, keywords: list = None):
+    def __init__(
+        self,
+        file_ast: FortranAST,
+        line_number: int,
+        name: str,
+        keywords: list[int] | None = None,
+    ):
         super().__init__()
         if keywords is None:
             keywords = []
@@ -489,7 +493,6 @@ class Scope(FortranObj):
         self.use: list[USE_line] = []
         self.keywords: list = keywords
         self.inherit = None
-        self.parent = None
         self.contains_start = None
         self.implicit_line = None
         self.FQSN: str = self.name.lower()
@@ -503,12 +506,8 @@ class Scope(FortranObj):
             setattr(self, k, v)
 
     def add_use(
-        self, use_mod, line_number, only_list: list = None, rename_map: dict = None
+        self, use_mod, line_number, only_list: list = [], rename_map: dict = {}
     ):
-        if only_list is None:
-            only_list = []
-        if rename_map is None:
-            rename_map = {}
         self.use.append(USE_line(use_mod, line_number, only_list, rename_map))
 
     def set_inherit(self, inherit_type):
@@ -517,7 +516,7 @@ class Scope(FortranObj):
     def set_parent(self, parent_obj):
         self.parent = parent_obj
 
-    def set_implicit(self, implicit_flag, line_number):
+    def set_implicit(self, implicit_flag: bool, line_number: int):
         self.implicit_vars = implicit_flag
         self.implicit_line = line_number
 
@@ -530,7 +529,7 @@ class Scope(FortranObj):
         self.children.append(child)
         child.set_parent(self)
 
-    def update_fqsn(self, enc_scope=None):
+    def update_fqsn(self, enc_scope: str | None = None):
         if enc_scope is not None:
             self.FQSN = enc_scope.lower() + "::" + self.name.lower()
         else:
@@ -745,7 +744,7 @@ class Submodule(Module):
         file_ast: FortranAST,
         line_number: int,
         name: str,
-        ancestor_name: str = None,
+        ancestor_name: str | None = None,
     ):
         super().__init__(file_ast, line_number, name)
         self.ancestor_name = ancestor_name
@@ -827,7 +826,7 @@ class Subroutine(Scope):
         name: str,
         args: str = "",
         mod_flag: bool = False,
-        keywords: list = None,
+        keywords: list[int] | None = None,
     ):
         super().__init__(file_ast, line_number, name, keywords)
         self.args: str = args.replace(" ", "")
@@ -1002,7 +1001,11 @@ class Subroutine(Scope):
 
     # TODO: fix this
     def get_interface_array(
-        self, keywords: list[str], signature: str, change_arg=-1, change_strings=None
+        self,
+        keywords: list[str],
+        signature: str,
+        change_arg=-1,
+        change_strings: str | None = None,
     ):
         interface_array = [" ".join(keywords) + signature]
         for i, arg_obj in enumerate(self.arg_objs):
@@ -1073,9 +1076,9 @@ class Function(Subroutine):
         name: str,
         args: str = "",
         mod_flag: bool = False,
-        keywords: list = None,
-        result_type: str = None,
-        result_name: str = None,
+        keywords: list | None = None,
+        result_type: str | None = None,
+        result_name: str | None = None,
     ):
         super().__init__(file_ast, line_number, name, args, mod_flag, keywords)
         self.args: str = args.replace(" ", "").lower()
@@ -1111,6 +1114,7 @@ class Function(Subroutine):
                 # Update result value and type
                 self.result_name = child.name
                 self.result_type = child.get_desc()
+                break
 
     def get_type(self, no_link=False):
         return FUNCTION_TYPE_ID
@@ -1195,12 +1199,11 @@ class Function(Subroutine):
         return "\n".join(interface_array)
 
 
-class Type(Scope):
+class DerivedType(Scope):
     def __init__(
         self, file_ast: FortranAST, line_number: int, name: str, keywords: list
     ):
         super().__init__(file_ast, line_number, name, keywords)
-        #
         self.in_children: list = []
         self.inherit = None
         self.inherit_var = None
@@ -1590,13 +1593,11 @@ class Variable(FortranObj):
         name: str,
         var_desc: str,
         keywords: list,
-        keyword_info: dict = None,
+        keyword_info: dict = {},
         # kind: int | str = None,
         link_obj=None,
     ):
         super().__init__()
-        if keyword_info is None:
-            keyword_info = {}
         self.file_ast: FortranAST = file_ast
         self.sline: int = line_number
         self.eline: int = line_number
@@ -1605,14 +1606,14 @@ class Variable(FortranObj):
         self.keywords: list = keywords
         self.keyword_info: dict = keyword_info
         self.callable: bool = FRegex.CLASS_VAR.match(var_desc) is not None
-        self.children: list = []
+        self.children: list[FortranObj] = []
         self.use: list[USE_line] = []
-        self.link_obj = None
+        self.link_obj: FortranObj | None = None
         self.type_obj = None
         self.is_const: bool = False
         self.is_external: bool = False
-        self.param_val: str = None
-        self.link_name: str = None
+        self.param_val: str | None = None
+        self.link_name: str | None = None
         # self.kind: int | str = kind
         self.FQSN: str = self.name.lower()
         if link_obj is not None:
@@ -1631,7 +1632,7 @@ class Variable(FortranObj):
         ):
             self.is_external = True
 
-    def update_fqsn(self, enc_scope=None):
+    def update_fqsn(self, enc_scope: str | None = None):
         if enc_scope is not None:
             self.FQSN = enc_scope.lower() + "::" + self.name.lower()
         else:
@@ -1840,7 +1841,7 @@ class Method(Variable):  # i.e. TypeBound procedure
         return METH_TYPE_ID
 
     def get_documentation(self):
-        if (self.link_obj is not None) and (self.doc_str is None):
+        if (self.link_obj is not None) and self.doc_str is None:
             return self.link_obj.get_documentation()
         return self.doc_str
 
@@ -1911,11 +1912,9 @@ class Method(Variable):  # i.e. TypeBound procedure
 
 
 class FortranAST:
-    def __init__(self, file_obj=None):
+    def __init__(self, file_obj: FortranFile | None = None):
         self.file = file_obj
-        self.path: str = None
-        if file_obj is not None:
-            self.path = file_obj.path
+        self.path: str | None = file_obj.path if file_obj is not None else None
         self.global_dict: dict = {}
         self.scope_list: list = []
         self.variable_list: list = []
@@ -1933,10 +1932,10 @@ class FortranAST:
         self.none_scope = None
         self.inc_scope = None
         self.current_scope = None
-        self.END_SCOPE_REGEX: Pattern = None
-        self.enc_scope_name: str = None
+        self.END_SCOPE_REGEX: Pattern | None = None
+        self.enc_scope_name: str | None = None
         self.last_obj = None
-        self.pending_doc: str = None
+        self.pending_doc: str | None = None
 
     def create_none_scope(self):
         """Create empty scope to hold non-module contained items"""
@@ -2051,7 +2050,7 @@ class FortranAST:
             if self.last_obj is not None:
                 self.last_obj.add_doc(doc_string)
 
-    def add_error(self, msg: str, sev: int, ln: int, sch: int, ech: int = None):
+    def add_error(self, msg: str, sev: int, ln: int, sch: int, ech: int | None = None):
         """Add a Diagnostic error, encountered during parsing, for a range
         in the document.
 
@@ -2078,7 +2077,7 @@ class FortranAST:
         if len(self.pp_if) > 0:
             self.pp_if[-1][1] = line_number - 1
 
-    def get_scopes(self, line_number: int = None):
+    def get_scopes(self, line_number: int | None = None):
         if line_number is None:
             return self.scope_list
         scope_list = []
@@ -2133,7 +2132,7 @@ class FortranAST:
                 curr_obj = next_obj
         return curr_obj
 
-    def resolve_includes(self, workspace, path: str = None):
+    def resolve_includes(self, workspace, path: str | None = None):
         file_dir = os.path.dirname(self.path)
         for inc in self.include_statements:
             file_path = os.path.normpath(os.path.join(file_dir, inc.path))

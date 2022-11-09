@@ -457,7 +457,7 @@ def debug_server_parser(args):
     if file_exists is False:
         error_exit("Specified 'debug_filepath' does not exist")
     # Get preprocessor definitions from config file
-    pp_suffixes = None
+    pp_suffixes = []
     pp_defs = {}
     include_dirs = set()
     if args.debug_rootpath:

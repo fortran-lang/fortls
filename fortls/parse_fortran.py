@@ -53,6 +53,7 @@ from fortls.helper_functions import (
 from fortls.objects import (
     Associate,
     Block,
+    DerivedType,
     Do,
     Enum,
     FortranAST,
@@ -66,7 +67,6 @@ from fortls.objects import (
     Select,
     Submodule,
     Subroutine,
-    Type,
     Variable,
     Where,
 )
@@ -825,7 +825,7 @@ def find_external(
 
 
 class FortranFile:
-    def __init__(self, path: str = None, pp_suffixes: list = None):
+    def __init__(self, path: str | None = None, pp_suffixes: list = []):
         self.path: str = path
         self.contents_split: list[str] = []
         self.contents_pp: list[str] = []
@@ -833,8 +833,8 @@ class FortranFile:
         self.nLines: int = 0
         self.fixed: bool = False
         self.preproc: bool = False
-        self.ast: FortranAST = None
-        self.hash: str = None
+        self.ast: FortranAST | None = None
+        self.hash: str | None = None
         if path:
             _, file_ext = os.path.splitext(os.path.basename(path))
             if pp_suffixes:
@@ -1570,7 +1570,7 @@ class FortranFile:
 
             elif obj_type == "typ":
                 keywords, _ = map_keywords(obj_info.keywords)
-                new_type = Type(file_ast, line_no, obj_info.name, keywords)
+                new_type = DerivedType(file_ast, line_no, obj_info.name, keywords)
                 if obj_info.parent is not None:
                     new_type.set_inherit(obj_info.parent)
                 file_ast.add_scope(new_type, FRegex.END_TYPED, req_container=True)

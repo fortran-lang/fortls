@@ -4,6 +4,7 @@ import queue
 import threading
 from collections import deque
 from pathlib import Path
+from typing import BinaryIO
 from urllib.parse import quote, unquote
 
 from fortls.constants import log
@@ -33,7 +34,7 @@ class JSONRPC2ProtocolError(Exception):
 
 
 class ReadWriter:
-    def __init__(self, reader, writer):
+    def __init__(self, reader: BinaryIO, writer: BinaryIO):
         self.reader = reader
         self.writer = writer
 
@@ -64,7 +65,7 @@ class TCPReadWriter(ReadWriter):
 
 
 class JSONRPC2Connection:
-    def __init__(self, conn=None):
+    def __init__(self, conn: ReadWriter):
         self.conn = conn
         self._msg_buffer = deque()
         self._next_id = 1

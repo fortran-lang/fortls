@@ -70,7 +70,7 @@ class LangServer:
     def __init__(self, conn, settings: dict):
         self.conn: JSONRPC2Connection = conn
         self.running: bool = True
-        self.root_path: str = None
+        self.root_path: str | None = None
         self.workspace: dict[str, FortranFile] = {}
         self.obj_tree: dict = {}
         self.link_version = 0
@@ -381,10 +381,8 @@ class LangServer:
         ):
             #
             def child_candidates(
-                scope, only_list: list = None, filter_public=True, req_abstract=False
+                scope, only_list: list = [], filter_public=True, req_abstract=False
             ):
-                if only_list is None:
-                    only_list = []
                 tmp_list = []
                 # Filter children
                 nonly = len(only_list)
@@ -463,7 +461,7 @@ class LangServer:
         def build_comp(
             candidate,
             name_only: bool = self.autocomplete_name_only,
-            name_replace: str = None,
+            name_replace: str | None = None,
             is_interface: bool = False,
             is_member: bool = False,
         ):
@@ -802,7 +800,7 @@ class LangServer:
         def get_sub_name(line: str):
             _, sections = get_paren_level(line)
             if sections[0].start <= 1:
-                return None, None, None
+                raise TypeError
             arg_string = line[sections[0].start : sections[-1].end]
             sub_string, sections = get_paren_level(line[: sections[0].start - 1])
             return sub_string.strip(), arg_string.split(","), sections[-1].start

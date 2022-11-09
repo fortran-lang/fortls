@@ -3,12 +3,12 @@ import os
 
 from fortls.helper_functions import fortran_md, map_keywords
 from fortls.objects import (
+    DerivedType,
     FortranAST,
     FortranObj,
     Function,
     Module,
     Subroutine,
-    Type,
     Variable,
 )
 
@@ -129,7 +129,7 @@ def load_intrinsics():
         elif json_obj["type"] == 3:
             return Variable(none_ast, 0, name, json_obj["desc"], keywords, keyword_info)
         elif json_obj["type"] == 4:
-            return Type(none_ast, 0, name, keywords)
+            return DerivedType(none_ast, 0, name, keywords)
         else:
             raise ValueError
 
