@@ -1846,9 +1846,6 @@ class Method(Variable):  # i.e. TypeBound procedure
 
     def get_hover(self, long=False, drop_arg=-1) -> tuple[str, str]:
         docs = self.get_documentation()
-        if not long:
-            hover_str = ", ".join([self.desc] + get_keywords(self.keywords))
-            return hover_str, docs
         # Long hover message
         if self.link_obj is None:
             sub_sig, _ = self.get_snippet()
