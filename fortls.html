@@ -690,14 +690,13 @@ by forward search of the string, returns -1 if no match is found</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.helper_functions.fortran_md">
-<span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">fortran_md</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highlight</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">langid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fortran90'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.fortran_md" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">fortran_md</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">langid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fortran90'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.fortran_md" title="Permalink to this definition">#</a></dt>
 <dd><p>Convert Fortran code to markdown</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>code</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Fortran code</p></li>
-<li><p><strong>docs</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em> | </em><em>None</em>) – Documentation string, only makes sense if <code class="docutils literal notranslate"><span class="pre">highlight</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
-<li><p><strong>highlight</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a>) – Whether to highlight the code</p></li>
+<li><p><strong>docs</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em> | </em><em>None</em>) – Documentation string</p></li>
 <li><p><strong>langid</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – Language ID, by default ‘fortran90’</p></li>
 </ul>
 </dd>
@@ -1024,6 +1023,11 @@ True</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.intrinsics.Intrinsic.get_hover">
 <span class="sig-name descname"><span class="pre">get_hover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.intrinsics.Intrinsic.get_hover" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fortls.intrinsics.Intrinsic.get_hover_md">
+<span class="sig-name descname"><span class="pre">get_hover_md</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.intrinsics.Intrinsic.get_hover_md" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1763,7 +1767,7 @@ in the document.</p>
 <span class="sig-name descname"><span class="pre">get_hover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.FortranObj.get_hover" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a> | None, <a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a> | None, <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)">bool</a>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a>[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a> | None, <a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a> | None]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3765,6 +3769,7 @@ F F03 F05 F08 F18 F77 F90 F95 FOR FPP f f03 f05 f08 f18 f77 f90 f95 for fpp</p>
 <li><a class="reference internal" href="#fortls.intrinsics.Intrinsic"><code class="docutils literal notranslate"><span class="pre">Intrinsic</span></code></a><ul>
 <li><a class="reference internal" href="#fortls.intrinsics.Intrinsic.get_desc"><code class="docutils literal notranslate"><span class="pre">Intrinsic.get_desc()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.intrinsics.Intrinsic.get_hover"><code class="docutils literal notranslate"><span class="pre">Intrinsic.get_hover()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.intrinsics.Intrinsic.get_hover_md"><code class="docutils literal notranslate"><span class="pre">Intrinsic.get_hover_md()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.intrinsics.Intrinsic.get_signature"><code class="docutils literal notranslate"><span class="pre">Intrinsic.get_signature()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.intrinsics.Intrinsic.get_snippet"><code class="docutils literal notranslate"><span class="pre">Intrinsic.get_snippet()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.intrinsics.Intrinsic.get_type"><code class="docutils literal notranslate"><span class="pre">Intrinsic.get_type()</span></code></a></li>
