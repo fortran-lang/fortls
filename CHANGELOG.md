@@ -6,6 +6,8 @@
 
 ### Added
 
+- Added dependabot alers for PyPi
+  ([#222](https://github.com/gnikit/fortls/issues/222))
 - Added `CITATION.cff` file to project roots
 
 ### Changed
