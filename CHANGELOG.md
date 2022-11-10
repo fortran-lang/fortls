@@ -6,15 +6,22 @@
 
 ### Added
 
+- Added dependabot alers for PyPi
+  ([#222](https://github.com/gnikit/fortls/issues/222))
 - Added `CITATION.cff` file to project roots
 
 ### Changed
 
+- Changed the completion signature to include the full Markdown documentation
+  for the completion item.
+  ([#219](https://github.com/gnikit/fortls/issues/219))
 - Changed hover messages and signature help to use Markdown
   ([#45](https://github.com/gnikit/fortls/issues/45))
 
 ### Fixed
 
+- Fixed debug interface parser not loading all configuration files
+  ([#221](https://github.com/gnikit/fortls/issues/221))
 - Fixed name mangling of type-bound procedure pointers while hovering
   ([#214](https://github.com/gnikit/fortls/issues/214))
 - Fixed parsing start of multilines into AST

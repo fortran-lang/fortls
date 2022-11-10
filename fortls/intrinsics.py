@@ -1,7 +1,7 @@
 import json
 import os
 
-from fortls.helper_functions import map_keywords
+from fortls.helper_functions import fortran_md, map_keywords
 from fortls.objects import (
     FortranAST,
     FortranObj,
@@ -71,7 +71,12 @@ class Intrinsic(FortranObj):
         return call_sig, self.doc_str, arg_sigs
 
     def get_hover(self, long=False):
-        return self.doc_str, None, False
+        return None, self.doc_str
+
+    def get_hover_md(self, long=False):
+        msg, docs = self.get_hover(long)
+        msg = msg if msg else ""
+        return fortran_md(msg, docs)
 
     def is_callable(self):
         if self.type == 2:
