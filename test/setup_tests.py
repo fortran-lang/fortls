@@ -7,7 +7,7 @@ from io import StringIO
 from pathlib import Path
 
 root_dir = Path(__file__).parent.parent.resolve()
-sys.path.insert(0, root_dir)
+sys.path.insert(0, str(root_dir))
 
 # Compromise since isort does not respect noqa
 from fortls.jsonrpc import path_to_uri  # noqa: E402, F401
@@ -23,7 +23,7 @@ def check_post_msg(result: dict, msg: str, severity: int):
     assert result["message"] == msg
 
 
-def run_request(request, fortls_args: list[str] = None):
+def run_request(request, fortls_args: list[str] = []):
     command = [
         sys.executable,
         "-m",

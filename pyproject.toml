@@ -8,7 +8,7 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
-write_to = "fortls/_version.py"
+write_to = "src/fortls/_version.py"
 
 [tool.isort]
 profile = "black"
@@ -16,4 +16,4 @@ profile = "black"
 [tool.pytest.ini_options]
 minversion = "7.0"
 addopts = "-v --cov=fortls --cov-report=html --cov-report=xml --cov-context=test"
-testpaths = ["fortls", "test"]
+testpaths = ["src/fortls", "test"]
