@@ -12,6 +12,8 @@
 
 ### Changed
 
+- Changed project layout to src from flat layout
+  ([#227](https://github.com/gnikit/fortls/issues/227))
 - Changed the completion signature to include the full Markdown documentation
   for the completion item.
   ([#219](https://github.com/gnikit/fortls/issues/219))
