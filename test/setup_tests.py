@@ -7,7 +7,7 @@ from io import StringIO
 from pathlib import Path
 
 root_dir = Path(__file__).parent.parent.resolve()
-sys.path.insert(0, str(root_dir))
+# sys.path.insert(0, str(root_dir))
 
 # Compromise since isort does not respect noqa
 from fortls.jsonrpc import path_to_uri  # noqa: E402, F401
@@ -30,6 +30,7 @@ def run_request(request, fortls_args: list[str] = []):
         "fortls",
         "--incremental_sync",
     ]
+
     if fortls_args:
         # Input args might not be sanitised, fix that
         for i in fortls_args:
@@ -62,4 +63,5 @@ def run_request(request, fortls_args: list[str] = []):
                 "Unexpected error encountered trying to extract server results"
             )
     errcode = pid.poll()
+    print("->>>> ERRORCODE: ", errcode, " RESULTS: ", parsed_results)
     return errcode, parsed_results
