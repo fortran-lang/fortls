@@ -4,6 +4,8 @@ import argparse
 import json
 import sys
 
+from fortls.version import __version__
+
 
 class SetAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
@@ -37,7 +39,8 @@ def cli(name: str = "fortls") -> argparse.ArgumentParser:
     parser.add_argument(
         "-v",
         "--version",
-        action="store_true",
+        action="version",
+        version=__version__,
         help="Print server version number and exit",
     )
     parser.add_argument(
@@ -225,6 +228,7 @@ def cli(name: str = "fortls") -> argparse.ArgumentParser:
     group.add_argument(
         "--pp_suffixes",
         type=str,
+        default=set(),
         nargs="*",
         metavar="SUFFIXES",
         help=(
@@ -246,6 +250,7 @@ def cli(name: str = "fortls") -> argparse.ArgumentParser:
         "--pp_defs",
         type=json.loads,
         default={},
+        metavar="JSON",
         help=(
             "A dictionary with additional preprocessor definitions. "
             "Preprocessor definitions are normally included via INCLUDE_DIRS"
