@@ -97,7 +97,7 @@ for more information about the Anaconda installation [see](https://github.com/co
 ### Common installation problems
 
 It is **NOT** recommended having `fortls` and `fortran-language-server`
-simultaneously installed, since they use the same binary name. If you are having trouble
+simultaneously installed, since they use the same executable name. If you are having trouble
 getting `fortls` to work try uninstalling `fortran-language-server` and reinstalling `fortls`.
 
 With `pip`

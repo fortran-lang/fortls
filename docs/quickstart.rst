@@ -62,7 +62,7 @@ The project is available for download through the **PyPi** and **Anaconda** pack
 
 .. warning::
     It is **NOT** possible having ``fortls`` and ``fortran-language-server``
-    simultaneously installed, since they use the same binary name. If you are having trouble
+    simultaneously installed, since they use the same executable name. If you are having trouble
     getting ``fortls`` to work try uninstalling ``fortran-language-server`` and reinstalling ``fortls``.
 
 
