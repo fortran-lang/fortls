@@ -2,6 +2,8 @@
 
 ## Added
 
+- Added and create a schema for fortls configuration files
+  ([#204](https://github.com/gnikit/fortls/issues/204))
 - Added dependabot alers for PyPi
   ([#222](https://github.com/gnikit/fortls/issues/222))
 - Added `CITATION.cff` file to project roots
