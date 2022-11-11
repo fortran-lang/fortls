@@ -31,7 +31,7 @@ def cli(name: str = "fortls") -> argparse.ArgumentParser:
             " default named '.fortlsrc', '.fortls.json' or '.fortls'"
             " (other names/paths can specified via -c or"
             " --config). For more details see our documentation:"
-            " https://gnikit.github.io/fortls/options.html#available-options"
+            " https://fortls.fortran-lang.org/options.html#available-options"
         ),
     )
 

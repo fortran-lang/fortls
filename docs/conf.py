@@ -107,7 +107,7 @@ html_theme = "furo"
 html_title = "fortls"
 html_logo = "../assets/logo.svg"
 html_favicon = "../assets/icon.svg"
-html_baseurl = "https://gnikit.github.io/fortls/"
+html_baseurl = "https://fortls.fortran-lang.org/"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
