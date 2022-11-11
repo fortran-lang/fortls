@@ -57,7 +57,7 @@ The project is available for download through the **PyPi** and **Anaconda** pack
 
         .. code-block:: sh
 
-            pip install --user --upgrade git+git://github.com/gnikit/fortls
+            pip install --user --upgrade git+git://github.com/fortran-lang/fortls
 
 
 .. warning::

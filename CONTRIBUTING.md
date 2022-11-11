@@ -4,15 +4,15 @@
 
 In this file you will find all the steps necessary to guide you through your first contribution to the project.
 
-Please note our [Code of Conduct](https://github.com/gnikit/fortls/blob/master/CODE_OF_CONDUCT.md) and adhere to it in all your interactions with this project.
+Please note our [Code of Conduct](https://github.com/fortran-lang/fortls/blob/master/CODE_OF_CONDUCT.md) and adhere to it in all your interactions with this project.
 
 ## 📚 Getting Started
 
-A good place to start is the [Issues tab](https://github.com/gnikit/fortls/issues) on GitHub. Look for any issues with the `help wanted` tag.
+A good place to start is the [Issues tab](https://github.com/fortran-lang/fortls/issues) on GitHub. Look for any issues with the `help wanted` tag.
 
 ### Downloading ⬇️
 
-Firstly, fork the repository from <https://github.com/gnikit/fortls>.
+Firstly, fork the repository from <https://github.com/fortran-lang/fortls>.
 
 Then clone the forked repository into your local machine.
 
@@ -70,4 +70,4 @@ You can find varisous test examples in the `tests` directory.
 
 ### Merging
 
-To merge your changes to the main `fortls` repository push your branch on GitHub and open a [Pull Request](https://github.com/gnikit/fortls/pulls). Ping `@gnikit` to review your PR.
+To merge your changes to the main `fortls` repository push your branch on GitHub and open a [Pull Request](https://github.com/fortran-lang/fortls/pulls). Ping `@gnikit` to review your PR.

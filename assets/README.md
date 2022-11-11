@@ -1,6 +1,6 @@
 # Info about Licenses
 
-All the contents of this directory (original URL: <https://github.com/gnikit/fortls/tree/master/assets>) and any subsequent directories or links or copies of this directory
+All the contents of this directory (original URL: <https://github.com/fortran-lang/fortls/tree/master/assets>) and any subsequent directories or links or copies of this directory
 are licensed under the
 [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International](https://creativecommons.org/licenses/by-nc-nd/4.0/) license.
 
