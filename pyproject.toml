@@ -16,4 +16,4 @@ profile = "black"
 [tool.pytest.ini_options]
 minversion = "7.0"
 addopts = "-v --cov=fortls --cov-report=html --cov-report=xml --cov-context=test"
-testpaths = ["src/fortls", "test"]
+testpaths = ["src", "test"]
