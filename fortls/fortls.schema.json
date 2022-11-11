@@ -1,0 +1,187 @@
+{
+  "title": "fortls schema",
+  "description": "Schema for the fortls Fortran Language Server",
+  "type": "object",
+  "properties": {
+    "config": {
+      "title": "Config",
+      "description": "Configuration options file (default file name: .fortlsrc, other default supported names: .fortls.json, .fortls)",
+      "default": ".fortlsrc",
+      "type": "string"
+    },
+    "nthreads": {
+      "title": "Nthreads",
+      "description": "Number of threads to use during workspace initialization (default: 4)",
+      "default": 4,
+      "type": "integer"
+    },
+    "notify_init": {
+      "title": "Notify Init",
+      "description": "Send notification message when workspace initialization is complete",
+      "default": false,
+      "type": "boolean"
+    },
+    "incremental_sync": {
+      "title": "Incremental Sync",
+      "description": "Use incremental document synchronization (beta)",
+      "default": false,
+      "type": "boolean"
+    },
+    "sort_keywords": {
+      "title": "Sort Keywords",
+      "description": "Display variable keywords information, function/subroutine definitions, etc. in a consistent (sorted) manner default: no sorting, display code as is)",
+      "default": false,
+      "type": "boolean"
+    },
+    "disable_autoupdate": {
+      "title": "Disable Autoupdate",
+      "description": "fortls automatically checks PyPi for newer version and installs them.Use this option to disable the autoupdate feature.",
+      "default": false,
+      "type": "boolean"
+    },
+    "preserve_keyword_order": {
+      "title": "Preserve Keyword Order",
+      "description": "DEPRECATED, this is now the default. To sort use sort_keywords",
+      "default": false,
+      "type": "boolean"
+    },
+    "debug_log": {
+      "title": "Debug Log",
+      "description": "Generate debug log in project root folder",
+      "default": false,
+      "type": "boolean"
+    },
+    "source_dirs": {
+      "title": "Source Dirs",
+      "description": "Folders containing source files (default: set())",
+      "default": [],
+      "type": "array",
+      "items": {},
+      "uniqueItems": true
+    },
+    "incl_suffixes": {
+      "title": "Incl Suffixes",
+      "description": "Consider additional file extensions to the default (default: F,F77,F90,F95,F03,F08,FOR,FPP (lower & upper casing))",
+      "default": [],
+      "type": "array",
+      "items": {},
+      "uniqueItems": true
+    },
+    "excl_suffixes": {
+      "title": "Excl Suffixes",
+      "description": "Source file extensions to be excluded (default: set())",
+      "default": [],
+      "type": "array",
+      "items": {},
+      "uniqueItems": true
+    },
+    "excl_paths": {
+      "title": "Excl Paths",
+      "description": "Folders to exclude from parsing",
+      "default": [],
+      "type": "array",
+      "items": {},
+      "uniqueItems": true
+    },
+    "autocomplete_no_prefix": {
+      "title": "Autocomplete No Prefix",
+      "description": "Do not filter autocomplete results by variable prefix",
+      "default": false,
+      "type": "boolean"
+    },
+    "autocomplete_no_snippets": {
+      "title": "Autocomplete No Snippets",
+      "description": "Do not use snippets with place holders in autocomplete results",
+      "default": false,
+      "type": "boolean"
+    },
+    "autocomplete_name_only": {
+      "title": "Autocomplete Name Only",
+      "description": "Complete only the name of procedures and not the parameters",
+      "default": false,
+      "type": "boolean"
+    },
+    "lowercase_intrinsics": {
+      "title": "Lowercase Intrinsics",
+      "description": "Use lowercase for intrinsics and keywords in autocomplete requests",
+      "default": false,
+      "type": "boolean"
+    },
+    "use_signature_help": {
+      "title": "Use Signature Help",
+      "description": "Use signature help instead of subroutine/function snippets. This effectively sets --autocomplete_no_snippets",
+      "default": false,
+      "type": "boolean"
+    },
+    "variable_hover": {
+      "title": "Variable Hover",
+      "description": "DEPRECATED: This option is always on. Show hover information for variables",
+      "default": false,
+      "type": "boolean"
+    },
+    "hover_signature": {
+      "title": "Hover Signature",
+      "description": "Show signature information in hover for arguments ",
+      "default": false,
+      "type": "boolean"
+    },
+    "hover_language": {
+      "title": "Hover Language",
+      "description": "Language used for responses to hover requests a VSCode language id (default: fortran90)",
+      "default": "fortran90",
+      "type": "string"
+    },
+    "max_line_length": {
+      "title": "Max Line Length",
+      "description": "Maximum line length (default: -1)",
+      "default": -1,
+      "type": "integer"
+    },
+    "max_comment_line_length": {
+      "title": "Max Comment Line Length",
+      "description": "Maximum comment line length (default: -1)",
+      "default": -1,
+      "type": "integer"
+    },
+    "disable_diagnostics": {
+      "title": "Disable Diagnostics",
+      "description": "Disable diagnostics",
+      "default": false,
+      "type": "boolean"
+    },
+    "pp_suffixes": {
+      "title": "Pp Suffixes",
+      "description": "File extensions to be parsed ONLY for preprocessor commands (default: all uppercase source file suffixes)",
+      "default": [],
+      "type": "array",
+      "items": {},
+      "uniqueItems": true
+    },
+    "include_dirs": {
+      "title": "Include Dirs",
+      "description": "Folders containing preprocessor files with extensions PP_SUFFIXES.",
+      "default": [],
+      "type": "array",
+      "items": {},
+      "uniqueItems": true
+    },
+    "pp_defs": {
+      "title": "Pp Defs",
+      "description": "A dictionary with additional preprocessor definitions. Preprocessor definitions are normally included via INCLUDE_DIRS",
+      "default": {},
+      "type": "object"
+    },
+    "symbol_skip_mem": {
+      "title": "Symbol Skip Mem",
+      "description": "Do not include type members in document symbol results",
+      "default": false,
+      "type": "boolean"
+    },
+    "enable_code_actions": {
+      "title": "Enable Code Actions",
+      "description": "Enable experimental code actions (default: false)",
+      "default": false,
+      "type": "boolean"
+    }
+  }
+}

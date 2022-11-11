@@ -2,6 +2,7 @@
 omit =
     fortls/__init__.py
     fortls/version.py
+    fortls/schema.py
 
 [report]
 exclude_lines =
