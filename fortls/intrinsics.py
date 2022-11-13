@@ -24,24 +24,28 @@ def set_lowercase_intrinsics():
     lowercase_intrinsics = True
 
 
+def intrinsics_case(name: str, args: str):
+    if lowercase_intrinsics:
+        return name.lower(), args.lower()
+    return name, args
+
+
 class Intrinsic(FortranObj):
     def __init__(
         self,
         name: str,
         type: int,
-        doc_str: str = "",
+        doc_str: str | None = None,
         args: str = "",
         parent=None,
     ):
         self.name: str = name
         self.type: int = type
-        self.doc_str: str = doc_str
+        self.doc_str: str | None = doc_str
         self.args: str = args.replace(" ", "")
         self.parent = parent
         self.file_ast: FortranAST = intrinsic_ast
-        if lowercase_intrinsics:
-            self.name = self.name.lower()
-            self.args = self.args.lower()
+        self.name, self.args = intrinsics_case(self.name, self.args)
 
     def get_type(self):
         return self.type
@@ -97,9 +101,7 @@ def load_intrinsics():
     def create_int_object(name: str, json_obj: dict, type: int):
         args = json_obj.get("args", "")
         doc_str = json_obj.get("doc")
-        if lowercase_intrinsics:
-            name = name.lower()
-            args = args.lower()
+        name, args = intrinsics_case(name, args)
         return Intrinsic(name, type, doc_str=doc_str, args=args)
 
     def create_object(json_obj: dict, enc_obj=None):
@@ -112,9 +114,8 @@ def load_intrinsics():
             keywords, keyword_info = map_keywords(json_obj["mods"])
         name = json_obj["name"]
         args = json_obj.get("args", "")
-        if lowercase_intrinsics:
-            name = name.lower()
-            args = args.lower()
+        name, args = intrinsics_case(name, args)
+
         if json_obj["type"] == 0:  # module, match "type": in JSON files
             mod_tmp = Module(intrinsic_ast, 0, name)
             if "use" in json_obj:
