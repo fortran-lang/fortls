@@ -277,7 +277,7 @@ def update_m_intrinsics():
     try:
         files = glob.glob("M_intrinsics/md/*.md")
         markdown_intrinsics = {}
-        for f in files:
+        for f in sorted(files):
             key = f.replace("M_intrinsics/md/", "")
             key = key.replace(".md", "").upper()  # remove md extension
             with open(f) as md_f:
