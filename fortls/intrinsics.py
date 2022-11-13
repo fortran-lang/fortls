@@ -148,50 +148,118 @@ def load_intrinsics():
             fort_obj.add_child(child_obj)
             add_children(child, child_obj)
 
+    def load_statements(root: str):
+        """Load the statements from the json file.
+        Fortran statements taken from Intel Fortran documentation
+        (https://www.intel.com/content/www/us/en/develop/documentation/fortran-compiler-oneapi-dev-guide-and-reference/top/language-reference/a-to-z-reference)
+
+
+        Parameters
+        ----------
+        root : str
+            root location of the json file.
+
+        Returns
+        -------
+        dict
+            statements dictionary
+        """
+        json_file = os.path.join(root, "statements.json")
+        statements = {"var_def": [], "int_stmnts": []}
+        with open(json_file, encoding="utf-8") as fid:
+            json_data = json.load(fid)
+            for key in statements:
+                for name, json_obj in sorted(json_data[key].items()):
+                    statements[key].append(create_int_object(name, json_obj, 15))
+        return statements
+
+    def load_keywords(root: str):
+        """Load the Fortran keywords from the json file.
+        Fortran statements taken from Intel Fortran documentation
+        (https://www.intel.com/content/www/us/en/develop/documentation/fortran-compiler-oneapi-dev-guide-and-reference/top/language-reference/a-to-z-reference)
+
+
+        Parameters
+        ----------
+        root : str
+            root location of the json file.
+
+        Returns
+        -------
+        dict
+            keywords dictionary
+        """
+        json_file = os.path.join(root, "keywords.json")
+        keywords = {"var_def": [], "arg": [], "type_mem": [], "vis": [], "param": []}
+        with open(json_file, encoding="utf-8") as fid:
+            json_data = json.load(fid)
+            for key in keywords:
+                for name, json_obj in sorted(json_data[key].items()):
+                    keywords[key].append(create_int_object(name, json_obj, 14))
+        return keywords
+
+    def load_intrinsic_procedures(root: str):
+        """Load Intrinsics procedure definitions, from gfortran
+        (https://gcc.gnu.org/onlinedocs/gfortran/intrinsic-procedures.html)
+
+        Parameters
+        ----------
+        root : str
+            root location of the json file.
+
+        Returns
+        -------
+        dict
+            intrinsic procedures dictionary
+        """
+        json_file = os.path.join(root, "intrinsic.procedures.markdown.json")
+        with open(json_file, encoding="utf-8") as f:
+            md_files = json.load(f)
+        json_file = os.path.join(root, "intrinsic.procedures.json")
+        intrinsic_procedures = []
+        with open(json_file, encoding="utf-8") as f:
+            json_data = json.load(f)
+            for name, json_obj in sorted(json_data.items()):
+                # Replace the plain documentation with the Markdown if available
+                if name in md_files:
+                    json_obj["doc"] = md_files[name]
+                intrinsic_procedures.append(
+                    create_int_object(name, json_obj, json_obj["type"])
+                )
+        return intrinsic_procedures
+
+    def load_intrinsic_modules(root: str):
+        """Load Intrinsics procedure definitions, from gfortran
+        (https://gcc.gnu.org/onlinedocs/gfortran/intrinsic-modules.html)
+        Update OpenACC from here https://www.openacc.org/specification
+
+        Parameters
+        ----------
+        root : str
+            root location of the json file.
+
+        Returns
+        -------
+        dict
+            intrinsic modules dictionary
+        """
+        json_file = os.path.join(root, "intrinsic.modules.json")
+        intrinsic_modules = []
+        with open(json_file, encoding="utf-8") as fid:
+            intrin_file = json.load(fid)
+            for key, json_obj in intrin_file.items():
+                fort_obj = create_object(json_obj)
+                add_children(json_obj, fort_obj)
+                intrinsic_modules.append(fort_obj)
+        return intrinsic_modules
+
     root = os.path.dirname(os.path.abspath(__file__))
-    # Fortran statements taken from Intel Fortran documentation
-    # (https://www.intel.com/content/www/us/en/develop/documentation/fortran-compiler-oneapi-dev-guide-and-reference/top/language-reference/a-to-z-reference)
-    json_file = os.path.join(root, "statements.json")
-    statements = {"var_def": [], "int_stmnts": []}
-    with open(json_file, encoding="utf-8") as fid:
-        intrin_file = json.load(fid)
-        for key in statements:
-            for name, json_obj in sorted(intrin_file[key].items()):
-                statements[key].append(create_int_object(name, json_obj, 15))
-    # Fortran keywords taken from Intel Fortran documentation
-    # (https://www.intel.com/content/www/us/en/develop/documentation/fortran-compiler-oneapi-dev-guide-and-reference/top/language-reference/a-to-z-reference)
-    json_file = os.path.join(root, "keywords.json")
-    keywords = {"var_def": [], "arg": [], "type_mem": [], "vis": [], "param": []}
-    with open(json_file, encoding="utf-8") as fid:
-        intrin_file = json.load(fid)
-        for key in keywords:
-            for name, json_obj in sorted(intrin_file[key].items()):
-                keywords[key].append(create_int_object(name, json_obj, 14))
-    # Intrinsics procedure definitions, from gfortran
-    # https://gcc.gnu.org/onlinedocs/gfortran/intrinsic-procedures.html
-    json_file = os.path.join(root, "intrinsic.procedures.markdown.json")
-    with open(json_file, encoding="utf-8") as fid:
-        md_files = json.load(fid)
-    json_file = os.path.join(root, "intrinsic.procedures.json")
-    int_funs = []
-    with open(json_file, encoding="utf-8") as fid:
-        intrin_file = json.load(fid)
-        for name, json_obj in sorted(intrin_file.items()):
-            if name in md_files:
-                json_obj["doc"] = md_files[name]
-            int_funs.append(create_int_object(name, json_obj, json_obj["type"]))
-    # Definitions taken from gfortran documentation
-    # https://gcc.gnu.org/onlinedocs/gfortran/intrinsic-modules.html
-    # Update OpenACC from here https://www.openacc.org/specification
-    json_file = os.path.join(root, "intrinsic.modules.json")
-    int_mods = []
-    with open(json_file, encoding="utf-8") as fid:
-        intrin_file = json.load(fid)
-        for key, json_obj in intrin_file.items():
-            fort_obj = create_object(json_obj)
-            add_children(json_obj, fort_obj)
-            int_mods.append(fort_obj)
-    return statements, keywords, int_funs, int_mods
+    statements = load_statements(root)
+    keywords = load_keywords(root)
+    intrinsic_procedures = load_intrinsic_procedures(root)
+    intrinsic_modules = load_intrinsic_modules(root)
+
+    return statements, keywords, intrinsic_procedures, intrinsic_modules
 
 
 def get_intrinsic_keywords(statements, keywords, context=-1):
