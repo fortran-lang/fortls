@@ -301,7 +301,12 @@ class LangServer:
         # Add scopes to outline view
         test_output = []
         for scope in file_obj.ast.get_scopes():
-            if (scope.name[0] == "#") or (scope.get_type() == SELECT_TYPE_ID):
+
+            if (
+                not scope.name
+                or scope.name[0] == "#"
+                or scope.get_type() == SELECT_TYPE_ID
+            ):
                 continue
             scope_tree = scope.FQSN.split("::")
             if len(scope_tree) > 2:
