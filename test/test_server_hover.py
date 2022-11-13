@@ -1,3 +1,5 @@
+import json
+
 from setup_tests import Path, run_request, test_dir, write_rpc_request
 
 
@@ -530,9 +532,9 @@ def test_intrinsics():
     string += hover_req(file_path, 39, 23)
     errcode, results = run_request(string, fortls_args=["-n", "1"])
     assert errcode == 0
-    ref_results = [
-        "\n-----\nSIZE(ARRAY,DIM=dim,KIND=kind) determines the extent of ARRAY along a"
-        " specified dimension DIM, or the total number of elements in ARRAY if DIM is"
-        " absent."
-    ]
+    with open(
+        test_dir.parent.parent / "fortls" / "intrinsic.procedures.markdown.json"
+    ) as f:
+        intrinsics = json.load(f)
+    ref_results = ["\n-----\n" + intrinsics["SIZE"]]
     validate_hover(results, ref_results)
