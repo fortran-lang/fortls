@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 import os
 
@@ -22,13 +24,20 @@ def set_lowercase_intrinsics():
 
 
 class Intrinsic(FortranObj):
-    def __init__(self, name, type, doc_str=None, args="", parent=None):
-        self.name = name
-        self.type = type
-        self.doc_str = doc_str
-        self.args = args.replace(" ", "")
+    def __init__(
+        self,
+        name: str,
+        type: int,
+        doc_str: str | None = None,
+        args: str = "",
+        parent=None,
+    ):
+        self.name: str = name
+        self.type: int = type
+        self.doc_str: str = doc_str
+        self.args: str = args.replace(" ", "")
         self.parent = parent
-        self.file_ast = none_ast
+        self.file_ast: FortranAST = none_ast
         if lowercase_intrinsics:
             self.name = self.name.lower()
             self.args = self.args.lower()
@@ -94,7 +103,7 @@ def load_intrinsics():
             args = args.lower()
         return Intrinsic(name, type, doc_str=doc_str, args=args)
 
-    def create_object(json_obj, enc_obj=None):
+    def create_object(json_obj: dict, enc_obj=None):
         if enc_obj is not None:
             none_ast.enc_scope_name = enc_obj.FQSN
         else:
@@ -139,11 +148,10 @@ def load_intrinsics():
             fort_obj.add_child(child_obj)
             add_children(child, child_obj)
 
-    # Fortran statments taken from Intel Fortran documentation
+    root = os.path.dirname(os.path.abspath(__file__))
+    # Fortran statements taken from Intel Fortran documentation
     # (https://www.intel.com/content/www/us/en/develop/documentation/fortran-compiler-oneapi-dev-guide-and-reference/top/language-reference/a-to-z-reference)
-    json_file = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "statements.json"
-    )
+    json_file = os.path.join(root, "statements.json")
     statements = {"var_def": [], "int_stmnts": []}
     with open(json_file, encoding="utf-8") as fid:
         intrin_file = json.load(fid)
@@ -152,31 +160,30 @@ def load_intrinsics():
                 statements[key].append(create_int_object(name, json_obj, 15))
     # Fortran keywords taken from Intel Fortran documentation
     # (https://www.intel.com/content/www/us/en/develop/documentation/fortran-compiler-oneapi-dev-guide-and-reference/top/language-reference/a-to-z-reference)
-    json_file = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "keywords.json"
-    )
+    json_file = os.path.join(root, "keywords.json")
     keywords = {"var_def": [], "arg": [], "type_mem": [], "vis": [], "param": []}
     with open(json_file, encoding="utf-8") as fid:
         intrin_file = json.load(fid)
         for key in keywords:
             for name, json_obj in sorted(intrin_file[key].items()):
                 keywords[key].append(create_int_object(name, json_obj, 14))
-    # Definitions taken from gfortran documentation
-    # (https://gcc.gnu.org/onlinedocs/gfortran/Intrinsic-Procedures.html#Intrinsic-Procedures)
-    json_file = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "intrinsic_funs.json"
-    )
+    # Intrinsics procedure definitions, from gfortran
+    # https://gcc.gnu.org/onlinedocs/gfortran/intrinsic-procedures.html
+    json_file = os.path.join(root, "intrinsic.procedures.markdown.json")
+    with open(json_file, encoding="utf-8") as fid:
+        md_files = json.load(fid)
+    json_file = os.path.join(root, "intrinsic.procedures.json")
     int_funs = []
     with open(json_file, encoding="utf-8") as fid:
         intrin_file = json.load(fid)
         for name, json_obj in sorted(intrin_file.items()):
+            if name in md_files:
+                json_obj["doc"] = md_files[name]
             int_funs.append(create_int_object(name, json_obj, json_obj["type"]))
     # Definitions taken from gfortran documentation
-    # (https://gcc.gnu.org/onlinedocs/gfortran/Intrinsic-Modules.html#Intrinsic-Modules)
+    # https://gcc.gnu.org/onlinedocs/gfortran/intrinsic-modules.html
     # Update OpenACC from here https://www.openacc.org/specification
-    json_file = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "intrinsic_mods.json"
-    )
+    json_file = os.path.join(root, "intrinsic.modules.json")
     int_mods = []
     with open(json_file, encoding="utf-8") as fid:
         intrin_file = json.load(fid)
