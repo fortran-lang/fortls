@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import glob
 import json
 import os
 
@@ -14,7 +15,7 @@ from fortls.objects import (
     Variable,
 )
 
-none_ast = FortranAST()
+intrinsic_ast = FortranAST()
 lowercase_intrinsics = False
 
 
@@ -28,7 +29,7 @@ class Intrinsic(FortranObj):
         self,
         name: str,
         type: int,
-        doc_str: str | None = None,
+        doc_str: str = "",
         args: str = "",
         parent=None,
     ):
@@ -37,7 +38,7 @@ class Intrinsic(FortranObj):
         self.doc_str: str = doc_str
         self.args: str = args.replace(" ", "")
         self.parent = parent
-        self.file_ast: FortranAST = none_ast
+        self.file_ast: FortranAST = intrinsic_ast
         if lowercase_intrinsics:
             self.name = self.name.lower()
             self.args = self.args.lower()
@@ -52,8 +53,7 @@ class Intrinsic(FortranObj):
             return "KEYWORD"
         elif self.type == 15:
             return "STATEMENT"
-        else:
-            return "INTRINSIC"
+        return "INTRINSIC"
 
     def get_snippet(self, name_replace=None, drop_arg=-1):
         if self.args == "":
@@ -90,12 +90,11 @@ class Intrinsic(FortranObj):
     def is_callable(self):
         if self.type == 2:
             return True
-        else:
-            return False
+        return False
 
 
 def load_intrinsics():
-    def create_int_object(name, json_obj, type):
+    def create_int_object(name: str, json_obj: dict, type: int):
         args = json_obj.get("args", "")
         doc_str = json_obj.get("doc")
         if lowercase_intrinsics:
@@ -104,41 +103,40 @@ def load_intrinsics():
         return Intrinsic(name, type, doc_str=doc_str, args=args)
 
     def create_object(json_obj: dict, enc_obj=None):
+        intrinsic_ast.enc_scope_name = None
         if enc_obj is not None:
-            none_ast.enc_scope_name = enc_obj.FQSN
-        else:
-            none_ast.enc_scope_name = None
+            intrinsic_ast.enc_scope_name = enc_obj.FQSN
+        keywords = []
+        keyword_info = {}
         if "mods" in json_obj:
             keywords, keyword_info = map_keywords(json_obj["mods"])
-        else:
-            keywords = []
-            keyword_info = {}
         name = json_obj["name"]
         args = json_obj.get("args", "")
         if lowercase_intrinsics:
             name = name.lower()
             args = args.lower()
-        if json_obj["type"] == 0:
-            mod_tmp = Module(none_ast, 0, name)
+        if json_obj["type"] == 0:  # module, match "type": in JSON files
+            mod_tmp = Module(intrinsic_ast, 0, name)
             if "use" in json_obj:
                 mod_tmp.add_use(json_obj["use"], 0)
             return mod_tmp
-        elif json_obj["type"] == 1:
-            return Subroutine(none_ast, 0, name, args=args)
-        elif json_obj["type"] == 2:
+        elif json_obj["type"] == 1:  # subroutine, match "type": in JSON files
+            return Subroutine(intrinsic_ast, 0, name, args=args)
+        elif json_obj["type"] == 2:  # function, match "type": in JSON files
             return Function(
-                none_ast,
+                intrinsic_ast,
                 0,
                 name,
                 args=args,
                 result_type=json_obj["return"],
                 keywords=keywords,
-                # keyword_info=keyword_info,
             )
-        elif json_obj["type"] == 3:
-            return Variable(none_ast, 0, name, json_obj["desc"], keywords, keyword_info)
-        elif json_obj["type"] == 4:
-            return Type(none_ast, 0, name, keywords)
+        elif json_obj["type"] == 3:  # variable, match "type": in JSON files
+            return Variable(
+                intrinsic_ast, 0, name, json_obj["desc"], keywords, keyword_info
+            )
+        elif json_obj["type"] == 4:  # derived type, match "type": in JSON files
+            return Type(intrinsic_ast, 0, name, keywords)
         else:
             raise ValueError
 
@@ -272,3 +270,28 @@ def get_intrinsic_keywords(statements, keywords, context=-1):
     elif context == 3:
         return keywords["var_def"] + keywords["type_mem"] + keywords["vis"]
     return keywords["var_def"] + keywords["param"]
+
+
+def update_m_intrinsics():
+    try:
+        files = glob.glob("M_intrinsics/md/*.md")
+        markdown_intrinsics = {}
+        for f in files:
+            key = f.replace("M_intrinsics/md/", "")
+            key = key.replace(".md", "").upper()  # remove md extension
+            with open(f) as md_f:
+                val = md_f.read()
+            # remove manpage tag
+            val = val.replace(f"**{key.lower()}**(3)", f"**{key.lower()}**")
+            val = val.replace(f"**{key.upper()}**(3)", f"**{key.upper()}**")
+            markdown_intrinsics[key] = val
+
+        with open("fortls/intrinsic.procedures.markdown.json", "w") as f:
+            json.dump(markdown_intrinsics, f, indent=2)
+            f.write("\n")  # add newline at end of file
+    except Exception as e:
+        print(e)
+
+
+if __name__ == "__main__":
+    update_m_intrinsics()
