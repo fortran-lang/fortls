@@ -1,0 +1,37 @@
+on:
+  # fire at 00:00 every 7th day of the month
+  schedule:
+    - cron: "0 0 */7 * *"
+  workflow_dispatch:
+
+name: Check M_intrinsics for updates
+jobs:
+  update-intrinsics:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install .[dev]
+
+      - name: Download M_intrinsics
+        run: |
+          git clone https://github.com/urbanjost/M_intrinsics
+
+      - name: Update Markdown intrinsics
+        run: |
+          python3 -m fortls.intrinsics
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "docs: update M_intrinsics"
+          title: Update M_intrinsics
+          body: |
+            Auto-generated Pull Request to update M_intrinsics JSON definitions.
+          branch: docs/update-intrinsics
+          delete-branch: true
+          reviewers: gnikit
