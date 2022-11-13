@@ -90,7 +90,9 @@ class JSONRPC2Connection:
         while line != "\r\n":
             line = self.conn.readline()
         body = self.conn.read(length)
-        log.debug("RECV %s", body)
+        log.debug(
+            "RECV %s", json.dumps(json.loads(body), separators=(",", ":"), indent=2)
+        )
         return json.loads(body)
 
     def read_message(self, want=None):
@@ -115,15 +117,15 @@ class JSONRPC2Connection:
             self._msg_buffer.append(msg)
 
     def _send(self, body):
-        body = json.dumps(body, separators=(",", ":"))
-        content_length = len(body)
+        bd = json.dumps(body, separators=(",", ":"))
+        content_length = len(bd)
         response = (
             f"Content-Length: {content_length}\r\n"
             "Content-Type: application/vscode-jsonrpc; charset=utf8\r\n\r\n"
-            f"{body}"
+            f"{bd}"
         )
         self.conn.write(response)
-        log.debug("SEND %s", body)
+        log.debug("SEND %s", json.dumps(body, separators=(",", ":"), indent=2))
 
     def write_response(self, rid, result):
         body = {
