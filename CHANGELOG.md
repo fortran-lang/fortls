@@ -6,70 +6,76 @@
 
 ### Added
 
+- Added support for Markdown intrinsics from the M_intrinsics repository
+  ([#215](https://github.com/fortran-lang/fortls/issues/215))
+- Added and create a schema for fortls configuration files
+  ([#204](https://github.com/fortran-lang/fortls/issues/204))
 - Added dependabot alers for PyPi
-  ([#222](https://github.com/gnikit/fortls/issues/222))
+  ([#222](https://github.com/fortran-lang/fortls/issues/222))
 - Added `CITATION.cff` file to project roots
 
 ### Changed
 
 - Changed the completion signature to include the full Markdown documentation
   for the completion item.
-  ([#219](https://github.com/gnikit/fortls/issues/219))
+  ([#219](https://github.com/fortran-lang/fortls/issues/219))
 - Changed hover messages and signature help to use Markdown
-  ([#45](https://github.com/gnikit/fortls/issues/45))
+  ([#45](https://github.com/fortran-lang/fortls/issues/45))
 
 ### Fixed
 
+- Fixed submodule crashing bug and document/Symbol request failure
+  ([#233](https://github.com/fortran-lang/fortls/issues/233))
 - Fixed debug interface parser not loading all configuration files
-  ([#221](https://github.com/gnikit/fortls/issues/221))
+  ([#221](https://github.com/fortran-lang/fortls/issues/221))
 - Fixed name mangling of type-bound procedure pointers while hovering
-  ([#214](https://github.com/gnikit/fortls/issues/214))
+  ([#214](https://github.com/fortran-lang/fortls/issues/214))
 - Fixed parsing start of multilines into AST
-  ([#217](https://github.com/gnikit/fortls/issues/217))
+  ([#217](https://github.com/fortran-lang/fortls/issues/217))
 
 ## 2.13.0
 
 ### Added
 
 - Added additional default configuration file names `.fortlsrc`, `.fortls.json`
-  ([#184](https://github.com/gnikit/fortls/issues/184))
+  ([#184](https://github.com/fortran-lang/fortls/issues/184))
 - Added coverage testing for multiple Python versions
-  ([#168](https://github.com/gnikit/fortls/pull/178))
+  ([#168](https://github.com/fortran-lang/fortls/pull/178))
 - Added pre-commit.ci to `fortls`
-  ([#168](https://github.com/gnikit/fortls/issues/168))
+  ([#168](https://github.com/fortran-lang/fortls/issues/168))
 
 ### Fixed
 
 - Fixed `intent(in out)` not being parsed correctly
-  ([#160](https://github.com/gnikit/fortls/issues/160))
+  ([#160](https://github.com/fortran-lang/fortls/issues/160))
 
 ## 2.12.0
 
 ### Fixed
 
 - Fixed issue where `pip` would install without `--user` and fail
-  ([#163](https://github.com/gnikit/fortls/issues/163))
+  ([#163](https://github.com/fortran-lang/fortls/issues/163))
 
 ## 2.11.0
 
 ### Fixed
 
 - Fixed bug thorowing diagnostic errors if arguments were named `pure`, `elemental`, etc.
-  ([#157](https://github.com/gnikit/fortls/issues/157))
+  ([#157](https://github.com/fortran-lang/fortls/issues/157))
 
 ## 2.10.0
 
 ### Fixed
 
 - Fixed `workspace/didChangeConfiguration` requests that caused errors in VS Code logs
-  ([#114](https://github.com/gnikit/fortls/issues/114))
+  ([#114](https://github.com/fortran-lang/fortls/issues/114))
 
 ## 2.9.0
 
 ### Fixed
 
 - Fixed glob pattern resolution for command line arguments
-  ([#142](https://github.com/gnikit/fortls/issues/142))
+  ([#142](https://github.com/fortran-lang/fortls/issues/142))
 
 ### Changed
 
@@ -77,63 +83,63 @@
   interface and the `json` interface are used. Instead of having the `json` interface
   default the values to an empty set it now defaults to the values of the
   command line: `excl_paths`, `source_dirs`, `incl_suffixes`, `excl_suffixes`, `include_dirs`
-  ([#143](https://github.com/gnikit/fortls/issues/143))
+  ([#143](https://github.com/fortran-lang/fortls/issues/143))
 
 ## 2.8.0
 
 ### Added
 
 - Added support for comments in the `json` configuration files
-  ([#137](https://github.com/gnikit/fortls/issues/137))
+  ([#137](https://github.com/fortran-lang/fortls/issues/137))
 - Added `sitemap.xml` to documentation webpage
-  ([#134](https://github.com/gnikit/fortls/pull/134))
+  ([#134](https://github.com/fortran-lang/fortls/pull/134))
 
 ### Fixed
 
 - Fixed bug where error messages did not post correctly
-  ([#135](https://github.com/gnikit/fortls/issues/135))
+  ([#135](https://github.com/fortran-lang/fortls/issues/135))
 
 ## 2.7.0
 
 ### Added
 
 - Added doctests in the pytest test suite
-  ([#131](https://github.com/gnikit/fortls/issues/131))
+  ([#131](https://github.com/fortran-lang/fortls/issues/131))
 
 ### Changed
 
 - Renamed variables to simplify parser
-  ([#133](https://github.com/gnikit/fortls/pull/133))
+  ([#133](https://github.com/fortran-lang/fortls/pull/133))
 - Redesigned parsing functions for short-hand declarations of array dimensions,
   character length and parsing of kind
-  ([#130](https://github.com/gnikit/fortls/pull/130))
+  ([#130](https://github.com/fortran-lang/fortls/pull/130))
 
 ## 2.6.0
 
 ### Changed
 
 - Redesigned the `fortls` website to be more aesthetically pleasing and user-friendly
-  ([#112](https://github.com/gnikit/fortls/issues/112))
+  ([#112](https://github.com/fortran-lang/fortls/issues/112))
 
 ### Fixed
 
 - Fixed bug where submodule procedure scopes would terminate early if keyword modifiers were used
-  ([#119](https://github.com/gnikit/fortls/issues/119))
+  ([#119](https://github.com/fortran-lang/fortls/issues/119))
 
 ## 2.5.0
 
 ### Added
 
 - Added `textDocument/documentHighlight` request for Vim and EMACS
-  ([#43](https://github.com/gnikit/fortls/issues/43))
+  ([#43](https://github.com/fortran-lang/fortls/issues/43))
 - Added `pre-commit` hook with `flake`, `black`, `isort` and `pyupgrade`
-  ([#106](https://github.com/gnikit/fortls/issues/106))
+  ([#106](https://github.com/fortran-lang/fortls/issues/106))
 - Added test support for diagnostic messages
 
 ### Changed
 
 - Changed code structure, reformatted files and changed name conventions
-  ([#109](https://github.com/gnikit/fortls/issues/109))
+  ([#109](https://github.com/fortran-lang/fortls/issues/109))
 - Updated CONTRIBUTING instructions
 
 ## 2.4.0
@@ -142,15 +148,15 @@
 
 - Added multiple unittests for diagnostic messages
 - Added `pre-commit` hook to the project
-  ([#106](https://github.com/gnikit/fortls/issues/106))
+  ([#106](https://github.com/fortran-lang/fortls/issues/106))
 - Added Code of Conduct
 - Added basic support for hovering over `ASSOCIATE` blocks
-  ([#62](https://github.com/gnikit/fortls/issues/62))
+  ([#62](https://github.com/fortran-lang/fortls/issues/62))
 
 ### Changed
 
 - Changed the naming convention for Fortran Objects
-  ([#109](https://github.com/gnikit/fortls/issues/109))
+  ([#109](https://github.com/fortran-lang/fortls/issues/109))
 - Formatted all files with `pre-commit`
 
 ## 2.3.1
@@ -158,14 +164,14 @@
 ### Fixed
 
 - Fixed remote coverage report line diff
-  ([#101](https://github.com/gnikit/fortls/issues/101))
+  ([#101](https://github.com/fortran-lang/fortls/issues/101))
 
 ## 2.3.0
 
 ### Added
 
 - Added keywords to the PyPi manifest
-  ([#99](https://github.com/gnikit/fortls/issues/99))
+  ([#99](https://github.com/fortran-lang/fortls/issues/99))
 
 ### Changed
 
@@ -199,14 +205,14 @@
 ### Added
 
 - Improved autocompletion for Fortran statements F2018 compliant
-  ([#63](https://github.com/gnikit/fortls/issues/63))
+  ([#63](https://github.com/fortran-lang/fortls/issues/63))
 
 ## 2.2.10
 
 ### Fixed
 
 - Fixes GoTo Implementation error for intrinsics
-  ([#80](https://github.com/gnikit/fortls/issues/80))
+  ([#80](https://github.com/fortran-lang/fortls/issues/80))
 
 ## 2.2.9
 
@@ -232,7 +238,7 @@
 ### Fixed
 
 - Fixed missing dependency from `setup.cfg`
-  ([#78](https://github.com/gnikit/fortls/issues/78))
+  ([#78](https://github.com/fortran-lang/fortls/issues/78))
 - Updated configuration file variables in documentation
 
 ## 2.2.6
@@ -240,12 +246,12 @@
 ### Added
 
 - Added the capability for `fortls` to auto-update use `--disable_autoupdate` to disable
-  ([#76](https://github.com/gnikit/fortls/issues/76))
+  ([#76](https://github.com/fortran-lang/fortls/issues/76))
 
 ## Deprecated
 
 - Deprecated `--variable_hover` option and now is always enabled
-  ([#46](https://github.com/gnikit/fortls/issues/46))
+  ([#46](https://github.com/fortran-lang/fortls/issues/46))
 
 ## 2.2.5
 
@@ -257,41 +263,41 @@
 ### Fixed
 
 - Fixed parsing of `defined` without by parenthesis surrounding the definition
-  ([#67](https://github.com/gnikit/fortls/pull/67))
+  ([#67](https://github.com/fortran-lang/fortls/pull/67))
 
 ## 2.2.4
 
 ### Fixed
 
 - Fixed hovering value of literal and constant strings not displaying
-  ([#54](https://github.com/gnikit/fortls/issues/54))
+  ([#54](https://github.com/fortran-lang/fortls/issues/54))
 - Fixed hovering string length size is now matching the string
-  ([#55](https://github.com/gnikit/fortls/issues/55))
+  ([#55](https://github.com/fortran-lang/fortls/issues/55))
 - Fixed space separated keywords not being displayed upon hover
-  ([#60](https://github.com/gnikit/fortls/issues/60))
+  ([#60](https://github.com/fortran-lang/fortls/issues/60))
 
 ## 2.2.3
 
 ### Changed
 
 - Changed reading in `json` files to be encoded as UTF-8
-  ([#51](https://github.com/gnikit/fortls/pull/51))
+  ([#51](https://github.com/fortran-lang/fortls/pull/51))
 
 ## 2.2.2
 
 ### Changed
 
 - Changed the way function hover messages are displayed, now signatures are standardised
-  ([gnikit/fortls#47](https://github.com/gnikit/fortls/issues/47))
+  ([#47](https://github.com/fortran-lang/fortls/issues/47))
 
 ### Fixed
 
 - Fixed hovering over functions displaying as theire result types
-  ([gnikit/fortls#22](https://github.com/gnikit/fortls/issues/22))
+  ([#22](https://github.com/fortran-lang/fortls/issues/22))
 - Fixed function modifiers not displaying upon hover
-  ([gnikit/fortls#48](https://github.com/gnikit/fortls/issues/48))
+  ([#48](https://github.com/fortran-lang/fortls/issues/48))
 - Fixed function hover when returning arrays
-  ([gnikit/fortls#50](https://github.com/gnikit/fortls/issues/50))
+  ([#50](https://github.com/fortran-lang/fortls/issues/50))
 
 ## 2.2.1
 
@@ -304,12 +310,12 @@
 ### Added
 
 - Added semantic versioning with `setuptools_scm`
-  ([gnikit/fortls#34](https://github.com/gnikit/fortls/issues/34))
+  ([#34](https://github.com/fortran-lang/fortls/issues/34))
 
 ### Changed
 
 - Changes from `setup.py` to `setup.toml` and `pyproject.toml`
-  ([gnikit/fortls#33](https://github.com/gnikit/fortls/issues/33))
+  ([#33](https://github.com/fortran-lang/fortls/issues/33))
 - Changed documentation CI to up to date action
 - Formatted Python imports with `isort`
 
@@ -337,9 +343,9 @@
 ### Fixed
 
 - Fixed global `sort_keywords` option not propagating during parsing on Windows
-  ([gnikit/fortls#36](https://github.com/gnikit/fortls/issues/36))
+  ([#36](https://github.com/fortran-lang/fortls/issues/36))
 - Fixed unittests not propagating debugger state
-  ([gnikit/fortls#35](https://github.com/gnikit/fortls/issues/35))
+  ([#35](https://github.com/fortran-lang/fortls/issues/35))
 
 ## 2.0.1
 
@@ -358,7 +364,7 @@
 - Fixed some mutable default argument warnings in methods and classes
 - Fixed private variables showing in autocomplete
   ([#191](https://github.com/hansec/fortran-language-server/issues/191))
-  ([gnikit/fortls#3](https://github.com/gnikit/fortls/issues/3))
+  ([#3](https://github.com/fortran-lang/fortls/issues/3))
 
 ## 2.0.0
 
@@ -378,7 +384,7 @@
 - Format json files with `prettier`
 - Initialises the log channel and adds `$/setTrace` to override client's (i.e. VS Code) loglevel
 - Unified the interfaces from the command line and the configuration options file
-  ([gnikit/fortls#17](https://github.com/gnikit/fortls/issues/17))
+  ([#17](https://github.com/fortran-lang/fortls/issues/17))
 - Updated the documentation and simplified the README.md
 
 ### Deprecated
@@ -393,17 +399,17 @@
 - Fixes objects marked `EXTERNAL` across multiple lines
   ([#169](https://github.com/hansec/fortran-language-server/issues/169))
 - Fixes include with external files
-  ([gnikit/fortls#13](https://github.com/gnikit/fortls/issues/13))
+  ([#13](https://github.com/fortran-lang/fortls/issues/13))
 - `POINTER` attribute now displays upon hover
-  ([gnikit/fortls#16](https://github.com/gnikit/fortls/issues/16))
+  ([#16](https://github.com/fortran-lang/fortls/issues/16))
 - Fixes `END FORALL` end of scope error
-  ([gnikit/fortls#18](https://github.com/gnikit/fortls/issues/18))
+  ([#18](https://github.com/fortran-lang/fortls/issues/18))
 - Fixes Fortran line continuation definitions intermingled with preprocessor directives
   ([#203](https://github.com/hansec/fortran-language-server/issues/203))
-  ([gnikit/fortls#4](https://github.com/gnikit/fortls/issues/4))
+  ([#4](https://github.com/fortran-lang/fortls/issues/4))
 - Fixes `USE` directive ordering issues
   ([#184](https://github.com/hansec/fortran-language-server/issues/184))
-  ([gnikit/fortls#7](https://github.com/gnikit/fortls/issues/7))
+  ([#7](https://github.com/fortran-lang/fortls/issues/7))
 
 ## 1.16.0
 
@@ -411,7 +417,7 @@
 
 - Adds value for `PARAMETER` variables on hover
   ([#116](https://github.com/hansec/fortran-language-server/issues/116))
-  ([gnikit/fortls#1](https://github.com/gnikit/fortls/issues/1))
+  ([#1](https://github.com/fortran-lang/fortls/issues/1))
 
 ## 1.15.2
 
@@ -424,7 +430,7 @@
 ### Fixed
 
 - Fixes premature end of scope with variables named `end`
-  ([gnikit/fortls#9](https://github.com/gnikit/fortls/issues/9))
+  ([#9](https://github.com/fortran-lang/fortls/issues/9))
 
 ## 1.15.0
 

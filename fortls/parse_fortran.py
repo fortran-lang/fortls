@@ -586,8 +586,8 @@ def read_submod_def(line: str):
     if submod_match is None:
         return None
 
-    parent_name: str = None
-    name: str = None
+    parent_name: str = ""
+    name: str = ""
     trailing_line = line[submod_match.end(0) :].split("!")[0]
     trailing_line = trailing_line.strip()
     parent_match = FRegex.WORD.match(trailing_line)

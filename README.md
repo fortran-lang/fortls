@@ -1,4 +1,4 @@
-![alt](https://raw.githubusercontent.com/gnikit/fortls/master/assets/logo.png)
+![alt](https://raw.githubusercontent.com/fortran-lang/fortls/master/assets/logo.png)
 
 # fortls - Fortran Language Server
 
@@ -6,29 +6,29 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fortls?style=flat-square)
 [![PyPi Downloads via PePy](https://img.shields.io/badge/dynamic/json?style=flat-square&color&maxAge=86400&label=PyPi%20Downloads&query=%24.total_downloads&url=https%3A%2F%2Fapi.pepy.tech%2Fapi%2Fprojects%2Ffortls)](https://pepy.tech/project/fortls)
 ![Conda](https://img.shields.io/conda/dn/conda-forge/fortls?label=Anaconda&style=flat-square)
-![GitHub License](https://img.shields.io/github/license/gnikit/fortls?style=flat-square)
-![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/gnikit/fortls/Tests/master?label=CI&style=flat-square)
-![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/gnikit/fortls/Docs/master?label=Docs&style=flat-square)
-![Codecov](https://img.shields.io/codecov/c/github/gnikit/fortls?style=flat-square)
+![GitHub License](https://img.shields.io/github/license/fortran-lang/fortls?style=flat-square)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/fortran-lang/fortls/Tests/master?label=CI&style=flat-square)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/fortran-lang/fortls/Docs/master?label=Docs&style=flat-square)
+![Codecov](https://img.shields.io/codecov/c/github/fortran-lang/fortls?style=flat-square)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
-![GitHub Repo stars](https://img.shields.io/github/stars/gnikit/fortls?color=yellow&style=flat-square)
+![GitHub Repo stars](https://img.shields.io/github/stars/fortran-lang/fortls?color=yellow&style=flat-square)
 
 [<img alt="https://github.com/sponsors/gnikit" src="https://img.shields.io/static/v1?style=social&label=Sponsor&message=%E2%9D%A4&logo=GitHub&color&link=%3Curl%3E" height="30" />](https://github.com/sponsors/gnikit)
 [<img alt="https://paypal.me/inikit" src="https://img.shields.io/static/v1?style=social&label=Donate&message=%E2%9D%A4&logo=Paypal&color&link=%3Curl%3E" height="30" />](https://paypal.me/inikit)
 
-![alt](https://raw.githubusercontent.com/gnikit/fortls/master/assets/animations/intro-demo.gif)
+![alt](https://raw.githubusercontent.com/fortran-lang/fortls/master/assets/animations/intro-demo.gif)
 
 `fortls` is an implementation of the [Language Server Protocol](https://github.com/Microsoft/language-server-protocol)
 (LSP) for Fortran using Python (3.7+).
 
 All code editors that support LSP can integrate with `fortls` see the section
-[Editor Integration](https://gnikit.github.io/fortls/editor_integration.html#editor-integration) in the documentation.
+[Editor Integration](https://fortls.fortran-lang.org/editor_integration.html#editor-integration) in the documentation.
 Some supported code editors include:
-[Visual Studio Code](https://gnikit.github.io/fortls/editor_integration.html#visual-studio-code),
-[Atom](https://gnikit.github.io/fortls/editor_integration.html#atom),
-[Sublime Text](https://gnikit.github.io/fortls/editor_integration.html#sublime-text),
-[(Neo)Vim](https://gnikit.github.io/fortls/editor_integration.html#vim-neovim-gvim),
-and [Emacs](https://gnikit.github.io/fortls/editor_integration.html#emacs).
+[Visual Studio Code](https://fortls.fortran-lang.org/editor_integration.html#visual-studio-code),
+[Atom](https://fortls.fortran-lang.org/editor_integration.html#atom),
+[Sublime Text](https://fortls.fortran-lang.org/editor_integration.html#sublime-text),
+[(Neo)Vim](https://fortls.fortran-lang.org/editor_integration.html#vim-neovim-gvim),
+and [Emacs](https://fortls.fortran-lang.org/editor_integration.html#emacs).
 
 ## Features
 
@@ -72,7 +72,7 @@ This project was originally based on `fortran-language-server` LSP implementatio
 the original `fortran-language-server` does not.
 
 For a complete and detailed list of the differences between the two Language Servers
-see the Documentation section: [Unique fortls features (not in fortran-language-server)](https://gnikit.github.io/fortls/fortls_changes.html)
+see the Documentation section: [Unique fortls features (not in fortran-language-server)](https://fortls.fortran-lang.org/fortls_changes.html)
 
 The name of executable for this project has been chosen to remain `fortls`
 to allow for integration with pre-existing plugins and workflows, but it could
@@ -97,7 +97,7 @@ for more information about the Anaconda installation [see](https://github.com/co
 ### Common installation problems
 
 It is **NOT** recommended having `fortls` and `fortran-language-server`
-simultaneously installed, since they use the same binary name. If you are having trouble
+simultaneously installed, since they use the same executable name. If you are having trouble
 getting `fortls` to work try uninstalling `fortran-language-server` and reinstalling `fortls`.
 
 With `pip`
@@ -119,7 +119,7 @@ conda install -c conda-forge fortls
 `fortls` can be configured through both the command line e.g.
 `fortls --hover_signature` or through a Configuration json file.
 The two interfaces are identical and a full list of the available options can
-be found in the [Documentation](https://gnikit.github.io/fortls/options.html)
+be found in the [Documentation](https://fortls.fortran-lang.org/options.html)
 or through `fortls -h`
 
 An example for a Configuration file is given below
@@ -172,14 +172,14 @@ If you want to support this project you can do it through
 
 ## Bug reports
 
-When [filing bugs](https://github.com/gnikit/fortls/issues/new)
+When [filing bugs](https://github.com/fortran-lang/fortls/issues/new)
 please provide example code to reproduce the observed issue.
 
 ## Security Policy
 
 To report a security vulnerability please follow the instructions in our
-[Security page](https://github.com/gnikit/fortls/security/policy).
+[Security page](https://github.com/fortran-lang/fortls/security/policy).
 
 ## License
 
-This project is made available under the [MIT License](https://github.com/gnikit/fortls/blob/master/LICENSE).
+This project is made available under the [MIT License](https://github.com/fortran-lang/fortls/blob/master/LICENSE).

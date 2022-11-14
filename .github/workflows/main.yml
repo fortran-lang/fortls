@@ -30,6 +30,11 @@ jobs:
       - name: Lint
         run: black --diff --check --verbose .
 
+      - name: Check schema is up to date
+        run: |
+          python3 -m fortls.schema
+          git diff --exit-code ./fortls/fortls.schema.json
+
   coverage:
     strategy:
       matrix:

@@ -17,3 +17,6 @@ fortls/_version.py
 
 .coverage
 coverage.xml
+
+# Ignore M_intrinsics repo
+M_intrinsics

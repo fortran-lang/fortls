@@ -57,12 +57,12 @@ The project is available for download through the **PyPi** and **Anaconda** pack
 
         .. code-block:: sh
 
-            pip install --user --upgrade git+git://github.com/gnikit/fortls
+            pip install --user --upgrade git+git://github.com/fortran-lang/fortls
 
 
 .. warning::
     It is **NOT** possible having ``fortls`` and ``fortran-language-server``
-    simultaneously installed, since they use the same binary name. If you are having trouble
+    simultaneously installed, since they use the same executable name. If you are having trouble
     getting ``fortls`` to work try uninstalling ``fortran-language-server`` and reinstalling ``fortls``.
 
 

@@ -23,6 +23,11 @@ jobs:
         with:
           python-version: "3.x"
 
+      - uses: softprops/action-gh-release@master
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          files: ./fortls/fortls.schema.json
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip

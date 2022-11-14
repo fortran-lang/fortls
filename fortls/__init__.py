@@ -20,13 +20,8 @@ def error_exit(error_str: str):
 
 
 def main():
-    #
     freeze_support()
     args = cli(__name__).parse_args()
-
-    if args.version:
-        print(__version__)
-        sys.exit(0)
 
     debug_server = (
         args.debug_diagnostics
