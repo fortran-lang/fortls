@@ -124,6 +124,8 @@
 
 ## Fixed
 
+- Fixed submodule crashing bug and document/Symbol request failure
+  ([#233](https://github.com/fortran-lang/fortls/issues/233))
 - Fixed debug interface parser not loading all configuration files
   ([#221](https://github.com/fortran-lang/fortls/issues/221))
 - Fixed name mangling of type-bound procedure pointers while hovering
