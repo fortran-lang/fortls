@@ -303,9 +303,9 @@ class LangServer:
         for scope in file_obj.ast.get_scopes():
 
             if (
-                not scope.name
-                or scope.name[0] == "#"
-                or scope.get_type() == SELECT_TYPE_ID
+                not scope.name  # Skip empty strings
+                or scope.name.startswith("#")  # Skip comments
+                or scope.get_type() == SELECT_TYPE_ID  # Skip select types
             ):
                 continue
             scope_tree = scope.FQSN.split("::")
