@@ -301,7 +301,12 @@ class LangServer:
         # Add scopes to outline view
         test_output = []
         for scope in file_obj.ast.get_scopes():
-            if (scope.name[0] == "#") or (scope.get_type() == SELECT_TYPE_ID):
+
+            if (
+                not scope.name  # Skip empty strings
+                or scope.name.startswith("#")  # Skip comments
+                or scope.get_type() == SELECT_TYPE_ID  # Skip select types
+            ):
                 continue
             scope_tree = scope.FQSN.split("::")
             if len(scope_tree) > 2:

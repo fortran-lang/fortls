@@ -745,7 +745,7 @@ class Submodule(Module):
         file_ast: FortranAST,
         line_number: int,
         name: str,
-        ancestor_name: str = None,
+        ancestor_name: str = "",
     ):
         super().__init__(file_ast, line_number, name)
         self.ancestor_name = ancestor_name
@@ -766,7 +766,7 @@ class Submodule(Module):
         return []
 
     def resolve_inherit(self, obj_tree, inherit_version):
-        if self.ancestor_name is None:
+        if not self.ancestor_name:
             return
         if self.ancestor_name in obj_tree:
             self.ancestor_obj = obj_tree[self.ancestor_name][0]
