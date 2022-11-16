@@ -167,7 +167,7 @@ def parse_var_keywords(test_str: str) -> tuple[list[str], str]:
     return keywords, test_str
 
 
-def read_var_def(line: str, var_type: str = None, fun_only: bool = False):
+def read_var_def(line: str, var_type: str | None = None, fun_only: bool = False):
     """Attempt to read variable definition line"""
 
     def parse_kind(line: str):
@@ -1499,9 +1499,9 @@ class FortranFile:
                         line_no,
                         name=obj_info.result.name,
                         var_desc=obj_info.result.type,
-                        kind=obj_info.result.kind,
                         keywords=keywords,
                         keyword_info=keyword_info,
+                        kind=obj_info.result.kind,
                     )
                     file_ast.add_variable(new_obj)
                 log.debug("%s !!! FUNCTION - Ln:%d", line, line_no)

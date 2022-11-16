@@ -1749,11 +1749,17 @@ class Variable(FortranObj):
             desc_obj_name = type_match.group(2).strip().lower()
             if desc_obj_name not in known_types:
                 type_def = find_in_scope(
-                    self.parent, desc_obj_name, obj_tree, interface=interface
+                    self.parent,
+                    desc_obj_name,
+                    obj_tree,
+                    interface=interface,
                 )
                 if type_def is None:
                     type_defs = find_in_workspace(
-                        obj_tree, desc_obj_name, filter_public=True, exact_match=True
+                        obj_tree,
+                        desc_obj_name,
+                        filter_public=True,
+                        exact_match=True,
                     )
                     known_types[desc_obj_name] = None
                     var_type = type_match.group(1).strip().lower()
@@ -1804,8 +1810,8 @@ class Method(Variable):  # i.e. TypeBound procedure
         var_desc: str,
         keywords: list,
         keyword_info: dict,
+        proc_ptr: str = "",  # procedure pointer e.g. `foo` in `procedure(foo)`
         link_obj=None,
-        proc_ptr: str = "",  # procedure pointer
     ):
         super().__init__(
             file_ast,

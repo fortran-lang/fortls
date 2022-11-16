@@ -109,9 +109,9 @@ class ResultSig:
 
     name: str | None = field(default=None)  #: Variable name of result
     type: str | None = field(default=None)  #: Variable type of result
+    kind: str | None = field(default=None)  #: Variable kind of result
     #: Keywords associated with the result variable, can append without init
     keywords: list[str] = field(default_factory=list)
-    kind: str | None = field(default=None)  #: Variable kind of result
 
 
 @dataclass
