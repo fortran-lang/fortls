@@ -416,3 +416,15 @@ def test_keyword_arg_list_var_names():
     errcode, results = run_request(string, ["-n", "1"])
     assert errcode == 0
     assert results[1]["diagnostics"] == []
+
+
+def test_attribute_and_variable_name_collision():
+    """Test variables named with attribute names do not cause a collision."""
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "diag")})
+    file_path = str(test_dir / "diag" / "var_shadowing_keyword_arg.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
+    errcode, results = run_request(string, ["-n", "1"])
+    assert errcode == 0
+    assert results[1]["diagnostics"] == []
