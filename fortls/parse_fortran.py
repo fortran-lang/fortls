@@ -202,11 +202,8 @@ def read_var_def(line: str, var_type: str = None, fun_only: bool = False):
     # defined kind
     try:
         kind_str, trailing_line = parse_kind(trailing_line)
-        var_type += kind_str  # XXX: see below
     except ValueError:
         return None
-    except TypeError:  # XXX: remove with explicit kind specification in VarInfo
-        pass
 
     # Class and Type statements need a kind spec
     if not kind_str and var_type in ("TYPE", "CLASS"):
@@ -214,10 +211,13 @@ def read_var_def(line: str, var_type: str = None, fun_only: bool = False):
     # Make sure next character is space or comma or colon
     if not kind_str and not trailing_line[0] in (" ", ",", ":"):
         return None
-    #
+
     keywords, trailing_line = parse_var_keywords(trailing_line)
     # Check if this is a function definition
-    fun_def = read_fun_def(trailing_line, ResultSig(type=var_type, keywords=keywords))
+    fun_def = read_fun_def(
+        trailing_line,
+        ResultSig(type=var_type, keywords=keywords, kind=kind_str),
+    )
     if fun_def or fun_only:
         return fun_def
     # Split the type and variable name
@@ -234,7 +234,12 @@ def read_var_def(line: str, var_type: str = None, fun_only: bool = False):
         if var_words is None:
             var_words = []
 
-    return "var", VarInfo(var_type, keywords, var_words, kind_str)
+    return "var", VarInfo(
+        var_type=var_type,
+        keywords=keywords,
+        var_names=var_words,
+        var_kind=kind_str,
+    )
 
 
 def get_procedure_modifiers(
@@ -1411,6 +1416,7 @@ class FortranFile:
                             desc,
                             keywords,
                             keyword_info=keyword_info,
+                            proc_ptr=obj_info.var_kind,
                             link_obj=link_name,
                         )
                     else:
@@ -1421,7 +1427,7 @@ class FortranFile:
                             desc,
                             keywords,
                             keyword_info=keyword_info,
-                            # kind=obj_info.var_kind,
+                            kind=obj_info.var_kind,
                             link_obj=link_name,
                         )
                         # If the object is fortran_var and a parameter include
@@ -1493,6 +1499,7 @@ class FortranFile:
                         line_no,
                         name=obj_info.result.name,
                         var_desc=obj_info.result.type,
+                        kind=obj_info.result.kind,
                         keywords=keywords,
                         keyword_info=keyword_info,
                     )

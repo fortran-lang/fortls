@@ -15,7 +15,8 @@ class VarInfo:
     #: keywords associated with this variable e.g. SAVE, DIMENSION, etc.
     keywords: list[str]  #: Keywords associated with variable
     var_names: list[str]  #: Variable names
-    var_kind: str = field(default=None)  #: Kind of variable e.g. ``INTEGER*4`` etc.
+    #: Kind of variable e.g. ``INTEGER*4`` etc.
+    var_kind: str | None = field(default=None)
 
 
 @dataclass
@@ -106,10 +107,11 @@ class SubInfo:
 class ResultSig:
     """Holds information about the RESULT section of a Fortran FUNCTION"""
 
-    name: str = field(default=None)  #: Variable name of result
-    type: str = field(default=None)  #: Variable type of result
+    name: str | None = field(default=None)  #: Variable name of result
+    type: str | None = field(default=None)  #: Variable type of result
     #: Keywords associated with the result variable, can append without init
     keywords: list[str] = field(default_factory=list)
+    kind: str | None = field(default=None)  #: Variable kind of result
 
 
 @dataclass
