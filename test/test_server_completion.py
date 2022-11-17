@@ -34,7 +34,7 @@ def test_comp1():
     string += comp_request(file_path, 21, 20)
     string += comp_request(file_path, 21, 42)
     string += comp_request(file_path, 23, 26)
-    errcode, results = run_request(string, ["--use_signature_help"])
+    errcode, results = run_request(string, ["--use_signature_help", "-n1"])
     assert errcode == 0
 
     exp_results = (

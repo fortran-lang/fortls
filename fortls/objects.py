@@ -1591,7 +1591,7 @@ class Variable(FortranObj):
         var_desc: str,
         keywords: list,
         keyword_info: dict = None,
-        # kind: int | str = None,
+        kind: str | None = None,
         link_obj=None,
     ):
         super().__init__()
@@ -1604,7 +1604,7 @@ class Variable(FortranObj):
         self.desc: str = var_desc
         self.keywords: list = keywords
         self.keyword_info: dict = keyword_info
-        self.callable: bool = FRegex.CLASS_VAR.match(var_desc) is not None
+        self.kind: str | None = kind
         self.children: list = []
         self.use: list[USE_line] = []
         self.link_obj = None
@@ -1613,7 +1613,7 @@ class Variable(FortranObj):
         self.is_external: bool = False
         self.param_val: str = None
         self.link_name: str = None
-        # self.kind: int | str = kind
+        self.callable: bool = FRegex.CLASS_VAR.match(self.get_desc(True)) is not None
         self.FQSN: str = self.name.lower()
         if link_obj is not None:
             self.link_name = link_obj.lower()
@@ -1657,17 +1657,19 @@ class Variable(FortranObj):
         # Normal variable
         return VAR_TYPE_ID
 
-    def get_desc(self):
-        if self.link_obj is not None:
+    def get_desc(self, no_link=False):
+        if not no_link and self.link_obj is not None:
             return self.link_obj.get_desc()
         # Normal variable
+        if self.kind:
+            return self.desc + self.kind
         return self.desc
 
     def get_type_obj(self, obj_tree):
         if self.link_obj is not None:
             return self.link_obj.get_type_obj(obj_tree)
         if (self.type_obj is None) and (self.parent is not None):
-            type_name = get_paren_substring(self.desc)
+            type_name = get_paren_substring(self.get_desc(no_link=True))
             if type_name is not None:
                 search_scope = self.parent
                 if search_scope.get_type() == CLASS_TYPE_ID:
@@ -1739,7 +1741,7 @@ class Variable(FortranObj):
 
     def check_definition(self, obj_tree, known_types={}, interface=False):
         # Check for type definition in scope
-        type_match = FRegex.DEF_KIND.match(self.desc)
+        type_match = FRegex.DEF_KIND.match(self.get_desc(no_link=True))
         if type_match is not None:
             var_type = type_match.group(1).strip().lower()
             if var_type == "procedure":
@@ -1747,11 +1749,17 @@ class Variable(FortranObj):
             desc_obj_name = type_match.group(2).strip().lower()
             if desc_obj_name not in known_types:
                 type_def = find_in_scope(
-                    self.parent, desc_obj_name, obj_tree, interface=interface
+                    self.parent,
+                    desc_obj_name,
+                    obj_tree,
+                    interface=interface,
                 )
                 if type_def is None:
                     type_defs = find_in_workspace(
-                        obj_tree, desc_obj_name, filter_public=True, exact_match=True
+                        obj_tree,
+                        desc_obj_name,
+                        filter_public=True,
+                        exact_match=True,
                     )
                     known_types[desc_obj_name] = None
                     var_type = type_match.group(1).strip().lower()
@@ -1802,15 +1810,23 @@ class Method(Variable):  # i.e. TypeBound procedure
         var_desc: str,
         keywords: list,
         keyword_info: dict,
+        proc_ptr: str = "",  # procedure pointer e.g. `foo` in `procedure(foo)`
         link_obj=None,
     ):
         super().__init__(
-            file_ast, line_number, name, var_desc, keywords, keyword_info, link_obj
+            file_ast,
+            line_number,
+            name,
+            var_desc,
+            keywords,
+            keyword_info,
+            kind=proc_ptr,
+            link_obj=link_obj,
         )
         self.drop_arg: int = -1
         self.pass_name: str = keyword_info.get("pass")
         if link_obj is None:
-            self.link_name = get_paren_substring(var_desc.lower())
+            self.link_name = get_paren_substring(self.get_desc(True).lower())
 
     def set_parent(self, parent_obj):
         self.parent = parent_obj
