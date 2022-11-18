@@ -377,3 +377,20 @@ def test_comp_documentation():
     ]
     assert len(exp_results) == len(results[1])
     assert exp_results == results[1]
+
+
+def test_comp_use_only_interface():
+    """Test completion of interfaces when using USE ONLY give the right signature."""
+    string = write_rpc_request(
+        1, "initialize", {"rootPath": str(test_dir / "completion")}
+    )
+    file_path = test_dir / "completion" / "use_only_interface.f90"
+    string += comp_request(file_path, 21, 29)
+    errcode, results = run_request(
+        string,
+    )
+    assert errcode == 0
+    exp_results = [[1, "some_sub", "INTERFACE"]]
+    assert len(exp_results) == len(results) - 1
+    for i, ref in enumerate(exp_results):
+        validate_comp(results[i + 1], ref)
