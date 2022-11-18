@@ -10,10 +10,6 @@ jobs:
         with:
           pre-build-command: "pip install .[docs]"
           docs-folder: "docs/"
-      - name: Set fortran-lang domain
-        if: github.ref == 'refs/heads/master'
-        run: |
-          echo fortls.fortran-lang.org > CNAME
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: github.ref == 'refs/heads/master'
