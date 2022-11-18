@@ -124,6 +124,8 @@
 
 ## Fixed
 
+- Fixed bug where completion of interfaces in USE ONLY would produce the snippet
+  ([#150](https://github.com/fortran-lang/fortls/issues/150))
 - Fixed bug where diagnostic messages were raised for non-existent variables
   ([#173](https://github.com/fortran-lang/fortls/issues/173))
   ([#175](https://github.com/fortran-lang/fortls/issues/175))
