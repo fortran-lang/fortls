@@ -660,7 +660,7 @@ class LangServer:
                 continue
             #
             name_replace = rename_list[i]
-            if candidate_type == INTERFACE_TYPE_ID:
+            if candidate_type == INTERFACE_TYPE_ID and not line_context == "mod_mems":
                 tmp_list = []
                 if name_replace is None:
                     name_replace = candidate.name
