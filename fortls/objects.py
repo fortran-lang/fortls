@@ -278,7 +278,7 @@ def climb_type_tree(var_stack, curr_scope: Scope, obj_tree: dict):
 
 
 # Helper classes
-class USE_line:
+class Use:
     def __init__(
         self,
         mod_name: str,
@@ -486,7 +486,7 @@ class Scope(FortranObj):
         self.name: str = name
         self.children: list = []
         self.members: list = []
-        self.use: list[USE_line] = []
+        self.use: list[Use] = []
         self.keywords: list = keywords
         self.inherit = None
         self.parent = None
@@ -509,7 +509,7 @@ class Scope(FortranObj):
             only_list = []
         if rename_map is None:
             rename_map = {}
-        self.use.append(USE_line(use_mod, line_number, only_list, rename_map))
+        self.use.append(Use(use_mod, line_number, only_list, rename_map))
 
     def set_inherit(self, inherit_type):
         self.inherit = inherit_type
@@ -1606,7 +1606,7 @@ class Variable(FortranObj):
         self.keyword_info: dict = keyword_info
         self.kind: str | None = kind
         self.children: list = []
-        self.use: list[USE_line] = []
+        self.use: list[Use] = []
         self.link_obj = None
         self.type_obj = None
         self.is_const: bool = False
