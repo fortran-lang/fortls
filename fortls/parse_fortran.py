@@ -658,6 +658,18 @@ def read_imp_stmt(line: str) -> tuple[Literal["import"], list[str]] | None:
     if import_match is None:
         return None
 
+    import_type = import_match.groupdict()
+    is_empty = all(value is None for value in import_type.values())
+    # import
+    # import, all
+    if is_empty or (import_type["spec"] and import_type["spec"].lower() == "all"):
+        return "import", []  # TODO: fix
+    # import, none
+    elif import_type["spec"] and import_type["spec"].lower() == "none":
+        return "import", []  # TODO: drop parent scope
+    # import, only: a, b, c
+    # import :: a, b, c
+    # import a, b, c
     trailing_line = line[import_match.end(0) - 1 :].lower()
     import_list = [import_obj.strip() for import_obj in trailing_line.split(",")]
     return "import", import_list
