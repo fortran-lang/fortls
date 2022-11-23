@@ -13,8 +13,8 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
 ![GitHub Repo stars](https://img.shields.io/github/stars/fortran-lang/fortls?color=yellow&style=flat-square)
 
-[<img alt="https://github.com/sponsors/gnikit" src="https://img.shields.io/static/v1?style=social&label=Sponsor&message=%E2%9D%A4&logo=GitHub&color&link=%3Curl%3E" height="30" />](https://github.com/sponsors/gnikit)
-[<img alt="https://paypal.me/inikit" src="https://img.shields.io/static/v1?style=social&label=Donate&message=%E2%9D%A4&logo=Paypal&color&link=%3Curl%3E" height="30" />](https://paypal.me/inikit)
+<!-- [<img alt="https://github.com/sponsors/gnikit" src="https://img.shields.io/static/v1?style=social&label=Sponsor&message=%E2%9D%A4&logo=GitHub&color&link=%3Curl%3E" height="30" />](https://github.com/sponsors/gnikit)
+[<img alt="https://paypal.me/inikit" src="https://img.shields.io/static/v1?style=social&label=Donate&message=%E2%9D%A4&logo=Paypal&color&link=%3Curl%3E" height="30" />](https://paypal.me/inikit) -->
 
 ![alt](https://raw.githubusercontent.com/fortran-lang/fortls/master/assets/animations/intro-demo.gif)
 
