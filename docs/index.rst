@@ -36,30 +36,30 @@ fortls
                 Get Started
 
 
-.. grid:: 2
-    :gutter: 0
-    :class-container: sd-text-center sd-pt-4
-    :class-row: sd-align-minor-center
+.. .. grid:: 2
+..     :gutter: 0
+..     :class-container: sd-text-center sd-pt-4
+..     :class-row: sd-align-minor-center
 
-    .. grid-item::
-        .. button-link:: https://github.com/sponsors/gnikit
-            :ref-type: ref
-            :outline:
-            :color: danger
-            :class: sd-px-2 sd-fs-4
+..     .. grid-item::
+..         .. button-link:: https://github.com/sponsors/gnikit
+..             :ref-type: ref
+..             :outline:
+..             :color: danger
+..             :class: sd-px-2 sd-fs-4
 
-            Become a **Sponsor**
-            :octicon:`mark-github;2em;sd-text-black`
-            :octicon:`heart-fill;2em;sd-text-danger`
+..             Become a **Sponsor**
+..             :octicon:`mark-github;2em;sd-text-black`
+..             :octicon:`heart-fill;2em;sd-text-danger`
 
-    .. grid-item::
-        .. button-link:: https://www.paypal.com/paypalme/inikit
-            :ref-type: ref
-            :color: primary
-            :class: sd-px-2 sd-fs-5
+..     .. grid-item::
+..         .. button-link:: https://www.paypal.com/paypalme/inikit
+..             :ref-type: ref
+..             :color: primary
+..             :class: sd-px-2 sd-fs-5
 
-            Make a **Donation**
-            :fa:`fa-paypal`
+..             Make a **Donation**
+..             :fa:`fa-paypal`
 
 
 .. div::  sd-text-center
