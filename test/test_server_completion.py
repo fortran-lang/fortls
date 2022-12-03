@@ -417,3 +417,20 @@ def test_import():
     assert len(exp_results) == len(results) - 1
     for i, ref in enumerate(exp_results):
         validate_comp(results[i + 1], ref)
+
+
+def test_use_multiple():
+    """Test that USE multiple times works."""
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "use")})
+    file_path = test_dir / "use" / "use.f90"
+    string += comp_request(file_path, 14, 11)
+    string += comp_request(file_path, 15, 12)
+    errcode, results = run_request(string, ["--use_signature_help", "-n1"])
+    assert errcode == 0
+    exp_results = (
+        [5, "val1", "INTEGER"],
+        [1, "val4", "INTEGER"],
+    )
+    assert len(exp_results) == len(results) - 1
+    for i, ref in enumerate(exp_results):
+        validate_comp(results[i + 1], ref)

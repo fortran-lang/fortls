@@ -3,7 +3,7 @@ from __future__ import annotations
 import copy
 import os
 import re
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from typing import Pattern
 
 from fortls.constants import (
@@ -45,7 +45,7 @@ def get_use_tree(
     rename_map: dict[str, str] = {},
     curr_path: list[str] = [],
 ):
-    def intersect_only(use_stmnt):
+    def intersect_only(use_stmnt: Use | Import):
         tmp_list = []
         tmp_map = rename_map.copy()
         for val1 in only_list:
@@ -58,13 +58,6 @@ def get_use_tree(
             else:
                 tmp_map.pop(val1, None)
         return tmp_list, tmp_map
-
-    if only_list is None:
-        only_list = set()
-    if rename_map is None:
-        rename_map = {}
-    if curr_path is None:
-        curr_path = []
 
     # Detect and break circular references
     if scope.FQSN in curr_path:
@@ -103,13 +96,14 @@ def get_use_tree(
                 only_len = old_len
                 for only_name in merged_use_list:
                     use_dict_mod.only_list.add(only_name)
-                    if len(use_dict_mod.only_list) != only_len:
-                        only_len = len(use_dict_mod.only_list)
-                        new_rename = merged_rename.get(only_name, None)
-                        if new_rename is not None:
-                            use_dict[use_stmnt.mod_name] = replace(
-                                use_dict_mod, rename_map=merged_rename
-                            )
+                    if len(use_dict_mod.only_list) == only_len:
+                        continue
+                    only_len = len(use_dict_mod.only_list)
+                    new_rename = merged_rename.get(only_name)
+                    if new_rename is None:
+                        continue
+                    use_dict_mod.rename_map = merged_rename
+                    use_dict[use_stmnt.mod_name] = use_dict_mod
             else:
                 use_dict[use_stmnt.mod_name] = Use(use_stmnt.mod_name)
             # Skip if we have already visited module with the same only list

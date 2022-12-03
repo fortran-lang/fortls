@@ -673,7 +673,7 @@ def read_imp_stmt(line: str) -> tuple[Literal["import"], Import] | None:
     # import :: a, b, c
     # import a, b, c
     trailing_line = line[import_match.end(0) - 1 :].lower()
-    import_list = set([import_obj.strip() for import_obj in trailing_line.split(",")])
+    import_list = {import_obj.strip() for import_obj in trailing_line.split(",")}
     return "import", Import("#import", ImportTypes.ONLY, import_list)
 
 
