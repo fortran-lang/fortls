@@ -26,7 +26,7 @@ from fortls.constants import (
     WHERE_TYPE_ID,
     FRegex,
 )
-from fortls.ftypes import IncludeInfo, UseInfo
+from fortls.ftypes import IncludeInfo
 from fortls.helper_functions import (
     fortran_md,
     get_keywords,
@@ -39,11 +39,11 @@ from fortls.jsonrpc import path_to_uri
 
 def get_use_tree(
     scope: Scope,
-    use_dict: dict[str, UseInfo],
+    use_dict: dict[str, Use | Import],
     obj_tree: dict,
-    only_list: list[str] = None,
-    rename_map: dict[str, str] = None,
-    curr_path: list[str] = None,
+    only_list: set[str] = set(),
+    rename_map: dict[str, str] = {},
+    curr_path: list[str] = [],
 ):
     def intersect_only(use_stmnt):
         tmp_list = []
@@ -60,7 +60,7 @@ def get_use_tree(
         return tmp_list, tmp_map
 
     if only_list is None:
-        only_list = []
+        only_list = set()
     if rename_map is None:
         rename_map = {}
     if curr_path is None:
@@ -72,24 +72,34 @@ def get_use_tree(
     new_path = curr_path + [scope.FQSN]
     # Add recursively
     for use_stmnt in scope.use:
-        if use_stmnt.mod_name not in obj_tree:
+        # if use_stmnt.mod_name not in obj_tree:
+        if type(use_stmnt) is Use and use_stmnt.mod_name not in obj_tree:
+            continue
+        # Escape any IMPORT, NONE statements
+        if type(use_stmnt) is Import and use_stmnt.import_type is ImportTypes.NONE:
             continue
         # Intersect parent and current ONLY list and renaming
         if len(only_list) == 0:
-            merged_use_list = use_stmnt.only_list[:]
+            merged_use_list = use_stmnt.only_list.copy()
             merged_rename = use_stmnt.rename_map.copy()
         elif len(use_stmnt.only_list) == 0:
-            merged_use_list = only_list[:]
+            merged_use_list = only_list.copy()
             merged_rename = rename_map.copy()
         else:
             merged_use_list, merged_rename = intersect_only(use_stmnt)
             if len(merged_use_list) == 0:
                 continue
         # Update ONLY list and renaming for current module
+        # If you have
+        # USE MOD, ONLY: A
+        # USE MOD, ONLY: B
+        # or
+        # IMPORT VAR
+        # IMPORT VAR2
         use_dict_mod = use_dict.get(use_stmnt.mod_name)
         if use_dict_mod is not None:
             old_len = len(use_dict_mod.only_list)
-            if (old_len > 0) and (len(merged_use_list) > 0):
+            if old_len > 0 and merged_use_list:
                 only_len = old_len
                 for only_name in merged_use_list:
                     use_dict_mod.only_list.add(only_name)
@@ -101,14 +111,31 @@ def get_use_tree(
                                 use_dict_mod, rename_map=merged_rename
                             )
             else:
-                use_dict[use_stmnt.mod_name] = UseInfo(use_stmnt.mod_name, set(), {})
+                use_dict[use_stmnt.mod_name] = Use(use_stmnt.mod_name)
             # Skip if we have already visited module with the same only list
             if old_len == len(use_dict_mod.only_list):
                 continue
         else:
-            use_dict[use_stmnt.mod_name] = UseInfo(
-                use_stmnt.mod_name, set(merged_use_list), merged_rename
-            )
+            if type(use_stmnt) is Use:
+                use_dict[use_stmnt.mod_name] = Use(
+                    mod_name=use_stmnt.mod_name,
+                    only_list=set(merged_use_list),
+                    rename_map=merged_rename,
+                )
+            elif type(use_stmnt) is Import:
+                use_dict[use_stmnt.mod_name] = Import(
+                    name=use_stmnt.mod_name,
+                    import_type=use_stmnt.import_type,
+                    only_list=set(merged_use_list),
+                    rename_map=merged_rename,
+                )
+                try:
+                    use_dict[use_stmnt.mod_name].scope = scope.parent.parent
+                except AttributeError:
+                    pass
+        # Do not descent the IMPORT tree, because it does not exist
+        if type(use_stmnt) is Import:
+            continue
         # Descend USE tree
         use_dict = get_use_tree(
             obj_tree[use_stmnt.mod_name][0],
@@ -160,6 +187,22 @@ def find_in_scope(
                 return child
         return None
 
+    def check_import_scope(scope: Scope, var_name_lower: str):
+        for use_stmnt in scope.use:
+            if not type(use_stmnt) is Import:
+                continue
+            if use_stmnt.import_type == ImportTypes.ONLY:
+                # Check if name is in only list
+                if var_name_lower in use_stmnt.only_list:
+                    return ImportTypes.ONLY
+            # Get Get the parent scope
+            elif use_stmnt.import_type == ImportTypes.ALL:
+                return ImportTypes.ALL
+            # Skip looking for parent scope
+            elif use_stmnt.import_type == ImportTypes.NONE:
+                return ImportTypes.NONE
+        return None
+
     #
     var_name_lower = var_name.lower()
     # Check local scope
@@ -182,6 +225,9 @@ def find_in_scope(
     use_dict = get_use_tree(scope, {}, obj_tree)
     # Look in found use modules
     for use_mod, use_info in use_dict.items():
+        # If use_mod is Import then it will not exist in the obj_tree
+        if type(use_info) is Import:
+            continue
         use_scope = obj_tree[use_mod][0]
         # Module name is request
         if use_mod.lower() == var_name_lower:
@@ -195,17 +241,13 @@ def find_in_scope(
         if tmp_var is not None:
             return tmp_var
     # Only search local and imported names for interfaces
+    import_type = ImportTypes.DEFAULT
     if interface:
-        in_import = False
-        for use_stmnt in scope.use:
-            if use_stmnt.mod_name.startswith("#import"):
-                if var_name_lower in use_stmnt.only_list:
-                    in_import = True
-                    break
-        if not in_import:
+        import_type = check_import_scope(scope, var_name_lower)
+        if import_type is None:
             return None
     # Check parent scopes
-    if scope.parent is not None:
+    if scope.parent is not None and import_type != ImportTypes.NONE:
         tmp_var = find_in_scope(scope.parent, var_name, obj_tree)
         if tmp_var is not None:
             return tmp_var
@@ -279,21 +321,72 @@ def climb_type_tree(var_stack, curr_scope: Scope, obj_tree: dict):
 
 # Helper classes
 class Use:
+    """AST node for USE statement"""
+
     def __init__(
         self,
         mod_name: str,
-        line_number: int,
-        only_list: list = None,
-        rename_map: dict = None,
+        only_list: set[str] = set(),
+        rename_map: dict[str, str] = {},
+        line_number: int | None = 0,
     ):
         self.mod_name: str = mod_name.lower()
-        self.line_number: int = line_number
-        if only_list is not None:
-            self.only_list: list = [only.lower() for only in only_list]
-        if rename_map is not None:
-            self.rename_map: dict = {
-                key.lower(): value.lower() for key, value in rename_map.items()
-            }
+        self._line_no: int = line_number
+        self.only_list: set[str] = only_list
+        self.rename_map: dict[str, str] = rename_map
+        if only_list:
+            self.only_list: set[str] = {only.lower() for only in only_list}
+        if rename_map:
+            self.rename_map = {k.lower(): v.lower() for k, v in rename_map.items()}
+
+    @property
+    def line_number(self):
+        return self._line_no
+
+    @line_number.setter
+    def line_number(self, line_number: int):
+        self._line_no = line_number
+
+    def rename(self, only_list: list[str] = []):
+        """Rename ONLY:, statements"""
+        if not only_list:
+            only_list = self.only_list
+        renamed_only_list = []
+        for only_name in only_list:
+            renamed_only_list += self.rename_map.get(only_name, only_name)
+        return renamed_only_list
+
+
+class ImportTypes:
+    DEFAULT = -1
+    NONE = 0
+    ALL = 1
+    ONLY = 2
+
+
+class Import(Use):
+    """AST node for IMPORT statement"""
+
+    def __init__(
+        self,
+        name: str,
+        import_type: ImportTypes = ImportTypes.DEFAULT,
+        only_list: set[str] = set(),
+        rename_map: dict[str, str] = {},
+        line_number: int = 0,
+    ):
+        super().__init__(name, only_list, rename_map, line_number)
+        self.import_type = import_type
+        self._scope: Scope | Module | None = None
+
+    @property
+    def scope(self):
+        """Parent scope of IMPORT statement i.e. parent of the interface"""
+        return self._scope
+
+    @scope.setter
+    def scope(self, scope: Scope):
+        self._scope = scope
 
 
 @dataclass
@@ -486,7 +579,7 @@ class Scope(FortranObj):
         self.name: str = name
         self.children: list = []
         self.members: list = []
-        self.use: list[Use] = []
+        self.use: list[Use | Import] = []
         self.keywords: list = keywords
         self.inherit = None
         self.parent = None
@@ -502,14 +595,8 @@ class Scope(FortranObj):
         for k, v in copy_source.__dict__.items():
             setattr(self, k, v)
 
-    def add_use(
-        self, use_mod, line_number, only_list: list = None, rename_map: dict = None
-    ):
-        if only_list is None:
-            only_list = []
-        if rename_map is None:
-            rename_map = {}
-        self.use.append(Use(use_mod, line_number, only_list, rename_map))
+    def add_use(self, use_mod: Use | Import):
+        self.use.append(use_mod)
 
     def set_inherit(self, inherit_type):
         self.inherit = inherit_type
@@ -664,7 +751,7 @@ class Scope(FortranObj):
         last_use_line = -1
         for use_stmnt in self.use:
             last_use_line = max(last_use_line, use_stmnt.line_number)
-            if use_stmnt.mod_name.startswith("#import"):
+            if type(use_stmnt) == Import:
                 if (self.parent is None) or (
                     self.parent.get_type() != INTERFACE_TYPE_ID
                 ):
@@ -1606,7 +1693,7 @@ class Variable(FortranObj):
         self.keyword_info: dict = keyword_info
         self.kind: str | None = kind
         self.children: list = []
-        self.use: list[Use] = []
+        self.use: list[Use | Import] = []
         self.link_obj = None
         self.type_obj = None
         self.is_const: bool = False
@@ -2044,16 +2131,10 @@ class FortranAST:
     def add_public(self, name: str):
         self.public_list.append(self.enc_scope_name + "::" + name)
 
-    def add_use(
-        self,
-        mod_word: str,
-        line_number: int,
-        only_list: list = [],
-        rename_map: dict = {},
-    ):
+    def add_use(self, use_mod: Use | Import):
         if self.current_scope is None:
             self.create_none_scope()
-        self.current_scope.add_use(mod_word, line_number, only_list, rename_map)
+        self.current_scope.add_use(use_mod)
 
     def add_include(self, path: str, line_number: int):
         self.include_statements.append(IncludeInfo(line_number, path, None, []))
@@ -2095,11 +2176,30 @@ class FortranAST:
             self.pp_if[-1][1] = line_number - 1
 
     def get_scopes(self, line_number: int = None):
+        """Get a list of all the scopes present in the line number provided.
+
+        Parameters
+        ----------
+        line_number : int, optional
+            Document line number, if None return all document scopes, by default None
+
+        Returns
+        -------
+        Variable,Type,Function,Subroutine,Module,Program,Interface,BlockData
+            A list of scopes
+        """
         if line_number is None:
             return self.scope_list
         scope_list = []
         for scope in self.scope_list:
             if (line_number >= scope.sline) and (line_number <= scope.eline):
+                if type(scope.parent) == Interface:
+                    for use_stmnt in scope.use:
+                        if not type(use_stmnt) == Import:
+                            continue
+                        # Exclude the parent and all other scopes
+                        if use_stmnt.import_type == ImportTypes.NONE:
+                            return [scope]
                 scope_list.append(scope)
                 for ancestor in scope.get_ancestors():
                     scope_list.append(ancestor)

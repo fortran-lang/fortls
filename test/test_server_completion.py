@@ -229,14 +229,10 @@ def test_comp_import_host_association():
     string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
     file_path = test_dir / "test_import.f90"
     string += comp_request(file_path, 15, 20)
-    errcode, results = run_request(string, ["--use_signature_help"])
+    errcode, results = run_request(string, ["--use_signature_help", "-n1"])
     assert errcode == 0
 
-    exp_results = (
-        # TODO: this should be 1, mytype2 should not appear in autocomplete
-        # see #5 and #8 on GitHub
-        [2, "mytype", "TYPE"],
-    )
+    exp_results = ([1, "mytype", "TYPE"],)
     assert len(exp_results) == len(results) - 1
     for i, ref in enumerate(exp_results):
         validate_comp(results[i + 1], ref)
@@ -391,6 +387,33 @@ def test_comp_use_only_interface():
     )
     assert errcode == 0
     exp_results = [[1, "some_sub", "INTERFACE"]]
+    assert len(exp_results) == len(results) - 1
+    for i, ref in enumerate(exp_results):
+        validate_comp(results[i + 1], ref)
+
+
+def test_import():
+    """Test that import works."""
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "imp")})
+    file_path = test_dir / "imp" / "import.f90"
+    string += comp_request(file_path, 13, 16)  # import type1
+    string += comp_request(file_path, 17, 16)  # import, only: type2
+    string += comp_request(file_path, 21, 16)  # import, none
+    string += comp_request(file_path, 25, 16)  # import, all
+    string += comp_request(file_path, 29, 16)  # import
+    string += comp_request(file_path, 34, 16)  # import type1; import type2
+    string += comp_request(file_path, 38, 16)  # import :: type1, type2
+    errcode, results = run_request(string, ["--use_signature_help", "-n1"])
+    assert errcode == 0
+    exp_results = (
+        [1, "type1", "TYPE"],
+        [1, "type2", "TYPE"],
+        [0],
+        [2, "type1", "TYPE"],
+        [2, "type1", "TYPE"],
+        [2, "type1", "TYPE"],
+        [2, "type1", "TYPE"],
+    )
     assert len(exp_results) == len(results) - 1
     for i, ref in enumerate(exp_results):
         validate_comp(results[i + 1], ref)

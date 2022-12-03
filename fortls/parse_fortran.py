@@ -35,7 +35,6 @@ from fortls.ftypes import (
     SelectInfo,
     SmodInfo,
     SubInfo,
-    UseInfo,
     VarInfo,
     VisInfo,
 )
@@ -58,6 +57,8 @@ from fortls.objects import (
     FortranAST,
     Function,
     If,
+    Import,
+    ImportTypes,
     Interface,
     Method,
     Module,
@@ -67,6 +68,7 @@ from fortls.objects import (
     Submodule,
     Subroutine,
     Type,
+    Use,
     Variable,
     Where,
 )
@@ -632,7 +634,7 @@ def read_int_def(line: str) -> tuple[Literal["int"], InterInfo] | None:
     return "int", InterInfo(int_match.group(2), is_abstract)
 
 
-def read_use_stmt(line: str) -> tuple[Literal["use"], UseInfo] | None:
+def read_use_stmt(line: str) -> tuple[Literal["use"], Use] | None:
     """Attempt to read USE statement"""
     use_match = FRegex.USE.match(line)
     if use_match is None:
@@ -649,10 +651,10 @@ def read_use_stmt(line: str) -> tuple[Literal["use"], UseInfo] | None:
             only_list.add(only_name)
             if len(only_split) == 2:
                 rename_map[only_name] = only_split[1].strip()
-    return "use", UseInfo(use_mod, only_list, rename_map)
+    return "use", Use(use_mod, only_list, rename_map)
 
 
-def read_imp_stmt(line: str) -> tuple[Literal["import"], list[str]] | None:
+def read_imp_stmt(line: str) -> tuple[Literal["import"], Import] | None:
     """Attempt to read IMPORT statement"""
     import_match = FRegex.IMPORT.match(line)
     if import_match is None:
@@ -663,16 +665,16 @@ def read_imp_stmt(line: str) -> tuple[Literal["import"], list[str]] | None:
     # import
     # import, all
     if is_empty or (import_type["spec"] and import_type["spec"].lower() == "all"):
-        return "import", []  # TODO: fix
+        return "import", Import("#import", ImportTypes.ALL)
     # import, none
     elif import_type["spec"] and import_type["spec"].lower() == "none":
-        return "import", []  # TODO: drop parent scope
+        return "import", Import("#import", ImportTypes.NONE)
     # import, only: a, b, c
     # import :: a, b, c
     # import a, b, c
     trailing_line = line[import_match.end(0) - 1 :].lower()
-    import_list = [import_obj.strip() for import_obj in trailing_line.split(",")]
-    return "import", import_list
+    import_list = set([import_obj.strip() for import_obj in trailing_line.split(",")])
+    return "import", Import("#import", ImportTypes.ONLY, import_list)
 
 
 def read_inc_stmt(line: str) -> tuple[Literal["inc"], str] | None:
@@ -1285,6 +1287,7 @@ class FortranFile:
             ifs=0,
             block=0,
             select=0,
+            imports=0,
             interface=0,
         )
         multi_lines = deque()
@@ -1635,16 +1638,15 @@ class FortranFile:
                         log.debug("%s !!! INTERFACE-IMPL - Ln:%d", line, line_no)
 
             elif obj_type == "use":
-                file_ast.add_use(
-                    obj_info.mod_name,
-                    line_no,
-                    obj_info.only_list,
-                    obj_info.rename_map,
-                )
+                obj_info.line_number = line_no
+                file_ast.add_use(obj_info)
                 log.debug("%s !!! USE - Ln:%d", line, line_no)
 
             elif obj_type == "import":
-                file_ast.add_use("#IMPORT", line_no, obj_info)
+                obj_info.line_number = line_no
+                obj_info.mod_name += str(counters["import"])
+                file_ast.add_use(obj_info)
+                counters["imports"] += 1
                 log.debug("%s !!! IMPORT - Ln:%d", line, line_no)
 
             elif obj_type == "inc":
