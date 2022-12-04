@@ -393,10 +393,10 @@ class LangServer:
                 only_list: list = None,
                 filter_public=True,
                 req_abstract=False,
-            ):
+            ) -> list[str]:
                 if only_list is None:
                     only_list = []
-                tmp_list = []
+                tmp_list: list[str] = []
                 # Filter children
                 nonly = len(only_list)
                 for child in scope.get_children(filter_public):
@@ -416,7 +416,7 @@ class LangServer:
                             tmp_list.append(child)
                 return tmp_list
 
-            var_list = []
+            var_list: list[str] = []
             use_dict: dict[str, Use | Import] = {}
             for scope in scope_list:
                 var_list += child_candidates(
@@ -431,13 +431,7 @@ class LangServer:
             for use_mod, use_info in use_dict.items():
                 if type(use_info) is Use:
                     scope = self.obj_tree[use_mod][0]
-                    only_list = use_info.only_list
-                    if use_info.rename_map:
-                        only_list = [
-                            use_info.rename_map.get(only_name, only_name)
-                            for only_name in only_list
-                        ]
-                    # TODO: replace only_name -> with use_info.rename()
+                    only_list = use_info.rename()
                     tmp_list = child_candidates(
                         scope, only_list, req_abstract=abstract_only
                     )
@@ -476,10 +470,10 @@ class LangServer:
             if var_prefix == "":
                 return var_list, rename_list
             else:
-                tmp_list = []
-                tmp_rename = []
+                tmp_list: list[str] = []
+                tmp_rename: list[str] = []
                 for (var, rename) in zip(var_list, rename_list):
-                    var_name = rename
+                    var_name: str | None = rename
                     if var_name is None:
                         var_name = var.name
                     if var_name.lower().startswith(var_prefix):

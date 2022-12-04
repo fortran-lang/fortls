@@ -347,7 +347,7 @@ class Use:
             only_list = self.only_list
         renamed_only_list = []
         for only_name in only_list:
-            renamed_only_list += self.rename_map.get(only_name, only_name)
+            renamed_only_list.append(self.rename_map.get(only_name, only_name))
         return renamed_only_list
 
 
