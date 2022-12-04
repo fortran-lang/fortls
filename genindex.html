@@ -248,10 +248,10 @@
 </li>
         <li><a href="fortls.html#fortls.objects.FortranAST.add_public">add_public() (fortls.objects.FortranAST method)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="fortls.html#fortls.objects.Diagnostic.add_related">add_related() (fortls.objects.Diagnostic method)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="fortls.html#fortls.objects.FortranAST.add_scope">add_scope() (fortls.objects.FortranAST method)</a>
 </li>
         <li><a href="fortls.html#fortls.objects.Scope.add_subroutine">add_subroutine() (fortls.objects.Scope method)</a>
@@ -263,6 +263,8 @@
 </li>
         </ul></li>
         <li><a href="fortls.html#fortls.objects.FortranAST.add_variable">add_variable() (fortls.objects.FortranAST method)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.ImportTypes.ALL">ALL (fortls.objects.ImportTypes attribute)</a>
 </li>
         <li><a href="fortls.html#fortls.parse_fortran.FortranFile.apply_change">apply_change() (fortls.parse_fortran.FortranFile method)</a>
 </li>
@@ -378,16 +380,18 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.DEF_KIND">DEF_KIND (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
+        <li><a href="fortls.html#fortls.objects.ImportTypes.DEFAULT">DEFAULT (fortls.objects.ImportTypes attribute)</a>
+</li>
         <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.DEFINED">DEFINED (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
         <li><a href="fortls.html#fortls.jsonrpc.deque_find_and_pop">deque_find_and_pop() (in module fortls.jsonrpc)</a>
 </li>
         <li><a href="fortls.html#fortls.ftypes.SelectInfo.desc">desc (fortls.ftypes.SelectInfo attribute)</a>
 </li>
-        <li><a href="fortls.html#fortls.helper_functions.detect_fixed_format">detect_fixed_format() (in module fortls.helper_functions)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.helper_functions.detect_fixed_format">detect_fixed_format() (in module fortls.helper_functions)</a>
+</li>
         <li><a href="fortls.html#fortls.objects.Diagnostic">Diagnostic (class in fortls.objects)</a>
 </li>
         <li><a href="fortls.html#fortls.json_templates.diagnostic_json">diagnostic_json() (in module fortls.json_templates)</a>
@@ -891,7 +895,11 @@
 </li>
         <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.IMPLICIT">IMPLICIT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
+        <li><a href="fortls.html#fortls.objects.Import">Import (class in fortls.objects)</a>
+</li>
         <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.IMPORT">IMPORT (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.ImportTypes">ImportTypes (class in fortls.objects)</a>
 </li>
         <li><a href="fortls.html#fortls.objects.Include">Include (class in fortls.objects)</a>
 </li>
@@ -1016,11 +1024,15 @@
         <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.LINE_LABEL">LINE_LABEL (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
         <li><a href="fortls.html#fortls.ftypes.IncludeInfo.line_number">line_number (fortls.ftypes.IncludeInfo attribute)</a>
+
+        <ul>
+          <li><a href="fortls.html#fortls.objects.Use.line_number">(fortls.objects.Use property)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.AssociateMap.link_name">link_name (fortls.objects.AssociateMap attribute)</a>
-</li>
+        </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.objects.AssociateMap.link_name">link_name (fortls.objects.AssociateMap attribute)</a>
+</li>
         <li><a href="fortls.html#fortls.parse_fortran.FortranFile.load_from_disk">load_from_disk() (fortls.parse_fortran.FortranFile method)</a>
 </li>
         <li><a href="fortls.html#fortls.intrinsics.load_intrinsics">load_intrinsics() (in module fortls.intrinsics)</a>
@@ -1108,6 +1120,8 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.NON_DEF">NON_DEF (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
+        <li><a href="fortls.html#fortls.objects.ImportTypes.NONE">NONE (fortls.objects.ImportTypes attribute)</a>
+</li>
         <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.NUMBER">NUMBER (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
     </ul></td>
@@ -1124,6 +1138,8 @@
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.objects.ImportTypes.ONLY">ONLY (fortls.objects.ImportTypes attribute)</a>
+</li>
         <li><a href="fortls.html#fortls.helper_functions.only_dirs">only_dirs() (in module fortls.helper_functions)</a>
 </li>
         <li><a href="fortls.html#fortls.ftypes.UseInfo.only_list">only_list (fortls.ftypes.UseInfo attribute)</a>
@@ -1268,10 +1284,12 @@
         </ul></li>
         <li><a href="fortls.html#fortls.jsonrpc.ReadWriter">ReadWriter (class in fortls.jsonrpc)</a>
 </li>
-        <li><a href="fortls.html#fortls.ftypes.UseInfo.rename_map">rename_map (fortls.ftypes.UseInfo attribute)</a>
+        <li><a href="fortls.html#fortls.objects.Use.rename">rename() (fortls.objects.Use method)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="fortls.html#fortls.ftypes.UseInfo.rename_map">rename_map (fortls.ftypes.UseInfo attribute)</a>
+</li>
         <li><a href="fortls.html#fortls.objects.Block.req_named_end">req_named_end() (fortls.objects.Block method)</a>
 
         <ul>
@@ -1351,6 +1369,8 @@
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="fortls.html#fortls.objects.Scope">Scope (class in fortls.objects)</a>
+</li>
+        <li><a href="fortls.html#fortls.objects.Import.scope">scope (fortls.objects.Import property)</a>
 </li>
         <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.SCOPE_DEF">SCOPE_DEF (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
@@ -1530,9 +1550,9 @@
 </li>
         <li><a href="fortls.html#fortls.json_templates.uri_json">uri_json() (in module fortls.json_templates)</a>
 </li>
-        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.USE">USE (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
+        <li><a href="fortls.html#fortls.objects.Use">Use (class in fortls.objects)</a>
 </li>
-        <li><a href="fortls.html#fortls.objects.USE_line">USE_line (class in fortls.objects)</a>
+        <li><a href="fortls.html#fortls.regex_patterns.FortranRegularExpressions.USE">USE (fortls.regex_patterns.FortranRegularExpressions attribute)</a>
 </li>
         <li><a href="fortls.html#fortls.ftypes.UseInfo">UseInfo (class in fortls.ftypes)</a>
 </li>
