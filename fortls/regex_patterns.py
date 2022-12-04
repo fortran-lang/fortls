@@ -11,7 +11,17 @@ class FortranRegularExpressions:
         r"[ ]*USE([, ]+(?:INTRINSIC|NON_INTRINSIC))?[ :]+(\w*)([, ]+ONLY[ :]+)?",
         I,
     )
-    IMPORT: Pattern = compile(r"[ ]*IMPORT[ :]+([a-z_])", I)
+    IMPORT: Pattern = compile(
+        r"[ ]*IMPORT"
+        r"(?:"
+        r"[ ]*,[ ]*(?P<spec>ALL|NONE)"  # import, [all | none]
+        r"|"  # or
+        r"[ ]*,[ ]*(?P<only>ONLY)[ ]*:[ ]*(?P<start1>[\w_])"  # import, only: name-list
+        r"|"  # or
+        r"[ ]+(?:::[ ]*)?(?P<start2>[\w_])"  # import [[::] name-list]
+        r")?",  # standalone import
+        I,
+    )
     INCLUDE: Pattern = compile(r"[ ]*INCLUDE[ :]*[\'\"]([^\'\"]*)", I)
     CONTAINS: Pattern = compile(r"[ ]*(CONTAINS)[ ]*$", I)
     IMPLICIT: Pattern = compile(r"[ ]*IMPLICIT[ ]+([a-z]*)", I)

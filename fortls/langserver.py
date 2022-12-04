@@ -51,6 +51,9 @@ from fortls.json_templates import change_json, symbol_json, uri_json
 from fortls.jsonrpc import JSONRPC2Connection, path_from_uri, path_to_uri
 from fortls.objects import (
     FortranAST,
+    Import,
+    Scope,
+    Use,
     Variable,
     climb_type_tree,
     find_in_scope,
@@ -386,11 +389,14 @@ class LangServer:
         ):
             #
             def child_candidates(
-                scope, only_list: list = None, filter_public=True, req_abstract=False
-            ):
+                scope: Scope,
+                only_list: list = None,
+                filter_public=True,
+                req_abstract=False,
+            ) -> list[str]:
                 if only_list is None:
                     only_list = []
-                tmp_list = []
+                tmp_list: list[str] = []
                 # Filter children
                 nonly = len(only_list)
                 for child in scope.get_children(filter_public):
@@ -410,8 +416,8 @@ class LangServer:
                             tmp_list.append(child)
                 return tmp_list
 
-            var_list = []
-            use_dict = {}
+            var_list: list[str] = []
+            use_dict: dict[str, Use | Import] = {}
             for scope in scope_list:
                 var_list += child_candidates(
                     scope, filter_public=public_only, req_abstract=abstract_only
@@ -421,48 +427,58 @@ class LangServer:
                     use_dict = get_use_tree(scope, use_dict, self.obj_tree)
             # Look in found use modules
             rename_list = [None for _ in var_list]
+            import_var_list = []
             for use_mod, use_info in use_dict.items():
-                scope = self.obj_tree[use_mod][0]
-                only_list = use_info.only_list
-                if len(use_info.rename_map) > 0:
-                    only_list = [
-                        use_info.rename_map.get(only_name, only_name)
-                        for only_name in only_list
-                    ]
-                tmp_list = child_candidates(
-                    scope, only_list, req_abstract=abstract_only
-                )
-                # Setup renaming
-                if len(use_info.rename_map) > 0:
-                    rename_reversed = {
-                        value: key for (key, value) in use_info.rename_map.items()
-                    }
-                    for tmp_obj in tmp_list:
-                        var_list.append(tmp_obj)
-                        rename_list.append(
-                            rename_reversed.get(tmp_obj.name.lower(), None)
-                        )
-                else:
-                    var_list += tmp_list
-                    rename_list += [None for _ in tmp_list]
+                if type(use_info) is Use:
+                    scope = self.obj_tree[use_mod][0]
+                    only_list = use_info.rename()
+                    tmp_list = child_candidates(
+                        scope, only_list, req_abstract=abstract_only
+                    )
+                    # Setup renaming
+                    if use_info.rename_map:
+                        rename_reversed = {
+                            value: key for (key, value) in use_info.rename_map.items()
+                        }
+                        for tmp_obj in tmp_list:
+                            var_list.append(tmp_obj)
+                            rename_list.append(
+                                rename_reversed.get(tmp_obj.name.lower(), None)
+                            )
+                    else:
+                        var_list += tmp_list
+                        rename_list += [None for _ in tmp_list]
+                elif type(use_info) is Import:
+                    scope = use_info.scope
+                    # Add import candidates
+                    import_var_list += child_candidates(
+                        scope,
+                        only_list=use_info.only_list,
+                        req_abstract=abstract_only,
+                    )
+                    # We do not have renames so ignore
+
             # Add globals
             if inc_globals:
                 tmp_list = [obj[0] for (_, obj) in self.obj_tree.items()]
                 var_list += tmp_list + self.intrinsic_funs
                 rename_list += [None for _ in tmp_list + self.intrinsic_funs]
+            if import_var_list:
+                var_list = import_var_list
+                rename_list = [None for _ in import_var_list]
             # Filter by prefix if necessary
             if var_prefix == "":
                 return var_list, rename_list
             else:
-                tmp_list = []
-                tmp_rename = []
-                for (i, var) in enumerate(var_list):
-                    var_name = rename_list[i]
+                tmp_list: list[str] = []
+                tmp_rename: list[str] = []
+                for (var, rename) in zip(var_list, rename_list):
+                    var_name: str | None = rename
                     if var_name is None:
                         var_name = var.name
                     if var_name.lower().startswith(var_prefix):
                         tmp_list.append(var)
-                        tmp_rename.append(rename_list[i])
+                        tmp_rename.append(rename)
                 return tmp_list, tmp_rename
 
         def build_comp(
@@ -651,7 +667,7 @@ class LangServer:
         candidate_list, rename_list = get_candidates(
             scope_list, var_prefix, include_globals, public_only, abstract_only, no_use
         )
-        for (i, candidate) in enumerate(candidate_list):
+        for (candidate, rename) in zip(candidate_list, rename_list):
             # Skip module names (only valid in USE)
             candidate_type = candidate.get_type()
             if type_mask[candidate_type]:
@@ -659,7 +675,7 @@ class LangServer:
             if req_callable and (not candidate.is_callable()):
                 continue
             #
-            name_replace = rename_list[i]
+            name_replace = rename
             if candidate_type == INTERFACE_TYPE_ID and not line_context == "mod_mems":
                 tmp_list = []
                 if name_replace is None:

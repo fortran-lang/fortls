@@ -12,6 +12,7 @@ from fortls.objects import (
     Module,
     Subroutine,
     Type,
+    Use,
     Variable,
 )
 
@@ -119,7 +120,7 @@ def load_intrinsics():
         if json_obj["type"] == 0:  # module, match "type": in JSON files
             mod_tmp = Module(intrinsic_ast, 0, name)
             if "use" in json_obj:
-                mod_tmp.add_use(json_obj["use"], 0)
+                mod_tmp.add_use(Use(json_obj["use"], line_number=0))
             return mod_tmp
         elif json_obj["type"] == 1:  # subroutine, match "type": in JSON files
             return Subroutine(intrinsic_ast, 0, name, args=args)
