@@ -1082,7 +1082,12 @@ class LangServer:
         # Construct hover information
         var_type: int = var_obj.get_type()
         hover_array = []
-        if var_type in (SUBROUTINE_TYPE_ID, FUNCTION_TYPE_ID):
+        if var_type in (
+            SUBROUTINE_TYPE_ID,
+            FUNCTION_TYPE_ID,
+            MODULE_TYPE_ID,
+            CLASS_TYPE_ID,
+        ):
             hover_array.append(var_obj.get_hover_md(long=True))
         elif var_type == INTERFACE_TYPE_ID:
             for member in var_obj.mems:

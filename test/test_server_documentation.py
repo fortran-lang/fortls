@@ -300,3 +300,73 @@ def test_doc_multiline_type_bound_procedure_arg_list():
         ),
         True,
     )
+
+
+def test_doxygen_doc_for_module_use():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "docs")})
+    file_path = test_dir / "docs" / "test_module_and_type_doc.f90"
+    string += hover_request(file_path, 24, 14)
+    errcode, results = run_request(string)
+    assert errcode == 0
+
+    ref = (
+        (0, "```fortran90"),
+        (1, "MODULE doxygen_doc_mod"),
+        (2, "```"),
+        (3, "-----"),
+        (4, "module doc for doxygen_doc_mod"),
+        (5, ""),
+        (6, "with info"),
+    )
+    check_return(results[1], ref)
+
+
+def test_ford_doc_for_module_use():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "docs")})
+    file_path = test_dir / "docs" / "test_module_and_type_doc.f90"
+    string += hover_request(file_path, 25, 14)
+    errcode, results = run_request(string)
+    assert errcode == 0
+
+    ref = (
+        (0, "```fortran90"),
+        (1, "MODULE ford_doc_mod"),
+        (2, "```"),
+        (3, "-----"),
+        (4, "Doc for ford_doc_mod"),
+    )
+    check_return(results[1], ref)
+
+
+def test_doxygen_doc_for_type():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "docs")})
+    file_path = test_dir / "docs" / "test_module_and_type_doc.f90"
+    string += hover_request(file_path, 27, 11)
+    errcode, results = run_request(string)
+    assert errcode == 0
+
+    ref = (
+        (0, "```fortran90"),
+        (1, "TYPE :: a_t"),
+        (2, "```"),
+        (3, "-----"),
+        (4, "Doc for a_t"),
+    )
+    check_return(results[1], ref)
+
+
+def test_ford_doc_for_type():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "docs")})
+    file_path = test_dir / "docs" / "test_module_and_type_doc.f90"
+    string += hover_request(file_path, 28, 11)
+    errcode, results = run_request(string)
+    assert errcode == 0
+
+    ref = (
+        (0, "```fortran90"),
+        (1, "TYPE :: b_t"),
+        (2, "```"),
+        (3, "-----"),
+        (4, "Doc for b_t"),
+    )
+    check_return(results[1], ref)
