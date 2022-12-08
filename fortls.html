@@ -6,10 +6,10 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Documentation" href="modules.html" />
         <link rel="canonical" href="https://fortls.fortran-lang.org/fortls.html" />
 
-    <link rel="shortcut icon" href="_static/icon.svg"/><meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="_static/icon.svg"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>fortls package - fortls</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -156,7 +156,7 @@
   <span class="sidebar-brand-text">fortls</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -2161,6 +2161,11 @@ TYPE, [RESULT_MODIFIERS] :: RESULT_VAR</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="fortls.objects.Module.get_hover">
+<span class="sig-name descname"><span class="pre">get_hover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Module.get_hover" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="fortls.objects.Module.get_type">
 <span class="sig-name descname"><span class="pre">get_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">no_link</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Module.get_type" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
@@ -2463,6 +2468,11 @@ and the documentation string that should be in normal Markdown.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.objects.Type.get_diagnostics">
 <span class="sig-name descname"><span class="pre">get_diagnostics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Type.get_diagnostics" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fortls.objects.Type.get_hover">
+<span class="sig-name descname"><span class="pre">get_hover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Type.get_hover" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -3708,9 +3718,7 @@ F F03 F05 F08 F18 F77 F90 F95 FOR FPP f f03 f05 f08 f18 f77 f90 f95 for fpp</p>
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         
@@ -4090,6 +4098,7 @@ F F03 F05 F08 F18 F77 F90 F95 FOR FPP f f03 f05 f08 f18 f77 f90 f95 for fpp</p>
 <li><a class="reference internal" href="#fortls.objects.Module"><code class="docutils literal notranslate"><span class="pre">Module</span></code></a><ul>
 <li><a class="reference internal" href="#fortls.objects.Module.check_valid_parent"><code class="docutils literal notranslate"><span class="pre">Module.check_valid_parent()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.Module.get_desc"><code class="docutils literal notranslate"><span class="pre">Module.get_desc()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Module.get_hover"><code class="docutils literal notranslate"><span class="pre">Module.get_hover()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.Module.get_type"><code class="docutils literal notranslate"><span class="pre">Module.get_type()</span></code></a></li>
 </ul>
 </li>
@@ -4158,6 +4167,7 @@ F F03 F05 F08 F18 F77 F90 F95 FOR FPP f f03 f05 f08 f18 f77 f90 f95 for fpp</p>
 <li><a class="reference internal" href="#fortls.objects.Type.get_children"><code class="docutils literal notranslate"><span class="pre">Type.get_children()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.Type.get_desc"><code class="docutils literal notranslate"><span class="pre">Type.get_desc()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.Type.get_diagnostics"><code class="docutils literal notranslate"><span class="pre">Type.get_diagnostics()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.objects.Type.get_hover"><code class="docutils literal notranslate"><span class="pre">Type.get_hover()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.Type.get_overridden"><code class="docutils literal notranslate"><span class="pre">Type.get_overridden()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.Type.get_type"><code class="docutils literal notranslate"><span class="pre">Type.get_type()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.Type.require_inherit"><code class="docutils literal notranslate"><span class="pre">Type.require_inherit()</span></code></a></li>

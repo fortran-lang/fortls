@@ -2,6 +2,8 @@
 
 ## Added
 
+- Added hover messages for Types and Modules
+  ([#208](https://github.com/fortran-lang/fortls/issues/208))
 - Added support for Markdown intrinsics from the M_intrinsics repository
   ([#215](https://github.com/fortran-lang/fortls/issues/215))
 - Added and create a schema for fortls configuration files
