@@ -82,7 +82,7 @@ change in the future.
 
 `fortls` has reached a point where it is feature complete and stable enough to be used in many modern Fortran projects without any issues.
 It does however still have fundamental limitations,
-namely its ability to understand all Fortran syntax that has been used throughout the 65+ years of the language. **The good news is that we have a plan to address this issue!**
+namely its ability to understand all Fortran syntax and semantics that has been used throughout the 65+ years of the language. **The good news is that we have a plan to address this issue!**
 
 We are excited to announce that we are working on creating a new Fortran Language Server
 based on the actively developed [LFortran](https://lfortran.org/) compiler 🎉.
