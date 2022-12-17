@@ -89,7 +89,7 @@ based on the actively developed [LFortran](https://lfortran.org/) compiler 🎉.
 The new Language Server will be able to understand all Fortran syntax, be faster,
 and give more accurate autocompletion, hover and diagnostic information. That means we plan on investing any future funding on creating our new language server and ultimately creating a better user experience for everyone.
 
-Have a look at our roadmap (link) and consider contributing to our efforts (donations and contribution tasks link).
+<!--  Have a look at our roadmap (link) and consider contributing to our efforts (donations and contribution tasks link).  -->
 
 ### What about `fortls`?
 
