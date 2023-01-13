@@ -247,15 +247,15 @@ available through the extension are not representative of <code class="docutils 
 <h2><a class="reference external" href="https://www.sublimetext.com/">Sublime Text</a><a class="headerlink" href="#sublime-text" title="Permalink to this heading">#</a></h2>
 <p>Firstly, install <code class="docutils literal notranslate"><span class="pre">fortls</span></code> then install the <a class="reference external" href="https://github.com/sublimelsp/LSP">LSP</a> package from package control.
 Finally, install the <a class="reference external" href="https://packagecontrol.io/packages/Fortran">Fortran</a> package and add the following in your configuration</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;clients&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;fortls&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;fortls&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--notify_init&quot;</span><span class="p">],</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;selector&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;source.modern-fortran | source.fixedform-fortran&quot;</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;clients&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;fortls&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;fortls&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--notify_init&quot;</span><span class="p">],</span>
+<span class="w">            </span><span class="nt">&quot;selector&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;source.modern-fortran | source.fixedform-fortran&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>For more details see the LSP <a class="reference external" href="https://lsp.sublimetext.io/language_servers/#fortran">documentation</a>.</p>
@@ -351,7 +351,7 @@ nmap <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt
 <p>Install the <a class="reference external" href="https://github.com/joaotavora/eglot">eglot</a> package which supports fortls out of the box.
 This can be done in emacs version &gt; 26.1 via <code class="docutils literal notranslate"><span class="pre">M-x</span> <span class="pre">package-install</span> <span class="pre">RET</span> <span class="pre">eglot</span> <span class="pre">RET</span></code>.
 Arguments to <code class="docutils literal notranslate"><span class="pre">fortls</span></code> can be provided in the form</p>
-<div class="highlight-elisp notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nv">add-to-list</span><span class="w"> </span><span class="ss">&#39;eglot-server-programs</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">f90-mode</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;fortls&quot;</span><span class="w"> </span><span class="s">&quot;--notify_init&quot;</span><span class="w"> </span><span class="s">&quot;--nthreads=4&quot;</span><span class="p">)))</span><span class="w"></span>
+<div class="highlight-elisp notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nv">add-to-list</span><span class="w"> </span><span class="ss">&#39;eglot-server-programs</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">f90-mode</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;fortls&quot;</span><span class="w"> </span><span class="s">&quot;--notify_init&quot;</span><span class="w"> </span><span class="s">&quot;--nthreads=4&quot;</span><span class="p">)))</span>
 </pre></div>
 </div>
 </section>
@@ -365,17 +365,17 @@ Arguments to <code class="docutils literal notranslate"><span class="pre">fortls
 <p>Install <a class="reference external" href="https://github.com/kak-lsp/">kak-lsp</a>.</p>
 <p>Edit the <code class="docutils literal notranslate"><span class="pre">kak-lsp.toml</span></code> config file to include:</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>language.fortran<span class="o">]</span>
-<span class="nv">filetypes</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&quot;fortran&quot;</span><span class="o">]</span>
-<span class="nv">roots</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&quot;.git&quot;</span>, <span class="s2">&quot;.fortls&quot;</span><span class="o">]</span>
-<span class="nb">command</span> <span class="o">=</span> <span class="s2">&quot;fortls&quot;</span>
-<span class="nv">args</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&quot;--symbol_skip_mem&quot;</span>, <span class="s2">&quot;--incremental_sync&quot;</span>, <span class="s2">&quot;--autocomplete_no_prefix&quot;</span>, <span class="s2">&quot;--lowercase_intrisics&quot;</span><span class="o">]</span>
+<span class="nv">filetypes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="s2">&quot;fortran&quot;</span><span class="o">]</span>
+<span class="nv">roots</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="s2">&quot;.git&quot;</span>,<span class="w"> </span><span class="s2">&quot;.fortls&quot;</span><span class="o">]</span>
+<span class="nb">command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;fortls&quot;</span>
+<span class="nv">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="s2">&quot;--symbol_skip_mem&quot;</span>,<span class="w"> </span><span class="s2">&quot;--incremental_sync&quot;</span>,<span class="w"> </span><span class="s2">&quot;--autocomplete_no_prefix&quot;</span>,<span class="w"> </span><span class="s2">&quot;--lowercase_intrisics&quot;</span><span class="o">]</span>
 </pre></div>
 </div>
 <p>Edit your <code class="docutils literal notranslate"><span class="pre">kakrc</span></code> config to enable <code class="docutils literal notranslate"><span class="pre">kak-lsp</span></code>, adding <code class="docutils literal notranslate"><span class="pre">fortran</span></code> as a filetype:</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">eval</span> %sh<span class="o">{</span>kak-lsp --kakoune -s <span class="nv">$kak_session</span><span class="o">}</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">eval</span><span class="w"> </span>%sh<span class="o">{</span>kak-lsp<span class="w"> </span>--kakoune<span class="w"> </span>-s<span class="w"> </span><span class="nv">$kak_session</span><span class="o">}</span>
 <span class="c1"># lsp-enable</span>
-hook global WinSetOption <span class="nv">filetype</span><span class="o">=(</span>fortran<span class="o">)</span> %<span class="o">{</span>
-  lsp-enable-window
+hook<span class="w"> </span>global<span class="w"> </span>WinSetOption<span class="w"> </span><span class="nv">filetype</span><span class="o">=(</span>fortran<span class="o">)</span><span class="w"> </span>%<span class="o">{</span>
+<span class="w">  </span>lsp-enable-window
 <span class="o">}</span>
 </pre></div>
 </div>
