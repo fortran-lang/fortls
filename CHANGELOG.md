@@ -26,6 +26,8 @@
 
 ### Fixed
 
+- Fixed end of scope for `CRITICAL` keyword blocks
+  ([#255](https://github.com/fortran-lang/fortls/issues/255))
 - Fixed bug where completion of interfaces in USE ONLY would produce the snippet
   ([#150](https://github.com/fortran-lang/fortls/issues/150))
 - Fixed bug where diagnostic messages were raised for non-existent variables
