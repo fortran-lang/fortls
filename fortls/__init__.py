@@ -400,7 +400,6 @@ def debug_server_general(args, settings):
                 print("=======")
     #
     if args.debug_actions:
-
         pp = pprint.PrettyPrinter(indent=2, width=120)
         print('\nTesting "textDocument/getActions" request:')
         check_request_params(args)

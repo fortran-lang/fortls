@@ -49,7 +49,6 @@ def test_subroutine_signature_help():
 
 
 def test_intrinsics():
-
     string = write_rpc_request(
         1, "initialize", {"rootPath": str(test_dir / "signature")}
     )

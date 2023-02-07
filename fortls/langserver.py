@@ -304,7 +304,6 @@ class LangServer:
         # Add scopes to outline view
         test_output = []
         for scope in file_obj.ast.get_scopes():
-
             if (
                 not scope.name  # Skip empty strings
                 or scope.name.startswith("#")  # Skip comments
@@ -472,7 +471,7 @@ class LangServer:
             else:
                 tmp_list: list[str] = []
                 tmp_rename: list[str] = []
-                for (var, rename) in zip(var_list, rename_list):
+                for var, rename in zip(var_list, rename_list):
                     var_name: str | None = rename
                     if var_name is None:
                         var_name = var.name
@@ -667,7 +666,7 @@ class LangServer:
         candidate_list, rename_list = get_candidates(
             scope_list, var_prefix, include_globals, public_only, abstract_only, no_use
         )
-        for (candidate, rename) in zip(candidate_list, rename_list):
+        for candidate, rename in zip(candidate_list, rename_list):
             # Skip module names (only valid in USE)
             candidate_type = candidate.get_type()
             if type_mask[candidate_type]:
@@ -944,7 +943,7 @@ class LangServer:
         for filename, file_obj in file_set:
             file_refs = []
             # Search through file line by line
-            for (i, line) in enumerate(file_obj.contents_split):
+            for i, line in enumerate(file_obj.contents_split):
                 if len(line) == 0:
                     continue
                 # Skip comment lines
@@ -1034,7 +1033,7 @@ class LangServer:
                     return None
         all_refs, _ = self.get_all_references(def_obj, type_mem, file_obj=restrict_file)
         refs = []
-        for (filename, file_refs) in all_refs.items():
+        for filename, file_refs in all_refs.items():
             for ref in file_refs:
                 refs.append(
                     uri_json(path_to_uri(filename), ref[0], ref[1], ref[0], ref[2])

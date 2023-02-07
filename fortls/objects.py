@@ -265,7 +265,7 @@ def find_in_workspace(
 
     matching_symbols = []
     query = query.lower()
-    for (_, obj_packed) in obj_tree.items():
+    for _, obj_packed in obj_tree.items():
         top_obj = obj_packed[0]
         top_uri = obj_packed[1]
         if top_uri is not None:
@@ -877,7 +877,7 @@ class Submodule(Module):
                         ancestor_interfaces.append(prototype)
         # Match interface definitions to implementations
         for prototype in ancestor_interfaces:
-            for (i, child) in enumerate(self.children):
+            for i, child in enumerate(self.children):
                 if child.name.lower() == prototype.name.lower():
                     # Create correct object for interface
                     if child.get_type() == BASE_TYPE_ID:
@@ -893,7 +893,7 @@ class Submodule(Module):
                         child.copy_from(child_old)
                         # Replace in child and scope lists
                         self.children[i] = child
-                        for (j, file_scope) in enumerate(child.file_ast.scope_list):
+                        for j, file_scope in enumerate(child.file_ast.scope_list):
                             if file_scope is child_old:
                                 child.file_ast.scope_list[j] = child
                     if child.get_type() == prototype.get_type():
@@ -965,7 +965,7 @@ class Subroutine(Scope):
         self.missing_args = []
         for child in self.children:
             ind = -1
-            for (i, arg) in enumerate(arg_list_lower):
+            for i, arg in enumerate(arg_list_lower):
                 if arg == child.name.lower():
                     ind = i
                     break
@@ -1069,7 +1069,7 @@ class Subroutine(Scope):
     def get_signature(self, drop_arg=-1):
         arg_sigs = []
         arg_list = self.args.split(",")
-        for (i, arg_obj) in enumerate(self.arg_objs):
+        for i, arg_obj in enumerate(self.arg_objs):
             if i == drop_arg:
                 continue
             if arg_obj is None:
@@ -1138,7 +1138,7 @@ class Subroutine(Scope):
         if (implicit_flag is None) or implicit_flag:
             return errors
         arg_list = self.args.replace(" ", "").split(",")
-        for (i, arg_obj) in enumerate(self.arg_objs):
+        for i, arg_obj in enumerate(self.arg_objs):
             if arg_obj is None:
                 arg_name = arg_list[i].strip()
                 new_diag = Diagnostic(
