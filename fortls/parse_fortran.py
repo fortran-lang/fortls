@@ -1164,13 +1164,13 @@ class FortranFile:
             word_range = find_word_in_line(curr_line.lower(), find_word_lower)
         if backward and (word_range.start < 0):
             back_lines.reverse()
-            for (i, line) in enumerate(back_lines):
+            for i, line in enumerate(back_lines):
                 word_range = find_word_in_line(line.lower(), find_word_lower)
                 if word_range.start >= 0:
                     line_no -= i + 1
                     return line_no, word_range
         if forward and (word_range.start < 0):
-            for (i, line) in enumerate(forward_lines):
+            for i, line in enumerate(forward_lines):
                 word_range = find_word_in_line(line.lower(), find_word_lower)
                 if word_range.start >= 0:
                     line_no += i + 1
@@ -1207,7 +1207,7 @@ class FortranFile:
                 COMMENT_LINE_MATCH = FRegex.FIXED_COMMENT
             else:
                 COMMENT_LINE_MATCH = FRegex.FREE_COMMENT
-            for (i, line) in enumerate(self.contents_split):
+            for i, line in enumerate(self.contents_split):
                 if COMMENT_LINE_MATCH.match(line) is None:
                     if 0 < max_line_length < len(line):
                         self.ast.add_error(
@@ -1891,7 +1891,7 @@ class FortranFile:
             docstr = ""
             has_args = True
             idx_args = -1
-            for (i, line) in enumerate(docs):
+            for i, line in enumerate(docs):
                 if line.startswith("@brief"):
                     docstr += line.replace("@brief", "", 1).strip() + "\n"
                 elif line.startswith("@param"):
@@ -1940,7 +1940,7 @@ class FortranFile:
         # most efficient implementation, see: shorturl.at/dfmyV
         if len("".join(docs)) > 0:
             file_ast.add_doc(format(docs), forward=predocmark)
-        for (i, doc_line) in enumerate(docs):
+        for i, doc_line in enumerate(docs):
             log.debug(f"{doc_line} !!! Doc string - Line:{_ln + i}")
         docs[:] = []
         return ln
@@ -2093,7 +2093,7 @@ def preprocess_file(
     def_regexes = {}
     output_file = []
     def_cont_name = None
-    for (i, line) in enumerate(contents_split):
+    for i, line in enumerate(contents_split):
         # Handle multiline macro continuation
         if def_cont_name is not None:
             output_file.append("")

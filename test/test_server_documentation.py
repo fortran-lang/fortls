@@ -5,7 +5,7 @@ def check_return(result_array, checks, only_docs=False):
     comm_lines = []
     found_docs = False
     idx = 0
-    for (i, hover_line) in enumerate(result_array["contents"]["value"].splitlines()):
+    for i, hover_line in enumerate(result_array["contents"]["value"].splitlines()):
         if hover_line == "-----":
             found_docs = True
         if found_docs and only_docs:

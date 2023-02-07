@@ -16,7 +16,7 @@ def hover_req(file_path: Path, ln: int, col: int) -> str:
 
 def validate_hover(result_array: list, checks: list):
     assert len(result_array) - 1 == len(checks)
-    for (i, check) in enumerate(checks):
+    for i, check in enumerate(checks):
         assert result_array[i + 1]["contents"]["value"] == check
 
 

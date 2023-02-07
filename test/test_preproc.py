@@ -16,7 +16,7 @@ def test_hover():
 
     def check_return(result_array, checks):
         assert len(result_array) == len(checks)
-        for (i, check) in enumerate(checks):
+        for i, check in enumerate(checks):
             assert result_array[i]["contents"]["value"] == check
 
     root_dir = test_dir / "pp"

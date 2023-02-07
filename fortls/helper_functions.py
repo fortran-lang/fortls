@@ -238,7 +238,7 @@ def find_paren_match(string: str) -> int:
     """
     paren_count = 1
     ind = -1
-    for (i, char) in enumerate(string):
+    for i, char in enumerate(string):
         if char == "(":
             paren_count += 1
         elif char == ")":
@@ -568,7 +568,7 @@ def get_var_stack(line: str) -> list[str]:
         return [""]
     # Continuation of variable after paren requires '%' character
     iLast = 0
-    for (i, section) in enumerate(sections):
+    for i, section in enumerate(sections):
         if not line[section.start : section.end].startswith("%"):
             iLast = i
     final_var = ""

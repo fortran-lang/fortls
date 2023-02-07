@@ -5,7 +5,7 @@ from setup_tests import path_to_uri, run_request, test_dir, write_rpc_request
 
 def validate_refs(result_array, checks):
     def find_in_results(uri, sline):
-        for (i, result) in enumerate(result_array):
+        for i, result in enumerate(result_array):
             if (result["uri"] == uri) and (result["range"]["start"]["line"] == sline):
                 del result_array[i]
                 return result
