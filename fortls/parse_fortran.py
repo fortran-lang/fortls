@@ -1179,20 +1179,20 @@ class FortranFile:
 
     def preprocess(
         self, pp_defs: dict = None, include_dirs: set = None, debug: bool = False
-    ) -> tuple[list, list]:
+    ) -> tuple[list, list, dict]:
         if pp_defs is None:
             pp_defs = {}
         if include_dirs is None:
             include_dirs = set()
 
-        self.contents_pp, pp_skips, pp_defines, self.pp_defs = preprocess_file(
+        self.contents_pp, pp_skips, pp_defines, self.pp_defs, pp_adds = preprocess_file(
             self.contents_split,
             self.path,
             pp_defs=pp_defs,
             include_dirs=include_dirs,
             debug=debug,
         )
-        return pp_skips, pp_defines
+        return pp_skips, pp_defines, pp_adds
 
     def check_file(self, obj_tree, max_line_length=-1, max_comment_line_length=-1):
         diagnostics = []
@@ -1266,7 +1266,7 @@ class FortranFile:
         file_ast = FortranAST(self)
         if self.preproc:
             log.debug("=== PreProc Pass ===\n")
-            pp_skips, pp_defines = self.preprocess(
+            pp_skips, pp_defines, pp_adds = self.preprocess(
                 pp_defs=pp_defs, include_dirs=include_dirs, debug=debug
             )
             for pp_reg in pp_skips:
@@ -1277,6 +1277,7 @@ class FortranFile:
             log.debug("=== No PreProc ===\n")
             pp_skips = []
             pp_defines = []
+            pp_adds = {}
 
         line_no = 0
         line_no_end = 0
@@ -1374,300 +1375,312 @@ class FortranFile:
             # Mark contains statement
             if self.parse_contains(line_no_comment, line_no, file_ast):
                 continue
-            # Loop through tests
-            obj_read = self.get_fortran_definition(line)
-            # Move to next line if nothing in the definition tests matches
-            if obj_read is None:
-                continue
 
-            obj_type: str = obj_read[0]
-            obj_info = obj_read[1]
-            if obj_type == "var":
-                if obj_info.var_names is None:
+            lines = pp_adds.get(line_no, [line])
+
+            for line in lines:
+                # Loop through tests
+                obj_read = self.get_fortran_definition(line)
+                # Move to next line if nothing in the definition tests matches
+                if obj_read is None:
                     continue
-                link_name: str = None
-                procedure_def = False
-                if obj_info.var_type[:3] == "PRO":
-                    if file_ast.current_scope.get_type() == INTERFACE_TYPE_ID:
-                        for var_name in obj_info.var_names:
-                            file_ast.add_int_member(var_name)
-                        log.debug("%s !!! INTERFACE-PRO - Ln:%d", line.strip(), line_no)
+
+                obj_type: str = obj_read[0]
+                obj_info = obj_read[1]
+                if obj_type == "var":
+                    if obj_info.var_names is None:
                         continue
-                    procedure_def = True
-                    link_name = get_paren_substring(obj_info.var_type)
-                for var_name in obj_info.var_names:
-                    desc = obj_info.var_type
                     link_name: str = None
-                    if var_name.find("=>") > -1:
-                        name_split = var_name.split("=>")
-                        name = name_split[0]
-                        link_name = name_split[1].split("(")[0].strip()
-                        if link_name.lower() == "null":
-                            link_name = None
-                    else:
-                        name = var_name.split("=")[0]
-                    # Add dimension if specified
-                    # TODO: turn into function and add support for co-arrays i.e. [*]
-                    # Copy global keywords to the individual variable
-                    var_keywords: list[str] = obj_info.keywords[:]
-                    # The name starts with (
-                    if name.find("(") == 0:
-                        continue
-                    name, dims = self.parse_imp_dim(name)
-                    name, char_len = self.parse_imp_char(name)
-                    if dims:
-                        var_keywords.append(dims)
-                    if char_len:
-                        desc += char_len
-
-                    name = name.strip()
-                    keywords, keyword_info = map_keywords(var_keywords)
-
-                    if procedure_def:
-                        new_var = Method(
-                            file_ast,
-                            line_no,
-                            name,
-                            desc,
-                            keywords,
-                            keyword_info=keyword_info,
-                            proc_ptr=obj_info.var_kind,
-                            link_obj=link_name,
-                        )
-                    else:
-                        new_var = Variable(
-                            file_ast,
-                            line_no,
-                            name,
-                            desc,
-                            keywords,
-                            keyword_info=keyword_info,
-                            kind=obj_info.var_kind,
-                            link_obj=link_name,
-                        )
-                        # If the object is fortran_var and a parameter include
-                        #  the value in hover
-                        if new_var.is_parameter():
-                            _, col = find_word_in_line(line, name)
-                            match = FRegex.PARAMETER_VAL.match(line[col:])
-                            if match:
-                                var = match.group(1).strip()
-                                new_var.set_parameter_val(var)
-
-                        # Check if the "variable" is external and if so cycle
-                        if find_external(file_ast, desc, name, new_var):
+                    procedure_def = False
+                    if obj_info.var_type[:3] == "PRO":
+                        if file_ast.current_scope.get_type() == INTERFACE_TYPE_ID:
+                            for var_name in obj_info.var_names:
+                                file_ast.add_int_member(var_name)
+                            log.debug(
+                                "%s !!! INTERFACE-PRO - Ln:%d", line.strip(), line_no
+                            )
                             continue
+                        procedure_def = True
+                        link_name = get_paren_substring(obj_info.var_type)
+                    for var_name in obj_info.var_names:
+                        desc = obj_info.var_type
+                        link_name: str = None
+                        if var_name.find("=>") > -1:
+                            name_split = var_name.split("=>")
+                            name = name_split[0]
+                            link_name = name_split[1].split("(")[0].strip()
+                            if link_name.lower() == "null":
+                                link_name = None
+                        else:
+                            name = var_name.split("=")[0]
+                        # Add dimension if specified
+                        # TODO: turn into function and add support for co-arrays i.e.[*]
+                        # Copy global keywords to the individual variable
+                        var_keywords: list[str] = obj_info.keywords[:]
+                        # The name starts with (
+                        if name.find("(") == 0:
+                            continue
+                        name, dims = self.parse_imp_dim(name)
+                        name, char_len = self.parse_imp_char(name)
+                        if dims:
+                            var_keywords.append(dims)
+                        if char_len:
+                            desc += char_len
 
-                    # if not merge_external:
-                    file_ast.add_variable(new_var)
-                log.debug("%s !!! VARIABLE - Ln:%d", line, line_no)
+                        name = name.strip()
+                        keywords, keyword_info = map_keywords(var_keywords)
 
-            elif obj_type == "mod":
-                new_mod = Module(file_ast, line_no, obj_info)
-                file_ast.add_scope(new_mod, FRegex.END_MOD)
-                log.debug("%s !!! MODULE - Ln:%d", line, line_no)
-
-            elif obj_type == "smod":
-                new_smod = Submodule(
-                    file_ast, line_no, obj_info.name, ancestor_name=obj_info.parent
-                )
-                file_ast.add_scope(new_smod, FRegex.END_SMOD)
-                log.debug("%s !!! SUBMODULE - Ln:%d", line, line_no)
-
-            elif obj_type == "prog":
-                new_prog = Program(file_ast, line_no, obj_info)
-                file_ast.add_scope(new_prog, FRegex.END_PROG)
-                log.debug("%s !!! PROGRAM - Ln:%d", line, line_no)
-
-            elif obj_type == "sub":
-                keywords, _ = map_keywords(obj_info.keywords)
-                new_sub = Subroutine(
-                    file_ast,
-                    line_no,
-                    obj_info.name,
-                    args=obj_info.args,
-                    mod_flag=obj_info.mod_flag,
-                    keywords=keywords,
-                )
-                file_ast.add_scope(new_sub, FRegex.END_SUB)
-                log.debug("%s !!! SUBROUTINE - Ln:%d", line, line_no)
-
-            elif obj_type == "fun":
-                keywords, _ = map_keywords(obj_info.keywords)
-                new_fun = Function(
-                    file_ast,
-                    line_no,
-                    obj_info.name,
-                    args=obj_info.args,
-                    mod_flag=obj_info.mod_flag,
-                    keywords=keywords,
-                    result_type=obj_info.result.type,
-                    result_name=obj_info.result.name,
-                )
-                file_ast.add_scope(new_fun, FRegex.END_FUN)
-                # function type is present without result(), register the automatic
-                # result() variable that is the function name
-                if obj_info.result.type:
-                    keywords, keyword_info = map_keywords(obj_info.result.keywords)
-                    new_obj = Variable(
-                        file_ast,
-                        line_no,
-                        name=obj_info.result.name,
-                        var_desc=obj_info.result.type,
-                        keywords=keywords,
-                        keyword_info=keyword_info,
-                        kind=obj_info.result.kind,
-                    )
-                    file_ast.add_variable(new_obj)
-                log.debug("%s !!! FUNCTION - Ln:%d", line, line_no)
-
-            elif obj_type == "block":
-                name = obj_info
-                if name is None:
-                    counters["block"] += 1
-                    name = f"#BLOCK{counters['block']}"
-                new_block = Block(file_ast, line_no, name)
-                file_ast.add_scope(new_block, FRegex.END_BLOCK, req_container=True)
-                log.debug("%s !!! BLOCK - Ln:%d", line, line_no)
-
-            elif obj_type == "do":
-                counters["do"] += 1
-                name = f"#DO{counters['do']}"
-                if obj_info != "":
-                    block_id_stack.append(obj_info)
-                new_do = Do(file_ast, line_no, name)
-                file_ast.add_scope(new_do, FRegex.END_DO, req_container=True)
-                log.debug("%s !!! DO - Ln:%d", line, line_no)
-
-            elif obj_type == "where":
-                # Add block if WHERE is not single line
-                if not obj_info:
-                    counters["do"] += 1
-                    name = f"#WHERE{counters['do']}"
-                    new_do = Where(file_ast, line_no, name)
-                    file_ast.add_scope(new_do, FRegex.END_WHERE, req_container=True)
-                log.debug("%s !!! WHERE - Ln:%d", line, line_no)
-
-            elif obj_type == "assoc":
-                counters["block"] += 1
-                name = f"#ASSOC{counters['block']}"
-                new_assoc = Associate(file_ast, line_no, name)
-                file_ast.add_scope(new_assoc, FRegex.END_ASSOCIATE, req_container=True)
-                for bound_var in obj_info:
-                    try:
-                        bind_name, link_name = bound_var.split("=>")
-                        file_ast.add_variable(
-                            new_assoc.create_binding_variable(
+                        if procedure_def:
+                            new_var = Method(
                                 file_ast,
                                 line_no,
-                                bind_name.strip(),
-                                link_name.strip(),
+                                name,
+                                desc,
+                                keywords,
+                                keyword_info=keyword_info,
+                                proc_ptr=obj_info.var_kind,
+                                link_obj=link_name,
                             )
-                        )
-                    except ValueError:
-                        pass
-                log.debug("%s !!! ASSOCIATE - Ln:%d", line, line_no)
-
-            elif obj_type == "if":
-                counters["if"] += 1
-                name = f"#IF{counters['if']}"
-                new_if = If(file_ast, line_no, name)
-                file_ast.add_scope(new_if, FRegex.END_IF, req_container=True)
-                log.debug("%s !!! IF - Ln:%d", line, line_no)
-
-            elif obj_type == "select":
-                counters["select"] += 1
-                name = f"#SELECT{counters['select']}"
-                new_select = Select(file_ast, line_no, name, obj_info)
-                file_ast.add_scope(new_select, FRegex.END_SELECT, req_container=True)
-                new_var = new_select.create_binding_variable(
-                    file_ast,
-                    line_no,
-                    f"{obj_info.desc}({obj_info.binding})",
-                    obj_info.type,
-                )
-                if new_var is not None:
-                    file_ast.add_variable(new_var)
-                log.debug("%s !!! SELECT - Ln:%d", line, line_no)
-
-            elif obj_type == "typ":
-                keywords, _ = map_keywords(obj_info.keywords)
-                new_type = Type(file_ast, line_no, obj_info.name, keywords)
-                if obj_info.parent is not None:
-                    new_type.set_inherit(obj_info.parent)
-                file_ast.add_scope(new_type, FRegex.END_TYPED, req_container=True)
-                log.debug("%s !!! TYPE - Ln:%d", line, line_no)
-
-            elif obj_type == "enum":
-                counters["block"] += 1
-                name = f"#ENUM{counters['block']}"
-                new_enum = Enum(file_ast, line_no, name)
-                file_ast.add_scope(new_enum, FRegex.END_ENUMD, req_container=True)
-                log.debug("%s !!! ENUM - Ln:%d", line, line_no)
-
-            elif obj_type == "int":
-                name = obj_info.name
-                if name is None:
-                    counters["interface"] += 1
-                    name = f"#GEN_INT{counters['interface']}"
-                new_int = Interface(file_ast, line_no, name, abstract=obj_info.abstract)
-                file_ast.add_scope(new_int, FRegex.END_INT, req_container=True)
-                log.debug("%s !!! INTERFACE - Ln:%d", line, line_no)
-
-            elif obj_type == "gen":
-                new_int = Interface(
-                    file_ast, line_no, obj_info.bound_name, abstract=False
-                )
-                new_int.set_visibility(obj_info.vis_flag)
-                file_ast.add_scope(new_int, FRegex.END_INT, req_container=True)
-                for pro_link in obj_info.pro_links:
-                    file_ast.add_int_member(pro_link)
-                file_ast.end_scope(line_no)
-                log.debug("%s !!! GENERIC - Ln:%d", line, line_no)
-
-            elif obj_type == "int_pro":
-                if file_ast.current_scope is not None:
-                    if file_ast.current_scope.get_type() == INTERFACE_TYPE_ID:
-                        for name in obj_info:
-                            file_ast.add_int_member(name)
-                        log.debug("%s !!! INTERFACE-PRO - Ln:%d", line, line_no)
-
-                    elif file_ast.current_scope.get_type() == SUBMODULE_TYPE_ID:
-                        new_impl = Scope(file_ast, line_no, obj_info[0])
-                        file_ast.add_scope(new_impl, FRegex.END_PRO)
-                        log.debug("%s !!! INTERFACE-IMPL - Ln:%d", line, line_no)
-
-            elif obj_type == "use":
-                obj_info.line_number = line_no
-                file_ast.add_use(obj_info)
-                log.debug("%s !!! USE - Ln:%d", line, line_no)
-
-            elif obj_type == "import":
-                obj_info.line_number = line_no
-                obj_info.mod_name += str(counters["import"])
-                file_ast.add_use(obj_info)
-                counters["imports"] += 1
-                log.debug("%s !!! IMPORT - Ln:%d", line, line_no)
-
-            elif obj_type == "inc":
-                file_ast.add_include(obj_info, line_no)
-                log.debug("%s !!! INCLUDE - Ln:%d", line, line_no)
-
-            elif obj_type == "vis":
-                if file_ast.current_scope is None:
-                    msg = "Visibility statement without enclosing scope"
-                    file_ast.add_error(msg, Severity.error, line_no, 0)
-                else:
-                    if (len(obj_info.obj_names) == 0) and (obj_info.type == 1):
-                        file_ast.current_scope.set_default_vis(-1)
-                    else:
-                        if obj_info.type == MODULE_TYPE_ID:
-                            for word in obj_info.obj_names:
-                                file_ast.add_private(word)
                         else:
-                            for word in obj_info.obj_names:
-                                file_ast.add_public(word)
-                log.debug("%s !!! VISIBILITY - Ln:%d", line, line_no)
+                            new_var = Variable(
+                                file_ast,
+                                line_no,
+                                name,
+                                desc,
+                                keywords,
+                                keyword_info=keyword_info,
+                                kind=obj_info.var_kind,
+                                link_obj=link_name,
+                            )
+                            # If the object is fortran_var and a parameter include
+                            #  the value in hover
+                            if new_var.is_parameter():
+                                _, col = find_word_in_line(line, name)
+                                match = FRegex.PARAMETER_VAL.match(line[col:])
+                                if match:
+                                    var = match.group(1).strip()
+                                    new_var.set_parameter_val(var)
+
+                            # Check if the "variable" is external and if so cycle
+                            if find_external(file_ast, desc, name, new_var):
+                                continue
+
+                        # if not merge_external:
+                        file_ast.add_variable(new_var)
+                    log.debug("%s !!! VARIABLE - Ln:%d", line, line_no)
+
+                elif obj_type == "mod":
+                    new_mod = Module(file_ast, line_no, obj_info)
+                    file_ast.add_scope(new_mod, FRegex.END_MOD)
+                    log.debug("%s !!! MODULE - Ln:%d", line, line_no)
+
+                elif obj_type == "smod":
+                    new_smod = Submodule(
+                        file_ast, line_no, obj_info.name, ancestor_name=obj_info.parent
+                    )
+                    file_ast.add_scope(new_smod, FRegex.END_SMOD)
+                    log.debug("%s !!! SUBMODULE - Ln:%d", line, line_no)
+
+                elif obj_type == "prog":
+                    new_prog = Program(file_ast, line_no, obj_info)
+                    file_ast.add_scope(new_prog, FRegex.END_PROG)
+                    log.debug("%s !!! PROGRAM - Ln:%d", line, line_no)
+
+                elif obj_type == "sub":
+                    keywords, _ = map_keywords(obj_info.keywords)
+                    new_sub = Subroutine(
+                        file_ast,
+                        line_no,
+                        obj_info.name,
+                        args=obj_info.args,
+                        mod_flag=obj_info.mod_flag,
+                        keywords=keywords,
+                    )
+                    file_ast.add_scope(new_sub, FRegex.END_SUB)
+                    log.debug("%s !!! SUBROUTINE - Ln:%d", line, line_no)
+
+                elif obj_type == "fun":
+                    keywords, _ = map_keywords(obj_info.keywords)
+                    new_fun = Function(
+                        file_ast,
+                        line_no,
+                        obj_info.name,
+                        args=obj_info.args,
+                        mod_flag=obj_info.mod_flag,
+                        keywords=keywords,
+                        result_type=obj_info.result.type,
+                        result_name=obj_info.result.name,
+                    )
+                    file_ast.add_scope(new_fun, FRegex.END_FUN)
+                    # function type is present without result(), register the automatic
+                    # result() variable that is the function name
+                    if obj_info.result.type:
+                        keywords, keyword_info = map_keywords(obj_info.result.keywords)
+                        new_obj = Variable(
+                            file_ast,
+                            line_no,
+                            name=obj_info.result.name,
+                            var_desc=obj_info.result.type,
+                            keywords=keywords,
+                            keyword_info=keyword_info,
+                            kind=obj_info.result.kind,
+                        )
+                        file_ast.add_variable(new_obj)
+                    log.debug("%s !!! FUNCTION - Ln:%d", line, line_no)
+
+                elif obj_type == "block":
+                    name = obj_info
+                    if name is None:
+                        counters["block"] += 1
+                        name = f"#BLOCK{counters['block']}"
+                    new_block = Block(file_ast, line_no, name)
+                    file_ast.add_scope(new_block, FRegex.END_BLOCK, req_container=True)
+                    log.debug("%s !!! BLOCK - Ln:%d", line, line_no)
+
+                elif obj_type == "do":
+                    counters["do"] += 1
+                    name = f"#DO{counters['do']}"
+                    if obj_info != "":
+                        block_id_stack.append(obj_info)
+                    new_do = Do(file_ast, line_no, name)
+                    file_ast.add_scope(new_do, FRegex.END_DO, req_container=True)
+                    log.debug("%s !!! DO - Ln:%d", line, line_no)
+
+                elif obj_type == "where":
+                    # Add block if WHERE is not single line
+                    if not obj_info:
+                        counters["do"] += 1
+                        name = f"#WHERE{counters['do']}"
+                        new_do = Where(file_ast, line_no, name)
+                        file_ast.add_scope(new_do, FRegex.END_WHERE, req_container=True)
+                    log.debug("%s !!! WHERE - Ln:%d", line, line_no)
+
+                elif obj_type == "assoc":
+                    counters["block"] += 1
+                    name = f"#ASSOC{counters['block']}"
+                    new_assoc = Associate(file_ast, line_no, name)
+                    file_ast.add_scope(
+                        new_assoc, FRegex.END_ASSOCIATE, req_container=True
+                    )
+                    for bound_var in obj_info:
+                        try:
+                            bind_name, link_name = bound_var.split("=>")
+                            file_ast.add_variable(
+                                new_assoc.create_binding_variable(
+                                    file_ast,
+                                    line_no,
+                                    bind_name.strip(),
+                                    link_name.strip(),
+                                )
+                            )
+                        except ValueError:
+                            pass
+                    log.debug("%s !!! ASSOCIATE - Ln:%d", line, line_no)
+
+                elif obj_type == "if":
+                    counters["if"] += 1
+                    name = f"#IF{counters['if']}"
+                    new_if = If(file_ast, line_no, name)
+                    file_ast.add_scope(new_if, FRegex.END_IF, req_container=True)
+                    log.debug("%s !!! IF - Ln:%d", line, line_no)
+
+                elif obj_type == "select":
+                    counters["select"] += 1
+                    name = f"#SELECT{counters['select']}"
+                    new_select = Select(file_ast, line_no, name, obj_info)
+                    file_ast.add_scope(
+                        new_select, FRegex.END_SELECT, req_container=True
+                    )
+                    new_var = new_select.create_binding_variable(
+                        file_ast,
+                        line_no,
+                        f"{obj_info.desc}({obj_info.binding})",
+                        obj_info.type,
+                    )
+                    if new_var is not None:
+                        file_ast.add_variable(new_var)
+                    log.debug("%s !!! SELECT - Ln:%d", line, line_no)
+
+                elif obj_type == "typ":
+                    keywords, _ = map_keywords(obj_info.keywords)
+                    new_type = Type(file_ast, line_no, obj_info.name, keywords)
+                    if obj_info.parent is not None:
+                        new_type.set_inherit(obj_info.parent)
+                    file_ast.add_scope(new_type, FRegex.END_TYPED, req_container=True)
+                    log.debug("%s !!! TYPE - Ln:%d", line, line_no)
+
+                elif obj_type == "enum":
+                    counters["block"] += 1
+                    name = f"#ENUM{counters['block']}"
+                    new_enum = Enum(file_ast, line_no, name)
+                    file_ast.add_scope(new_enum, FRegex.END_ENUMD, req_container=True)
+                    log.debug("%s !!! ENUM - Ln:%d", line, line_no)
+
+                elif obj_type == "int":
+                    name = obj_info.name
+                    if name is None:
+                        counters["interface"] += 1
+                        name = f"#GEN_INT{counters['interface']}"
+                    new_int = Interface(
+                        file_ast, line_no, name, abstract=obj_info.abstract
+                    )
+                    file_ast.add_scope(new_int, FRegex.END_INT, req_container=True)
+                    log.debug("%s !!! INTERFACE - Ln:%d", line, line_no)
+
+                elif obj_type == "gen":
+                    new_int = Interface(
+                        file_ast, line_no, obj_info.bound_name, abstract=False
+                    )
+                    new_int.set_visibility(obj_info.vis_flag)
+                    file_ast.add_scope(new_int, FRegex.END_INT, req_container=True)
+                    for pro_link in obj_info.pro_links:
+                        file_ast.add_int_member(pro_link)
+                    file_ast.end_scope(line_no)
+                    log.debug("%s !!! GENERIC - Ln:%d", line, line_no)
+
+                elif obj_type == "int_pro":
+                    if file_ast.current_scope is not None:
+                        if file_ast.current_scope.get_type() == INTERFACE_TYPE_ID:
+                            for name in obj_info:
+                                file_ast.add_int_member(name)
+                            log.debug("%s !!! INTERFACE-PRO - Ln:%d", line, line_no)
+
+                        elif file_ast.current_scope.get_type() == SUBMODULE_TYPE_ID:
+                            new_impl = Scope(file_ast, line_no, obj_info[0])
+                            file_ast.add_scope(new_impl, FRegex.END_PRO)
+                            log.debug("%s !!! INTERFACE-IMPL - Ln:%d", line, line_no)
+
+                elif obj_type == "use":
+                    obj_info.line_number = line_no
+                    file_ast.add_use(obj_info)
+                    log.debug("%s !!! USE - Ln:%d", line, line_no)
+
+                elif obj_type == "import":
+                    obj_info.line_number = line_no
+                    obj_info.mod_name += str(counters["import"])
+                    file_ast.add_use(obj_info)
+                    counters["imports"] += 1
+                    log.debug("%s !!! IMPORT - Ln:%d", line, line_no)
+
+                elif obj_type == "inc":
+                    file_ast.add_include(obj_info, line_no)
+                    log.debug("%s !!! INCLUDE - Ln:%d", line, line_no)
+
+                elif obj_type == "vis":
+                    if file_ast.current_scope is None:
+                        msg = "Visibility statement without enclosing scope"
+                        file_ast.add_error(msg, Severity.error, line_no, 0)
+                    else:
+                        if (len(obj_info.obj_names) == 0) and (obj_info.type == 1):
+                            file_ast.current_scope.set_default_vis(-1)
+                        else:
+                            if obj_info.type == MODULE_TYPE_ID:
+                                for word in obj_info.obj_names:
+                                    file_ast.add_private(word)
+                            else:
+                                for word in obj_info.obj_names:
+                                    file_ast.add_public(word)
+                    log.debug("%s !!! VISIBILITY - Ln:%d", line, line_no)
 
         file_ast.close_file(line_no)
         if debug:
@@ -2089,6 +2102,7 @@ def preprocess_file(
     pp_skips = []
     pp_defines = []
     pp_stack = []
+    pp_adds: dict[int, list[str]] = {}
     defs_tmp = pp_defs.copy()
     def_regexes = {}
     output_file = []
@@ -2149,6 +2163,8 @@ def preprocess_file(
                     exc_start = True
                 else:
                     pp_stack[-1][1] = i + 1
+                    pp_skips.append(pp_stack.pop())
+                    pp_stack.append([-1, -1])
                     inc_start = True
             elif match.group(1) == "endif":
                 if pp_stack[-1][0] < 0:
@@ -2213,13 +2229,32 @@ def preprocess_file(
                     err_string, _ = include_file.load_from_disk()
                     if err_string is None:
                         log.debug(f'\n!!! Parsing include file "{include_path}"')
-                        _, _, _, defs_tmp = preprocess_file(
+                        (
+                            include_stmts,
+                            include_skips,
+                            _,
+                            defs_tmp,
+                            internal_adds,
+                        ) = preprocess_file(
                             include_file.contents_split,
                             file_path=include_path,
                             pp_defs=defs_tmp,
                             include_dirs=include_dirs,
                             debug=debug,
                         )
+                        adds = []
+                        for idx, stmt in enumerate(include_stmts):
+                            if include_skips:
+                                for skip_start, skip_end in include_skips:
+                                    if skip_start <= idx + 1 <= skip_end:
+                                        continue
+                                    adds.append(stmt)
+                            else:
+                                adds.append(stmt)
+
+                        for data in internal_adds.values():
+                            adds.extend(data)
+                        pp_adds.update({i + 1: adds})
                         log.debug("!!! Completed parsing include file\n")
 
                     else:
@@ -2244,4 +2279,4 @@ def preprocess_file(
                 )
                 line = line_new
         output_file.append(line)
-    return output_file, pp_skips, pp_defines, defs_tmp
+    return output_file, pp_skips, pp_defines, defs_tmp, pp_adds

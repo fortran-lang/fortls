@@ -1,0 +1,1 @@
+use omp_lib

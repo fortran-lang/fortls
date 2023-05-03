@@ -24,12 +24,25 @@ def test_hover():
     file_path = root_dir / "preproc.F90"
     string += hover_req(file_path, 5, 8)  # user defined type
     string += hover_req(file_path, 7, 30)  # variable
-    string += hover_req(file_path, 7, 40)  # multi-lin variable
+    string += hover_req(file_path, 7, 40)  # multi-line variable
     string += hover_req(file_path, 8, 7)  # function with if conditional
     string += hover_req(file_path, 9, 7)  # multiline function with if conditional
     string += hover_req(file_path, 10, 15)  # defined without ()
     file_path = root_dir / "preproc_keywords.F90"
     string += hover_req(file_path, 6, 2)  # ignores PP across Fortran line continuations
+    file_path = root_dir / "preproc_ifdef.F90"
+    string += hover_req(file_path, 21, 15)  # defined inside `if` block
+    string += hover_req(file_path, 22, 15)  # defined inside `elif` block
+    string += hover_req(file_path, 23, 15)  # defined inside `ifndef` block
+    file_path = root_dir / "preproc_use.F90"
+    string += hover_req(file_path, 7, 15)  # Correct subroutine definition from mpi_f08
+    string += hover_req(file_path, 7, 30)  # Correct type of MPI_COMM_WORLD
+    file_path = root_dir / "preproc_use_include.F90"
+    string += hover_req(file_path, 3, 15)  # Correct subroutine definition from mpi_f08
+    string += hover_req(file_path, 3, 30)  # Correct type of MPI_COMM_WORLD
+    string += hover_req(
+        file_path, 4, 15
+    )  # Found definition of `omp_get_num_threads` function from omp_lib module
     config = str(root_dir / ".pp_conf.json")
     errcode, results = run_request(string, ["--config", config])
     assert errcode == 0
@@ -49,6 +62,44 @@ def test_hover():
         ),
         "```fortran90\n#define SUCCESS .true.\n```",
         "```fortran90\nREAL, CONTIGUOUS, POINTER, DIMENSION(:) :: var1\n```",
+        "```fortran90\n#define CUSTOM_MACRO 0\n```",
+        "```fortran90\n#define SECOND_CUSTOM_MACRO 1\n```",
+        "```fortran90\n#define THIRD_CUSTOM_MACRO 0\n```",
+        (
+            "```fortran90"
+            "\nSUBROUTINE MPI_Comm_size(comm, size, ierror=ierror)"
+            "\n TYPE(MPI_Comm), INTENT(IN) :: comm"
+            "\n INTEGER(C_INT), INTENT(OUT) :: size"
+            "\n INTEGER(C_INT), OPTIONAL, INTENT(OUT) :: ierror"
+            "\n"
+            "```"
+            "\n-----\n"
+            "\n**Parameters:**     "
+            "\n`comm` Communicator.   "
+            "\n`size` Size of communicator.   "
+            "\n`ierror` Error status."
+        ),
+        "```fortran90\nTYPE(MPI_Comm) :: MPI_COMM_WORLD\n```",
+        (
+            "```fortran90"
+            "\nSUBROUTINE MPI_Comm_size(comm, size, ierror=ierror)"
+            "\n TYPE(MPI_Comm), INTENT(IN) :: comm"
+            "\n INTEGER(C_INT), INTENT(OUT) :: size"
+            "\n INTEGER(C_INT), OPTIONAL, INTENT(OUT) :: ierror"
+            "\n"
+            "```"
+            "\n-----\n"
+            "\n**Parameters:**     "
+            "\n`comm` Communicator.   "
+            "\n`size` Size of communicator.   "
+            "\n`ierror` Error status."
+        ),
+        "```fortran90\nTYPE(MPI_Comm) :: MPI_COMM_WORLD\n```",
+        (
+            "```fortran90"
+            "\nINTEGER FUNCTION omp_get_num_threads() RESULT(omp_get_num_threads)"
+            "\n```"
+        ),
     )
     assert len(ref_results) == len(results) - 1
     check_return(results[1:], ref_results)
