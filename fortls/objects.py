@@ -1160,6 +1160,7 @@ class Function(Subroutine):
         args: str = "",
         mod_flag: bool = False,
         keywords: list = None,
+        keyword_info: dict = None,
         result_type: str = None,
         result_name: str = None,
     ):
@@ -1173,9 +1174,13 @@ class Function(Subroutine):
         self.result_name: str = result_name
         self.result_type: str = result_type
         self.result_obj: Variable = None
+        self.keyword_info: dict = keyword_info
         # Set the implicit result() name to be the function name
         if self.result_name is None:
             self.result_name = self.name
+        # Used in Associated blocks
+        if self.keyword_info is None:
+            self.keyword_info = {}
 
     def copy_interface(self, copy_source: Function):
         # Call the parent class method

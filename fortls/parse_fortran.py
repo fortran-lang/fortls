@@ -1493,7 +1493,7 @@ class FortranFile:
                 log.debug("%s !!! SUBROUTINE - Ln:%d", line, line_no)
 
             elif obj_type == "fun":
-                keywords, _ = map_keywords(obj_info.keywords)
+                keywords, keyword_info = map_keywords(obj_info.keywords)
                 new_fun = Function(
                     file_ast,
                     line_no,
@@ -1501,6 +1501,7 @@ class FortranFile:
                     args=obj_info.args,
                     mod_flag=obj_info.mod_flag,
                     keywords=keywords,
+                    keyword_info=keyword_info,
                     result_type=obj_info.result.type,
                     result_name=obj_info.result.name,
                 )
