@@ -598,7 +598,7 @@ def fortran_md(code: str, docs: str | None):
     """
     msg = ""
     if code:
-        msg = "```{langid}\n"   # This gets inserted later
+        msg = "```{langid}\n"  # This gets inserted later
         msg += f"{code}\n```"
     # Add documentation
     if docs:  # if docs is not None or ""
