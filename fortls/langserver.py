@@ -514,9 +514,14 @@ class LangServer:
             if call_sig is not None:
                 comp_obj["detail"] += " " + call_sig
             # Use the full markdown documentation
-            hover_msg = candidate.get_hover_md(long=True)
+            hover_msg: str = candidate.get_hover_md(long=True)
             if hover_msg:
-                hover_msg = {"kind": "markdown", "value": hover_msg}
+                hover_msg: dict = {
+                    "kind": "markdown",
+                    "value": hover_msg.replace(
+                        "```{langid}", f"```{self.hover_language}", 1
+                    ),
+                }
                 comp_obj["documentation"] = hover_msg
             return comp_obj
 
@@ -837,6 +842,17 @@ class LangServer:
                         return i
             return None
 
+        def replace_langid(params: list[dict]) -> list[dict]:
+            new_params = params[:]
+            for param in new_params:
+                if "documentation" not in param:
+                    continue
+                # Replace the first value of langid, when starting a code block
+                param["documentation"]["value"] = param["documentation"][
+                    "value"
+                ].replace("```{langid}", f"```{self.hover_language}", 1)
+            return params
+
         # Get parameters from request
         params: dict = request["params"]
         uri: str = params["textDocument"]["uri"]
@@ -904,6 +920,9 @@ class LangServer:
         label, doc_str, params = var_obj.get_signature()
         if label is None:
             return None
+        # Replace placeholder language id with Fortran ID
+        params = replace_langid(params)
+
         # Find current parameter by index or by
         # looking at last arg with optional name
         param_num = len(arg_strings) - 1
@@ -917,6 +936,7 @@ class LangServer:
             param_num = opt_num
         signature = {"label": label, "parameters": params}
         if doc_str is not None:
+            doc_str = doc_str.format(langid=self.hover_language)
             signature["documentation"] = {"kind": "markdown", "value": doc_str}
         req_dict = {"signatures": [signature], "activeParameter": param_num}
         return req_dict
@@ -1063,7 +1083,7 @@ class LangServer:
         def create_hover(string: str, docs: str | None):
             # This does not account for Fixed Form Fortran, but it should be
             # okay for 99% of cases
-            return fortran_md(string, docs, self.hover_language)
+            return fortran_md(string, docs).format(langid=self.hover_language)
 
         # Get parameters from request
         params: dict = request["params"]
@@ -1087,7 +1107,11 @@ class LangServer:
             MODULE_TYPE_ID,
             CLASS_TYPE_ID,
         ):
-            hover_array.append(var_obj.get_hover_md(long=True))
+            hover_array.append(
+                var_obj.get_hover_md(long=True).replace(
+                    "```{langid}", f"```{self.hover_language}", 1
+                )
+            )
         elif var_type == INTERFACE_TYPE_ID:
             for member in var_obj.mems:
                 hover_str, docs = member.get_hover(long=True)
@@ -1097,7 +1121,11 @@ class LangServer:
             # Unless we have a Fortran literal include the desc in the hover msg
             # See get_definition for an explanation about this default name
             if not var_obj.desc.startswith(FORTRAN_LITERAL):
-                hover_array.append(var_obj.get_hover_md(long=True))
+                hover_array.append(
+                    var_obj.get_hover_md(long=True).replace(
+                        "```{langid}", f"```{self.hover_language}", 1
+                    )
+                )
             # Hover for Literal variables
             elif var_obj.desc.endswith("REAL"):
                 hover_array.append(create_hover("REAL", None))

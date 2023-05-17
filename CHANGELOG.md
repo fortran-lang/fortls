@@ -26,6 +26,12 @@
 
 ### Fixed
 
+- Fixed bug where `associate` blocks for variables pointing to function results
+  where not properly resolved
+  ([#269](https://github.com/fortran-lang/fortls/issues/269))
+- Fixed bug where the `langid` was not propagated correctly from the user
+  settings to the LSP creation stage for all types of requests.
+  ([#257](https://github.com/fortran-lang/fortls/issues/257))
 - Fixed end of scope for `CRITICAL` keyword blocks
   ([#255](https://github.com/fortran-lang/fortls/issues/255))
 - Fixed bug where completion of interfaces in USE ONLY would produce the snippet

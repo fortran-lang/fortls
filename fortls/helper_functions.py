@@ -582,7 +582,7 @@ def get_var_stack(line: str) -> list[str]:
         return None
 
 
-def fortran_md(code: str, docs: str | None, langid: str = "fortran90"):
+def fortran_md(code: str, docs: str | None):
     """Convert Fortran code to markdown
 
     Parameters
@@ -591,9 +591,6 @@ def fortran_md(code: str, docs: str | None, langid: str = "fortran90"):
         Fortran code
     docs : str | None
         Documentation string
-    langid : str, optional
-        Language ID, by default 'fortran90'
-
     Returns
     -------
     str
@@ -601,7 +598,8 @@ def fortran_md(code: str, docs: str | None, langid: str = "fortran90"):
     """
     msg = ""
     if code:
-        msg = f"```{langid}\n{code}\n```"
+        msg = "```{langid}\n"  # This gets inserted later
+        msg += f"{code}\n```"
     # Add documentation
     if docs:  # if docs is not None or ""
         msg += f"\n-----\n{docs}"
