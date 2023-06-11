@@ -70,6 +70,73 @@ def test_hover_parameter():
     validate_hover(results, ref_results)
 
 
+def test_hover_parameter_eqnospace():
+    """Test that hover parameters display value correctly"""
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    file_path = test_dir / "hover" / "parameters.f90"
+    string += hover_req(file_path, 11, 28)
+    errcode, results = run_request(string, fortls_args=["--sort_keywords"])
+    assert errcode == 0
+    ref_results = ["```fortran90\nINTEGER, PARAMETER :: var_no_space = 123\n```"]
+    validate_hover(results, ref_results)
+
+
+def test_hover_parameter_morespace():
+    """Test that hover parameters display value correctly"""
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    file_path = test_dir / "hover" / "parameters.f90"
+    string += hover_req(file_path, 12, 28)
+    errcode, results = run_request(string, fortls_args=["--sort_keywords"])
+    assert errcode == 0
+    ref_results = ["```fortran90\nINTEGER, PARAMETER :: var_more_space = 123\n```"]
+    validate_hover(results, ref_results)
+
+
+def test_hover_parameter_var_sum():
+    """Test that hover parameters display value correctly with sum"""
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    file_path = test_dir / "hover" / "parameters.f90"
+    string += hover_req(file_path, 13, 28)
+    errcode, results = run_request(string, fortls_args=["--sort_keywords"])
+    assert errcode == 0
+    ref_results = ["```fortran90\nINTEGER, PARAMETER :: var_sum1 = 1 + 23\n```"]
+    validate_hover(results, ref_results)
+
+
+def test_hover_parameter_var_neg():
+    """Test that hover parameters display value correctly with extraction"""
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    file_path = test_dir / "hover" / "parameters.f90"
+    string += hover_req(file_path, 14, 28)
+    errcode, results = run_request(string, fortls_args=["--sort_keywords"])
+    assert errcode == 0
+    ref_results = ["```fortran90\nINTEGER, PARAMETER :: var_ex1 = 1 - 23\n```"]
+    validate_hover(results, ref_results)
+
+
+def test_hover_parameter_var_mul():
+    """Test that hover parameters display value correctly with
+    multiplication and spaces"""
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    file_path = test_dir / "hover" / "parameters.f90"
+    string += hover_req(file_path, 15, 28)
+    errcode, results = run_request(string, fortls_args=["--sort_keywords"])
+    assert errcode == 0
+    ref_results = ["```fortran90\nINTEGER, PARAMETER :: var_mul1 = 1  *   23\n```"]
+    validate_hover(results, ref_results)
+
+
+def test_hover_parameter_var_div():
+    """Test that hover parameters display value correctly with value of division"""
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    file_path = test_dir / "hover" / "parameters.f90"
+    string += hover_req(file_path, 16, 28)
+    errcode, results = run_request(string, fortls_args=["--sort_keywords"])
+    assert errcode == 0
+    ref_results = ["```fortran90\nINTEGER, PARAMETER :: var_div1 = 1/1\n```"]
+    validate_hover(results, ref_results)
+
+
 def test_hover_parameter_nested():
     """Test that hover parameters using other parameter values works"""
     string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
