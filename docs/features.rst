@@ -100,7 +100,7 @@ Intrinsics Modules
 ------------------
 
 
-- ``ISO_FORTRAN_ENV``, ``IOS_C_BINDING`` GCC 11.2.0
+- ``ISO_FORTRAN_ENV``, ``ISO_C_BINDING`` GCC 11.2.0
 - ``IEEE_EXCEPTIONS``, ``IEEE_ARITHMETIC``, ``IEEE_FEATURES`` GCC 11.2.0
 - OpenMP ``OMP_LIB``, ``OMP_LIB_KINDS`` v5.0
 - OpenACC ``OPENACC``, ``OPENACC_KINDS`` v3.1
