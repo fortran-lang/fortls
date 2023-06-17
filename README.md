@@ -40,7 +40,7 @@ and [Emacs](https://fortls.fortran-lang.org/editor_integration.html#emacs).
   [FORD](https://github.com/Fortran-FOSS-Programmers/ford) styles)
 - Access to multiple intrinsic modules and functions
   - `ISO_FORTRAN_ENV` GCC 11.2.0
-  - `IOS_C_BINDING` GCC 11.2.0
+  - `ISO_C_BINDING` GCC 11.2.0
   - `IEEE_EXCEPTIONS`, `IEEE_ARITHMETIC`, `IEEE_FEATURES` GCC 11.2.0
   - OpenMP `OMP_LIB`, `OMP_LIB_KINDS` v5.0
   - OpenACC `OPENACC`, `OPENACC_KINDS` v3.1
