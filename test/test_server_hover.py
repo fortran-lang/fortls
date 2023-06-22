@@ -122,7 +122,7 @@ def test_hover_parameter_var_mul():
     string += hover_req(file_path, 15, 28)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
     assert errcode == 0
-    ref_results = ["```fortran90\nINTEGER, PARAMETER :: var_mul1 = 1  *   23\n```"]
+    ref_results = ["```fortran90\nINTEGER, PARAMETER :: var_mul1 = 1 * 23\n```"]
     validate_hover(results, ref_results)
 
 
@@ -134,6 +134,20 @@ def test_hover_parameter_var_div():
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
     assert errcode == 0
     ref_results = ["```fortran90\nINTEGER, PARAMETER :: var_div1 = 1/1\n```"]
+    validate_hover(results, ref_results)
+
+
+def test_hover_parameter_var_multiline2():
+    """Test that hover parameters display value correctly with
+    multiplication and spaces. Item 2"""
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    file_path = test_dir / "hover" / "parameters.f90"
+    string += hover_req(file_path, 17, 28)
+    errcode, results = run_request(string, fortls_args=["--sort_keywords"])
+    assert errcode == 0
+    ref_results = [
+        "```fortran90\nINTEGER, PARAMETER :: var_multi2 = 1 * 23 + 2 /1\n```"
+    ]
     validate_hover(results, ref_results)
 
 

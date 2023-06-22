@@ -15,4 +15,7 @@ program params
     integer, parameter :: var_ex1  = 1 - 23
     integer, parameter :: var_mul1  = 1  *   23
     integer, parameter :: var_div1  = 1/1
+    INTEGER, PARAMETER :: var_multi2 = 1 *   &
+                                        23 + &
+                                        2 /1        ! comment
 end program params

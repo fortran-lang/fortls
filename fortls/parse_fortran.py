@@ -1451,7 +1451,7 @@ class FortranFile:
                             _, col = find_word_in_line(line, name)
                             match = FRegex.PARAMETER_VAL.match(line[col:])
                             if match:
-                                var = match.group(1).strip()
+                                var = " ".join(match.group(1).strip().split())
                                 new_var.set_parameter_val(var)
 
                         # Check if the "variable" is external and if so cycle
