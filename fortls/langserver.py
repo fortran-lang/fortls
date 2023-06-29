@@ -89,7 +89,7 @@ class LangServer:
 
         self.sync_type: int = 2 if self.incremental_sync else 1
         self.post_messages = []
-        self.FORTRAN_SRC_EXT_REGEX: Pattern[str] = src_file_exts()
+        self.FORTRAN_SRC_EXT_REGEX: Pattern[str] = src_file_exts(self.incl_suffixes)
         # Intrinsic (re-loaded during initialize)
         (
             self.statements,
