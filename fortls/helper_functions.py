@@ -38,7 +38,7 @@ def expand_name(line: str, char_pos: int) -> str:
     return ""
 
 
-def detect_fixed_format(file_lines: list[str]) -> bool:
+def detect_fixed_format(file_lines: list[str], preproc: bool = False) -> bool:
     """Detect fixed/free format by looking for characters in label columns
     and variable declarations before column 6. Treat intersection format
     files as free format.
@@ -47,6 +47,9 @@ def detect_fixed_format(file_lines: list[str]) -> bool:
     ----------
     file_lines : list[str]
         List of consecutive file lines
+    preproc : bool
+        If true, preprocessor directives (lines starting with '#') will be
+        ignored
 
     Returns
     -------
@@ -68,8 +71,15 @@ def detect_fixed_format(file_lines: list[str]) -> bool:
     Lines wih ampersands are not fixed format
     >>> detect_fixed_format(['trailing line & ! comment'])
     False
+
+    But preprocessor lines might be ignored
+    >>> detect_fixed_format(['#if defined(A) && !defined(B)'], preproc=True)
+    True
     """
     for line in file_lines:
+        # Ignore preprocessor lines
+        if preproc and line.startswith("#"):
+            continue
         if FRegex.FREE_FORMAT_TEST.match(line):
             return False
         tmp_match = FRegex.VAR.match(line)
