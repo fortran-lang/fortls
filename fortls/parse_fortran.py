@@ -2234,6 +2234,10 @@ def preprocess_file(
 
         # Substitute (if any) read in preprocessor macros
         for def_tmp, value in defs_tmp.items():
+            # Skip if the line does not contain the macro at all. This is supposed to
+            # spare the expensive regex-substitution in case we do not need it at all
+            if def_tmp not in line:
+                continue
             def_regex = def_regexes.get(def_tmp)
             if def_regex is None:
                 def_regex = re.compile(rf"\b{def_tmp}\b")
