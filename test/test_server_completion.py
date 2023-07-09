@@ -34,6 +34,7 @@ def test_comp1():
     string += comp_request(file_path, 21, 20)
     string += comp_request(file_path, 21, 42)
     string += comp_request(file_path, 23, 26)
+    string += comp_request(file_path, 24, 28)
     errcode, results = run_request(string, ["--use_signature_help", "-n1"])
     assert errcode == 0
 
@@ -46,6 +47,7 @@ def test_comp1():
         [1, "stretch_vector", "TYPE(scaled_vector)"],
         [6, "scale", "TYPE(scale_type)"],
         [2, "n", "INTEGER(4)"],
+        [1, "val", "REAL(8)"],
         [1, "val", "REAL(8)"],
     )
     assert len(exp_results) == len(results) - 1

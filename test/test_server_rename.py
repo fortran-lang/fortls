@@ -55,7 +55,7 @@ def test_rename_var_across_module():
     """Test renaming objects like variables across modules works"""
     string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
     file_path = test_dir / "test_prog.f08"
-    string += rename_request("new_module_var", file_path, 26, 15)
+    string += rename_request("new_module_var", file_path, 27, 15)
     errcode, results = run_request(string)
     assert errcode == 0
     ref = {}
@@ -63,7 +63,7 @@ def test_rename_var_across_module():
         create("new_module_var", 32, 11, 32, 26)
     ]
     ref[path_to_uri(str(file_path))] = [create("new_module_var", 2, 44, 2, 59)]
-    ref[path_to_uri(str(file_path))].append(create("new_module_var", 26, 8, 26, 23))
+    ref[path_to_uri(str(file_path))].append(create("new_module_var", 27, 8, 27, 23))
 
     check_rename_response(results[1]["changes"], ref)
 

@@ -576,6 +576,8 @@ def get_var_stack(line: str) -> list[str]:
         final_var += line[section.start : section.end]
 
     if final_var is not None:
+        # refuse any spaces in class
+        final_var = "%".join([i.strip() for i in final_var.split("%")])
         final_op_split: list[str] = FRegex.OBJBREAK.split(final_var)
         return final_op_split[-1].split("%")
     else:
