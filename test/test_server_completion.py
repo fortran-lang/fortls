@@ -226,7 +226,7 @@ def test_comp10():
 
 
 def test_comp11():
-    '''Indicate the derived types arguments separated with spaces and types'''
+    """Indicate the derived types arguments separated with spaces and types"""
     string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
     file_path = test_dir / "test_prog.f08"
     string += comp_request(file_path, 6, 25)
