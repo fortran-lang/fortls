@@ -34,7 +34,6 @@ def test_comp1():
     string += comp_request(file_path, 21, 20)
     string += comp_request(file_path, 21, 42)
     string += comp_request(file_path, 23, 26)
-    string += comp_request(file_path, 24, 28)
     errcode, results = run_request(string, ["--use_signature_help", "-n1"])
     assert errcode == 0
 
@@ -47,7 +46,6 @@ def test_comp1():
         [1, "stretch_vector", "TYPE(scaled_vector)"],
         [6, "scale", "TYPE(scale_type)"],
         [2, "n", "INTEGER(4)"],
-        [1, "val", "REAL(8)"],
         [1, "val", "REAL(8)"],
     )
     assert len(exp_results) == len(results) - 1
@@ -221,6 +219,29 @@ def test_comp10():
     exp_results = (
         # subdir/test_vis.f90
         [3, "some_type", "TYPE"],
+    )
+    assert len(exp_results) == len(results) - 1
+    for i, ref in enumerate(exp_results):
+        validate_comp(results[i + 1], ref)
+
+
+def test_comp11():
+    '''Indicate the derived types arguments separated with spaces and types'''
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    file_path = test_dir / "test_prog.f08"
+    string += comp_request(file_path, 6, 25)
+    string += comp_request(file_path, 23, 26)
+    string += comp_request(file_path, 27, 28)
+    string += comp_request(file_path, 28, 30)
+    errcode, results = run_request(string, ["--use_signature_help", "-n1"])
+    assert errcode == 0
+
+    exp_results = (
+        # test_prog.f08
+        [1, "val", "INTEGER(4)"],
+        [1, "val", "REAL(8)"],
+        [1, "val", "REAL(8)"],
+        [1, "val", "REAL(8)"],
     )
     assert len(exp_results) == len(results) - 1
     for i, ref in enumerate(exp_results):

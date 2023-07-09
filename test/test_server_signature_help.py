@@ -27,11 +27,11 @@ def test_subroutine_signature_help():
     """
     string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
     file_path = test_dir / "test_prog.f08"
-    string += sigh_request(file_path, 26, 18)
-    string += sigh_request(file_path, 26, 20)
-    string += sigh_request(file_path, 26, 22)
-    string += sigh_request(file_path, 26, 27)
-    string += sigh_request(file_path, 26, 29)
+    string += sigh_request(file_path, 25, 18)
+    string += sigh_request(file_path, 25, 20)
+    string += sigh_request(file_path, 25, 22)
+    string += sigh_request(file_path, 25, 27)
+    string += sigh_request(file_path, 25, 29)
     errcode, results = run_request(string)
     assert errcode == 0
 

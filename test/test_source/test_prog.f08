@@ -22,8 +22,9 @@ CALL stretch_vector%create(n)
 CALL stretch_vector%set_scale(loc_vector%norm(self))
 x = stretch_vector%norm()
 y = stretch_vector%scale%val
-y = stretch_vector%scale % val
 !
 CALL test_sig_Sub(a,b,opt2=c,opt3=d)
 PRINT*, module_variable
+y = stretch_vector%scale % val
+y = stretch_vector % scale	%	val
 END PROGRAM test_program
