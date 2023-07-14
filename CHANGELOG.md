@@ -18,6 +18,9 @@
 
 ### Changed
 
+- Changed `--incl_suffixes` option to faithfully match the suffixes that are
+  provided in the option, without performing any type of modification.
+  ([#300](https://github.com/fortran-lang/fortls/issues/300))
 - Changed the completion signature to include the full Markdown documentation
   for the completion item.
   ([#219](https://github.com/fortran-lang/fortls/issues/219))

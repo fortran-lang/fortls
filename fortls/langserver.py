@@ -61,7 +61,7 @@ from fortls.objects import (
     get_use_tree,
 )
 from fortls.parse_fortran import FortranFile, get_line_context
-from fortls.regex_patterns import src_file_exts
+from fortls.regex_patterns import create_src_file_exts_str
 from fortls.version import __version__
 
 # Global regexes
@@ -89,7 +89,9 @@ class LangServer:
 
         self.sync_type: int = 2 if self.incremental_sync else 1
         self.post_messages = []
-        self.FORTRAN_SRC_EXT_REGEX: Pattern[str] = src_file_exts(self.incl_suffixes)
+        self.FORTRAN_SRC_EXT_REGEX: Pattern[str] = create_src_file_exts_str(
+            self.incl_suffixes
+        )
         # Intrinsic (re-loaded during initialize)
         (
             self.statements,
@@ -1569,7 +1571,7 @@ class LangServer:
         self.source_dirs = set(config_dict.get("source_dirs", self.source_dirs))
         self.incl_suffixes = set(config_dict.get("incl_suffixes", self.incl_suffixes))
         # Update the source file REGEX
-        self.FORTRAN_SRC_EXT_REGEX = src_file_exts(self.incl_suffixes)
+        self.FORTRAN_SRC_EXT_REGEX = create_src_file_exts_str(self.incl_suffixes)
         self.excl_suffixes = set(config_dict.get("excl_suffixes", self.excl_suffixes))
 
     def _load_config_file_general(self, config_dict: dict) -> None:

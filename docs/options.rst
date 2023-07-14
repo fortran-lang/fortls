@@ -102,11 +102,15 @@ incl_suffixes
 .. code-block:: json
 
    {
-      "incl_suffixes": [".h", ".FYP"]
+      "incl_suffixes": [".h", ".FYP", "inc"]
    }
 
 ``fortls`` will parse only files with ``incl_suffixes`` extensions found in
-``source_dirs``. By default ``incl_suffixes`` are defined as
+``source_dirs``. Using the above example, ``fortls`` will match files by the
+``file.h`` and ``file.FYP``, but not ``file.fyp`` or ``filefyp``.
+It will also match ``file.inc`` and ``fileinc`` but not ``file.inc2``.
+
+By default, ``incl_suffixes`` are defined as
 .F .f .F03 .f03 .F05 .f05 .F08 .f08 .F18 .f18 .F77 .f77 .F90 .f90 .F95 .f95 .FOR .for .FPP .fpp.
 Additional source file extensions can be defined in ``incl_suffixes``.
 
