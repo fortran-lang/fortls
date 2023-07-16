@@ -61,7 +61,7 @@
     },
     "incl_suffixes": {
       "title": "Incl Suffixes",
-      "description": "Consider additional file extensions to the default (default: F,F77,F90,F95,F03,F08,FOR,FPP (lower & upper casing))",
+      "description": "Consider additional file extensions to the default (default: .F, .F77, .F90, .F95, .F03, .F08, .FOR, .FPP (lower & upper casing))",
       "default": [],
       "type": "array",
       "items": {},

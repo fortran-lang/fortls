@@ -126,7 +126,7 @@ def cli(name: str = "fortls") -> argparse.ArgumentParser:
         metavar="SUFFIXES",
         help=(
             "Consider additional file extensions to the default (default: "
-            "F,F77,F90,F95,F03,F08,FOR,FPP (lower & upper casing))"
+            ".F, .F77, .F90, .F95, .F03, .F08, .FOR, .FPP (lower & upper casing))"
         ),
     )
     group.add_argument(
