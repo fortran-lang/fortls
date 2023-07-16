@@ -3660,23 +3660,54 @@ This is to avoid parsing as keywords variables named pure, impure, etc.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="fortls.regex_patterns.src_file_exts">
-<span class="sig-prename descclassname"><span class="pre">fortls.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">src_file_exts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_exts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.regex_patterns.src_file_exts" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a REGEX for which file extensions the Language Server should parse
-Default extensions are
-F F03 F05 F08 F18 F77 F90 F95 FOR FPP f f03 f05 f08 f18 f77 f90 f95 for fpp</p>
+<dt class="sig sig-object py" id="fortls.regex_patterns.create_src_file_exts_regex">
+<span class="sig-prename descclassname"><span class="pre">fortls.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">create_src_file_exts_regex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_exts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.regex_patterns.create_src_file_exts_regex" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a REGEX for which sources the Language Server should parse.</p>
+<p>Default extensions are (case insensitive):
+F F03 F05 F08 F18 F77 F90 F95 FOR FPP</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>input_exts</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em><em>, </em><em>optional</em>) – Additional Fortran, by default []</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A compiled regular expression, by default
-‘.(F|F03|F05|F08|F18|F77|F90|F95|FOR|FPP|f|f03|f05|f08|f18|f77|f90|f95|for|fpp)?’</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Pattern[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+<dd class="field-odd"><p><strong>input_exts</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em><em>, </em><em>optional</em>) – Additional list of file extensions to parse, in Python REGEX format
+that means special characters must be escaped
+, by default []</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span> <span class="o">=</span> <span class="n">create_src_file_exts_regex</span><span class="p">([</span><span class="sa">r</span><span class="s2">&quot;\.fypp&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\.inc&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;test.fypp&quot;</span><span class="p">)</span>
+<span class="go">&lt;re.Match object; span=(4, 9), match=&#39;.fypp&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;test.inc&quot;</span><span class="p">)</span>
+<span class="go">&lt;re.Match object; span=(4, 8), match=&#39;.inc&#39;&gt;</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span> <span class="o">=</span> <span class="n">create_src_file_exts_regex</span><span class="p">([</span><span class="sa">r</span><span class="s2">&quot;\.inc.*&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;test.inc.1&quot;</span><span class="p">)</span>
+<span class="go">&lt;re.Match object; span=(4, 10), match=&#39;.inc.1&#39;&gt;</span>
+</pre></div>
+</div>
+<p>Invalid regex expressions will cause the function to revert to the default
+extensions</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span> <span class="o">=</span> <span class="n">create_src_file_exts_regex</span><span class="p">([</span><span class="s2">&quot;*.inc&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;test.inc&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A compiled regular expression for matching file extensions</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pattern[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fortls.regex_patterns.create_src_file_exts_str">
+<span class="sig-prename descclassname"><span class="pre">fortls.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">create_src_file_exts_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_exts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.regex_patterns.create_src_file_exts_str" title="Permalink to this definition">#</a></dt>
+<dd><p>This is a version of create_src_file_exts_regex that takes a list
+sanitises the list of input_exts before compiling the regex.
+For more info see create_src_file_exts_regex</p>
 </dd></dl>
 
 </section>
@@ -4351,7 +4382,8 @@ F F03 F05 F08 F18 F77 F90 F95 FOR FPP f f03 f05 f08 f18 f77 f90 f95 for fpp</p>
 <li><a class="reference internal" href="#fortls.regex_patterns.FortranRegularExpressions.WORD"><code class="docutils literal notranslate"><span class="pre">FortranRegularExpressions.WORD</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#fortls.regex_patterns.src_file_exts"><code class="docutils literal notranslate"><span class="pre">src_file_exts()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.create_src_file_exts_regex"><code class="docutils literal notranslate"><span class="pre">create_src_file_exts_regex()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.regex_patterns.create_src_file_exts_str"><code class="docutils literal notranslate"><span class="pre">create_src_file_exts_str()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-fortls.version">fortls.version module</a></li>
