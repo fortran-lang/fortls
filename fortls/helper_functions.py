@@ -553,6 +553,9 @@ def get_var_stack(line: str) -> list[str]:
     >>> get_var_stack('myarray(i)%foo%bar')
     ['myarray', 'foo', 'bar']
 
+    >>> get_var_stack('myarray( i ) % foo   % bar')
+    ['myarray', 'foo', 'bar']
+
     In this case it will operate at the end of the string i.e. ``'this%foo'``
 
     >>> get_var_stack('CALL self%method(this%foo')
