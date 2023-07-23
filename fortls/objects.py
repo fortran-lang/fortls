@@ -897,6 +897,8 @@ class Submodule(Module):
                             if file_scope is child_old:
                                 child.file_ast.scope_list[j] = child
                     if child.get_type() == prototype.get_type():
+                        # Link the interface with the implementation
+                        prototype.link_obj = child
                         prototype.resolve_link(obj_tree)
                         child.copy_interface(prototype)
                         break
@@ -922,6 +924,7 @@ class Subroutine(Scope):
         self.in_children: list = []
         self.missing_args: list = []
         self.mod_scope: bool = mod_flag
+        self.link_obj: Subroutine | Function | None = None
 
     def is_mod_scope(self):
         return self.mod_scope

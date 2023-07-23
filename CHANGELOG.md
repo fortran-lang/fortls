@@ -32,6 +32,8 @@
 - Fixed bug where type fields or methods were not detected if spaces were
   used around `%`
   ([#286](https://github.com/fortran-lang/fortls/issues/286))
+- Fixed bug where Go To Implementation would not work for submodules
+  ([#74](https://github.com/fortran-lang/fortls/issues/74))
 - Fixed bug where `associate` blocks for variables pointing to function results
   where not properly resolved
   ([#269](https://github.com/fortran-lang/fortls/issues/269))

@@ -1165,6 +1165,10 @@ class LangServer:
             impl_obj = var_obj.link_obj
             if (impl_obj is not None) and (impl_obj.file_ast.file is not None):
                 return self._create_ref_link(impl_obj)
+        elif var_obj.parent.get_type() == INTERFACE_TYPE_ID:
+            # Find the first implementation of the interface
+            if var_obj.link_obj is not None:
+                return self._create_ref_link(var_obj.link_obj)
         return None
 
     def serve_rename(self, request: dict):
