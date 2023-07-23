@@ -829,6 +829,10 @@ True</p>
 <span class="go">[&#39;myarray&#39;, &#39;foo&#39;, &#39;bar&#39;]</span>
 </pre></div>
 </div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_var_stack</span><span class="p">(</span><span class="s1">&#39;myarray( i ) </span><span class="si">% f</span><span class="s1">oo   % bar&#39;</span><span class="p">)</span>
+<span class="go">[&#39;myarray&#39;, &#39;foo&#39;, &#39;bar&#39;]</span>
+</pre></div>
+</div>
 <p>In this case it will operate at the end of the string i.e. <code class="docutils literal notranslate"><span class="pre">'this%foo'</span></code></p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_var_stack</span><span class="p">(</span><span class="s1">&#39;CALL self%method(this</span><span class="si">%f</span><span class="s1">oo&#39;</span><span class="p">)</span>
 <span class="go">[&#39;this&#39;, &#39;foo&#39;]</span>
