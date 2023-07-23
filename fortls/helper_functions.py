@@ -553,6 +553,9 @@ def get_var_stack(line: str) -> list[str]:
     >>> get_var_stack('myarray(i)%foo%bar')
     ['myarray', 'foo', 'bar']
 
+    >>> get_var_stack('myarray( i ) % foo   % bar')
+    ['myarray', 'foo', 'bar']
+
     In this case it will operate at the end of the string i.e. ``'this%foo'``
 
     >>> get_var_stack('CALL self%method(this%foo')
@@ -569,13 +572,14 @@ def get_var_stack(line: str) -> list[str]:
     # Continuation of variable after paren requires '%' character
     iLast = 0
     for i, section in enumerate(sections):
-        if not line[section.start : section.end].startswith("%"):
+        if not line[section.start : section.end].strip().startswith("%"):
             iLast = i
     final_var = ""
     for section in sections[iLast:]:
         final_var += line[section.start : section.end]
 
     if final_var is not None:
+        final_var = "%".join([i.strip() for i in final_var.split("%")])
         final_op_split: list[str] = FRegex.OBJBREAK.split(final_var)
         return final_op_split[-1].split("%")
     else:

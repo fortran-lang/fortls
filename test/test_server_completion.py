@@ -225,6 +225,29 @@ def test_comp10():
         validate_comp(results[i + 1], ref)
 
 
+def test_comp11():
+    """Indicate the derived types arguments separated with spaces and types"""
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    file_path = test_dir / "test_prog.f08"
+    string += comp_request(file_path, 23, 26)
+    string += comp_request(file_path, 27, 28)
+    string += comp_request(file_path, 28, 30)
+    string += comp_request(file_path, 29, 30)
+    errcode, results = run_request(string, ["--use_signature_help", "-n1"])
+    assert errcode == 0
+
+    exp_results = (
+        # test_prog.f08
+        [1, "val", "REAL(8)"],
+        [1, "val", "REAL(8)"],
+        [1, "val", "REAL(8)"],
+        [1, "val", "REAL(8)"],
+    )
+    assert len(exp_results) == len(results) - 1
+    for i, ref in enumerate(exp_results):
+        validate_comp(results[i + 1], ref)
+
+
 def test_comp_import_host_association():
     string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
     file_path = test_dir / "test_import.f90"
