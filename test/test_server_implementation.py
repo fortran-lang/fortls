@@ -75,3 +75,18 @@ def test_implementation_no_file():
     errcode, results = run_request(string, ["-n", "1"])
     assert errcode == 0
     assert results[1] is None
+
+
+def test_implementation_submodule():
+    """Go to implementation for submodule"""
+    root = test_dir / "imp"
+    string = write_rpc_request(1, "initialize", {"rootPath": str(root)})
+    file_path = root / "submodule.f90"
+    string += imp_request(file_path, 5, 30)
+    string += imp_request(file_path, 8, 30)
+    string += imp_request(file_path, 9, 30)
+    errcode, results = run_request(string, ["-n", "1"])
+    assert errcode == 0
+    assert results[1] == create(str(root / "submodule.f90"), 19, 20, 34)
+    assert results[2] == create(str(root / "submodule.f90"), 19, 20, 34)
+    assert results[3] is None
