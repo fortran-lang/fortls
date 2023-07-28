@@ -42,10 +42,17 @@ def get_use_tree(
     scope: Scope,
     use_dict: dict[str, Use | Import],
     obj_tree: dict,
-    only_list: set[str] = set(),
-    rename_map: dict[str, str] = {},
-    curr_path: list[str] = [],
+    only_list: list[str] = None,
+    rename_map: dict[str, str] = None,
+    curr_path: list[str] = None,
 ):
+    if only_list is None:
+        only_list = set()
+    if rename_map is None:
+        rename_map = {}
+    if curr_path is None:
+        curr_path = []
+
     def intersect_only(use_stmnt: Use | Import):
         tmp_list = []
         tmp_map = rename_map.copy()
@@ -318,10 +325,12 @@ class Use:
     def __init__(
         self,
         mod_name: str,
-        only_list: set[str] = set(),
+        only_list: set[str] = None,
         rename_map: dict[str, str] = None,
-        line_number: int | None = 0,
+        line_number: int = 0,
     ):
+        if only_list is None:
+            only_list = set()
         if rename_map is None:
             rename_map = {}
         self.mod_name: str = mod_name.lower()
@@ -364,10 +373,12 @@ class Import(Use):
         self,
         name: str,
         import_type: ImportTypes = ImportTypes.DEFAULT,
-        only_list: set[str] = set(),
+        only_list: set[str] = None,
         rename_map: dict[str, str] = None,
         line_number: int = 0,
     ):
+        if only_list is None:
+            only_list = set()
         if rename_map is None:
             rename_map = {}
         super().__init__(name, only_list, rename_map, line_number)
