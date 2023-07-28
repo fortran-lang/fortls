@@ -586,6 +586,43 @@ def get_var_stack(line: str) -> list[str]:
         return None
 
 
+def get_placeholders(arg_list: list[str]) -> tuple[str, str]:
+    """
+    Function used to generate placeholders for snippets
+
+    Parameters
+    ----------
+    arg_list : list[str]
+        Method arguments list
+
+    Returns
+    -------
+    Tuple[str, str]
+        Tuple of arguments as a string and snippet string
+
+    Examples
+    --------
+    >>> get_placeholders(['x', 'y'])
+    ('(x, y)', '(${1:x}, ${2:y})')
+
+    >>> get_placeholders(['x=1', 'y=2'])
+    ('(x=1, y=2)', '(x=${1:1}, y=${2:2})')
+
+    >>> get_placeholders(['x', 'y=2', 'z'])
+    ('(x, y=2, z)', '(${1:x}, y=${2:2}, ${3:z})')
+    """
+    place_holders = []
+    for i, arg in enumerate(arg_list):
+        opt_split = arg.split("=")
+        if len(opt_split) > 1:
+            place_holders.append(f"{opt_split[0]}=${{{i+1}:{opt_split[1]}}}")
+        else:
+            place_holders.append(f"${{{i+1}:{arg}}}")
+    arg_str = f"({', '.join(arg_list)})"
+    arg_snip = f"({', '.join(place_holders)})"
+    return arg_str, arg_snip
+
+
 def fortran_md(code: str, docs: str | None):
     """Convert Fortran code to markdown
 

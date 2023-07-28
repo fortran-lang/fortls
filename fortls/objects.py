@@ -32,6 +32,7 @@ from fortls.helper_functions import (
     fortran_md,
     get_keywords,
     get_paren_substring,
+    get_placeholders,
     get_var_stack,
 )
 from fortls.json_templates import diagnostic_json, location_json, range_json
@@ -496,19 +497,6 @@ class FortranObj:
 
     def get_snippet(self, name_replace=None, drop_arg=-1):
         return None, None
-
-    @staticmethod
-    def get_placeholders(arg_list: list[str]):
-        place_holders = []
-        for i, arg in enumerate(arg_list):
-            opt_split = arg.split("=")
-            if len(opt_split) > 1:
-                place_holders.append(f"{opt_split[0]}=${{{i+1}:{opt_split[1]}}}")
-            else:
-                place_holders.append(f"${{{i+1}:{arg}}}")
-        arg_str = f"({', '.join(arg_list)})"
-        arg_snip = f"({', '.join(place_holders)})"
-        return arg_str, arg_snip
 
     def get_documentation(self):
         return self.doc_str
@@ -1017,7 +1005,7 @@ class Subroutine(Scope):
             del arg_list[drop_arg]
         arg_snip = None
         if len(arg_list) > 0:
-            arg_str, arg_snip = self.get_placeholders(arg_list)
+            arg_str, arg_snip = get_placeholders(arg_list)
         else:
             arg_str = "()"
         name = name_replace if name_replace is not None else self.name

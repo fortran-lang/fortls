@@ -5,7 +5,7 @@ import json
 import os
 import pathlib
 
-from fortls.helper_functions import fortran_md, map_keywords
+from fortls.helper_functions import fortran_md, get_placeholders, map_keywords
 from fortls.objects import (
     FortranAST,
     FortranObj,
@@ -67,7 +67,7 @@ class Intrinsic(FortranObj):
             arg_snip = None
         else:
             arg_list = self.args.split(",")
-            arg_str, arg_snip = self.get_placeholders(arg_list)
+            arg_str, arg_snip = get_placeholders(arg_list)
         name = name_replace if name_replace is not None else self.name
         snippet = name + arg_snip if arg_snip is not None else None
         return name + arg_str, snippet
