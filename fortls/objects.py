@@ -195,7 +195,7 @@ def find_in_scope(
                 # Check if name is in only list
                 if var_name_lower in use_stmnt.only_list:
                     return ImportTypes.ONLY
-            # Get Get the parent scope
+            # Get the parent scope
             elif use_stmnt.import_type == ImportTypes.ALL:
                 return ImportTypes.ALL
             # Skip looking for parent scope
