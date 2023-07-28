@@ -10,7 +10,7 @@ def range_json(sln: int, sch: int, eln: int = None, ech: int = None):
     }
 
 
-def diagnostic_json(sln: int, sch: int, eln: int, ech: int, msg: str, sev: str):
+def diagnostic_json(sln: int, sch: int, eln: int, ech: int, msg: str, sev: int):
     return {**range_json(sln, sch, eln, ech), "message": msg, "severity": sev}
 
 
