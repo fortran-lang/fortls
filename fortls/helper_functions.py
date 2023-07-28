@@ -100,10 +100,9 @@ def strip_line_label(line: str) -> tuple[str, str | None]:
     match = FRegex.LINE_LABEL.match(line)
     if match is None:
         return line, None
-    else:
-        line_label = match.group(1)
-        out_str = line[: match.start(1)] + " " * len(line_label) + line[match.end(1) :]
-        return out_str, line_label
+    line_label = match.group(1)
+    out_str = line[: match.start(1)] + " " * len(line_label) + line[match.end(1) :]
+    return out_str, line_label
 
 
 def strip_strings(in_line: str, maintain_len: bool = False) -> str:
@@ -172,7 +171,7 @@ def separate_def_list(test_str: str) -> list[str] | None:
             if curr_str != "":
                 def_list.append(curr_str)
                 curr_str = ""
-            elif (curr_str == "") and (len(def_list) == 0):
+            elif not def_list:
                 return None
             continue
         curr_str += char
@@ -198,17 +197,20 @@ def find_word_in_line(line: str, word: str) -> Range:
         start and end positions (indices) of the word if not found it returns
         -1, len(word) -1
     """
-    i = -1
-    for poss_name in FRegex.WORD.finditer(line):
-        if poss_name.group() == word:
-            i = poss_name.start()
-            break
+    i = next(
+        (
+            poss_name.start()
+            for poss_name in FRegex.WORD.finditer(line)
+            if poss_name.group() == word
+        ),
+        -1,
+    )
     # TODO: if i == -1: return None makes more sense
     return Range(i, i + len(word))
 
 
 def find_paren_match(string: str) -> int:
-    """Find matching closing parenthesis **from an already open parenthesis scope**
+    """Find matching closing parenthesis from an already open parenthesis scope
     by forward search of the string, returns -1 if no match is found
 
     Parameters
@@ -237,7 +239,6 @@ def find_paren_match(string: str) -> int:
     -1
     """
     paren_count = 1
-    ind = -1
     for i, char in enumerate(string):
         if char == "(":
             paren_count += 1
@@ -245,7 +246,7 @@ def find_paren_match(string: str) -> int:
             paren_count -= 1
         if paren_count == 0:
             return i
-    return ind
+    return -1
 
 
 def get_line_prefix(
@@ -282,17 +283,16 @@ def get_line_prefix(
     col += len(prepend_string)
     line_prefix = curr_line[:col].lower()
     # Ignore string literals
-    if qs:
-        if (line_prefix.find("'") > -1) or (line_prefix.find('"') > -1):
-            sq_count = 0
-            dq_count = 0
-            for char in line_prefix:
-                if (char == "'") and (dq_count % 2 == 0):
-                    sq_count += 1
-                elif (char == '"') and (sq_count % 2 == 0):
-                    dq_count += 1
-            if (dq_count % 2 == 1) or (sq_count % 2 == 1):
-                return None
+    if qs and ((line_prefix.find("'") > -1) or (line_prefix.find('"') > -1)):
+        sq_count = 0
+        dq_count = 0
+        for char in line_prefix:
+            if (char == "'") and (dq_count % 2 == 0):
+                sq_count += 1
+            elif (char == '"') and (sq_count % 2 == 0):
+                dq_count += 1
+        if (dq_count % 2 == 1) or (sq_count % 2 == 1):
+            return None
     return line_prefix
 
 
@@ -329,14 +329,12 @@ def resolve_globs(glob_path: str, root_path: str = None) -> list[str]:
     >>> resolve_globs('test') == [str(pathlib.Path(os.getcwd()) / 'test')]
     True
     """
-    # Resolve absolute paths i.e. not in our root_path
-    if os.path.isabs(glob_path) or not root_path:
-        p = Path(glob_path).resolve()
-        root = p.anchor  # drive letter + root path
-        rel = str(p.relative_to(root))  # contains glob pattern
-        return [str(p.resolve()) for p in Path(root).glob(rel)]
-    else:
+    if not os.path.isabs(glob_path) and root_path:
         return [str(p.resolve()) for p in Path(root_path).resolve().glob(glob_path)]
+    p = Path(glob_path).resolve()
+    root = p.anchor  # drive letter + root path
+    rel = str(p.relative_to(root))  # contains glob pattern
+    return [str(p.resolve()) for p in Path(root).glob(rel)]
 
 
 def only_dirs(paths: list[str]) -> list[str]:
@@ -406,7 +404,9 @@ def map_keywords(keywords: list[str]):
     return mapped_keywords, keyword_info
 
 
-def get_keywords(keywords: list, keyword_info: dict = {}):
+def get_keywords(keywords: list, keyword_info: dict = None):
+    if keyword_info is None:
+        keyword_info = {}
     keyword_strings = []
     for keyword_id in keywords:
         string_rep = KEYWORD_LIST[keyword_id]
@@ -461,10 +461,7 @@ def get_paren_substring(string: str) -> str | None:
     """
     i1 = string.find("(")
     i2 = string.rfind(")")
-    if -1 < i1 < i2:
-        return string[i1 + 1 : i2]
-    else:
-        return None
+    return string[i1 + 1 : i2] if -1 < i1 < i2 else None
 
 
 def get_paren_level(line: str) -> tuple[str, list[Range]]:
@@ -496,7 +493,7 @@ def get_paren_level(line: str) -> tuple[str, list[Range]]:
     ('', [Range(start=0, end=0)])
 
     """
-    if line == "":
+    if not line:
         return "", [Range(0, 0)]
     level = 0
     in_string = False
@@ -526,9 +523,7 @@ def get_paren_level(line: str) -> tuple[str, list[Range]]:
     if level == 0:
         sections.append(Range(i, i1))
     sections.reverse()
-    out_string = ""
-    for section in sections:
-        out_string += line[section.start : section.end]
+    out_string = "".join(line[section.start : section.end] for section in sections)
     return out_string, sections
 
 
@@ -564,7 +559,7 @@ def get_var_stack(line: str) -> list[str]:
     >>> get_var_stack('')
     ['']
     """
-    if len(line) == 0:
+    if not line:
         return [""]
     final_var, sections = get_paren_level(line)
     if final_var == "":
@@ -574,10 +569,9 @@ def get_var_stack(line: str) -> list[str]:
     for i, section in enumerate(sections):
         if not line[section.start : section.end].strip().startswith("%"):
             iLast = i
-    final_var = ""
-    for section in sections[iLast:]:
-        final_var += line[section.start : section.end]
-
+    final_var = "".join(
+        line[section.start : section.end] for section in sections[iLast:]
+    )
     if final_var is not None:
         final_var = "%".join([i.strip() for i in final_var.split("%")])
         final_op_split: list[str] = FRegex.OBJBREAK.split(final_var)
