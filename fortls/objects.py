@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import copy
 import os
 import re
@@ -72,7 +73,7 @@ def get_use_tree(
         if type(use_stmnt) is Import and use_stmnt.import_type is ImportTypes.NONE:
             continue
         # Intersect parent and current ONLY list and renaming
-        if len(only_list) == 0:
+        if not only_list:
             merged_use_list = use_stmnt.only_list.copy()
             merged_rename = use_stmnt.rename_map.copy()
         elif len(use_stmnt.only_list) == 0:
@@ -123,10 +124,8 @@ def get_use_tree(
                     only_list=set(merged_use_list),
                     rename_map=merged_rename,
                 )
-                try:
+                with contextlib.suppress(AttributeError):
                     use_dict[use_stmnt.mod_name].scope = scope.parent.parent
-                except AttributeError:
-                    pass
         # Do not descent the IMPORT tree, because it does not exist
         if type(use_stmnt) is Import:
             continue
@@ -161,9 +160,9 @@ def find_in_scope(
                 tmp_var = check_scope(child, var_name_lower, filter_public)
                 if tmp_var is not None:
                     return tmp_var
-            if filter_public:
-                if (child.vis < 0) or ((local_scope.def_vis < 0) and (child.vis <= 0)):
-                    continue
+            is_private = child.vis < 0 or (local_scope.def_vis < 0 and child.vis <= 0)
+            if filter_public and is_private:
+                continue
             if child.name.lower() == var_name_lower:
                 # For functions with an implicit result() variable the name
                 # of the function is used. If we are hovering over the function
@@ -183,7 +182,7 @@ def find_in_scope(
 
     def check_import_scope(scope: Scope, var_name_lower: str):
         for use_stmnt in scope.use:
-            if not type(use_stmnt) is Import:
+            if type(use_stmnt) is not Import:
                 continue
             if use_stmnt.import_type == ImportTypes.ONLY:
                 # Check if name is in only list
@@ -227,9 +226,8 @@ def find_in_scope(
         if use_mod.lower() == var_name_lower:
             return use_scope
         # Filter children by only_list
-        if len(use_info.only_list) > 0:
-            if var_name_lower not in use_info.only_list:
-                continue
+        if len(use_info.only_list) > 0 and var_name_lower not in use_info.only_list:
+            continue
         mod_name = use_info.rename_map.get(var_name_lower, var_name_lower)
         tmp_var = check_scope(use_scope, mod_name, filter_public=True)
         if tmp_var is not None:
@@ -321,9 +319,11 @@ class Use:
         self,
         mod_name: str,
         only_list: set[str] = set(),
-        rename_map: dict[str, str] = {},
+        rename_map: dict[str, str] = None,
         line_number: int | None = 0,
     ):
+        if rename_map is None:
+            rename_map = {}
         self.mod_name: str = mod_name.lower()
         self._line_no: int = line_number
         self.only_list: set[str] = only_list
@@ -341,14 +341,13 @@ class Use:
     def line_number(self, line_number: int):
         self._line_no = line_number
 
-    def rename(self, only_list: list[str] = []):
+    def rename(self, only_list: list[str] = None):
         """Rename ONLY:, statements"""
+        if only_list is None:
+            only_list = []
         if not only_list:
             only_list = self.only_list
-        renamed_only_list = []
-        for only_name in only_list:
-            renamed_only_list.append(self.rename_map.get(only_name, only_name))
-        return renamed_only_list
+        return [self.rename_map.get(only_name, only_name) for only_name in only_list]
 
 
 class ImportTypes:
@@ -366,9 +365,11 @@ class Import(Use):
         name: str,
         import_type: ImportTypes = ImportTypes.DEFAULT,
         only_list: set[str] = set(),
-        rename_map: dict[str, str] = {},
+        rename_map: dict[str, str] = None,
         line_number: int = 0,
     ):
+        if rename_map is None:
+            rename_map = {}
         super().__init__(name, only_list, rename_map, line_number)
         self.import_type = import_type
         self._scope: Scope | Module | None = None
@@ -526,11 +527,10 @@ class FortranObj:
     def get_implicit(self):
         if self.parent is None:
             return self.implicit_vars
-        else:
-            parent_implicit = self.parent.get_implicit()
-            if (self.implicit_vars is not None) or (parent_implicit is None):
-                return self.implicit_vars
-            return parent_implicit
+        parent_implicit = self.parent.get_implicit()
+        if (self.implicit_vars is not None) or (parent_implicit is None):
+            return self.implicit_vars
+        return parent_implicit
 
     def get_actions(self, sline, eline):
         return None
@@ -581,7 +581,7 @@ class Scope(FortranObj):
         self.implicit_line = None
         self.FQSN: str = self.name.lower()
         if file_ast.enc_scope_name is not None:
-            self.FQSN = file_ast.enc_scope_name.lower() + "::" + self.name.lower()
+            self.FQSN = f"{file_ast.enc_scope_name.lower()}::{self.name.lower()}"
 
     def copy_from(self, copy_source: Scope):
         # Pass the reference, we don't want shallow copy since that would still
@@ -613,7 +613,7 @@ class Scope(FortranObj):
 
     def update_fqsn(self, enc_scope=None):
         if enc_scope is not None:
-            self.FQSN = enc_scope.lower() + "::" + self.name.lower()
+            self.FQSN = f"{enc_scope.lower()}::{self.name.lower()}"
         else:
             self.FQSN = self.name.lower()
         for child in self.children:
@@ -623,18 +623,17 @@ class Scope(FortranObj):
         self.members.append(member)
 
     def get_children(self, public_only=False):
-        if public_only:
-            pub_children = []
-            for child in self.children:
-                if (child.vis < 0) or ((self.def_vis < 0) and (child.vis <= 0)):
-                    continue
-                if child.name.startswith("#GEN_INT"):
-                    pub_children.append(child)
-                    continue
-                pub_children.append(child)
-            return pub_children
-        else:
+        if not public_only:
             return copy.copy(self.children)
+        pub_children = []
+        for child in self.children:
+            if (child.vis < 0) or ((self.def_vis < 0) and (child.vis <= 0)):
+                continue
+            if child.name.startswith("#GEN_INT"):
+                pub_children.append(child)
+                continue
+            pub_children.append(child)
+        return pub_children
 
     def check_definitions(self, obj_tree):
         """Check for definition errors in scope"""
@@ -663,13 +662,11 @@ class Scope(FortranObj):
             else:
                 contains_line = self.contains_start
         # Detect interface definitions
-        is_interface = False
-        if (
-            (self.parent is not None)
-            and (self.parent.get_type() == INTERFACE_TYPE_ID)
-            and (not self.is_mod_scope())
-        ):
-            is_interface = True
+        is_interface = (
+            self.parent is not None
+            and self.parent.get_type() == INTERFACE_TYPE_ID
+            and not self.is_mod_scope()
+        )
         errors = []
         known_types = {}
         for child in self.children:
@@ -698,21 +695,20 @@ class Scope(FortranObj):
             ):
                 continue
             # Check other variables in current scope
-            if child.FQSN in FQSN_dict:
-                if line_number > FQSN_dict[child.FQSN]:
-                    new_diag = Diagnostic(
-                        line_number,
-                        message=f'Variable "{child.name}" declared twice in scope',
-                        severity=1,
-                        find_word=child.name,
-                    )
-                    new_diag.add_related(
-                        path=self.file_ast.path,
-                        line=FQSN_dict[child.FQSN],
-                        message="First declaration",
-                    )
-                    errors.append(new_diag)
-                    continue
+            if child.FQSN in FQSN_dict and line_number > FQSN_dict[child.FQSN]:
+                new_diag = Diagnostic(
+                    line_number,
+                    message=f'Variable "{child.name}" declared twice in scope',
+                    severity=1,
+                    find_word=child.name,
+                )
+                new_diag.add_related(
+                    path=self.file_ast.path,
+                    line=FQSN_dict[child.FQSN],
+                    message="First declaration",
+                )
+                errors.append(new_diag)
+                continue
             # Check for masking from parent scope in subroutines, functions, and blocks
             if (self.parent is not None) and (
                 self.get_type() in (SUBROUTINE_TYPE_ID, FUNCTION_TYPE_ID, BLOCK_TYPE_ID)
@@ -809,10 +805,8 @@ class Module(Scope):
         doc_str = self.get_documentation()
         return hover, doc_str
 
-    def check_valid_parent(self):
-        if self.parent is not None:
-            return False
-        return True
+    def check_valid_parent(self) -> bool:
+        return self.parent is None
 
 
 class Include(Scope):
@@ -861,47 +855,57 @@ class Submodule(Module):
         return True
 
     def resolve_link(self, obj_tree):
+        def get_ancestor_interfaces(ancestor_children: list[FortranObj]):
+            interfaces = []
+            for child in ancestor_children:
+                if child.get_type() != INTERFACE_TYPE_ID:
+                    continue
+                for interface in child.children:
+                    interface_type = interface.get_type()
+                    if (
+                        interface_type
+                        in (SUBROUTINE_TYPE_ID, FUNCTION_TYPE_ID, BASE_TYPE_ID)
+                    ) and interface.is_mod_scope():
+                        interfaces.append(interface)
+            return interfaces
+
+        def create_child_from_prototype(child: Scope, interface: Interface):
+            if interface.get_type() == SUBROUTINE_TYPE_ID:
+                return Subroutine(child.file_ast, child.sline, child.name)
+            elif interface.get_type() == FUNCTION_TYPE_ID:
+                return Function(child.file_ast, child.sline, child.name)
+            else:
+                raise ValueError(f"Unsupported interface type: {interface.get_type()}")
+
+        def replace_child_in_scope_list(child: Scope, child_old: Scope):
+            for i, file_scope in enumerate(child.file_ast.scope_list):
+                if file_scope is child_old:
+                    child.file_ast.scope_list[i] = child
+            return child
+
         # Link subroutine/function implementations to prototypes
         if self.ancestor_obj is None:
             return
-        # Grab ancestor interface definitions (function/subroutine only)
-        ancestor_interfaces = []
-        for child in self.ancestor_obj.children:
-            if child.get_type() == INTERFACE_TYPE_ID:
-                for prototype in child.children:
-                    prototype_type = prototype.get_type()
-                    if (
-                        prototype_type
-                        in (SUBROUTINE_TYPE_ID, FUNCTION_TYPE_ID, BASE_TYPE_ID)
-                    ) and prototype.is_mod_scope():
-                        ancestor_interfaces.append(prototype)
+
+        ancestor_interfaces = get_ancestor_interfaces(self.ancestor_obj.children)
         # Match interface definitions to implementations
-        for prototype in ancestor_interfaces:
+        for interface in ancestor_interfaces:
             for i, child in enumerate(self.children):
-                if child.name.lower() == prototype.name.lower():
-                    # Create correct object for interface
-                    if child.get_type() == BASE_TYPE_ID:
-                        child_old = child
-                        if prototype.get_type() == SUBROUTINE_TYPE_ID:
-                            child = Subroutine(
-                                child_old.file_ast, child_old.sline, child_old.name
-                            )
-                        elif prototype.get_type() == FUNCTION_TYPE_ID:
-                            child = Function(
-                                child_old.file_ast, child_old.sline, child_old.name
-                            )
-                        child.copy_from(child_old)
-                        # Replace in child and scope lists
-                        self.children[i] = child
-                        for j, file_scope in enumerate(child.file_ast.scope_list):
-                            if file_scope is child_old:
-                                child.file_ast.scope_list[j] = child
-                    if child.get_type() == prototype.get_type():
-                        # Link the interface with the implementation
-                        prototype.link_obj = child
-                        prototype.resolve_link(obj_tree)
-                        child.copy_interface(prototype)
-                        break
+                if child.name.lower() != interface.name.lower():
+                    continue
+
+                if child.get_type() == BASE_TYPE_ID:
+                    child_old = child
+                    child = create_child_from_prototype(child_old, interface)
+                    child.copy_from(child_old)
+                    self.children[i] = child
+                    child = replace_child_in_scope_list(child, child_old)
+
+                if child.get_type() == interface.get_type():
+                    interface.link_obj = child
+                    interface.resolve_link(obj_tree)
+                    child.copy_interface(interface)
+                    break
 
     def require_link(self):
         return True
@@ -938,9 +942,7 @@ class Subroutine(Scope):
         self.args_snip = copy_source.args_snip
         self.arg_objs = copy_source.arg_objs
         # Get current fields
-        child_names = []
-        for child in self.children:
-            child_names.append(child.name.lower())
+        child_names = [child.name.lower() for child in self.children]
         # Import arg_objs from copy object
         self.in_children = []
         for child in copy_source.arg_objs:
@@ -1007,12 +1009,8 @@ class Subroutine(Scope):
             arg_str, arg_snip = self.get_placeholders(arg_list)
         else:
             arg_str = "()"
-        name = self.name
-        if name_replace is not None:
-            name = name_replace
-        snippet = None
-        if arg_snip is not None:
-            snippet = name + arg_snip
+        name = name_replace if name_replace is not None else self.name
+        snippet = name + arg_snip if arg_snip is not None else None
         return name + arg_str, snippet
 
     def get_desc(self):
@@ -1113,9 +1111,7 @@ class Subroutine(Scope):
         interface_array = self.get_interface_array(
             keyword_list, sub_sig, change_arg, change_strings
         )
-        name = self.name
-        if name_replace is not None:
-            name = name_replace
+        name = name_replace if name_replace is not None else self.name
         interface_array.append(f"END SUBROUTINE {name}")
         return "\n".join(interface_array)
 
@@ -1210,9 +1206,8 @@ class Function(Subroutine):
         return FUNCTION_TYPE_ID
 
     def get_desc(self):
-        if self.result_type:
-            return self.result_type + " FUNCTION"
-        return "FUNCTION"
+        token = "FUNCTION"
+        return f"{self.result_type} {token}" if self.result_type else token
 
     def is_callable(self):
         return False
@@ -1282,9 +1277,7 @@ class Function(Subroutine):
         if self.result_obj is not None:
             arg_doc, docs = self.result_obj.get_hover()
             interface_array.append(f"{arg_doc} :: {self.result_obj.name}")
-        name = self.name
-        if name_replace is not None:
-            name = name_replace
+        name = name_replace if name_replace is not None else self.name
         interface_array.append(f"END FUNCTION {name}")
         return "\n".join(interface_array)
 
@@ -1294,16 +1287,12 @@ class Type(Scope):
         self, file_ast: FortranAST, line_number: int, name: str, keywords: list
     ):
         super().__init__(file_ast, line_number, name, keywords)
-        #
         self.in_children: list = []
         self.inherit = None
         self.inherit_var = None
         self.inherit_tmp = None
         self.inherit_version = -1
-        if self.keywords.count(KEYWORD_ID_DICT["abstract"]) > 0:
-            self.abstract = True
-        else:
-            self.abstract = False
+        self.abstract = self.keywords.count(KEYWORD_ID_DICT["abstract"]) > 0
         if self.keywords.count(KEYWORD_ID_DICT["public"]) > 0:
             self.vis = 1
         if self.keywords.count(KEYWORD_ID_DICT["private"]) > 0:
@@ -1326,21 +1315,22 @@ class Type(Scope):
         self.inherit_version = inherit_version
         self.inherit_var = find_in_scope(self.parent, self.inherit, obj_tree)
         if self.inherit_var is not None:
-            # Resolve parent inheritance while avoiding circular recursion
-            self.inherit_tmp = self.inherit
-            self.inherit = None
-            self.inherit_var.resolve_inherit(obj_tree, inherit_version)
-            self.inherit = self.inherit_tmp
-            self.inherit_tmp = None
-            # Get current fields
-            child_names = []
-            for child in self.children:
-                child_names.append(child.name.lower())
-            # Import for parent objects
-            self.in_children = []
-            for child in self.inherit_var.get_children():
-                if child.name.lower() not in child_names:
-                    self.in_children.append(child)
+            self._resolve_inherit_parent(obj_tree, inherit_version)
+
+    def _resolve_inherit_parent(self, obj_tree, inherit_version):
+        # Resolve parent inheritance while avoiding circular recursion
+        self.inherit_tmp = self.inherit
+        self.inherit = None
+        self.inherit_var.resolve_inherit(obj_tree, inherit_version)
+        self.inherit = self.inherit_tmp
+        self.inherit_tmp = None
+        # Get current fields
+        child_names = [child.name.lower() for child in self.children]
+        # Import for parent objects
+        self.in_children = []
+        for child in self.inherit_var.get_children():
+            if child.name.lower() not in child_names:
+                self.in_children.append(child)
 
     def require_inherit(self):
         return True
@@ -1359,11 +1349,8 @@ class Type(Scope):
     def check_valid_parent(self):
         if self.parent is None:
             return False
-        else:
-            parent_type = self.parent.get_type()
-            if (parent_type == CLASS_TYPE_ID) or (parent_type >= BLOCK_TYPE_ID):
-                return False
-        return True
+        parent_type = self.parent.get_type()
+        return parent_type != CLASS_TYPE_ID and parent_type < BLOCK_TYPE_ID
 
     def get_diagnostics(self):
         errors = []
@@ -1567,12 +1554,10 @@ class Associate(Block):
                 if type_scope is None:
                     continue
                 var_obj = find_in_scope(type_scope, var_stack[-1], obj_tree)
-                if var_obj is not None:
-                    assoc.var.link_obj = var_obj
             else:
                 var_obj = find_in_scope(self, assoc.link_name, obj_tree)
-                if var_obj is not None:
-                    assoc.var.link_obj = var_obj
+            if var_obj is not None:
+                assoc.var.link_obj = var_obj
 
     def require_link(self):
         return True
@@ -1623,7 +1608,7 @@ class Select(Block):
         return self.select_type == 2
 
     def is_type_region(self):
-        return (self.select_type == 3) or (self.select_type == 4)
+        return self.select_type in [3, 4]
 
     def create_binding_variable(self, file_ast, line_number, var_desc, case_type):
         if self.parent.get_type() != SELECT_TYPE_ID:
@@ -1641,7 +1626,7 @@ class Select(Block):
             return Variable(
                 file_ast, line_number, binding_name, var_desc, [], link_obj=bound_var
             )
-        elif (binding_name is None) and (bound_var is not None):
+        elif bound_var is not None:
             return Variable(file_ast, line_number, bound_var, var_desc, [])
         return None
 
@@ -1723,7 +1708,7 @@ class Variable(FortranObj):
         if link_obj is not None:
             self.link_name = link_obj.lower()
         if file_ast.enc_scope_name is not None:
-            self.FQSN = file_ast.enc_scope_name.lower() + "::" + self.name.lower()
+            self.FQSN = f"{file_ast.enc_scope_name.lower()}::{self.name.lower()}"
         if self.keywords.count(KEYWORD_ID_DICT["public"]) > 0:
             self.vis = 1
         if self.keywords.count(KEYWORD_ID_DICT["private"]) > 0:
@@ -1738,7 +1723,7 @@ class Variable(FortranObj):
 
     def update_fqsn(self, enc_scope=None):
         if enc_scope is not None:
-            self.FQSN = enc_scope.lower() + "::" + self.name.lower()
+            self.FQSN = f"{enc_scope.lower()}::{self.name.lower()}"
         else:
             self.FQSN = self.name.lower()
         for child in self.children:
@@ -1766,9 +1751,7 @@ class Variable(FortranObj):
         if not no_link and self.link_obj is not None:
             return self.link_obj.get_desc()
         # Normal variable
-        if self.kind:
-            return self.desc + self.kind
-        return self.desc
+        return self.desc + self.kind if self.kind else self.desc
 
     def get_type_obj(self, obj_tree):
         if self.link_obj is not None:
@@ -1794,9 +1777,7 @@ class Variable(FortranObj):
             self.keywords.sort()
 
     def get_snippet(self, name_replace=None, drop_arg=-1):
-        name = self.name
-        if name_replace is not None:
-            name = name_replace
+        name = name_replace if name_replace is not None else self.name
         if self.link_obj is not None:
             return self.link_obj.get_snippet(name, drop_arg)
         # Normal variable
@@ -1826,10 +1807,7 @@ class Variable(FortranObj):
         return get_keywords(self.keywords, self.keyword_info)
 
     def is_optional(self):
-        if self.keywords.count(KEYWORD_ID_DICT["optional"]) > 0:
-            return True
-        else:
-            return False
+        return self.keywords.count(KEYWORD_ID_DICT["optional"]) > 0
 
     def is_callable(self):
         return self.callable
@@ -1860,50 +1838,54 @@ class Variable(FortranObj):
                     interface=interface,
                 )
                 if type_def is None:
-                    type_defs = find_in_workspace(
-                        obj_tree,
-                        desc_obj_name,
-                        filter_public=True,
-                        exact_match=True,
+                    self._check_definition_type_def(
+                        obj_tree, desc_obj_name, known_types, type_match
                     )
-                    known_types[desc_obj_name] = None
-                    var_type = type_match.group(1).strip().lower()
-                    filter_id = VAR_TYPE_ID
-                    if (var_type == "class") or (var_type == "type"):
-                        filter_id = CLASS_TYPE_ID
-                    for type_def in type_defs:
-                        if type_def.get_type() == filter_id:
-                            known_types[desc_obj_name] = (1, type_def)
-                            break
                 else:
                     known_types[desc_obj_name] = (0, type_def)
             type_info = known_types[desc_obj_name]
-            if type_info is not None:
-                if type_info[0] == 1:
-                    if interface:
-                        out_diag = Diagnostic(
-                            self.sline - 1,
-                            message=(
-                                f'Object "{desc_obj_name}" not imported in interface'
-                            ),
-                            severity=1,
-                            find_word=desc_obj_name,
-                        )
-                    else:
-                        out_diag = Diagnostic(
-                            self.sline - 1,
-                            message=f'Object "{desc_obj_name}" not found in scope',
-                            severity=1,
-                            find_word=desc_obj_name,
-                        )
-                        type_def = type_info[1]
-                        out_diag.add_related(
-                            path=type_def.file_ast.path,
-                            line=type_def.sline - 1,
-                            message="Possible object",
-                        )
-                    return out_diag, known_types
+            if type_info is not None and type_info[0] == 1:
+                if interface:
+                    out_diag = Diagnostic(
+                        self.sline - 1,
+                        message=f'Object "{desc_obj_name}" not imported in interface',
+                        severity=1,
+                        find_word=desc_obj_name,
+                    )
+                else:
+                    out_diag = Diagnostic(
+                        self.sline - 1,
+                        message=f'Object "{desc_obj_name}" not found in scope',
+                        severity=1,
+                        find_word=desc_obj_name,
+                    )
+                    type_def = type_info[1]
+                    out_diag.add_related(
+                        path=type_def.file_ast.path,
+                        line=type_def.sline - 1,
+                        message="Possible object",
+                    )
+                return out_diag, known_types
         return None, known_types
+
+    def _check_definition_type_def(
+        self, obj_tree, desc_obj_name, known_types, type_match
+    ):
+        type_defs = find_in_workspace(
+            obj_tree,
+            desc_obj_name,
+            filter_public=True,
+            exact_match=True,
+        )
+        known_types[desc_obj_name] = None
+        var_type = type_match.group(1).strip().lower()
+        filter_id = VAR_TYPE_ID
+        if var_type in ["class", "type"]:
+            filter_id = CLASS_TYPE_ID
+        for type_def in type_defs:
+            if type_def.get_type() == filter_id:
+                known_types[desc_obj_name] = (1, type_def)
+                break
 
 
 class Method(Variable):  # i.e. TypeBound procedure
@@ -1947,10 +1929,7 @@ class Method(Variable):  # i.e. TypeBound procedure
 
     def get_snippet(self, name_replace=None, drop_arg=-1):
         if self.link_obj is not None:
-            if name_replace is None:
-                name = self.name
-            else:
-                name = name_replace
+            name = self.name if name_replace is None else name_replace
             return self.link_obj.get_snippet(name, self.drop_arg)
         return None, None
 
@@ -2070,9 +2049,7 @@ class FortranAST:
 
     def get_enc_scope_name(self):
         """Get current enclosing scope name"""
-        if self.current_scope is None:
-            return None
-        return self.current_scope.FQSN
+        return None if self.current_scope is None else self.current_scope.FQSN
 
     def add_scope(
         self,
@@ -2089,12 +2066,11 @@ class FortranAST:
         if self.current_scope is None:
             if req_container:
                 self.create_none_scope()
-                new_scope.FQSN = self.none_scope.FQSN + "::" + new_scope.name.lower()
+                new_scope.FQSN = f"{self.none_scope.FQSN}::{new_scope.name.lower()}"
                 self.current_scope.add_child(new_scope)
                 self.scope_stack.append(self.current_scope)
-            else:
-                if exportable:
-                    self.global_dict[new_scope.FQSN] = new_scope
+            elif exportable:
+                self.global_dict[new_scope.FQSN] = new_scope
         else:
             self.current_scope.add_child(new_scope)
             self.scope_stack.append(self.current_scope)
@@ -2128,7 +2104,7 @@ class FortranAST:
     def add_variable(self, new_var: Variable):
         if self.current_scope is None:
             self.create_none_scope()
-            new_var.FQSN = self.none_scope.FQSN + "::" + new_var.name.lower()
+            new_var.FQSN = f"{self.none_scope.FQSN}::{new_var.name.lower()}"
         self.current_scope.add_child(new_var)
         self.variable_list.append(new_var)
         if new_var.is_external:
@@ -2144,10 +2120,10 @@ class FortranAST:
         self.current_scope.add_member(key)
 
     def add_private(self, name: str):
-        self.private_list.append(self.enc_scope_name + "::" + name)
+        self.private_list.append(f"{self.enc_scope_name}::{name}")
 
     def add_public(self, name: str):
-        self.public_list.append(self.enc_scope_name + "::" + name)
+        self.public_list.append(f"{self.enc_scope_name}::{name}")
 
     def add_use(self, use_mod: Use | Import):
         if self.current_scope is None:
@@ -2158,13 +2134,12 @@ class FortranAST:
         self.include_statements.append(IncludeInfo(line_number, path, None, []))
 
     def add_doc(self, doc_string: str, forward: bool = False):
-        if doc_string == "":
+        if not doc_string:
             return
         if forward:
             self.pending_doc = doc_string
-        else:
-            if self.last_obj is not None:
-                self.last_obj.add_doc(doc_string)
+        elif self.last_obj is not None:
+            self.last_obj.add_doc(doc_string)
 
     def add_error(self, msg: str, sev: int, ln: int, sch: int, ech: int = None):
         """Add a Diagnostic error, encountered during parsing, for a range
@@ -2213,26 +2188,27 @@ class FortranAST:
             if (line_number >= scope.sline) and (line_number <= scope.eline):
                 if type(scope.parent) == Interface:
                     for use_stmnt in scope.use:
-                        if not type(use_stmnt) == Import:
+                        if type(use_stmnt) != Import:
                             continue
                         # Exclude the parent and all other scopes
                         if use_stmnt.import_type == ImportTypes.NONE:
                             return [scope]
                 scope_list.append(scope)
-                for ancestor in scope.get_ancestors():
-                    scope_list.append(ancestor)
-        if (len(scope_list) == 0) and (self.none_scope is not None):
+                scope_list.extend(iter(scope.get_ancestors()))
+        if scope_list or self.none_scope is None:
+            return scope_list
+        else:
             return [self.none_scope]
-        return scope_list
 
     def get_inner_scope(self, line_number: int):
         scope_sline = -1
         curr_scope = None
         for scope in self.scope_list:
-            if scope.sline > scope_sline:
-                if (line_number >= scope.sline) and (line_number <= scope.eline):
-                    curr_scope = scope
-                    scope_sline = scope.sline
+            if scope.sline > scope_sline and (
+                (line_number >= scope.sline) and (line_number <= scope.eline)
+            ):
+                curr_scope = scope
+                scope_sline = scope.sline
         if (curr_scope is None) and (self.none_scope is not None):
             return self.none_scope
         return curr_scope
@@ -2271,7 +2247,7 @@ class FortranAST:
         file_dir = os.path.dirname(self.path)
         for inc in self.include_statements:
             file_path = os.path.normpath(os.path.join(file_dir, inc.path))
-            if path and not (path == file_path):
+            if path and path != file_path:
                 continue
             parent_scope = self.get_inner_scope(inc.line_number)
             added_entities = inc.scope_objs
