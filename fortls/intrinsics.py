@@ -3,6 +3,7 @@ from __future__ import annotations
 import glob
 import json
 import os
+import pathlib
 
 from fortls.helper_functions import fortran_md, map_keywords
 from fortls.objects import (
@@ -26,9 +27,7 @@ def set_lowercase_intrinsics():
 
 
 def intrinsics_case(name: str, args: str):
-    if lowercase_intrinsics:
-        return name.lower(), args.lower()
-    return name, args
+    return (name.lower(), args.lower()) if lowercase_intrinsics else (name, args)
 
 
 class Intrinsic(FortranObj):
@@ -69,18 +68,12 @@ class Intrinsic(FortranObj):
         else:
             arg_list = self.args.split(",")
             arg_str, arg_snip = self.get_placeholders(arg_list)
-        name = self.name
-        if name_replace is not None:
-            name = name_replace
-        snippet = None
-        if arg_snip is not None:
-            snippet = name + arg_snip
+        name = name_replace if name_replace is not None else self.name
+        snippet = name + arg_snip if arg_snip is not None else None
         return name + arg_str, snippet
 
     def get_signature(self):
-        arg_sigs = []
-        for arg in self.args.split(","):
-            arg_sigs.append({"label": arg})
+        arg_sigs = [{"label": arg} for arg in self.args.split(",")]
         call_sig, _ = self.get_snippet()
         return call_sig, self.doc_str, arg_sigs
 
@@ -89,13 +82,11 @@ class Intrinsic(FortranObj):
 
     def get_hover_md(self, long=False):
         msg, docs = self.get_hover(long)
-        msg = msg if msg else ""
+        msg = msg or ""
         return fortran_md(msg, docs)
 
     def is_callable(self):
-        if self.type == 2:
-            return True
-        return False
+        return self.type == 2
 
 
 def load_intrinsics():
@@ -281,8 +272,7 @@ def update_m_intrinsics():
         for f in sorted(files):
             key = f.replace("M_intrinsics/md/", "")
             key = key.replace(".md", "").upper()  # remove md extension
-            with open(f) as md_f:
-                val = md_f.read()
+            val = pathlib.Path(f).read_text()
             # remove manpage tag
             val = val.replace(f"**{key.lower()}**(3)", f"**{key.lower()}**")
             val = val.replace(f"**{key.upper()}**(3)", f"**{key.upper()}**")
