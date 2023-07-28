@@ -1822,7 +1822,9 @@ class Variable(FortranObj):
         self.keywords.append(KEYWORD_ID_DICT["external"])
         self.is_external = True
 
-    def check_definition(self, obj_tree, known_types={}, interface=False):
+    def check_definition(self, obj_tree, known_types=None, interface=False):
+        if known_types is None:
+            known_types = {}
         # Check for type definition in scope
         type_match = FRegex.DEF_KIND.match(self.get_desc(no_link=True))
         if type_match is not None:
@@ -2006,7 +2008,9 @@ class Method(Variable):  # i.e. TypeBound procedure
     def is_callable(self):
         return True
 
-    def check_definition(self, obj_tree, known_types={}, interface=False):
+    def check_definition(self, obj_tree, known_types=None, interface=False):
+        if known_types is None:
+            known_types = {}
         return None, known_types
 
 
