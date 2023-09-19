@@ -6,6 +6,7 @@ import os
 import re
 from dataclasses import dataclass
 from typing import Pattern
+from typing import Type as T
 
 from fortls.constants import (
     ASSOC_TYPE_ID,
@@ -570,7 +571,7 @@ class Scope(FortranObj):
         self.sline: int = line_number
         self.eline: int = line_number
         self.name: str = name
-        self.children: list = []
+        self.children: list[T[Scope]] = []
         self.members: list = []
         self.use: list[Use | Import] = []
         self.keywords: list = keywords
@@ -621,7 +622,7 @@ class Scope(FortranObj):
     def add_member(self, member):
         self.members.append(member)
 
-    def get_children(self, public_only=False):
+    def get_children(self, public_only=False) -> list[T[FortranObj]]:
         if not public_only:
             return copy.copy(self.children)
         pub_children = []
@@ -634,40 +635,40 @@ class Scope(FortranObj):
             pub_children.append(child)
         return pub_children
 
-    def check_definitions(self, obj_tree):
+    def check_definitions(self, obj_tree) -> list[Diagnostic]:
         """Check for definition errors in scope"""
-        FQSN_dict = {}
+        fqsn_dict: dict[str, int] = {}
+        errors: list[Diagnostic] = []
+        known_types: dict[str, FortranObj] = {}
+
         for child in self.children:
             # Skip masking/double checks for interfaces
             if child.get_type() == INTERFACE_TYPE_ID:
                 continue
             # Check other variables in current scope
-            if child.FQSN in FQSN_dict:
-                if child.sline < FQSN_dict[child.FQSN]:
-                    FQSN_dict[child.FQSN] = child.sline - 1
+            if child.FQSN in fqsn_dict:
+                if child.sline < fqsn_dict[child.FQSN]:
+                    fqsn_dict[child.FQSN] = child.sline - 1
             else:
-                FQSN_dict[child.FQSN] = child.sline - 1
-        #
+                fqsn_dict[child.FQSN] = child.sline - 1
+
         contains_line = -1
-        after_contains_list = (SUBROUTINE_TYPE_ID, FUNCTION_TYPE_ID)
         if self.get_type() in (
             MODULE_TYPE_ID,
             SUBMODULE_TYPE_ID,
             SUBROUTINE_TYPE_ID,
             FUNCTION_TYPE_ID,
         ):
-            if self.contains_start is None:
-                contains_line = self.eline
-            else:
-                contains_line = self.contains_start
+            contains_line = (
+                self.contains_start if self.contains_start is not None else self.eline
+            )
         # Detect interface definitions
         is_interface = (
             self.parent is not None
             and self.parent.get_type() == INTERFACE_TYPE_ID
             and not self.is_mod_scope()
         )
-        errors = []
-        known_types = {}
+
         for child in self.children:
             if child.name.startswith("#"):
                 continue
@@ -679,8 +680,9 @@ class Scope(FortranObj):
             if def_error is not None:
                 errors.append(def_error)
             # Detect contains errors
-            if (contains_line >= child.sline) and (
-                child.get_type(no_link=True) in after_contains_list
+            if contains_line >= child.sline and child.get_type(no_link=True) in (
+                SUBROUTINE_TYPE_ID,
+                FUNCTION_TYPE_ID,
             ):
                 new_diag = Diagnostic(
                     line_number,
@@ -689,12 +691,13 @@ class Scope(FortranObj):
                 )
                 errors.append(new_diag)
             # Skip masking/double checks for interfaces and members
-            if (self.get_type() == INTERFACE_TYPE_ID) or (
-                child.get_type() == INTERFACE_TYPE_ID
+            if (
+                self.get_type() == INTERFACE_TYPE_ID
+                or child.get_type() == INTERFACE_TYPE_ID
             ):
                 continue
             # Check other variables in current scope
-            if child.FQSN in FQSN_dict and line_number > FQSN_dict[child.FQSN]:
+            if child.FQSN in fqsn_dict and line_number > fqsn_dict[child.FQSN]:
                 new_diag = Diagnostic(
                     line_number,
                     message=f'Variable "{child.name}" declared twice in scope',
@@ -703,22 +706,26 @@ class Scope(FortranObj):
                 )
                 new_diag.add_related(
                     path=self.file_ast.path,
-                    line=FQSN_dict[child.FQSN],
+                    line=fqsn_dict[child.FQSN],
                     message="First declaration",
                 )
                 errors.append(new_diag)
                 continue
             # Check for masking from parent scope in subroutines, functions, and blocks
-            if (self.parent is not None) and (
-                self.get_type() in (SUBROUTINE_TYPE_ID, FUNCTION_TYPE_ID, BLOCK_TYPE_ID)
+            if self.parent is not None and self.get_type() in (
+                SUBROUTINE_TYPE_ID,
+                FUNCTION_TYPE_ID,
+                BLOCK_TYPE_ID,
             ):
                 parent_var = find_in_scope(self.parent, child.name, obj_tree)
                 if parent_var is not None:
                     # Ignore if function return variable
-                    if (self.get_type() == FUNCTION_TYPE_ID) and (
-                        parent_var.FQSN == self.FQSN
+                    if (
+                        self.get_type() == FUNCTION_TYPE_ID
+                        and parent_var.FQSN == self.FQSN
                     ):
                         continue
+
                     new_diag = Diagnostic(
                         line_number,
                         message=(
@@ -733,6 +740,7 @@ class Scope(FortranObj):
                         message="First declaration",
                     )
                     errors.append(new_diag)
+
         return errors
 
     def check_use(self, obj_tree):
@@ -854,7 +862,9 @@ class Submodule(Module):
         return True
 
     def resolve_link(self, obj_tree):
-        def get_ancestor_interfaces(ancestor_children: list[FortranObj]):
+        def get_ancestor_interfaces(
+            ancestor_children: list[Scope],
+        ) -> list[T[Interface]]:
             interfaces = []
             for child in ancestor_children:
                 if child.get_type() != INTERFACE_TYPE_ID:
