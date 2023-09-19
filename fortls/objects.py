@@ -1098,14 +1098,14 @@ class Subroutine(Scope):
 
     # TODO: fix this
     def get_interface_array(
-        self, keywords: list[str], signature: str, change_arg=-1, change_strings=None
+        self, keywords: list[str], signature: str, drop_arg=-1, change_strings=None
     ):
         interface_array = [" ".join(keywords) + signature]
         for i, arg_obj in enumerate(self.arg_objs):
             if arg_obj is None:
                 return None
             arg_doc, docs = arg_obj.get_hover()
-            if i == change_arg:
+            if i == drop_arg:
                 i0 = arg_doc.lower().find(change_strings[0].lower())
                 if i0 >= 0:
                     i1 = i0 + len(change_strings[0])
@@ -1113,12 +1113,12 @@ class Subroutine(Scope):
             interface_array.append(f"{arg_doc} :: {arg_obj.name}")
         return interface_array
 
-    def get_interface(self, name_replace=None, change_arg=-1, change_strings=None):
+    def get_interface(self, name_replace=None, drop_arg=-1, change_strings=None):
         sub_sig, _ = self.get_snippet(name_replace=name_replace)
         keyword_list = get_keywords(self.keywords)
         keyword_list.append("SUBROUTINE ")
         interface_array = self.get_interface_array(
-            keyword_list, sub_sig, change_arg, change_strings
+            keyword_list, sub_sig, drop_arg, change_strings
         )
         name = name_replace if name_replace is not None else self.name
         interface_array.append(f"END SUBROUTINE {name}")
@@ -1197,9 +1197,11 @@ class Function(Subroutine):
         self.result_name = copy_source.result_name
         self.result_type = copy_source.result_type
         self.result_obj = copy_source.result_obj
-        if copy_source.result_obj is not None:
-            if copy_source.result_obj.name.lower() not in child_names:
-                self.in_children.append(copy_source.result_obj)
+        if (
+            copy_source.result_obj is not None
+            and copy_source.result_obj.name.lower() not in child_names
+        ):
+            self.in_children.append(copy_source.result_obj)
 
     def resolve_link(self, obj_tree):
         self.resolve_arg_link(obj_tree)
@@ -1270,7 +1272,7 @@ class Function(Subroutine):
         return "\n ".join(hover_array), "  \n".join(docs)
 
     # TODO: fix this
-    def get_interface(self, name_replace=None, change_arg=-1, change_strings=None):
+    def get_interface(self, name_replace=None, drop_arg=-1, change_strings=None):
         fun_sig, _ = self.get_snippet(name_replace=name_replace)
         fun_sig += f" RESULT({self.result_name})"
         # XXX:
@@ -1281,7 +1283,7 @@ class Function(Subroutine):
         keyword_list.append("FUNCTION ")
 
         interface_array = self.get_interface_array(
-            keyword_list, fun_sig, change_arg, change_strings
+            keyword_list, fun_sig, drop_arg, change_strings
         )
         if self.result_obj is not None:
             arg_doc, docs = self.result_obj.get_hover()
@@ -1990,7 +1992,7 @@ class Method(Variable):  # i.e. TypeBound procedure
             return call_sig, self.get_documentation(), arg_sigs
         return None, None, None
 
-    def get_interface(self, name_replace=None, change_arg=-1, change_strings=None):
+    def get_interface(self, name_replace=None, drop_arg=-1, change_strings=None):
         if self.link_obj is not None:
             return self.link_obj.get_interface(
                 name_replace, self.drop_arg, change_strings
