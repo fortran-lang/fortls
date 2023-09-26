@@ -38,7 +38,7 @@ def expand_name(line: str, char_pos: int) -> str:
     return ""
 
 
-def detect_fixed_format(file_lines: list[str], preproc: bool = False) -> bool:
+def detect_fixed_format(file_lines: list[str]) -> bool:
     """Detect fixed/free format by looking for characters in label columns
     and variable declarations before column 6. Treat intersection format
     files as free format.
@@ -47,9 +47,6 @@ def detect_fixed_format(file_lines: list[str], preproc: bool = False) -> bool:
     ----------
     file_lines : list[str]
         List of consecutive file lines
-    preproc : bool
-        If true, preprocessor directives (lines starting with '#') will be
-        ignored
 
     Returns
     -------
@@ -72,13 +69,29 @@ def detect_fixed_format(file_lines: list[str], preproc: bool = False) -> bool:
     >>> detect_fixed_format(['trailing line & ! comment'])
     False
 
-    But preprocessor lines might be ignored
-    >>> detect_fixed_format(['#if defined(A) && !defined(B)'], preproc=True)
+    But preprocessor lines will be ignored
+    >>> detect_fixed_format(
+    ...     ['#if defined(A) && !defined(B)', 'C Fixed format', '#endif'])
     True
+
+    >>> detect_fixed_format(
+    ...     ['#if defined(A) && !defined(B)', ' free format', '#endif'])
+    False
+
+    And preprocessor line-continuation is taken into account
+    >>> detect_fixed_format(
+    ...     ['#if defined(A) \\\\ ', ' && !defined(B)', 'C Fixed format', '#endif'])
+    True
+
+    >>> detect_fixed_format(
+    ...     ['#if defined(A) \\\\', '&& \\\\', '!defined(B)', ' free format', '#endif'])
+    False
     """
+    pp_continue = False
     for line in file_lines:
         # Ignore preprocessor lines
-        if preproc and line.startswith("#"):
+        if line.startswith("#") or pp_continue:
+            pp_continue = line.rstrip().endswith("\\")
             continue
         if FRegex.FREE_FORMAT_TEST.match(line):
             return False

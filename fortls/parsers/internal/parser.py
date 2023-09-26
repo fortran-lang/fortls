@@ -902,7 +902,7 @@ class FortranFile:
 
             self.hash = hash
             self.contents_split = contents.splitlines()
-            self.fixed = detect_fixed_format(self.contents_split, self.preproc)
+            self.fixed = detect_fixed_format(self.contents_split)
             self.contents_pp = self.contents_split
             self.nLines = len(self.contents_split)
             return None, True
@@ -1011,7 +1011,7 @@ class FortranFile:
         self.contents_pp = self.contents_split
         self.nLines = len(self.contents_split)
         if detect_format:
-            self.fixed = detect_fixed_format(self.contents_split, self.preproc)
+            self.fixed = detect_fixed_format(self.contents_split)
 
     def get_line(self, line_no: int, pp_content: bool = False) -> str:
         """Get single line from file"""
