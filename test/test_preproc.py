@@ -34,8 +34,9 @@ def test_hover():
     string += hover_req(file_path, 8, 12)
     string += hover_req(file_path, 18, 12)
     file_path = root_dir / "preproc_elif.F90"
-    string += hover_req(file_path, 10, 12)
-    string += hover_req(file_path, 14, 15)
+    string += hover_req(file_path, 15, 12)
+    string += hover_req(file_path, 19, 15)
+    string += hover_req(file_path, 21, 10)
     config = str(root_dir / ".pp_conf.json")
     errcode, results = run_request(string, ["--config", config])
     assert errcode == 0
@@ -59,6 +60,7 @@ def test_hover():
         "```fortran90\nREAL :: var1\n```",
         "```fortran90\nLOGICAL :: var1\n```",
         "```fortran90\nINTEGER :: var2\n```",
+        "```fortran90\nINTEGER, INTENT(INOUT) :: var\n```",
     )
     assert len(ref_results) == len(results) - 1
     check_return(results[1:], ref_results)
