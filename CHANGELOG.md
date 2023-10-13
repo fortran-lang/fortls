@@ -56,6 +56,11 @@
 - Fixed parsing start of multilines into AST
   ([#217](https://github.com/fortran-lang/fortls/issues/217))
 
+### Removed
+
+- Removed `setuptools_scm_git_archive` due to package deprecation
+  ([#326](https://github.com/fortran-lang/fortls/issues/326))
+
 ## 2.13.0
 
 ### Added
