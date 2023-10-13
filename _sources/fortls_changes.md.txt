@@ -127,6 +127,11 @@
 
 - Option `--preserve_keyword_order` has been substituted with its opposite `--sort_keywords`
 
+## Removed
+
+- Removed `setuptools_scm_git_archive` due to package deprecation
+  ([#326](https://github.com/fortran-lang/fortls/issues/326))
+
 ## Fixed
 
 - Fixed bug where type fields or methods were not detected if spaces were
