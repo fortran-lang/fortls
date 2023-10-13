@@ -2150,6 +2150,8 @@ def preprocess_file(
                     exc_start = True
                 else:
                     pp_stack[-1][1] = i + 1
+                    pp_skips.append(pp_stack.pop())
+                    pp_stack.append([-1, -1])
                     inc_start = True
             elif match.group(1) == "endif":
                 if pp_stack[-1][0] < 0:
