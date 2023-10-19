@@ -26,6 +26,9 @@
   ([#219](https://github.com/fortran-lang/fortls/issues/219))
 - Changed hover messages and signature help to use Markdown
   ([#45](https://github.com/fortran-lang/fortls/issues/45))
+- Changed automatic detection of fixed/free-form of files to ignore
+  preprocessor lines.
+  ([#302](https://github.com/fortran-lang/fortls/pull/302))
 
 ### Fixed
 
