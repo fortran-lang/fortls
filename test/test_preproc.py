@@ -33,14 +33,12 @@ def test_hover():
     file_path = root_dir / "preproc_else.F90"
     string += hover_req(file_path, 8, 12)
     string += hover_req(file_path, 18, 12)
-    file_path = root_dir / "preproc_elif.F90"
-    string += hover_req(file_path, 15, 12)
-    string += hover_req(file_path, 19, 15)
-    string += hover_req(file_path, 21, 10)
-    string += hover_req(file_path, 46, 36)
-    string += hover_req(file_path, 76, 36)
-    string += hover_req(file_path, 106, 36)
-    string += hover_req(file_path, 136, 36)
+    file_path = root_dir / "preproc_elif_elif_skip.F90"
+    string += hover_req(file_path, 24, 23)
+    file_path = root_dir / "preproc_if_elif_else.F90"
+    string += hover_req(file_path, 24, 23)
+    file_path = root_dir / "preproc_if_elif_skip.F90"
+    string += hover_req(file_path, 24, 23)
     config = str(root_dir / ".pp_conf.json")
     errcode, results = run_request(string, ["--config", config])
     assert errcode == 0
@@ -62,13 +60,9 @@ def test_hover():
         "```fortran90\nREAL, CONTIGUOUS, POINTER, DIMENSION(:) :: var1\n```",
         "```fortran90\nINTEGER :: var0\n```",
         "```fortran90\nREAL :: var1\n```",
-        "```fortran90\nLOGICAL :: var1\n```",
-        "```fortran90\nINTEGER :: var2\n```",
-        "```fortran90\nINTEGER, INTENT(INOUT) :: var\n```",
-        "```fortran90\nREAL(1, 5, 5, 5) :: var3\n```",
-        "```fortran90\nREAL(5, 2, 5, 5) :: var4\n```",
-        "```fortran90\nREAL(5, 5, 5, 4) :: var5\n```",
-        "```fortran90\nREAL(1, 5, 5, 5) :: var6\n```",
+        "```fortran90\nINTEGER, PARAMETER :: res = 0+1+0+0\n```",
+        "```fortran90\nINTEGER, PARAMETER :: res = 0+0+0+1\n```",
+        "```fortran90\nINTEGER, PARAMETER :: res = 1+0+0+0\n```",
     )
     assert len(ref_results) == len(results) - 1
     check_return(results[1:], ref_results)
