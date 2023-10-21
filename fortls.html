@@ -643,7 +643,7 @@ False</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.helper_functions.find_paren_match">
 <span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">find_paren_match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.find_paren_match" title="Permalink to this definition">#</a></dt>
-<dd><p>Find matching closing parenthesis <strong>from an already open parenthesis scope</strong>
+<dd><p>Find matching closing parenthesis from an already open parenthesis scope
 by forward search of the string, returns -1 if no match is found</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -716,7 +716,7 @@ by forward search of the string, returns -1 if no match is found</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.helper_functions.get_keywords">
-<span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">get_keywords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keywords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keyword_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.get_keywords" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">get_keywords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keywords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keyword_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.get_keywords" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -803,6 +803,36 @@ to mark the <code class="docutils literal notranslate"><span class="pre">start</
 <p>If the line has incomplete parenthesis however, <code class="docutils literal notranslate"><span class="pre">None</span></code> is returned
 &gt;&gt;&gt; get_paren_substring(‘some line(a, b’) is None
 True</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fortls.helper_functions.get_placeholders">
+<span class="sig-prename descclassname"><span class="pre">fortls.helper_functions.</span></span><span class="sig-name descname"><span class="pre">get_placeholders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.helper_functions.get_placeholders" title="Permalink to this definition">#</a></dt>
+<dd><p>Function used to generate placeholders for snippets</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>arg_list</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – Method arguments list</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple of arguments as a string and snippet string</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[<a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_placeholders</span><span class="p">([</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">])</span>
+<span class="go">(&#39;(x, y)&#39;, &#39;(${1:x}, ${2:y})&#39;)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_placeholders</span><span class="p">([</span><span class="s1">&#39;x=1&#39;</span><span class="p">,</span> <span class="s1">&#39;y=2&#39;</span><span class="p">])</span>
+<span class="go">(&#39;(x=1, y=2)&#39;, &#39;(x=${1:1}, y=${2:2})&#39;)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_placeholders</span><span class="p">([</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y=2&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">])</span>
+<span class="go">(&#39;(x, y=2, z)&#39;, &#39;(${1:x}, y=${2:2}, ${3:z})&#39;)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -1824,11 +1854,6 @@ in the document.</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="fortls.objects.FortranObj.get_placeholders">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_placeholders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.FortranObj.get_placeholders" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="fortls.objects.FortranObj.get_signature">
 <span class="sig-name descname"><span class="pre">get_signature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.FortranObj.get_signature" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
@@ -1966,7 +1991,7 @@ TYPE, [RESULT_MODIFIERS] :: RESULT_VAR</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.objects.Function.get_interface">
-<span class="sig-name descname"><span class="pre">get_interface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name_replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">change_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">change_strings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Function.get_interface" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_interface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name_replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">change_strings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Function.get_interface" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -2004,7 +2029,7 @@ TYPE, [RESULT_MODIFIERS] :: RESULT_VAR</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="fortls.objects.Import">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.objects.</span></span><span class="sig-name descname"><span class="pre">Import</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">import_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rename_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Import" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.objects.</span></span><span class="sig-name descname"><span class="pre">Import</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">import_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rename_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Import" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#fortls.objects.Use" title="fortls.objects.Use"><code class="xref py py-class docutils literal notranslate"><span class="pre">Use</span></code></a></p>
 <p>AST node for IMPORT statement</p>
 <dl class="py property">
@@ -2099,7 +2124,7 @@ TYPE, [RESULT_MODIFIERS] :: RESULT_VAR</p>
 <dd><p>Bases: <a class="reference internal" href="#fortls.objects.Variable" title="fortls.objects.Variable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variable</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.objects.Method.check_definition">
-<span class="sig-name descname"><span class="pre">check_definition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj_tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">known_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Method.check_definition" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">check_definition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj_tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">known_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Method.check_definition" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -2114,7 +2139,7 @@ TYPE, [RESULT_MODIFIERS] :: RESULT_VAR</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.objects.Method.get_interface">
-<span class="sig-name descname"><span class="pre">get_interface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name_replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">change_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">change_strings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Method.get_interface" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_interface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name_replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">change_strings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Method.get_interface" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -2156,7 +2181,12 @@ TYPE, [RESULT_MODIFIERS] :: RESULT_VAR</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.objects.Module.check_valid_parent">
 <span class="sig-name descname"><span class="pre">check_valid_parent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Module.check_valid_parent" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.objects.Module.get_desc">
@@ -2394,12 +2424,12 @@ and the documentation string that should be in normal Markdown.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.objects.Subroutine.get_interface">
-<span class="sig-name descname"><span class="pre">get_interface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name_replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">change_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">change_strings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Subroutine.get_interface" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_interface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name_replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">change_strings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Subroutine.get_interface" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.objects.Subroutine.get_interface_array">
-<span class="sig-name descname"><span class="pre">get_interface_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keywords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">change_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">change_strings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Subroutine.get_interface_array" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_interface_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keywords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">change_strings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Subroutine.get_interface_array" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -2502,7 +2532,7 @@ and the documentation string that should be in normal Markdown.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="fortls.objects.Use">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.objects.</span></span><span class="sig-name descname"><span class="pre">Use</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mod_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rename_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Use" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fortls.objects.</span></span><span class="sig-name descname"><span class="pre">Use</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mod_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rename_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Use" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>AST node for USE statement</p>
 <dl class="py property">
@@ -2512,7 +2542,7 @@ and the documentation string that should be in normal Markdown.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.objects.Use.rename">
-<span class="sig-name descname"><span class="pre">rename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">only_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Use.rename" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">rename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">only_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Use.rename" title="Permalink to this definition">#</a></dt>
 <dd><p>Rename ONLY:, statements</p>
 </dd></dl>
 
@@ -2524,7 +2554,7 @@ and the documentation string that should be in normal Markdown.</p>
 <dd><p>Bases: <a class="reference internal" href="#fortls.objects.FortranObj" title="fortls.objects.FortranObj"><code class="xref py py-class docutils literal notranslate"><span class="pre">FortranObj</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="fortls.objects.Variable.check_definition">
-<span class="sig-name descname"><span class="pre">check_definition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj_tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">known_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Variable.check_definition" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">check_definition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj_tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">known_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.Variable.check_definition" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -2643,7 +2673,7 @@ and the documentation string that should be in normal Markdown.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.objects.get_use_tree">
-<span class="sig-prename descclassname"><span class="pre">fortls.objects.</span></span><span class="sig-name descname"><span class="pre">get_use_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj_tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rename_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curr_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.get_use_tree" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">fortls.objects.</span></span><span class="sig-name descname"><span class="pre">get_use_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj_tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rename_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curr_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.objects.get_use_tree" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </section>
@@ -3871,6 +3901,7 @@ For more info see create_src_file_exts_regex</p>
 <li><a class="reference internal" href="#fortls.helper_functions.get_line_prefix"><code class="docutils literal notranslate"><span class="pre">get_line_prefix()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.helper_functions.get_paren_level"><code class="docutils literal notranslate"><span class="pre">get_paren_level()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.helper_functions.get_paren_substring"><code class="docutils literal notranslate"><span class="pre">get_paren_substring()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.helper_functions.get_placeholders"><code class="docutils literal notranslate"><span class="pre">get_placeholders()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.helper_functions.get_var_stack"><code class="docutils literal notranslate"><span class="pre">get_var_stack()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.helper_functions.map_keywords"><code class="docutils literal notranslate"><span class="pre">map_keywords()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.helper_functions.only_dirs"><code class="docutils literal notranslate"><span class="pre">only_dirs()</span></code></a></li>
@@ -4055,7 +4086,6 @@ For more info see create_src_file_exts_regex</p>
 <li><a class="reference internal" href="#fortls.objects.FortranObj.get_hover_md"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_hover_md()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.FortranObj.get_implicit"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_implicit()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.FortranObj.get_interface"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_interface()</span></code></a></li>
-<li><a class="reference internal" href="#fortls.objects.FortranObj.get_placeholders"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_placeholders()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.FortranObj.get_signature"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_signature()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.FortranObj.get_snippet"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_snippet()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.objects.FortranObj.get_type"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_type()</span></code></a></li>
@@ -4403,7 +4433,7 @@ For more info see create_src_file_exts_regex</p>
       
     </aside>
   </div>
-</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=aae6c0d2"></script>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=ec86e239"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>
