@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 import os
 import pprint
@@ -8,7 +10,7 @@ from .helper_functions import only_dirs, resolve_globs
 from .interface import cli
 from .jsonrpc import JSONRPC2Connection, ReadWriter, path_from_uri
 from .langserver import LangServer
-from .parse_fortran import FortranFile
+from .parsers.internal.parser import FortranFile
 from .version import __version__
 
 __all__ = ["__version__"]

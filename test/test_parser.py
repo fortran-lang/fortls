@@ -1,6 +1,6 @@
 from setup_tests import test_dir
 
-from fortls.parse_fortran import FortranFile
+from fortls.parsers.internal.parser import FortranFile
 
 
 def test_line_continuations():

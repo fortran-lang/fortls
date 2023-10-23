@@ -627,9 +627,14 @@ def test_intrinsics():
     string += hover_req(file_path, 39, 23)
     errcode, results = run_request(string, fortls_args=["-n", "1"])
     assert errcode == 0
-    with open(
-        test_dir.parent.parent / "fortls" / "intrinsic.procedures.markdown.json"
-    ) as f:
+    path = (
+        test_dir.parent.parent
+        / "fortls"
+        / "parsers"
+        / "internal"
+        / "intrinsic.procedures.markdown.json"
+    )
+    with open(path, encoding="utf-8") as f:
         intrinsics = json.load(f)
     ref_results = ["\n-----\n" + intrinsics["SIZE"]]
     validate_hover(results, ref_results)

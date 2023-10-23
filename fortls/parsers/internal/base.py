@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+from fortls.constants import BASE_TYPE_ID
 from fortls.helper_functions import fortran_md
-from fortls.objects import BASE_TYPE_ID
 
 
 # Fortran object classes

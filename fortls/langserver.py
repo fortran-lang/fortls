@@ -41,26 +41,26 @@ from fortls.helper_functions import (
     resolve_globs,
     set_keyword_ordering,
 )
-from fortls.intrinsics import (
+from fortls.json_templates import change_json, symbol_json, uri_json
+from fortls.jsonrpc import JSONRPC2Connection, path_from_uri, path_to_uri
+from fortls.parsers.internal.ast import FortranAST
+from fortls.parsers.internal.imports import Import
+from fortls.parsers.internal.intrinsics import (
     Intrinsic,
     get_intrinsic_keywords,
     load_intrinsics,
     set_lowercase_intrinsics,
 )
-from fortls.json_templates import change_json, symbol_json, uri_json
-from fortls.jsonrpc import JSONRPC2Connection, path_from_uri, path_to_uri
-from fortls.objects import (
-    FortranAST,
-    Import,
-    Scope,
-    Use,
-    Variable,
+from fortls.parsers.internal.parser import FortranFile, get_line_context
+from fortls.parsers.internal.scope import Scope
+from fortls.parsers.internal.use import Use
+from fortls.parsers.internal.utilities import (
     climb_type_tree,
     find_in_scope,
     find_in_workspace,
     get_use_tree,
 )
-from fortls.parse_fortran import FortranFile, get_line_context
+from fortls.parsers.internal.variable import Variable
 from fortls.regex_patterns import create_src_file_exts_str
 from fortls.version import __version__
 
