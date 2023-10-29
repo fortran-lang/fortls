@@ -134,6 +134,8 @@
 
 ## Fixed
 
+- Fixed preprocessor bug with `if` and `elif` conditionals
+  ([#322](https://github.com/fortran-lang/fortls/issues/322))
 - Fixed bug where type fields or methods were not detected if spaces were
   used around `%`
   ([#286](https://github.com/fortran-lang/fortls/issues/286))
