@@ -2090,6 +2090,7 @@ def preprocess_file(
     pp_skips = []
     pp_defines = []
     pp_stack = []
+    pp_stack_group = []
     defs_tmp = pp_defs.copy()
     def_regexes = {}
     output_file = []
@@ -2135,25 +2136,49 @@ def preprocess_file(
             # Closing/middle conditional statements
             inc_start = False
             exc_start = False
+            exc_continue = False
             if match.group(1) == "elif":
-                if pp_stack[-1][0] < 0:
-                    pp_stack[-1][0] = i + 1
-                    exc_start = True
+                if (not pp_stack_group) or (pp_stack_group[-1][0] != len(pp_stack)):
+                    # First elif statement for this elif group
+                    if pp_stack[-1][0] < 0:
+                        pp_stack_group.append([len(pp_stack), True])
+                    else:
+                        pp_stack_group.append([len(pp_stack), False])
+                if pp_stack_group[-1][1]:
+                    # An earlier if or elif in this group has been true
+                    exc_continue = True
+                    if pp_stack[-1][0] < 0:
+                        pp_stack[-1][0] = i + 1
+                elif eval_pp_if(line[match.end(1) :], defs_tmp):
+                    pp_stack[-1][1] = i + 1
+                    pp_skips.append(pp_stack.pop())
+                    pp_stack_group[-1][1] = True
+                    pp_stack.append([-1, -1])
+                    inc_start = True
                 else:
-                    if eval_pp_if(line[match.end(1) :], defs_tmp):
-                        pp_stack[-1][1] = i - 1
-                        pp_stack.append([-1, -1])
-                        inc_start = True
+                    exc_start = True
             elif match.group(1) == "else":
                 if pp_stack[-1][0] < 0:
                     pp_stack[-1][0] = i + 1
                     exc_start = True
+                elif (
+                    pp_stack_group
+                    and (pp_stack_group[-1][0] == len(pp_stack))
+                    and (pp_stack_group[-1][1])
+                ):
+                    # An earlier if or elif in this group has been true
+                    exc_continue = True
                 else:
                     pp_stack[-1][1] = i + 1
+                    pp_skips.append(pp_stack.pop())
+                    pp_stack.append([-1, -1])
                     inc_start = True
             elif match.group(1) == "endif":
+                if pp_stack_group and (pp_stack_group[-1][0] == len(pp_stack)):
+                    pp_stack_group.pop()
                 if pp_stack[-1][0] < 0:
                     pp_stack.pop()
+                    log.debug(f"{line.strip()} !!! Conditional TRUE/END({i + 1})")
                     continue
                 if pp_stack[-1][1] < 0:
                     pp_stack[-1][1] = i + 1
@@ -2164,6 +2189,8 @@ def preprocess_file(
                     log.debug(f"{line.strip()} !!! Conditional TRUE({i + 1})")
                 elif exc_start:
                     log.debug(f"{line.strip()} !!! Conditional FALSE({i + 1})")
+                elif exc_continue:
+                    log.debug(f"{line.strip()} !!! Conditional EXCLUDED({i + 1})")
             continue
         # Handle variable/macro definitions files
         match = FRegex.PP_DEF.match(line)
