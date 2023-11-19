@@ -4,7 +4,7 @@
 
 ![PyPI](https://img.shields.io/pypi/v/fortls?style=flat-square)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fortls?style=flat-square)
-[![PyPi Downloads via PePy](https://img.shields.io/badge/dynamic/json?style=flat-square&color&maxAge=86400&label=PyPi%20Downloads&query=%24.total_downloads&url=https%3A%2F%2Fapi.pepy.tech%2Fapi%2Fprojects%2Ffortls)](https://pepy.tech/project/fortls)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/fortls?style=flat-square&label=PyPi)](https://pepy.tech/project/fortls)
 ![Conda](https://img.shields.io/conda/dn/conda-forge/fortls?label=Anaconda&style=flat-square)
 ![GitHub License](https://img.shields.io/github/license/fortran-lang/fortls?style=flat-square)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/fortran-lang/fortls/main.yml?branch=master&label=CI&style=flat-square)
