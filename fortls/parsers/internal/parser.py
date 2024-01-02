@@ -49,29 +49,27 @@ from fortls.helper_functions import (
     strip_line_label,
     strip_strings,
 )
-from fortls.objects import (
-    Associate,
-    Block,
-    Do,
-    Enum,
-    FortranAST,
-    Function,
-    If,
-    Import,
-    ImportTypes,
-    Interface,
-    Method,
-    Module,
-    Program,
-    Scope,
-    Select,
-    Submodule,
-    Subroutine,
-    Type,
-    Use,
-    Variable,
-    Where,
-)
+
+from .associate import Associate
+from .ast import FortranAST
+from .block import Block
+from .do import Do
+from .enum import Enum
+from .function import Function
+from .if_block import If
+from .imports import Import, ImportTypes
+from .interface import Interface
+from .method import Method
+from .module import Module
+from .program import Program
+from .scope import Scope
+from .select import Select
+from .submodule import Submodule
+from .subroutine import Subroutine
+from .type import Type
+from .use import Use
+from .variable import Variable
+from .where import Where
 
 
 def get_line_context(line: str) -> tuple[str, None] | tuple[str, str]:

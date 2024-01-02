@@ -6,16 +6,15 @@ import os
 import pathlib
 
 from fortls.helper_functions import fortran_md, get_placeholders, map_keywords
-from fortls.objects import (
-    FortranAST,
-    FortranObj,
-    Function,
-    Module,
-    Subroutine,
-    Type,
-    Use,
-    Variable,
-)
+
+from .ast import FortranAST
+from .base import FortranObj
+from .function import Function
+from .module import Module
+from .subroutine import Subroutine
+from .type import Type
+from .use import Use
+from .variable import Variable
 
 intrinsic_ast = FortranAST()
 lowercase_intrinsics = False
