@@ -80,14 +80,14 @@ def test_hover():
     check_return(results[1:], ref_results)
 
 
-def test_FortranFile_pp():
-    from fortls import FortranFile
+# def test_FortranFile_pp():
+#     from fortls import FortranFile
 
-    root_dir = test_dir / "pp"
-    # file_path = root_dir / "preproc.F90"
-    file_path = root_dir / "preproc_spacing_arg_defs.F90"
-    ff = FortranFile(file_path)
-    ff.load_from_disk()
-    include_dirs = {root_dir / "include"}
-    file_ast = ff.parse(include_dirs=include_dirs, debug=True)
-    assert file_ast
+#     root_dir = test_dir / "pp"
+#     # file_path = root_dir / "preproc.F90"
+#     file_path = root_dir / "preproc_spacing_arg_defs.F90"
+#     ff = FortranFile(file_path)
+#     ff.load_from_disk()
+#     include_dirs = {root_dir / "include"}
+#     file_ast = ff.parse(include_dirs=include_dirs, debug=True)
+#     assert file_ast

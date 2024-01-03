@@ -9,9 +9,9 @@ from collections import Counter, deque
 
 # Python < 3.8 does not have typing.Literals
 try:
-    from typing import Literal, Tuple
+    from typing import Literal
 except ImportError:
-    from typing_extensions import Literal, Tuple
+    from typing_extensions import Literal
 
 from re import Match, Pattern
 
