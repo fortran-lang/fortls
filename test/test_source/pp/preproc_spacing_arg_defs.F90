@@ -14,10 +14,11 @@ program preprocessor_spacing_arg_defs
   end type test_type
 
   type(test_type) :: the_test
+  integer :: argtest
 
   call the_test%set_test()
 
-  integer, parameter :: argtest = MACROARGS(me%test_int, 4)
+  argtest = MACROARGS(the_test%test_int, 4)
 
 contains
   subroutine test_type_set_test(me)

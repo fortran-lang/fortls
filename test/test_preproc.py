@@ -42,9 +42,10 @@ def test_hover():
     string += hover_req(file_path, 30, 23)
     file_path = root_dir / "preproc_if_elif_skip.F90"
     string += hover_req(file_path, 30, 23)
-    # file_path = root_dir / "preproc_spacing_arg_defs.F90"
-    # string += hover_req(file_path, 11, 20)
-    # string += hover_req(file_path, 19, 25)
+    file_path = root_dir / "preproc_spacing_arg_defs.F90"
+    string += hover_req(file_path, 11, 20)
+    string += hover_req(file_path, 18, 17)
+    string += hover_req(file_path, 20, 13)
     config = str(root_dir / ".pp_conf.json")
     errcode, results = run_request(string, ["--config", config])
     assert errcode == 0
@@ -55,12 +56,12 @@ def test_hover():
         "```fortran90\n#define PETSC_ERR_INT_OVERFLOW 84\n```",
         "```fortran90\n#define varVar 55\n```",
         (
-            "```fortran90\n#define ewrite if (priority <= 3) write((priority),"
-            " format)\n```"
+            "```fortran90\n#define ewrite(priority, format)"
+            " if (priority <= 3) write((priority), format)\n```"
         ),
         (
-            "```fortran90\n#define ewrite2 if (priority <= 3) write((priority),"
-            " format)\n```"
+            "```fortran90\n#define ewrite2(priority, format)"
+            " if (priority <= 3) write((priority), format)\n```"
         ),
         "```fortran90\n#define SUCCESS .true.\n```",
         "```fortran90\nREAL, CONTIGUOUS, POINTER, DIMENSION(:) :: var1\n```",
@@ -71,8 +72,9 @@ def test_hover():
         "```fortran90\nINTEGER, PARAMETER :: res = 0+1+0+0\n```",
         "```fortran90\nINTEGER, PARAMETER :: res = 0+0+0+1\n```",
         "```fortran90\nINTEGER, PARAMETER :: res = 1+0+0+0\n```",
-        # "```fortran90\nPROCEDURE :: test_type_print_test\n```",
-        # "```fortran90\nINTEGER, PARAMETER :: argtest = me%test_int + 4\n```",
+        "```fortran90\n#define MAYBEWRAP(PROCEDURE) PROCEDURE\n```",
+        "```fortran90\nSUBROUTINE test_type_set_test()\n```",
+        "```fortran90\n#define MACROARGS(x , y ) x + y\n```",
     )
     assert len(ref_results) == len(results) - 1
     check_return(results[1:], ref_results)
@@ -82,7 +84,8 @@ def test_FortranFile_pp():
     from fortls import FortranFile
 
     root_dir = test_dir / "pp"
-    file_path = root_dir / "preproc.F90"
+    # file_path = root_dir / "preproc.F90"
+    file_path = root_dir / "preproc_spacing_arg_defs.F90"
     ff = FortranFile(file_path)
     ff.load_from_disk()
     include_dirs = {root_dir / "include"}

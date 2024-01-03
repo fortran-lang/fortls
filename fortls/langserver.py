@@ -751,11 +751,17 @@ class LangServer:
             return None
         # Search in Preprocessor defined variables
         if def_name in def_file.pp_defs:
+            def_value = def_file.pp_defs.get(def_name)
+            def_arg_str = ''
+            if isinstance(def_value, tuple):
+                def_arg_str, def_value = def_value
+                def_arg_str = f'({def_arg_str})'
+
             var = Variable(
                 def_file.ast,
                 def_line + 1,
                 def_name,
-                f"#define {def_name} {def_file.pp_defs.get(def_name)}",
+                f"#define {def_name}{def_arg_str} {def_value}",
                 [],
             )
             return var

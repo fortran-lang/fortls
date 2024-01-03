@@ -9,9 +9,9 @@ from collections import Counter, deque
 
 # Python < 3.8 does not have typing.Literals
 try:
-    from typing import Literal
+    from typing import Literal, Tuple
 except ImportError:
-    from typing_extensions import Literal
+    from typing_extensions import Literal, Tuple
 
 from re import Match, Pattern
 
@@ -2098,10 +2098,11 @@ def preprocess_file(
         if def_cont_name is not None:
             output_file.append("")
             if line.rstrip()[-1] != "\\":
-                defs_tmp[def_cont_name] += line.strip()
+                append_multiline_macro(defs_tmp, def_cont_name, line.strip())
                 def_cont_name = None
             else:
-                defs_tmp[def_cont_name] += line[0:-1].strip()
+                append_multiline_macro(defs_tmp, def_cont_name, line[0:-1].strip())
+
             continue
         # Handle conditional statements
         match = FRegex.PP_REGEX.match(line)
@@ -2206,15 +2207,24 @@ def preprocess_file(
             #     def_name += match.group(3)
             if (match.group(1) == "define") and (def_name not in defs_tmp):
                 eq_ind = line[match.end(0) :].find(" ")
+                if eq_ind < 0:
+                    eq_ind = line[match.end(0) :].find("\t")
+
                 if eq_ind >= 0:
                     # Handle multiline macros
                     if line.rstrip()[-1] == "\\":
-                        defs_tmp[def_name] = line[match.end(0) + eq_ind : -1].strip()
+                        def_value = line[match.end(0) + eq_ind : -1].strip()
                         def_cont_name = def_name
                     else:
-                        defs_tmp[def_name] = line[match.end(0) + eq_ind :].strip()
+                        def_value = line[match.end(0) + eq_ind :].strip()
                 else:
-                    defs_tmp[def_name] = "True"
+                    def_value = "True"
+
+                # are there arguments to parse?
+                if match.group(3):
+                    def_value = (match.group(4), def_value)
+
+                defs_tmp[def_name] = def_value
             elif (match.group(1) == "undef") and (def_name in defs_tmp):
                 defs_tmp.pop(def_name, None)
             log.debug(f"{line.strip()} !!! Define statement({i + 1})")
@@ -2265,8 +2275,16 @@ def preprocess_file(
                 continue
             def_regex = def_regexes.get(def_tmp)
             if def_regex is None:
-                def_regex = re.compile(rf"\b{def_tmp}\b")
+                if isinstance(value, tuple):
+                    def_regex = expand_def_func_macro(def_tmp, value)
+                else:
+                    def_regex = re.compile(rf"\b{def_tmp}\b")
+
                 def_regexes[def_tmp] = def_regex
+
+            if isinstance(def_regex, tuple):
+                def_regex, value = def_regex
+
             line_new, nsubs = def_regex.subn(value, line)
             if nsubs > 0:
                 log.debug(
@@ -2275,3 +2293,29 @@ def preprocess_file(
                 line = line_new
         output_file.append(line)
     return output_file, pp_skips, pp_defines, defs_tmp
+
+
+def expand_def_func_macro(def_name: str, def_value: Tuple[str, str]):
+    def_args, sub = def_value
+    def_args = def_args.split(',')
+    regex = re.compile(rf"\b{def_name}\s*\({','.join(['(.*)']*len(def_args))}\)")
+
+    for i, arg in enumerate(def_args):
+        arg = arg.strip()
+        sub = re.sub(rf"\b({arg})\b", rf"\\{i + 1}", sub)
+
+    return regex, sub
+
+
+def append_multiline_macro(pp_defs: dict, def_name: str, line: str):
+    def_value = pp_defs[def_name]
+    def_args = None
+    if isinstance(def_value, tuple):
+        def_args, def_value = def_value
+
+    def_value += line
+
+    if def_args is not None:
+        def_value = (def_args, def_value)
+
+    pp_defs[def_name] = def_value

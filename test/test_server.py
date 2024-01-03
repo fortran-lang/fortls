@@ -175,7 +175,7 @@ def test_workspace_symbols():
     def check_return(result_array):
         # Expected objects
         objs = (
-            ["argtest", 13, 19],
+            ["argtest", 13, 16],
             ["test", 6, 7],
             ["test_abstract", 2, 0],
             ["test_associate_block", 2, 0],
@@ -198,10 +198,10 @@ def test_workspace_symbols():
             ["test_str2", 13, 5],
             ["test_sub", 6, 8],
             ["test_type", 5, 5],
-            ["test_type_set_test", 6, 22],
+            ["test_type_set_test", 6, 23],
             ["test_vis_mod", 2, 0],
             ["the_test", 13, 15],
-            ["wrap_test_type_set_test", 6, 30],
+            ["wrap_test_type_set_test", 6, 31],
         )
         assert len(result_array) == len(objs)
         for i, obj in enumerate(objs):

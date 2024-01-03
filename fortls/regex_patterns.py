@@ -124,13 +124,13 @@ class FortranRegularExpressions:
     FREE_FORMAT_TEST: Pattern = compile(r"[ ]{1,4}[a-z]", I)
     # Preprocessor matching rules
     DEFINED: Pattern = compile(r"defined[ ]*\(?[ ]*([a-z_]\w*)[ ]*\)?", I)
-    PP_REGEX: Pattern = compile(r"#\s*(if |ifdef|ifndef|else|elif|endif)")
+    PP_REGEX: Pattern = compile(r"\s*#\s*(if |ifdef|ifndef|else|elif|endif)")
     PP_DEF: Pattern = compile(
-        r"#\s*(define|undef)\s*(\w+)(\(\s*(\w+\s*,?[\s\w,]*)*\s*\))?",
+        r"\s*#\s*(define|undef)\s*(\w+)(\(\s*(\w+\s*,?[\s\w,]*)*\s*\))?",
         I,
     )
     PP_DEF_TEST: Pattern = compile(r"(![ ]*)?defined[ ]*\([ ]*(\w*)[ ]*\)$", I)
-    PP_INCLUDE: Pattern = compile(r"#\s*include\s*([\"\w\.]*)", I)
+    PP_INCLUDE: Pattern = compile(r"\s*#\s*include\s*([\"\w\.]*)", I)
     PP_ANY: Pattern = compile(r"(^\s*#\s*\w*:?\w+)")
     # Context matching rules
     CALL: Pattern = compile(r"[ ]*CALL[ ]+[\w%]*$", I)
