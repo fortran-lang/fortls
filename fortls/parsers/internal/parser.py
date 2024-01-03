@@ -2295,9 +2295,9 @@ def preprocess_file(
     return output_file, pp_skips, pp_defines, defs_tmp
 
 
-def expand_def_func_macro(def_name: str, def_value: Tuple[str, str]):
+def expand_def_func_macro(def_name: str, def_value: tuple[str, str]):
     def_args, sub = def_value
-    def_args = def_args.split(',')
+    def_args = def_args.split(",")
     regex = re.compile(rf"\b{def_name}\s*\({','.join(['(.*)']*len(def_args))}\)")
 
     for i, arg in enumerate(def_args):
