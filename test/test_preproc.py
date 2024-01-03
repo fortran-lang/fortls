@@ -85,6 +85,6 @@ def test_FortranFile_pp():
     file_path = root_dir / "preproc.F90"
     ff = FortranFile(file_path)
     ff.load_from_disk()
-    include_dirs = set([root_dir / 'include'])
+    include_dirs = {root_dir / "include"}
     file_ast = ff.parse(include_dirs=include_dirs, debug=True)
     assert file_ast
