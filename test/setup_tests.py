@@ -52,14 +52,14 @@ def run_request(request, fortls_args: list[str] = None):
             try:
                 # Present in `method`s
                 parsed_results.append(result["params"])
-            except:
+            except Exception as exc:
                 raise RuntimeError(
                     "Only 'result' and 'params' keys have been implemented for testing."
                     " Please add the new key."
-                )
-        except:
+                ) from exc
+        except Exception as exc:
             raise RuntimeError(
                 "Unexpected error encountered trying to extract server results"
-            )
+            ) from exc
     errcode = pid.poll()
     return errcode, parsed_results
