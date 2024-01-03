@@ -179,7 +179,8 @@ def test_version_update_pypi():
     s = LangServer(conn=JSONRPC2Connection(ReadWriter(stdin, stdout)), settings=args)
     s.root_path = (Path(__file__).parent / "test_source").resolve()
     did_update = s._update_version_pypi(test=True)
-    assert did_update
+    isconda = os.path.exists(os.path.join(sys.prefix, "conda-meta"))
+    assert not did_update if isconda else did_update
 
     s.disable_autoupdate = True
     did_update = s._update_version_pypi()

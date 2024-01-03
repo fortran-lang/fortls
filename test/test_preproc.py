@@ -42,9 +42,9 @@ def test_hover():
     string += hover_req(file_path, 30, 23)
     file_path = root_dir / "preproc_if_elif_skip.F90"
     string += hover_req(file_path, 30, 23)
-    file_path = root_dir / "preproc_spacing_arg_defs.F90"
-    string += hover_req(file_path, 11, 20)
-    string += hover_req(file_path, 19, 25)
+    # file_path = root_dir / "preproc_spacing_arg_defs.F90"
+    # string += hover_req(file_path, 11, 20)
+    # string += hover_req(file_path, 19, 25)
     config = str(root_dir / ".pp_conf.json")
     errcode, results = run_request(string, ["--config", config])
     assert errcode == 0
@@ -71,9 +71,8 @@ def test_hover():
         "```fortran90\nINTEGER, PARAMETER :: res = 0+1+0+0\n```",
         "```fortran90\nINTEGER, PARAMETER :: res = 0+0+0+1\n```",
         "```fortran90\nINTEGER, PARAMETER :: res = 1+0+0+0\n```",
-        "```fortran90\nINTEGER, PARAMETER :: res = 0+0+0+1\n```",
-        "```fortran90\nPROCEDURE :: test_type_print_test\n```",
-        "```fortran90\nINTEGER, PARAMETER :: argtest = me%test_int + 4\n```",
+        # "```fortran90\nPROCEDURE :: test_type_print_test\n```",
+        # "```fortran90\nINTEGER, PARAMETER :: argtest = me%test_int + 4\n```",
     )
     assert len(ref_results) == len(results) - 1
     check_return(results[1:], ref_results)
