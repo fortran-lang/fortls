@@ -41,7 +41,7 @@
     },
     "allow_conda_autoupdate": {
       "title": "Allow Conda Autoupdate",
-      "description": "By default, fortls does not permit autoupdating in conda environments.  Use this option to enable fortls to automatically check conda-forge for newer version and install them.",
+      "description": "By default, fortls does not permit autoupdating in conda environments. Use this option to enable fortls to automatically check conda-forge for newer version and install them.",
       "default": false,
       "type": "boolean"
     },
