@@ -1852,7 +1852,8 @@ class LangServer:
             [
                 "conda",
                 "update",
-                "-c", "conda-forge",
+                "-c",
+                "conda-forge",
                 "--yes",
                 "--quiet",
                 "fortls",
