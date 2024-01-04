@@ -12,7 +12,7 @@ parser = cli("fortls")
 def test_command_line_general_options():
     args = parser.parse_args(
         "-c config_file.json -n 2 --notify_init --incremental_sync --sort_keywords"
-        " --disable_autoupdate --debug_log".split()
+        " --disable_autoupdate --allow_conda_autoupdate --debug_log".split()
     )
     assert args.config == "config_file.json"
     assert args.nthreads == 2
@@ -20,6 +20,7 @@ def test_command_line_general_options():
     assert args.incremental_sync
     assert args.sort_keywords
     assert args.disable_autoupdate
+    assert args.allow_conda_autoupdate
     assert args.debug_log
 
 
@@ -83,14 +84,14 @@ def test_command_line_code_actions_options():
     assert args.enable_code_actions
 
 
-def unittest_server_init():
+def unittest_server_init(conn=None):
     from fortls.langserver import LangServer
 
     root = (Path(__file__).parent / "test_source").resolve()
     parser = cli("fortls")
     args = parser.parse_args("-c f90_config.json".split())
 
-    server = LangServer(None, vars(args))
+    server = LangServer(conn, vars(args))
     server.root_path = root
     server._load_config_file()
 
@@ -104,6 +105,7 @@ def test_config_file_general_options():
     assert server.incremental_sync
     assert server.sort_keywords
     assert server.disable_autoupdate
+    assert server.allow_conda_autoupdate
 
 
 def test_config_file_dir_parsing_options():
@@ -164,28 +166,23 @@ def test_config_file_codeactions_options():
     assert server.enable_code_actions
 
 
-def test_version_update_pypi():
+def test_version_update():
     from packaging import version
 
     from fortls.jsonrpc import JSONRPC2Connection, ReadWriter
-    from fortls.langserver import LangServer
-
-    parser = cli("fortls")
-    args = parser.parse_args("-c f90_config.json".split())
-    args = vars(args)
-    args["disable_autoupdate"] = False
 
     stdin, stdout = sys.stdin.buffer, sys.stdout.buffer
-    s = LangServer(conn=JSONRPC2Connection(ReadWriter(stdin, stdout)), settings=args)
-    s.root_path = (Path(__file__).parent / "test_source").resolve()
-    did_update = s._update_version_pypi(test=True)
+    s, root = unittest_server_init(JSONRPC2Connection(ReadWriter(stdin, stdout)))
+    s.disable_autoupdate = False
+
+    did_update = s._update_version(test=True)
     assert did_update
 
     s.disable_autoupdate = True
-    did_update = s._update_version_pypi()
+    did_update = s._update_version()
     assert not did_update
 
     s.disable_autoupdate = False
     s._version = version.parse("999.0.0")
-    did_update = s._update_version_pypi()
+    did_update = s._update_version()
     assert not did_update

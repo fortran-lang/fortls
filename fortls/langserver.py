@@ -202,7 +202,7 @@ class LangServer:
         self._config_logger(request)
         self._load_intrinsics()
         self._add_source_dirs()
-        if self._update_version_pypi():
+        if self._update_version():
             self.post_message(
                 "Please restart the server for the new version to activate",
                 Severity.info,
@@ -1590,6 +1590,9 @@ class LangServer:
         self.disable_autoupdate = config_dict.get(
             "disable_autoupdate", self.disable_autoupdate
         )
+        self.allow_conda_autoupdate = config_dict.get(
+            "allow_conda_autoupdate", self.allow_conda_autoupdate
+        )
 
         # Autocomplete options -------------------------------------------------
         self.autocomplete_no_prefix = config_dict.get(
@@ -1760,8 +1763,8 @@ class LangServer:
             schar = echar = 0
         return uri_json(path_to_uri(obj_file.path), sline, schar, sline, echar)
 
-    def _update_version_pypi(self, test: bool = False):
-        """Fetch updates from PyPi for fortls
+    def _update_version(self, test: bool = False):
+        """Fetch updates from PyPi or conda-forge for fortls
 
         Parameters
         ----------
@@ -1778,7 +1781,8 @@ class LangServer:
             request = urllib.request.Request("https://pypi.org/pypi/fortls/json")
             with urllib.request.urlopen(request) as resp:
                 info = json.loads(resp.read().decode("utf-8"))
-                remote_v = version.parse(info["info"]["version"])
+                remote_v_str = info["info"]["version"]
+                remote_v = version.parse(remote_v_str)
                 # Do not update from remote if it is a prerelease
                 if remote_v.is_prerelease:
                     return False
@@ -1788,35 +1792,79 @@ class LangServer:
                         "A newer version of fortls is available for download",
                         Severity.info,
                     )
-                    # Anaconda environments should handle their updates through conda
                     if os.path.exists(os.path.join(sys.prefix, "conda-meta")):
-                        return False
-                    self.post_message(
-                        f"Downloading from PyPi fortls {info['info']['version']}",
-                        Severity.info,
-                    )
-                    # Run pip
-                    result = subprocess.run(
-                        [
-                            sys.executable,
-                            "-m",
-                            "pip",
-                            "install",
-                            "fortls",
-                            "--upgrade",
-                            "--user",
-                        ],
-                        capture_output=True,
-                    )
-                    if result.stdout:
-                        log.info(result.stdout.decode("utf-8"))
-                    if result.stderr:
-                        log.error(result.stderr.decode("utf-8"))
-                    return True
+                        return self._update_version_conda(remote_v_str)
+                    return self._update_version_pypi(remote_v_str)
         # No internet connection exceptions
         except (URLError, KeyError):
             self.post_message("Failed to update the fortls", Severity.warn)
         return False
+
+    def _update_version_pypi(self, version: str):
+        """Fetch updates from PyPi for fortls
+
+        Parameters
+        ----------
+        version : str
+            version to install, only used for update notification
+        """
+        self.post_message(
+            f"Downloading from PyPi fortls {version}",
+            Severity.info,
+        )
+        # Run pip
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "pip",
+                "install",
+                "fortls",
+                "--upgrade",
+                "--user",
+            ],
+            capture_output=True,
+        )
+        if result.stdout:
+            log.info(result.stdout.decode("utf-8"))
+        if result.stderr:
+            log.error(result.stderr.decode("utf-8"))
+        return result.returncode == 0
+
+    def _update_version_conda(self, version: str):
+        """Fetch updates from conda-forge for fortls
+
+        Parameters
+        ----------
+        version : str
+            version to install, only used for update notification
+        """
+
+        if not self.allow_conda_autoupdate:
+            return False
+
+        self.post_message(
+            f"Downloading from conda-forge fortls {version}",
+            Severity.info,
+        )
+        # Run conda
+        result = subprocess.run(
+            [
+                "conda",
+                "update",
+                "-c", "conda-forge",
+                "--yes",
+                "--quiet",
+                "fortls",
+                # "conda-forge::fortls",
+            ],
+            capture_output=True,
+        )
+        if result.stdout:
+            log.info(result.stdout.decode("utf-8"))
+        if result.stderr:
+            log.error(result.stderr.decode("utf-8"))
+        return result.returncode == 0
 
 
 class JSONRPC2Error(Exception):

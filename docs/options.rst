@@ -49,6 +49,7 @@ All the ``fortls`` settings with their default arguments can be found below
       "incremental_sync": false,
       "sort_keywords": false,
       "disable_autoupdate": false,
+      "allow_conda_autoupdate": false,
       "debug_log": false,
 
       "source_dirs": ["./**"],

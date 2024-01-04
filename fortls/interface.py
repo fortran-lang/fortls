@@ -88,7 +88,16 @@ def cli(name: str = "fortls") -> argparse.ArgumentParser:
         action="store_true",
         help=(
             "fortls automatically checks PyPi for newer version and installs them."
-            "Use this option to disable the autoupdate feature."
+            " Use this option to disable the autoupdate feature."
+        ),
+    )
+    parser.add_argument(
+        "--allow_conda_autoupdate",
+        action="store_true",
+        help=(
+            "By default, fortls does not permit autoupdating in conda environments."
+            " Use this option to enable fortls to automatically check conda-forge"
+            " for newer version and install them."
         ),
     )
     # XXX: Deprecated, argument not attached to anything. Remove
