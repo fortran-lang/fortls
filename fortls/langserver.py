@@ -755,6 +755,7 @@ class LangServer:
             def_arg_str = ""
             if isinstance(def_value, tuple):
                 def_arg_str, def_value = def_value
+                def_arg_str = ', '.join([x.strip() for x in def_arg_str.split(',')])
                 def_arg_str = f"({def_arg_str})"
 
             var = Variable(

@@ -126,7 +126,7 @@ class FortranRegularExpressions:
     DEFINED: Pattern = compile(r"defined[ ]*\(?[ ]*([a-z_]\w*)[ ]*\)?", I)
     PP_REGEX: Pattern = compile(r"[ ]*#[ ]*(if |ifdef|ifndef|else|elif|endif)")
     PP_DEF: Pattern = compile(
-        r"[ ]*#[ ]*(define|undef)[ ]+(\w+)(\([ ]*([\w][ \w,]*)*[ ]*\))?",
+        r"[ ]*#[ ]*(define|undef)[ ]+(\w+)(\([ ]*([ \w,]*?)[ ]*\))?",
         I,
     )
     PP_DEF_TEST: Pattern = compile(r"(![ ]*)?defined[ ]*\([ ]*(\w*)[ ]*\)$", I)

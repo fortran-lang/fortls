@@ -74,7 +74,7 @@ def test_hover():
         "```fortran90\nINTEGER, PARAMETER :: res = 1+0+0+0\n```",
         "```fortran90\n#define MAYBEWRAP(PROCEDURE) PROCEDURE\n```",
         "```fortran90\nSUBROUTINE test_type_set_test()\n```",
-        "```fortran90\n#define MACROARGS(x , y ) x + y\n```",
+        "```fortran90\n#define MACROARGS(x, y) x + y\n```",
     )
     assert len(ref_results) == len(results) - 1
     check_return(results[1:], ref_results)
