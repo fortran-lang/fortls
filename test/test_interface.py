@@ -83,14 +83,14 @@ def test_command_line_code_actions_options():
     assert args.enable_code_actions
 
 
-def unittest_server_init():
+def unittest_server_init(conn=None):
     from fortls.langserver import LangServer
 
     root = (Path(__file__).parent / "test_source").resolve()
     parser = cli("fortls")
     args = parser.parse_args("-c f90_config.json".split())
 
-    server = LangServer(None, vars(args))
+    server = LangServer(conn, vars(args))
     server.root_path = root
     server._load_config_file()
 
@@ -168,18 +168,14 @@ def test_version_update_pypi():
     from packaging import version
 
     from fortls.jsonrpc import JSONRPC2Connection, ReadWriter
-    from fortls.langserver import LangServer
-
-    parser = cli("fortls")
-    args = parser.parse_args("-c f90_config.json".split())
-    args = vars(args)
-    args["disable_autoupdate"] = False
 
     stdin, stdout = sys.stdin.buffer, sys.stdout.buffer
-    s = LangServer(conn=JSONRPC2Connection(ReadWriter(stdin, stdout)), settings=args)
-    s.root_path = (Path(__file__).parent / "test_source").resolve()
+    s, root = unittest_server_init(JSONRPC2Connection(ReadWriter(stdin, stdout)))
+    s.disable_autoupdate = False
+
     did_update = s._update_version_pypi(test=True)
-    assert did_update
+    isconda = os.path.exists(os.path.join(sys.prefix, "conda-meta"))
+    assert not did_update if isconda else did_update
 
     s.disable_autoupdate = True
     did_update = s._update_version_pypi()
