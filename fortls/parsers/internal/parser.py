@@ -2043,13 +2043,41 @@ def preprocess_file(
     # Initial implementation only looks for "if" and "ifndef" statements.
     # For "if" statements all blocks are excluded except the "else" block if present
     # For "ifndef" statements all blocks excluding the first block are excluded
-    def eval_pp_if(text, defs: dict = None):
-        def replace_ops(expr: str):
+    def eval_pp_if(text, defs: dict = None, pp_parse_intel: bool = False):
+        def replace_ops(expr: str, pp_parse_intel: bool):
             expr = expr.replace("&&", " and ")
             expr = expr.replace("||", " or ")
             expr = expr.replace("!=", " <> ")
             expr = expr.replace("!", " not ")
             expr = expr.replace(" <> ", " != ")
+
+            if pp_parse_intel:
+                expr = expr.replace("/=", " != ")
+                expr = expr.replace(".AND.", " and ")
+                expr = expr.replace(".LT.", " < ")
+                expr = expr.replace(".GT.", " > ")
+                expr = expr.replace(".EQ.", " == ")
+                expr = expr.replace(".LE.", " <= ")
+                expr = expr.replace(".GE.", " >= ")
+                expr = expr.replace(".NE.", " != ")
+                expr = expr.replace(".EQV.", " == ")
+                expr = expr.replace(".NEQV.", " != ")
+                expr = expr.replace(".NOT.", " not ")
+                expr = expr.replace(".OR.", " or ")
+                expr = expr.replace(".XOR.", " != ")  # admittedly a hack...
+                expr = expr.replace(".and.", " and ")
+                expr = expr.replace(".lt.", " < ")
+                expr = expr.replace(".gt.", " > ")
+                expr = expr.replace(".eq.", " == ")
+                expr = expr.replace(".le.", " <= ")
+                expr = expr.replace(".ge.", " >= ")
+                expr = expr.replace(".ne.", " != ")
+                expr = expr.replace(".eqv.", " == ")
+                expr = expr.replace(".neqv.", " != ")
+                expr = expr.replace(".not.", " not ")
+                expr = expr.replace(".or.", " or ")
+                expr = expr.replace(".xor.", " != ")  # admittedly a hack...
+
             return expr
 
         def replace_defined(line: str):
@@ -2085,7 +2113,7 @@ def preprocess_file(
         out_line = replace_defined(text)
         out_line = replace_vars(out_line)
         try:
-            line_res = eval(replace_ops(out_line))
+            line_res = eval(replace_ops(out_line, pp_parse_intel))
         except:
             return False
         else:
@@ -2123,14 +2151,14 @@ def preprocess_file(
             def_name = None
             if_start = False
             # Opening conditional statements
-            if match.group(2) == "if ":
-                is_path = eval_pp_if(line[match.end(2) :], defs_tmp)
+            if match.group(2).lower() == "if ":
+                is_path = eval_pp_if(line[match.end(2) :], defs_tmp, pp_parse_intel)
                 if_start = True
-            elif match.group(2) == "ifdef":
+            elif match.group(2).lower() == "ifdef":
                 if_start = True
                 def_name = line[match.end(0) :].strip()
                 is_path = def_name in defs_tmp
-            elif match.group(2) == "ifndef":
+            elif match.group(2).lower() == "ifndef":
                 if_start = True
                 def_name = line[match.end(0) :].strip()
                 is_path = not (def_name in defs_tmp)
@@ -2148,7 +2176,7 @@ def preprocess_file(
             inc_start = False
             exc_start = False
             exc_continue = False
-            if match.group(2) == "elif":
+            if match.group(2).lower() == "elif":
                 if (not pp_stack_group) or (pp_stack_group[-1][0] != len(pp_stack)):
                     # First elif statement for this elif group
                     if pp_stack[-1][0] < 0:
@@ -2160,7 +2188,7 @@ def preprocess_file(
                     exc_continue = True
                     if pp_stack[-1][0] < 0:
                         pp_stack[-1][0] = i + 1
-                elif eval_pp_if(line[match.end(2) :], defs_tmp):
+                elif eval_pp_if(line[match.end(2) :], defs_tmp, pp_parse_intel):
                     pp_stack[-1][1] = i + 1
                     pp_skips.append(pp_stack.pop())
                     pp_stack_group[-1][1] = True
@@ -2168,7 +2196,7 @@ def preprocess_file(
                     inc_start = True
                 else:
                     exc_start = True
-            elif match.group(2) == "else":
+            elif match.group(2).lower() == "else":
                 if pp_stack[-1][0] < 0:
                     pp_stack[-1][0] = i + 1
                     exc_start = True
@@ -2184,7 +2212,7 @@ def preprocess_file(
                     pp_skips.append(pp_stack.pop())
                     pp_stack.append([-1, -1])
                     inc_start = True
-            elif match.group(2) == "endif":
+            elif match.group(2).lower() == "endif":
                 if pp_stack_group and (pp_stack_group[-1][0] == len(pp_stack)):
                     pp_stack_group.pop()
                 if pp_stack[-1][0] < 0:
