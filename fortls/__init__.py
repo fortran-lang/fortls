@@ -503,8 +503,12 @@ def debug_server_parser(args):
         error_exit(f"Reading file failed: {err_str}")
     print(f"  Detected format: {'fixed' if file_obj.fixed else 'free'}")
     print("\n=========\nParser Output\n=========\n")
-    file_ast = file_obj.parse(debug=True, pp_defs=pp_defs, include_dirs=include_dirs,
-                              pp_parse_intel=pp_parse_intel)
+    file_ast = file_obj.parse(
+        debug=True,
+        pp_defs=pp_defs,
+        include_dirs=include_dirs,
+        pp_parse_intel=pp_parse_intel,
+    )
     print("\n=========\nObject Tree\n=========\n")
     for obj in file_ast.get_scopes():
         print("{}: {}".format(obj.get_type(), obj.FQSN))

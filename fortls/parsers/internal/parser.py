@@ -1176,7 +1176,10 @@ class FortranFile:
         return line_no, word_range
 
     def preprocess(
-        self, pp_defs: dict = None, include_dirs: set = None, debug: bool = False,
+        self,
+        pp_defs: dict = None,
+        include_dirs: set = None,
+        debug: bool = False,
         pp_parse_intel: bool = False,
     ) -> tuple[list, list]:
         if pp_defs is None:
@@ -1270,7 +1273,9 @@ class FortranFile:
         if self.preproc:
             log.debug("=== PreProc Pass ===\n")
             pp_skips, pp_defines = self.preprocess(
-                pp_defs=pp_defs, include_dirs=include_dirs, debug=debug,
+                pp_defs=pp_defs,
+                include_dirs=include_dirs,
+                debug=debug,
                 pp_parse_intel=pp_parse_intel,
             )
             for pp_reg in pp_skips:
@@ -2200,8 +2205,9 @@ def preprocess_file(
             continue
         # Handle variable/macro definitions files
         match = FRegex.PP_DEF.match(line)
-        if ((match is not None and check_pp_prefix(match.group(1), pp_parse_intel))
-                and ((len(pp_stack) == 0) or (pp_stack[-1][0] < 0))):
+        if (match is not None and check_pp_prefix(match.group(1), pp_parse_intel)) and (
+            (len(pp_stack) == 0) or (pp_stack[-1][0] < 0)
+        ):
             output_file.append(line)
             pp_defines.append(i + 1)
             def_name = match.group(3)
@@ -2233,9 +2239,10 @@ def preprocess_file(
                     def_value = (match.group(5), def_value)
 
                 defs_tmp[def_name] = def_value
-            elif ((match.group(2) == "undef"
-                    or (pp_parse_intel and match.group(2) == "undefine"))
-                    and (def_name in defs_tmp)):
+            elif (
+                match.group(2) == "undef"
+                or (pp_parse_intel and match.group(2) == "undefine")
+            ) and (def_name in defs_tmp):
                 defs_tmp.pop(def_name, None)
             log.debug(f"{line.strip()} !!! Define statement({i + 1})")
             continue
@@ -2333,4 +2340,4 @@ def append_multiline_macro(pp_defs: dict, def_name: str, line: str):
 
 
 def check_pp_prefix(prefix: str, pp_parse_intel: bool):
-    return prefix == '#' or (pp_parse_intel and FRegex.INTEL_FPP_PRE.match(prefix))
+    return prefix == "#" or (pp_parse_intel and FRegex.INTEL_FPP_PRE.match(prefix))
