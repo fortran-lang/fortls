@@ -2044,39 +2044,41 @@ def preprocess_file(
     # For "if" statements all blocks are excluded except the "else" block if present
     # For "ifndef" statements all blocks excluding the first block are excluded
     def eval_pp_if(text, defs: dict = None, pp_parse_intel: bool = False):
-        def replace_ops(expr: str, pp_parse_intel: bool):
+        def replace_ops(expr: str):
             expr = expr.replace("&&", " and ")
             expr = expr.replace("||", " or ")
             expr = expr.replace("!=", " <> ")
             expr = expr.replace("!", " not ")
             expr = expr.replace(" <> ", " != ")
 
-            if pp_parse_intel:
-                expr = expr.replace("/=", " != ")
-                expr = expr.replace(".AND.", " and ")
-                expr = expr.replace(".LT.", " < ")
-                expr = expr.replace(".GT.", " > ")
-                expr = expr.replace(".EQ.", " == ")
-                expr = expr.replace(".LE.", " <= ")
-                expr = expr.replace(".GE.", " >= ")
-                expr = expr.replace(".NE.", " != ")
-                expr = expr.replace(".EQV.", " == ")
-                expr = expr.replace(".NEQV.", " != ")
-                expr = expr.replace(".NOT.", " not ")
-                expr = expr.replace(".OR.", " or ")
-                expr = expr.replace(".XOR.", " != ")  # admittedly a hack...
-                expr = expr.replace(".and.", " and ")
-                expr = expr.replace(".lt.", " < ")
-                expr = expr.replace(".gt.", " > ")
-                expr = expr.replace(".eq.", " == ")
-                expr = expr.replace(".le.", " <= ")
-                expr = expr.replace(".ge.", " >= ")
-                expr = expr.replace(".ne.", " != ")
-                expr = expr.replace(".eqv.", " == ")
-                expr = expr.replace(".neqv.", " != ")
-                expr = expr.replace(".not.", " not ")
-                expr = expr.replace(".or.", " or ")
-                expr = expr.replace(".xor.", " != ")  # admittedly a hack...
+            return expr
+
+        def replace_intel_ops(expr: str):
+            expr = expr.replace("/=", " != ")
+            expr = expr.replace(".AND.", " && ")
+            expr = expr.replace(".LT.", " < ")
+            expr = expr.replace(".GT.", " > ")
+            expr = expr.replace(".EQ.", " == ")
+            expr = expr.replace(".LE.", " <= ")
+            expr = expr.replace(".GE.", " >= ")
+            expr = expr.replace(".NE.", " != ")
+            expr = expr.replace(".EQV.", " == ")
+            expr = expr.replace(".NEQV.", " != ")
+            expr = expr.replace(".NOT.", "!")
+            expr = expr.replace(".OR.", " || ")
+            expr = expr.replace(".XOR.", " != ")  # admittedly a hack...
+            expr = expr.replace(".and.", " && ")
+            expr = expr.replace(".lt.", " < ")
+            expr = expr.replace(".gt.", " > ")
+            expr = expr.replace(".eq.", " == ")
+            expr = expr.replace(".le.", " <= ")
+            expr = expr.replace(".ge.", " >= ")
+            expr = expr.replace(".ne.", " != ")
+            expr = expr.replace(".eqv.", " == ")
+            expr = expr.replace(".neqv.", " != ")
+            expr = expr.replace(".not.", "!")
+            expr = expr.replace(".or.", " || ")
+            expr = expr.replace(".xor.", " != ")  # admittedly a hack...
 
             return expr
 
@@ -2110,10 +2112,15 @@ def preprocess_file(
 
         if defs is None:
             defs = {}
-        out_line = replace_defined(text)
+
+        out_line = text
+        if pp_parse_intel:
+            out_line = replace_intel_ops(out_line)
+
+        out_line = replace_defined(out_line)
         out_line = replace_vars(out_line)
         try:
-            line_res = eval(replace_ops(out_line, pp_parse_intel))
+            line_res = eval(replace_ops(out_line))
         except:
             return False
         else:
