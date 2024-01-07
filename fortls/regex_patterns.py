@@ -124,14 +124,20 @@ class FortranRegularExpressions:
     FREE_FORMAT_TEST: Pattern = compile(r"[ ]{1,4}[a-z]", I)
     # Preprocessor matching rules
     DEFINED: Pattern = compile(r"defined[ ]*\(?[ ]*([a-z_]\w*)[ ]*\)?", I)
-    PP_REGEX: Pattern = compile(r"[ ]*#[ ]*(if |ifdef|ifndef|else|elif|endif)")
+    INTEL_FPP_PRE_STR = r"[c!*]DEC\$|[c!*]DIR\$|!MS\$"
+    INTEL_FPP_PRE: Pattern = compile(f"{INTEL_FPP_PRE_STR}", I)
+    PP_REGEX: Pattern = compile(
+        rf"[ ]*(#|{INTEL_FPP_PRE_STR})[ ]*(if |ifdef|ifndef|else|elif|endif)",
+        I,
+    )
     PP_DEF: Pattern = compile(
-        r"[ ]*#[ ]*(define|undef)[ ]+(\w+)(\([ ]*([ \w,]*?)[ ]*\))?",
+        rf"[ ]*(#|{INTEL_FPP_PRE_STR})[ ]*(define|undef|undefined)"
+        r"[ ]+(\w+)(\([ ]*([ \w,]*?)[ ]*\))?",
         I,
     )
     PP_DEF_TEST: Pattern = compile(r"(![ ]*)?defined[ ]*\([ ]*(\w*)[ ]*\)$", I)
     PP_INCLUDE: Pattern = compile(r"[ ]*#[ ]*include[ ]+([\"\w\.]*)", I)
-    PP_ANY: Pattern = compile(r"(^[ ]*#[ ]*\w*:?\w+)")
+    PP_ANY: Pattern = compile(rf"(^[ ]*(?:#|{INTEL_FPP_PRE_STR})[ ]*\w*:?\w+)")
     # Context matching rules
     CALL: Pattern = compile(r"[ ]*CALL[ ]+[\w%]*$", I)
     INT_STMNT: Pattern = compile(r"^[ ]*[a-z]*$", I)

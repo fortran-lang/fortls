@@ -65,12 +65,14 @@ def test_command_line_diagnostic_options():
 
 def test_command_line_preprocessor_options():
     args = parser.parse_args(
-        "--pp_suffixes .h .fh --include_dirs /usr/include/** ./local/incl --pp_defs"
+        "--pp_suffixes .h .fh --include_dirs /usr/include/** ./local/incl"
+        " --pp_parse_intel --pp_defs"
         ' {"HAVE_PETSC":"","HAVE_ZOLTAN":"","Mat":"type(tMat)"}'.split()
     )
     assert args.pp_suffixes == [".h", ".fh"]
     assert args.include_dirs == {"/usr/include/**", "./local/incl"}
     assert args.pp_defs == {"HAVE_PETSC": "", "HAVE_ZOLTAN": "", "Mat": "type(tMat)"}
+    assert args.pp_parse_intel
 
 
 def test_command_line_symbol_options():
@@ -150,6 +152,7 @@ def test_config_file_preprocessor_options():
         "HAVE_ZOLTAN": "",
         "Mat": "type(tMat)",
     }
+    assert server.pp_parse_intel
 
 
 def test_config_file_symbols_options():

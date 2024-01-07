@@ -1176,7 +1176,8 @@ class FortranFile:
         return line_no, word_range
 
     def preprocess(
-        self, pp_defs: dict = None, include_dirs: set = None, debug: bool = False
+        self, pp_defs: dict = None, include_dirs: set = None, debug: bool = False,
+        pp_parse_intel: bool = False,
     ) -> tuple[list, list]:
         if pp_defs is None:
             pp_defs = {}
@@ -1189,6 +1190,7 @@ class FortranFile:
             pp_defs=pp_defs,
             include_dirs=include_dirs,
             debug=debug,
+            pp_parse_intel=pp_parse_intel,
         )
         return pp_skips, pp_defines
 
@@ -1231,6 +1233,7 @@ class FortranFile:
         debug: bool = False,
         pp_defs: dict = None,
         include_dirs: set = None,
+        pp_parse_intel: bool = False,
     ) -> FortranAST:
         """Parse Fortran file contents of a fortran_file object and build an
         Abstract Syntax Tree (AST)
@@ -1243,6 +1246,8 @@ class FortranFile:
             Preprocessor definitions and their values, by default None
         include_dirs : set, optional
             Preprocessor include directories, by default None
+        pp_parse_intel : bool, optional
+            Parse Intel FPP directives, by default False
 
         Returns
         -------
@@ -1265,7 +1270,8 @@ class FortranFile:
         if self.preproc:
             log.debug("=== PreProc Pass ===\n")
             pp_skips, pp_defines = self.preprocess(
-                pp_defs=pp_defs, include_dirs=include_dirs, debug=debug
+                pp_defs=pp_defs, include_dirs=include_dirs, debug=debug,
+                pp_parse_intel=pp_parse_intel,
             )
             for pp_reg in pp_skips:
                 file_ast.start_ppif(pp_reg[0])
@@ -2026,6 +2032,7 @@ def preprocess_file(
     pp_defs: dict = None,
     include_dirs: set = None,
     debug: bool = False,
+    pp_parse_intel: bool = False,
 ):
     # Look for and mark excluded preprocessor paths in file
     # Initial implementation only looks for "if" and "ifndef" statements.
@@ -2106,19 +2113,19 @@ def preprocess_file(
             continue
         # Handle conditional statements
         match = FRegex.PP_REGEX.match(line)
-        if match:
+        if match and check_pp_prefix(match.group(1), pp_parse_intel):
             output_file.append(line)
             def_name = None
             if_start = False
             # Opening conditional statements
-            if match.group(1) == "if ":
-                is_path = eval_pp_if(line[match.end(1) :], defs_tmp)
+            if match.group(2) == "if ":
+                is_path = eval_pp_if(line[match.end(2) :], defs_tmp)
                 if_start = True
-            elif match.group(1) == "ifdef":
+            elif match.group(2) == "ifdef":
                 if_start = True
                 def_name = line[match.end(0) :].strip()
                 is_path = def_name in defs_tmp
-            elif match.group(1) == "ifndef":
+            elif match.group(2) == "ifndef":
                 if_start = True
                 def_name = line[match.end(0) :].strip()
                 is_path = not (def_name in defs_tmp)
@@ -2136,7 +2143,7 @@ def preprocess_file(
             inc_start = False
             exc_start = False
             exc_continue = False
-            if match.group(1) == "elif":
+            if match.group(2) == "elif":
                 if (not pp_stack_group) or (pp_stack_group[-1][0] != len(pp_stack)):
                     # First elif statement for this elif group
                     if pp_stack[-1][0] < 0:
@@ -2148,7 +2155,7 @@ def preprocess_file(
                     exc_continue = True
                     if pp_stack[-1][0] < 0:
                         pp_stack[-1][0] = i + 1
-                elif eval_pp_if(line[match.end(1) :], defs_tmp):
+                elif eval_pp_if(line[match.end(2) :], defs_tmp):
                     pp_stack[-1][1] = i + 1
                     pp_skips.append(pp_stack.pop())
                     pp_stack_group[-1][1] = True
@@ -2156,7 +2163,7 @@ def preprocess_file(
                     inc_start = True
                 else:
                     exc_start = True
-            elif match.group(1) == "else":
+            elif match.group(2) == "else":
                 if pp_stack[-1][0] < 0:
                     pp_stack[-1][0] = i + 1
                     exc_start = True
@@ -2172,7 +2179,7 @@ def preprocess_file(
                     pp_skips.append(pp_stack.pop())
                     pp_stack.append([-1, -1])
                     inc_start = True
-            elif match.group(1) == "endif":
+            elif match.group(2) == "endif":
                 if pp_stack_group and (pp_stack_group[-1][0] == len(pp_stack)):
                     pp_stack_group.pop()
                 if pp_stack[-1][0] < 0:
@@ -2193,10 +2200,11 @@ def preprocess_file(
             continue
         # Handle variable/macro definitions files
         match = FRegex.PP_DEF.match(line)
-        if (match is not None) and ((len(pp_stack) == 0) or (pp_stack[-1][0] < 0)):
+        if ((match is not None and check_pp_prefix(match.group(1), pp_parse_intel))
+                and ((len(pp_stack) == 0) or (pp_stack[-1][0] < 0))):
             output_file.append(line)
             pp_defines.append(i + 1)
-            def_name = match.group(2)
+            def_name = match.group(3)
             # If this is an argument list of a function add them to the name
             # get_definition will only return the function name upon hover
             # hence if the argument list is appended in the def_name then
@@ -2205,7 +2213,7 @@ def preprocess_file(
             # This also does not allow for multiline argument list definitions.
             # if match.group(3):
             #     def_name += match.group(3)
-            if (match.group(1) == "define") and (def_name not in defs_tmp):
+            if (match.group(2) == "define") and (def_name not in defs_tmp):
                 eq_ind = line[match.end(0) :].find(" ")
                 if eq_ind < 0:
                     eq_ind = line[match.end(0) :].find("\t")
@@ -2221,11 +2229,13 @@ def preprocess_file(
                     def_value = "True"
 
                 # are there arguments to parse?
-                if match.group(3):
-                    def_value = (match.group(4), def_value)
+                if match.group(4):
+                    def_value = (match.group(5), def_value)
 
                 defs_tmp[def_name] = def_value
-            elif (match.group(1) == "undef") and (def_name in defs_tmp):
+            elif ((match.group(2) == "undef"
+                    or (pp_parse_intel and match.group(2) == "undefine"))
+                    and (def_name in defs_tmp)):
                 defs_tmp.pop(def_name, None)
             log.debug(f"{line.strip()} !!! Define statement({i + 1})")
             continue
@@ -2255,6 +2265,7 @@ def preprocess_file(
                             pp_defs=defs_tmp,
                             include_dirs=include_dirs,
                             debug=debug,
+                            pp_parse_intel=pp_parse_intel,
                         )
                         log.debug("!!! Completed parsing include file\n")
 
@@ -2319,3 +2330,7 @@ def append_multiline_macro(pp_defs: dict, def_name: str, line: str):
         def_value = (def_args, def_value)
 
     pp_defs[def_name] = def_value
+
+
+def check_pp_prefix(prefix: str, pp_parse_intel: bool):
+    return prefix == '#' or (pp_parse_intel and FRegex.INTEL_FPP_PRE.match(prefix))

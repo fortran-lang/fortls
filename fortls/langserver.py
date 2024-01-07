@@ -1323,7 +1323,8 @@ class LangServer:
             # Update inheritance (currently file only)
             # tmp_file.ast.resolve_links(self.obj_tree, self.link_version)
         elif file_obj.preproc:
-            file_obj.preprocess(pp_defs=self.pp_defs)
+            file_obj.preprocess(pp_defs=self.pp_defs,
+                                pp_parse_intel=self.pp_parse_intel)
             self.pp_defs = {**self.pp_defs, **file_obj.pp_defs}
 
     def serve_onOpen(self, request: dict):
@@ -1396,7 +1397,8 @@ class LangServer:
                 if not file_changed:
                     return False, None
             ast_new = file_obj.parse(
-                pp_defs=self.pp_defs, include_dirs=self.include_dirs
+                pp_defs=self.pp_defs, include_dirs=self.include_dirs,
+                pp_parse_intel=self.pp_parse_intel
             )
             # Add the included read in pp_defs from to the ones specified in the
             # configuration file
@@ -1429,6 +1431,7 @@ class LangServer:
         pp_suffixes: list[str],
         include_dirs: set[str],
         sort: bool,
+        pp_parse_intel: bool,
     ):
         """Initialise a Fortran file
 
@@ -1444,6 +1447,8 @@ class LangServer:
             Preprocessor only include directories, not used by normal parser
         sort : bool
             Whether or not keywords should be sorted
+        pp_parse_intel : bool
+            Parse Intel FPP directives
 
         Returns
         -------
@@ -1460,7 +1465,8 @@ class LangServer:
             # This is a bypass.
             # For more see on SO: shorturl.at/hwAG1
             set_keyword_ordering(sort)
-            file_ast = file_obj.parse(pp_defs=pp_defs, include_dirs=include_dirs)
+            file_ast = file_obj.parse(pp_defs=pp_defs, include_dirs=include_dirs,
+                                      pp_parse_intel=pp_parse_intel)
         except:
             log.error("Error while parsing file %s", filepath, exc_info=True)
             return "Error during parsing"
@@ -1483,6 +1489,7 @@ class LangServer:
                     self.pp_suffixes,
                     self.include_dirs,
                     self.sort_keywords,
+                    self.pp_parse_intel,
                 ),
             )
         pool.close()
@@ -1639,6 +1646,7 @@ class LangServer:
     def _load_config_file_preproc(self, config_dict: dict) -> None:
         self.pp_suffixes = config_dict.get("pp_suffixes", None)
         self.pp_defs = config_dict.get("pp_defs", {})
+        self.pp_parse_intel = config_dict.get("pp_parse_intel", False)
         if isinstance(self.pp_defs, list):
             self.pp_defs = {key: "" for key in self.pp_defs}
 

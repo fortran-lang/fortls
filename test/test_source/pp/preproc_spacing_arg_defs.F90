@@ -16,9 +16,15 @@ program preprocessor_spacing_arg_defs
   type(test_type) :: the_test
   integer :: argtest
 
+  !DEC$ IF DEFINED(SPACING_TEST)
+    INTEGER (KIND=4), PARAMETER :: C_LONG = 4
+  !DEC$ ELSE
+    INTEGER (KIND=4), PARAMETER :: C_LONG = 8
+  !DEC$ ENDIF
+
   call the_test%set_test()
 
-  argtest = MACROARGS(the_test%test_int, 4)
+  argtest = MACROARGS(the_test%test_int, C_LONG)
 
 contains
   subroutine test_type_set_test(me)

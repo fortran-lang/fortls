@@ -472,6 +472,7 @@ def debug_server_parser(args):
     pp_suffixes = None
     pp_defs = {}
     include_dirs = set()
+    pp_parse_intel = False
     if args.debug_rootpath:
         # Check for config files
         config_path = locate_config(args.debug_rootpath)
@@ -482,6 +483,7 @@ def debug_server_parser(args):
                     config_dict = json.load(fhandle)
                     pp_suffixes = config_dict.get("pp_suffixes", None)
                     pp_defs = config_dict.get("pp_defs", {})
+                    pp_parse_intel = config_dict.get("pp_parse_intel", False)
                     include_dirs = set()
                     for path in config_dict.get("include_dirs", set()):
                         include_dirs.update(
@@ -501,7 +503,8 @@ def debug_server_parser(args):
         error_exit(f"Reading file failed: {err_str}")
     print(f"  Detected format: {'fixed' if file_obj.fixed else 'free'}")
     print("\n=========\nParser Output\n=========\n")
-    file_ast = file_obj.parse(debug=True, pp_defs=pp_defs, include_dirs=include_dirs)
+    file_ast = file_obj.parse(debug=True, pp_defs=pp_defs, include_dirs=include_dirs,
+                              pp_parse_intel=pp_parse_intel)
     print("\n=========\nObject Tree\n=========\n")
     for obj in file_ast.get_scopes():
         print("{}: {}".format(obj.get_type(), obj.FQSN))
