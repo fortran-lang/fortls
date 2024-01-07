@@ -172,7 +172,7 @@
       "type": "object"
     },
     "pp_parse_intel": {
-      "title": "Parse Intel FPP directives",
+      "title": "Pp Parse Intel",
       "description": "Parses Intel compiler directive defines and conditionals.",
       "default": false,
       "type": "boolean"
