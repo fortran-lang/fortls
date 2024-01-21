@@ -68,8 +68,31 @@ def detect_fixed_format(file_lines: list[str]) -> bool:
     Lines wih ampersands are not fixed format
     >>> detect_fixed_format(['trailing line & ! comment'])
     False
+
+    But preprocessor lines will be ignored
+    >>> detect_fixed_format(
+    ...     ['#if defined(A) && !defined(B)', 'C Fixed format', '#endif'])
+    True
+
+    >>> detect_fixed_format(
+    ...     ['#if defined(A) && !defined(B)', ' free format', '#endif'])
+    False
+
+    And preprocessor line-continuation is taken into account
+    >>> detect_fixed_format(
+    ...     ['#if defined(A) \\\\ ', ' && !defined(B)', 'C Fixed format', '#endif'])
+    True
+
+    >>> detect_fixed_format(
+    ...     ['#if defined(A) \\\\', '&& \\\\', '!defined(B)', ' free format', '#endif'])
+    False
     """
+    pp_continue = False
     for line in file_lines:
+        # Ignore preprocessor lines
+        if line.startswith("#") or pp_continue:
+            pp_continue = line.rstrip().endswith("\\")
+            continue
         if FRegex.FREE_FORMAT_TEST.match(line):
             return False
         tmp_match = FRegex.VAR.match(line)
