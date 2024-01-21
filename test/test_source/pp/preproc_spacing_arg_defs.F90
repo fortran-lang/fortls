@@ -16,11 +16,7 @@ program preprocessor_spacing_arg_defs
   type(test_type) :: the_test
   integer :: argtest
 
-  !DEC$ IF DEFINED(SPACING_TEST).AND.DEFINED(MACROARGS)
-    INTEGER (KIND=4), PARAMETER :: C_LONG = 4
-  !DEC$ ELSE
-    INTEGER (KIND=4), PARAMETER :: C_LONG = 8
-  !DEC$ ENDIF
+  INTEGER (KIND=4), PARAMETER :: C_LONG = 4
 
   call the_test%set_test()
 

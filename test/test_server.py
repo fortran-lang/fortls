@@ -198,10 +198,10 @@ def test_workspace_symbols():
             ["test_str2", 13, 5],
             ["test_sub", 6, 8],
             ["test_type", 5, 5],
-            ["test_type_set_test", 6, 29],
+            ["test_type_set_test", 6, 25],
             ["test_vis_mod", 2, 0],
             ["the_test", 13, 15],
-            ["wrap_test_type_set_test", 6, 37],
+            ["wrap_test_type_set_test", 6, 33],
         )
         assert len(result_array) == len(objs)
         for i, obj in enumerate(objs):
