@@ -70,6 +70,17 @@ def test_hover_parameter():
     validate_hover(results, ref_results)
 
 
+def test_hover_parameter_dollar():
+    """Test that hover parameters with dollar in name are recognized correctly"""
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    file_path = test_dir / "hover" / "parameters.f90"
+    string += hover_req(file_path, 20, 31)
+    errcode, results = run_request(string, fortls_args=["--sort_keywords"])
+    assert errcode == 0
+    ref_results = ["```fortran90\nINTEGER(4), PARAMETER :: SIG$ERR = -1\n```"]
+    validate_hover(results, ref_results)
+
+
 def test_hover_parameter_eqnospace():
     """Test that hover parameters display value correctly"""
     string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
