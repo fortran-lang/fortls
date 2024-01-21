@@ -751,11 +751,18 @@ class LangServer:
             return None
         # Search in Preprocessor defined variables
         if def_name in def_file.pp_defs:
+            def_value = def_file.pp_defs.get(def_name)
+            def_arg_str = ""
+            if isinstance(def_value, tuple):
+                def_arg_str, def_value = def_value
+                def_arg_str = ", ".join([x.strip() for x in def_arg_str.split(",")])
+                def_arg_str = f"({def_arg_str})"
+
             var = Variable(
                 def_file.ast,
                 def_line + 1,
                 def_name,
-                f"#define {def_name} {def_file.pp_defs.get(def_name)}",
+                f"#define {def_name}{def_arg_str} {def_value}",
                 [],
             )
             return var
@@ -1316,7 +1323,9 @@ class LangServer:
             # Update inheritance (currently file only)
             # tmp_file.ast.resolve_links(self.obj_tree, self.link_version)
         elif file_obj.preproc:
-            file_obj.preprocess(pp_defs=self.pp_defs)
+            file_obj.preprocess(
+                pp_defs=self.pp_defs,
+            )
             self.pp_defs = {**self.pp_defs, **file_obj.pp_defs}
 
     def serve_onOpen(self, request: dict):
@@ -1389,7 +1398,8 @@ class LangServer:
                 if not file_changed:
                     return False, None
             ast_new = file_obj.parse(
-                pp_defs=self.pp_defs, include_dirs=self.include_dirs
+                pp_defs=self.pp_defs,
+                include_dirs=self.include_dirs,
             )
             # Add the included read in pp_defs from to the ones specified in the
             # configuration file
@@ -1453,7 +1463,10 @@ class LangServer:
             # This is a bypass.
             # For more see on SO: shorturl.at/hwAG1
             set_keyword_ordering(sort)
-            file_ast = file_obj.parse(pp_defs=pp_defs, include_dirs=include_dirs)
+            file_ast = file_obj.parse(
+                pp_defs=pp_defs,
+                include_dirs=include_dirs,
+            )
         except:
             log.error("Error while parsing file %s", filepath, exc_info=True)
             return "Error during parsing"
