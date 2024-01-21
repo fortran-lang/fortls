@@ -618,6 +618,24 @@ files as free format.</p>
 <p>Lines wih ampersands are not fixed format
 &gt;&gt;&gt; detect_fixed_format([‘trailing line &amp; ! comment’])
 False</p>
+<p>But preprocessor lines will be ignored
+&gt;&gt;&gt; detect_fixed_format(
+…     [‘#if defined(A) &amp;&amp; !defined(B)’, ‘C Fixed format’, ‘#endif’])
+True</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">detect_fixed_format</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">[</span><span class="s1">&#39;#if defined(A) &amp;&amp; !defined(B)&#39;</span><span class="p">,</span> <span class="s1">&#39; free format&#39;</span><span class="p">,</span> <span class="s1">&#39;#endif&#39;</span><span class="p">])</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>And preprocessor line-continuation is taken into account
+&gt;&gt;&gt; detect_fixed_format(
+…     [‘#if defined(A) \ ‘, ‘ &amp;&amp; !defined(B)’, ‘C Fixed format’, ‘#endif’])
+True</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">detect_fixed_format</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">[</span><span class="s1">&#39;#if defined(A) </span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&amp;&amp; </span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;!defined(B)&#39;</span><span class="p">,</span> <span class="s1">&#39; free format&#39;</span><span class="p">,</span> <span class="s1">&#39;#endif&#39;</span><span class="p">])</span>
+<span class="go">False</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -2255,7 +2273,7 @@ For more info see create_src_file_exts_regex</p>
       
     </aside>
   </div>
-</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=9361f45a"></script>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=48227ab5"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>
