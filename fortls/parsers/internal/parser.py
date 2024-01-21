@@ -2235,9 +2235,7 @@ def preprocess_file(
                     def_value = (match.group(5), def_value)
 
                 defs_tmp[def_name] = def_value
-            elif (
-                match.group(2) == "undef"
-            ) and (def_name in defs_tmp):
+            elif (match.group(2) == "undef") and (def_name in defs_tmp):
                 defs_tmp.pop(def_name, None)
             log.debug(f"{line.strip()} !!! Define statement({i + 1})")
             continue
