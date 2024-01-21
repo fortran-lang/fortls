@@ -1180,6 +1180,7 @@ class FortranFile:
         pp_defs: dict = None,
         include_dirs: set = None,
         debug: bool = False,
+        pp_parse_intel: bool = False,
     ) -> tuple[list, list]:
         if pp_defs is None:
             pp_defs = {}
@@ -1275,6 +1276,7 @@ class FortranFile:
                 pp_defs=pp_defs,
                 include_dirs=include_dirs,
                 debug=debug,
+                pp_parse_intel=pp_parse_intel,
             )
             for pp_reg in pp_skips:
                 file_ast.start_ppif(pp_reg[0])
@@ -2051,6 +2053,35 @@ def preprocess_file(
 
             return expr
 
+        def replace_intel_ops(expr: str):
+            expr = expr.replace("/=", " != ")
+            expr = expr.replace(".AND.", " && ")
+            expr = expr.replace(".LT.", " < ")
+            expr = expr.replace(".GT.", " > ")
+            expr = expr.replace(".EQ.", " == ")
+            expr = expr.replace(".LE.", " <= ")
+            expr = expr.replace(".GE.", " >= ")
+            expr = expr.replace(".NE.", " != ")
+            expr = expr.replace(".EQV.", " == ")
+            expr = expr.replace(".NEQV.", " != ")
+            expr = expr.replace(".NOT.", "!")
+            expr = expr.replace(".OR.", " || ")
+            expr = expr.replace(".XOR.", " != ")  # admittedly a hack...
+            expr = expr.replace(".and.", " && ")
+            expr = expr.replace(".lt.", " < ")
+            expr = expr.replace(".gt.", " > ")
+            expr = expr.replace(".eq.", " == ")
+            expr = expr.replace(".le.", " <= ")
+            expr = expr.replace(".ge.", " >= ")
+            expr = expr.replace(".ne.", " != ")
+            expr = expr.replace(".eqv.", " == ")
+            expr = expr.replace(".neqv.", " != ")
+            expr = expr.replace(".not.", "!")
+            expr = expr.replace(".or.", " || ")
+            expr = expr.replace(".xor.", " != ")  # admittedly a hack...
+
+            return expr
+
         def replace_defined(line: str):
             i0 = 0
             out_line = ""
@@ -2083,6 +2114,9 @@ def preprocess_file(
             defs = {}
 
         out_line = text
+        if pp_parse_intel:
+            out_line = replace_intel_ops(out_line)
+
         out_line = replace_defined(out_line)
         out_line = replace_vars(out_line)
         try:
@@ -2119,13 +2153,13 @@ def preprocess_file(
             continue
         # Handle conditional statements
         match = FRegex.PP_REGEX.match(line)
-        if match and check_pp_prefix(match.group(1)):
+        if match and check_pp_prefix(match.group(1), pp_parse_intel):
             output_file.append(line)
             def_name = None
             if_start = False
             # Opening conditional statements
             if match.group(2).lower() == "if ":
-                is_path = eval_pp_if(line[match.end(2) :], defs_tmp)
+                is_path = eval_pp_if(line[match.end(2) :], defs_tmp, pp_parse_intel)
                 if_start = True
             elif match.group(2).lower() == "ifdef":
                 if_start = True
@@ -2161,7 +2195,7 @@ def preprocess_file(
                     exc_continue = True
                     if pp_stack[-1][0] < 0:
                         pp_stack[-1][0] = i + 1
-                elif eval_pp_if(line[match.end(2) :], defs_tmp):
+                elif eval_pp_if(line[match.end(2) :], defs_tmp, pp_parse_intel):
                     pp_stack[-1][1] = i + 1
                     pp_skips.append(pp_stack.pop())
                     pp_stack_group[-1][1] = True

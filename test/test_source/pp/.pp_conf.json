@@ -8,4 +8,5 @@
   "incl_suffixes": [".h"],
   "include_dirs": ["include"],
   "pp_defs": { "HAVE_CONTIGUOUS": "" },
+  "pp_parse_intel": true
 }

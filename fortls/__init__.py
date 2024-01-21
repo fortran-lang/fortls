@@ -507,6 +507,7 @@ def debug_server_parser(args):
         debug=True,
         pp_defs=pp_defs,
         include_dirs=include_dirs,
+        pp_parse_intel=pp_parse_intel,
     )
     print("\n=========\nObject Tree\n=========\n")
     for obj in file_ast.get_scopes():
