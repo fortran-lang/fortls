@@ -98,7 +98,7 @@ class FortranRegularExpressions:
         r"[ ]*,[ ]*(PUBLIC|PRIVATE|ABSTRACT|EXTENDS\(\w*\))", I
     )
     VIS: Pattern = compile(r"[ ]*\b(PUBLIC|PRIVATE)\b", I)
-    WORD: Pattern = compile(r"[a-z_]\w*", I)
+    WORD: Pattern = compile(r"[a-z_][\w\$]*", I)
     NUMBER: Pattern = compile(
         r"[\+\-]?(\b\d+\.?\d*|\.\d+)(_\w+|d[\+\-]?\d+|e[\+\-]?\d+(_\w+)?)?(?!\w)",
         I,
@@ -146,7 +146,7 @@ class FortranRegularExpressions:
     # Object regex patterns
     CLASS_VAR: Pattern = compile(r"(TYPE|CLASS)[ ]*\(", I)
     DEF_KIND: Pattern = compile(r"(\w*)[ ]*\((?:KIND|LEN)?[ =]*(\w*)", I)
-    OBJBREAK: Pattern = compile(r"[\/\-(.,+*<>=$: ]", I)
+    OBJBREAK: Pattern = compile(r"[\/\-(.,+*<>=: ]", I)
 
 
 # TODO: use this in the main code

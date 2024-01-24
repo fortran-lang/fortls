@@ -18,4 +18,5 @@ program params
     INTEGER, PARAMETER :: var_multi2 = 1 *   &
                                         23 + &
                                         2 /1        ! comment
+    INTEGER(4), PARAMETER :: SIG$ERR   = -1
 end program params
