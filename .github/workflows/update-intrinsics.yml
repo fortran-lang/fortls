@@ -22,7 +22,7 @@ jobs:
 
       - name: Update Markdown intrinsics
         run: |
-          python3 -m fortls.intrinsics
+          python3 -m fortls.parsers.internal.intrinsics
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
