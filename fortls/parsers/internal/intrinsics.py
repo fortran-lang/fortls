@@ -277,7 +277,9 @@ def update_m_intrinsics():
             val = val.replace(f"**{key.upper()}**(3)", f"**{key.upper()}**")
             markdown_intrinsics[key] = val
 
-        with open("fortls/parsers/internal/intrinsic.procedures.markdown.json", "w") as f:
+        with open(
+            "fortls/parsers/internal/intrinsic.procedures.markdown.json", "w"
+        ) as f:
             json.dump(markdown_intrinsics, f, indent=2)
             f.write("\n")  # add newline at end of file
     except Exception as e:
