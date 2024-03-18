@@ -28,7 +28,7 @@ To build this project you will need [Python](https://www.python.org/) `>= 3.7` a
 To install all Python dependencies open a terminal go into the `fortls` cloned folder and run:
 
 ```sh
-pip install -e .[dev,docs]
+pip install -e ".[dev,docs]"
 ```
 
 ### Testing 🧪
