@@ -7,5 +7,5 @@
   "pp_suffixes": [".h", ".F90"],
   "incl_suffixes": [".h"],
   "include_dirs": ["include"],
-  "pp_defs": { "HAVE_CONTIGUOUS": "" }
+  "pp_defs": { "HAVE_CONTIGUOUS": "" },
 }
