@@ -3,7 +3,7 @@ from __future__ import annotations
 import glob
 import json
 import os
-import pathlib
+from pathlib import Path
 
 from fortls.helper_functions import fortran_md, get_placeholders, map_keywords
 
@@ -271,13 +271,15 @@ def update_m_intrinsics():
         for f in sorted(files):
             key = f.replace("M_intrinsics/md/", "")
             key = key.replace(".md", "").upper()  # remove md extension
-            val = pathlib.Path(f).read_text()
+            val = Path(f).read_text()
             # remove manpage tag
             val = val.replace(f"**{key.lower()}**(3)", f"**{key.lower()}**")
             val = val.replace(f"**{key.upper()}**(3)", f"**{key.upper()}**")
             markdown_intrinsics[key] = val
 
-        with open("fortls/intrinsic.procedures.markdown.json", "w") as f:
+        with open(
+            Path(__file__).parent / "intrinsic.procedures.markdown.json", "w"
+        ) as f:
             json.dump(markdown_intrinsics, f, indent=2)
             f.write("\n")  # add newline at end of file
     except Exception as e:
