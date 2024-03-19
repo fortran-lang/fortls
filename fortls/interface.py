@@ -256,6 +256,11 @@ def cli(name: str = "fortls") -> argparse.ArgumentParser:
             "Preprocessor definitions are normally included via INCLUDE_DIRS"
         ),
     )
+    group.add_argument(
+        "--pp_parse_intel",
+        action="store_true",
+        help="Parses Intel compiler directive defines and conditionals.",
+    )
 
     # Symbols options ----------------------------------------------------------
     group = parser.add_argument_group("Symbols options")

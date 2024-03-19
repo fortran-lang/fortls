@@ -171,6 +171,12 @@
       "default": {},
       "type": "object"
     },
+    "pp_parse_intel": {
+      "title": "Pp Parse Intel",
+      "description": "Parses Intel compiler directive defines and conditionals.",
+      "default": false,
+      "type": "boolean"
+    },
     "symbol_skip_mem": {
       "title": "Symbol Skip Mem",
       "description": "Do not include type members in document symbol results",
