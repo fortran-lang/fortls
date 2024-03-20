@@ -1539,11 +1539,11 @@ class LangServer:
         for f, present in zip(default_conf_files, present_conf_files):
             if not present:
                 continue
-            config_path = os.path.join(self.root_path, f)
+            self.config_path = os.path.join(self.root_path, f)
             break
 
         try:
-            with open(config_path) as jsonfile:
+            with open(self.config_path) as jsonfile:
                 config_dict = json5.load(jsonfile)
 
                 # Include and Exclude directories
@@ -1731,10 +1731,48 @@ class LangServer:
             # Also forward logs to the console
             consoleHandler = logging.StreamHandler()
             log.addHandler(consoleHandler)
+            self._log_final_options()
             log.debug("REQUEST %s %s", request.get("id"), request.get("method"))
             self.post_messages.append([Severity.info, "fortls debugging enabled"])
         else:
             logging.basicConfig(format=fmt, datefmt="%H:%M:%S", level=logging.INFO)
+
+    def _log_final_options(self) -> None:
+        """serialize the final initialisation
+        settings and write them as json in the log
+        """
+        serializable_vars = {
+            "version": str(self._version),
+            "root_path": self.root_path,
+            "config_path": self.config_path,
+            "nthreads": self.nthreads,
+            "notify_init": self.notify_init,
+            "incremental_sync": self.incremental_sync,
+            "sync_type": self.sync_type,
+            "sort_keywords": self.sort_keywords,
+            "disable_autoupdate": self.disable_autoupdate,
+            "source_dirs": list(self.source_dirs),
+            "incl_suffixes": list(self.incl_suffixes),
+            "excl_suffixes": list(self.excl_suffixes),
+            "excl_paths": list(self.excl_paths),
+            "autocomplete_no_prefix": self.autocomplete_no_prefix,
+            "autocomplete_no_snippets": self.autocomplete_no_snippets,
+            "autocomplete_name_only": self.autocomplete_name_only,
+            "lowercase_intrinsics": self.lowercase_intrinsics,
+            "use_signature_help": self.use_signature_help,
+            "variable_hover": self.variable_hover,
+            "hover_signature": self.hover_signature,
+            "hover_language": self.hover_language,
+            "max_line_length": self.max_line_length,
+            "max_comment_line_length": self.max_comment_line_length,
+            "disable_diagnostics": self.disable_diagnostics,
+            "pp_suffixes": self.pp_suffixes,
+            "include_dirs": list(self.include_dirs),
+            "pp_defs": self.pp_defs,
+            "symbol_skip_mem": self.symbol_skip_mem,
+            "enable_code_actions": self.enable_code_actions,
+        }
+        log.debug("final options:\n%s", json.dumps(serializable_vars, indent=4))
 
     def _load_intrinsics(self) -> None:
         # Load intrinsics
