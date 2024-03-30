@@ -1323,9 +1323,7 @@ class LangServer:
             # Update inheritance (currently file only)
             # tmp_file.ast.resolve_links(self.obj_tree, self.link_version)
         elif file_obj.preproc:
-            file_obj.preprocess(
-                pp_defs=self.pp_defs,
-            )
+            file_obj.preprocess(pp_defs=self.pp_defs)
             self.pp_defs = {**self.pp_defs, **file_obj.pp_defs}
 
     def serve_onOpen(self, request: dict):
@@ -1398,8 +1396,7 @@ class LangServer:
                 if not file_changed:
                     return False, None
             ast_new = file_obj.parse(
-                pp_defs=self.pp_defs,
-                include_dirs=self.include_dirs,
+                pp_defs=self.pp_defs, include_dirs=self.include_dirs
             )
             # Add the included read in pp_defs from to the ones specified in the
             # configuration file
@@ -1463,10 +1460,7 @@ class LangServer:
             # This is a bypass.
             # For more see on SO: shorturl.at/hwAG1
             set_keyword_ordering(sort)
-            file_ast = file_obj.parse(
-                pp_defs=pp_defs,
-                include_dirs=include_dirs,
-            )
+            file_ast = file_obj.parse(pp_defs=pp_defs, include_dirs=include_dirs)
         except:
             log.error("Error while parsing file %s", filepath, exc_info=True)
             return "Error during parsing"
