@@ -2097,15 +2097,13 @@ def preprocess_file(
         # Handle multiline macro continuation
         if def_cont_name is not None:
             output_file.append("")
-            if line.rstrip()[-1] != "\\":
-                defs_tmp[def_cont_name] = append_multiline_macro(
-                    defs_tmp[def_cont_name], line.strip()
-                )
+            is_multiline = line.strip()[-1] != "\\"
+            line_to_append = line.strip() if is_multiline else line[0:-1].strip()
+            defs_tmp[def_cont_name] = append_multiline_macro(
+                defs_tmp[def_cont_name], line_to_append
+            )
+            if is_multiline:
                 def_cont_name = None
-            else:
-                defs_tmp[def_cont_name] = append_multiline_macro(
-                    defs_tmp[def_cont_name], line[0:-1].strip()
-                )
             continue
         # Handle conditional statements
         match = FRegex.PP_REGEX.match(line)
