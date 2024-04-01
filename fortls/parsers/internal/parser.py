@@ -2079,6 +2079,24 @@ def preprocess_file(
         else:
             return line_res
 
+    def expand_func_macro(def_name: str, def_value: tuple[str, str]):
+        def_args, sub = def_value
+        def_args = def_args.split(",")
+        regex = re.compile(rf"\b{def_name}\s*\({','.join(['(.*)']*len(def_args))}\)")
+
+        for i, arg in enumerate(def_args):
+            arg = arg.strip()
+            sub = re.sub(rf"\b({arg})\b", rf"\\{i + 1}", sub)
+
+        return regex, sub
+
+    def append_multiline_macro(def_value: str | tuple, line: str):
+        if isinstance(def_value, tuple):
+            def_args, def_value = def_value
+            def_value += line
+            return (def_args, def_value)
+        return def_value + line
+
     if pp_defs is None:
         pp_defs = {}
     if include_dirs is None:
@@ -2290,23 +2308,3 @@ def preprocess_file(
                 line = line_new
         output_file.append(line)
     return output_file, pp_skips, pp_defines, defs_tmp
-
-
-def expand_func_macro(def_name: str, def_value: tuple[str, str]):
-    def_args, sub = def_value
-    def_args = def_args.split(",")
-    regex = re.compile(rf"\b{def_name}\s*\({','.join(['(.*)']*len(def_args))}\)")
-
-    for i, arg in enumerate(def_args):
-        arg = arg.strip()
-        sub = re.sub(rf"\b({arg})\b", rf"\\{i + 1}", sub)
-
-    return regex, sub
-
-
-def append_multiline_macro(def_value: str | tuple, line: str):
-    if isinstance(def_value, tuple):
-        def_args, def_value = def_value
-        def_value += line
-        return (def_args, def_value)
-    return def_value + line
