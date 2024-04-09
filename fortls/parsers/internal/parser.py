@@ -1351,6 +1351,18 @@ class FortranFile:
                 multi_lines.extendleft(line_stripped.split(";"))
                 line = multi_lines.pop()
                 line_stripped = line
+
+            # Populate folding_start_list and folding_end_list
+            if FRegex.FOLD_START.match(line_no_comment) is not None:
+                file_ast.lines_to_fold.append(line_no)
+            elif FRegex.FOLD_END.match(line_no_comment) is not None:
+                file_ast.folding_start.append(file_ast.lines_to_fold.pop())
+                file_ast.folding_end.append(line_no - 1)
+            elif FRegex.ELSE.match(line_no_comment) is not None:
+                file_ast.folding_start.append(file_ast.lines_to_fold.pop())
+                file_ast.folding_end.append(line_no - 1)
+                file_ast.lines_to_fold.append(line_no)
+
             # Test for scope end
             if file_ast.END_SCOPE_REGEX is not None:
                 match = FRegex.END_WORD.match(line_no_comment)

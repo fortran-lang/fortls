@@ -146,6 +146,7 @@ class LangServer:
             "textDocument/hover": self.serve_hover,
             "textDocument/implementation": self.serve_implementation,
             "textDocument/rename": self.serve_rename,
+            "textDocument/foldingRange": self.serve_folding_range,
             "textDocument/didOpen": self.serve_onOpen,
             "textDocument/didSave": self.serve_onSave,
             "textDocument/didClose": self.serve_onClose,
@@ -225,6 +226,7 @@ class LangServer:
             "renameProvider": True,
             "workspaceSymbolProvider": True,
             "textDocumentSync": self.sync_type,
+            "foldingRangeProvider": True,
         }
         if self.use_signature_help:
             server_capabilities["signatureHelpProvider"] = {
@@ -1216,6 +1218,32 @@ class LangServer:
                 )
         return {"changes": changes}
 
+    def serve_folding_range(self, request: dict):
+        # Get parameters from request
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
+        path = path_from_uri(uri)
+        # Find object
+        file_obj = self.workspace.get(path)
+        if file_obj is None:
+            return None
+        # need generic definition for foldingRange here
+        var_obj = self.get_definition(file_obj, 0, 9)
+        if var_obj is None:
+            return None
+        # Construct folding_rage list
+        folding_ranges = []
+        file_ast = var_obj.file_ast
+        folds = len(file_ast.folding_start)
+        for i in range(0, folds):
+            fold_range = {
+                "startLine": file_ast.folding_start[i],
+                "endLine": file_ast.folding_end[i],
+            }
+            folding_ranges.append(json.dumps(fold_range))
+
+        return folding_ranges
+
     def serve_codeActions(self, request: dict):
         params: dict = request["params"]
         uri: str = params["textDocument"]["uri"]
@@ -1611,6 +1639,9 @@ class LangServer:
         # Hover options --------------------------------------------------------
         self.hover_signature = config_dict.get("hover_signature", self.hover_signature)
         self.hover_language = config_dict.get("hover_language", self.hover_language)
+
+        # Folding range --------------------------------------------------------
+        self.folding_range = config_dict.get("folding_range", self.folding_range)
 
         # Diagnostic options ---------------------------------------------------
         self.max_line_length = config_dict.get("max_line_length", self.max_line_length)

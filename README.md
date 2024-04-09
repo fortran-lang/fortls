@@ -146,6 +146,7 @@ An example for a Configuration file is given below
   "incremental_sync": true,
   "lowercase_intrinsics": true,
   "hover_signature": true,
+  "folding_range": true,
   "use_signature_help": true,
   "excl_paths": ["tests/**", "tools/**"],
   "excl_suffixes": ["_skip.f90"],

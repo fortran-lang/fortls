@@ -203,6 +203,13 @@ def cli(name: str = "fortls") -> argparse.ArgumentParser:
         ),
     )
 
+    # Folding range ------------------------------------------------------------
+    group.add_argument(
+        "--folding_range",
+        action="store_true",
+        help="Fold editor based on language keywords",
+    )
+
     # Diagnostic options -------------------------------------------------------
     group = parser.add_argument_group("Diagnostic options (error swigles)")
     group.add_argument(

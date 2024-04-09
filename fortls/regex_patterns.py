@@ -48,6 +48,7 @@ class FortranRegularExpressions:
     END_WHERE: Pattern = compile(r"WHERE", I)
     IF: Pattern = compile(r"[ ]*(?:[a-z_]\w*[ ]*:[ ]*)?IF[ ]*\(", I)
     THEN: Pattern = compile(r"\)[ ]*THEN$", I)
+    ELSE: Pattern = compile(r"(\s*)(ELSE|ELSE(\s*)IF)")
     END_IF: Pattern = compile(r"IF", I)
     ASSOCIATE: Pattern = compile(r"[ ]*ASSOCIATE[ ]*\(", I)
     END_ASSOCIATE: Pattern = compile(r"ASSOCIATE", I)
@@ -141,6 +142,16 @@ class FortranRegularExpressions:
     END: Pattern = compile(
         r"[ ]*(END)("
         r" |MODULE|PROGRAM|SUBROUTINE|FUNCTION|PROCEDURE|TYPE|DO|IF|SELECT)?",
+        I,
+    )
+    FOLD_START: Pattern = compile(
+        # r"^(\s*)((IF(\s*)\((.)*\)(\s*)THEN)|DO(\s*)\(PROGRAM|MODULE|SUBROUTINE|FUNCTION)",
+        r"^(\s*)((IF(\s*)\((.)*\)(\s*)THEN)|(DO(\s*)\)|PROGRAM))",
+        I,
+    )
+    FOLD_END: Pattern = compile(
+        # r"^(\s*)(END)(\s*)(IF|DO|PROGRAM|MODULE|SUBROUTINE|FUNCTION)",
+        r"^(\s*)(END)(\s*)(IF|PROGRAM)",
         I,
     )
     # Object regex patterns

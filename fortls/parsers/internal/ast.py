@@ -36,6 +36,9 @@ class FortranAST:
         self.inherit_objs: list = []
         self.linkable_objs: list = []
         self.external_objs: list = []
+        self.folding_start: list = []
+        self.folding_end: list = []
+        self.lines_to_fold: list = []
         self.none_scope = None
         self.inc_scope = None
         self.current_scope = None
