@@ -1237,10 +1237,10 @@ class LangServer:
         folds = len(file_ast.folding_start)
         for i in range(0, folds):
             fold_range = {
-                "startLine": file_ast.folding_start[i],
-                "endLine": file_ast.folding_end[i],
+                "startLine": file_ast.folding_start[i] - 1,
+                "endLine": file_ast.folding_end[i] - 1,
             }
-            folding_ranges.append(json.dumps(fold_range))
+            folding_ranges.append(fold_range)
 
         return folding_ranges
 

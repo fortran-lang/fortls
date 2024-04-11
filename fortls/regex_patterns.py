@@ -48,7 +48,7 @@ class FortranRegularExpressions:
     END_WHERE: Pattern = compile(r"WHERE", I)
     IF: Pattern = compile(r"[ ]*(?:[a-z_]\w*[ ]*:[ ]*)?IF[ ]*\(", I)
     THEN: Pattern = compile(r"\)[ ]*THEN$", I)
-    ELSE: Pattern = compile(r"(\s*)(ELSE|ELSE(\s*)IF)")
+    ELSE: Pattern = compile(r"(\s*)(ELSE|ELSE(\s*)IF)", I)
     END_IF: Pattern = compile(r"IF", I)
     ASSOCIATE: Pattern = compile(r"[ ]*ASSOCIATE[ ]*\(", I)
     END_ASSOCIATE: Pattern = compile(r"ASSOCIATE", I)

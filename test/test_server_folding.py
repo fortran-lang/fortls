@@ -23,13 +23,11 @@ def test_folding():
     errcode, results = run_request(string)
     assert errcode == 0
     ref = [
-        '{"startLine": 9, "endLine": 10}',
-        '{"startLine": 7, "endLine": 11}',
-        '{"startLine": 6, "endLine": 12}',
-        '{"startLine": 15, "endLine": 18}',
-        '{"startLine": 1, "endLine": 20}',
+        {"startLine": 8, "endLine": 9},
+        {"startLine": 6, "endLine": 10},
+        {"startLine": 5, "endLine": 11},
+        {"startLine": 14, "endLine": 15},
+        {"startLine": 16, "endLine": 17},
+        {"startLine": 0, "endLine": 19},
     ]
     validate_folding(results[1], ref)
-
-
-test_folding()
