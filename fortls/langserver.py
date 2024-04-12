@@ -86,7 +86,7 @@ class LangServer:
             if k.startswith("debug_") and k != "debug_log":
                 continue
             setattr(self, k, v)
-
+        self.arguments_list = list(settings.keys())
         self.sync_type: int = 2 if self.incremental_sync else 1
         self.post_messages = []
         self.FORTRAN_SRC_EXT_REGEX: Pattern[str] = create_src_file_exts_str(
@@ -234,6 +234,15 @@ class LangServer:
             server_capabilities["codeActionProvider"] = True
         if self.notify_init:
             self.post_message("fortls initialization complete", Severity.info)
+
+        # Log final options
+        final_options = {}
+        for argument in self.arguments_list:
+            if argument.startswith("debug_") and argument != "debug_log":
+                continue
+            final_options[argument] = getattr(self, argument)
+        log.debug("Final options: %s", final_options)
+
         return {"capabilities": server_capabilities}
 
     def serve_workspace_symbol(self, request):
