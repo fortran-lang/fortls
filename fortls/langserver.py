@@ -210,7 +210,7 @@ class LangServer:
 
         # Initialize workspace
         self.workspace_init()
-        log.info(f"fortls - Fortran Language Server {__version__} Initialized")
+        log.info("fortls - Fortran Language Server %s Initialized", __version__)
         #
         server_capabilities = {
             "completionProvider": {
@@ -1391,7 +1391,7 @@ class LangServer:
                             return False, "File does not exist"  # Error during load
                 err_string, file_changed = file_obj.load_from_disk()
                 if err_string:
-                    log.error(f"{err_string} : {filepath}")
+                    log.error("%s : %s", err_string, filepath)
                     return False, err_string  # Error during file read
                 if not file_changed:
                     return False, None

@@ -1677,11 +1677,11 @@ class FortranFile:
                         message = f"Unexpected end of scope at line {error[0]}"
                     else:
                         message = "Unexpected end statement: No open scopes"
-                    log.debug(f"{error[1]}: {message}")
+                    log.debug("%s: %s", error[1], message)
             if len(file_ast.parse_errors) > 0:
                 log.debug("\n=== Parsing Errors ===\n")
                 for error in file_ast.parse_errors:
-                    log.debug(f"{error['range']}: {error['message']}")
+                    log.debug("%s: %s", error["range"], error["message"])
         return file_ast
 
     def parse_imp_dim(self, line: str):
@@ -1919,7 +1919,7 @@ class FortranFile:
             # Handle dangling comments from previous line
             if docs:
                 file_ast.add_doc(format(docs))
-                log.debug(f"{format(docs)} !!! Doc string - Line:{ln}")
+                log.debug("%s !!! Doc string - Line:%d", format(docs), ln)
                 docs[:] = []  # empty the documentation stack
 
         # Check for comments in line
@@ -1940,7 +1940,7 @@ class FortranFile:
         if len("".join(docs)) > 0:
             file_ast.add_doc(format(docs), forward=predocmark)
         for i, doc_line in enumerate(docs):
-            log.debug(f"{doc_line} !!! Doc string - Line:{_ln + i}")
+            log.debug("%s !!! Doc string - Line:%d", doc_line, _ln + i)
         docs[:] = []
         return ln
 
@@ -2143,10 +2143,10 @@ def preprocess_file(
             if if_start:
                 if is_path:
                     pp_stack.append([-1, -1])
-                    log.debug(f"{line.strip()} !!! Conditional TRUE({i + 1})")
+                    log.debug("%s !!! Conditional TRUE(%d)", line.strip(), i + 1)
                 else:
                     pp_stack.append([i + 1, -1])
-                    log.debug(f"{line.strip()} !!! Conditional FALSE({i + 1})")
+                    log.debug("%s !!! Conditional FALSE(%d)", line.strip(), i + 1)
                 continue
             if len(pp_stack) == 0:
                 continue
@@ -2195,19 +2195,19 @@ def preprocess_file(
                     pp_stack_group.pop()
                 if pp_stack[-1][0] < 0:
                     pp_stack.pop()
-                    log.debug(f"{line.strip()} !!! Conditional TRUE/END({i + 1})")
+                    log.debug("%s !!! Conditional TRUE/END(%d)", line.strip(), i + 1)
                     continue
                 if pp_stack[-1][1] < 0:
                     pp_stack[-1][1] = i + 1
-                    log.debug(f"{line.strip()} !!! Conditional FALSE/END({i + 1})")
+                    log.debug("%s !!! Conditional FALSE/END(%d)", line.strip(), i + 1)
                 pp_skips.append(pp_stack.pop())
             if debug:
                 if inc_start:
-                    log.debug(f"{line.strip()} !!! Conditional TRUE({i + 1})")
+                    log.debug("%s !!! Conditional TRUE(%d)", line.strip(), i + 1)
                 elif exc_start:
-                    log.debug(f"{line.strip()} !!! Conditional FALSE({i + 1})")
+                    log.debug("%s !!! Conditional FALSE(%d)", line.strip(), i + 1)
                 elif exc_continue:
-                    log.debug(f"{line.strip()} !!! Conditional EXCLUDED({i + 1})")
+                    log.debug("%s !!! Conditional EXCLUDED(%d)", line.strip(), i + 1)
             continue
         # Handle variable/macro definitions files
         match = FRegex.PP_DEF.match(line)
@@ -2242,12 +2242,12 @@ def preprocess_file(
                 defs_tmp[def_name] = def_value
             elif (match.group(1) == "undef") and (def_name in defs_tmp):
                 defs_tmp.pop(def_name, None)
-            log.debug(f"{line.strip()} !!! Define statement({i + 1})")
+            log.debug("%s !!! Define statement(%d)", line.strip(), i + 1)
             continue
         # Handle include files
         match = FRegex.PP_INCLUDE.match(line)
         if (match is not None) and ((len(pp_stack) == 0) or (pp_stack[-1][0] < 0)):
-            log.debug(f"{line.strip()} !!! Include statement({i + 1})")
+            log.debug("%s !!! Include statement(%d)", line.strip(), i + 1)
             include_filename = match.group(1).replace('"', "")
             include_path = None
             # Intentionally keep this as a list and not a set. There are cases
@@ -2263,7 +2263,7 @@ def preprocess_file(
                     include_file = FortranFile(include_path)
                     err_string, _ = include_file.load_from_disk()
                     if err_string is None:
-                        log.debug(f'\n!!! Parsing include file "{include_path}"')
+                        log.debug("\n!!! Parsing include file '%s'", include_path)
                         _, _, _, defs_tmp = preprocess_file(
                             include_file.contents_split,
                             file_path=include_path,
@@ -2274,13 +2274,15 @@ def preprocess_file(
                         log.debug("!!! Completed parsing include file\n")
 
                     else:
-                        log.debug(f"!!! Failed to parse include file: {err_string}")
+                        log.debug("!!! Failed to parse include file: %s", err_string)
 
                 except:
                     log.debug("!!! Failed to parse include file: exception")
 
             else:
-                log.debug(f"{line.strip()} !!! Could not locate include file ({i + 1})")
+                log.debug(
+                    "%s !!! Could not locate include file (%d)", line.strip(), i + 1
+                )
 
         # Substitute (if any) read in preprocessor macros
         for def_tmp, value in defs_tmp.items():
@@ -2302,7 +2304,11 @@ def preprocess_file(
             line_new, nsubs = def_regex.subn(value, line)
             if nsubs > 0:
                 log.debug(
-                    f"{line.strip()} !!! Macro sub({i + 1}) '{def_tmp}' -> {value}"
+                    "%s !!! Macro sub(%d) '%s' -> '%s'",
+                    line.strip(),
+                    i + 1,
+                    def_tmp,
+                    value,
                 )
                 line = line_new
         output_file.append(line)
