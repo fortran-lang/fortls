@@ -2079,6 +2079,23 @@ def preprocess_file(
         else:
             return line_res
 
+    def expand_func_macro(def_name: str, def_value: tuple[str, str]):
+        def_args, sub = def_value
+        def_args = def_args.split(",")
+        regex = re.compile(rf"\b{def_name}\s*\({','.join(['(.*)']*len(def_args))}\)")
+
+        for i, arg in enumerate(def_args, start=1):
+            sub = re.sub(rf"\b({arg.strip()})\b", rf"\\{i}", sub)
+
+        return regex, sub
+
+    def append_multiline_macro(def_value: str | tuple, line: str):
+        if isinstance(def_value, tuple):
+            def_args, def_value = def_value
+            def_value += line
+            return (def_args, def_value)
+        return def_value + line
+
     if pp_defs is None:
         pp_defs = {}
     if include_dirs is None:
@@ -2097,11 +2114,13 @@ def preprocess_file(
         # Handle multiline macro continuation
         if def_cont_name is not None:
             output_file.append("")
-            if line.rstrip()[-1] != "\\":
-                defs_tmp[def_cont_name] += line.strip()
+            is_multiline = line.strip()[-1] != "\\"
+            line_to_append = line.strip() if is_multiline else line[0:-1].strip()
+            defs_tmp[def_cont_name] = append_multiline_macro(
+                defs_tmp[def_cont_name], line_to_append
+            )
+            if is_multiline:
                 def_cont_name = None
-            else:
-                defs_tmp[def_cont_name] += line[0:-1].strip()
             continue
         # Handle conditional statements
         match = FRegex.PP_REGEX.match(line)
@@ -2110,14 +2129,14 @@ def preprocess_file(
             def_name = None
             if_start = False
             # Opening conditional statements
-            if match.group(1) == "if ":
+            if match.group(1).lower() == "if ":
                 is_path = eval_pp_if(line[match.end(1) :], defs_tmp)
                 if_start = True
-            elif match.group(1) == "ifdef":
+            elif match.group(1).lower() == "ifdef":
                 if_start = True
                 def_name = line[match.end(0) :].strip()
                 is_path = def_name in defs_tmp
-            elif match.group(1) == "ifndef":
+            elif match.group(1).lower() == "ifndef":
                 if_start = True
                 def_name = line[match.end(0) :].strip()
                 is_path = not (def_name in defs_tmp)
@@ -2135,7 +2154,7 @@ def preprocess_file(
             inc_start = False
             exc_start = False
             exc_continue = False
-            if match.group(1) == "elif":
+            if match.group(1).lower() == "elif":
                 if (not pp_stack_group) or (pp_stack_group[-1][0] != len(pp_stack)):
                     # First elif statement for this elif group
                     if pp_stack[-1][0] < 0:
@@ -2155,7 +2174,7 @@ def preprocess_file(
                     inc_start = True
                 else:
                     exc_start = True
-            elif match.group(1) == "else":
+            elif match.group(1).lower() == "else":
                 if pp_stack[-1][0] < 0:
                     pp_stack[-1][0] = i + 1
                     exc_start = True
@@ -2171,7 +2190,7 @@ def preprocess_file(
                     pp_skips.append(pp_stack.pop())
                     pp_stack.append([-1, -1])
                     inc_start = True
-            elif match.group(1) == "endif":
+            elif match.group(1).lower() == "endif":
                 if pp_stack_group and (pp_stack_group[-1][0] == len(pp_stack)):
                     pp_stack_group.pop()
                 if pp_stack[-1][0] < 0:
@@ -2209,12 +2228,18 @@ def preprocess_file(
                 if eq_ind >= 0:
                     # Handle multiline macros
                     if line.rstrip()[-1] == "\\":
-                        defs_tmp[def_name] = line[match.end(0) + eq_ind : -1].strip()
+                        def_value = line[match.end(0) + eq_ind : -1].strip()
                         def_cont_name = def_name
                     else:
-                        defs_tmp[def_name] = line[match.end(0) + eq_ind :].strip()
+                        def_value = line[match.end(0) + eq_ind :].strip()
                 else:
-                    defs_tmp[def_name] = "True"
+                    def_value = "True"
+
+                # are there arguments to parse?
+                if match.group(3):
+                    def_value = (match.group(4), def_value)
+
+                defs_tmp[def_name] = def_value
             elif (match.group(1) == "undef") and (def_name in defs_tmp):
                 defs_tmp.pop(def_name, None)
             log.debug(f"{line.strip()} !!! Define statement({i + 1})")
@@ -2265,8 +2290,15 @@ def preprocess_file(
                 continue
             def_regex = def_regexes.get(def_tmp)
             if def_regex is None:
-                def_regex = re.compile(rf"\b{def_tmp}\b")
+                if isinstance(value, tuple):
+                    def_regex = expand_func_macro(def_tmp, value)
+                else:
+                    def_regex = re.compile(rf"\b{def_tmp}\b")
                 def_regexes[def_tmp] = def_regex
+
+            if isinstance(def_regex, tuple):
+                def_regex, value = def_regex
+
             line_new, nsubs = def_regex.subn(value, line)
             if nsubs > 0:
                 log.debug(
