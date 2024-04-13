@@ -72,6 +72,7 @@ All the ``fortls`` settings with their default arguments can be found below
       "pp_suffixes": [],
       "include_dirs": [],
       "pp_defs": {},
+      "pp_parse_intel": false,
 
       "symbol_skip_mem": false,
 
@@ -197,6 +198,13 @@ Additional **preprocessor definitions** from what are specified in files found i
 ``include_dirs`` can be defined in ``pp_defs``.
 
 .. note:: Definitions in ``pp_defs`` will override definitions from ``include_dirs``
+
+pp_parse_intel
+**************
+
+Parses Intel compiler directive defines and conditionals of the form
+``!DEC$``, ``!DIR$``, ``CDIR$``, ``CDEC$``, ``*DIR$``, ``*DEC$``, or ``!MS$``.
+Only defines, undefines, and if defined statements are evaluated.
 
 
 Limitations
