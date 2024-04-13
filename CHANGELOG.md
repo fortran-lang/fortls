@@ -6,6 +6,10 @@
 
 ### Added
 
+- Added support for preprocessor macro expansions
+  ([#368](https://github.com/fortran-lang/fortls/pull/368))
+- Added support for leading white spaces in preprocessor directives
+  ([#297](https://github.com/fortran-lang/fortls/issues/297))
 - Added hover messages for Types and Modules
   ([#208](https://github.com/fortran-lang/fortls/issues/208))
 - Added support for Markdown intrinsics from the M_intrinsics repository
