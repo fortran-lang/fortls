@@ -2084,9 +2084,8 @@ def preprocess_file(
         def_args = def_args.split(",")
         regex = re.compile(rf"\b{def_name}\s*\({','.join(['(.*)']*len(def_args))}\)")
 
-        for i, arg in enumerate(def_args):
-            arg = arg.strip()
-            sub = re.sub(rf"\b({arg})\b", rf"\\{i + 1}", sub)
+        for i, arg in enumerate(def_args, start=1):
+            sub = re.sub(rf"\b({arg.strip()})\b", rf"\\{i}", sub)
 
         return regex, sub
 
