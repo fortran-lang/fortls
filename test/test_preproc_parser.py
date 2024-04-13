@@ -21,3 +21,18 @@ def test_pp_leading_spaces():
         "FILE_ENCODING": ",encoding='UTF-8'",
     }
     assert defs == ref
+
+
+def test_pp_macro_expansion():
+    lines = [
+        "# define WRAP(PROCEDURE) PROCEDURE , wrap_/**/PROCEDURE",
+        "generic, public :: set => WRAP(abc)",
+        "procedure :: WRAP(abc)",
+    ]
+    ref = [
+        "# define WRAP(PROCEDURE) PROCEDURE , wrap_/**/PROCEDURE",
+        "generic, public :: set => abc , wrap_/**/abc",
+        "procedure :: abc , wrap_/**/abc",
+    ]
+    output, _, _, _ = preprocess_file(lines)
+    assert output == ref
