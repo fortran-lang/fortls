@@ -20,3 +20,5 @@ coverage.xml
 
 # Ignore M_intrinsics repo
 M_intrinsics
+benchmarks/
+scripts/
