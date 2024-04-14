@@ -198,6 +198,7 @@ class LangServer:
         self.source_dirs.add(self.root_path)
 
         self._load_config_file()
+        update_recursion_limit(self.recursion_limit)
         self._resolve_globs_in_paths()
         self._config_logger(request)
         self._load_intrinsics()
@@ -1593,6 +1594,7 @@ class LangServer:
             "incremental_sync", self.incremental_sync
         )
         self.sync_type: int = 2 if self.incremental_sync else 1
+        self.recursion_limit = config_dict.get("recursion_limit", self.recursion_limit)
         self.sort_keywords = config_dict.get("sort_keywords", self.sort_keywords)
         self.disable_autoupdate = config_dict.get(
             "disable_autoupdate", self.disable_autoupdate
@@ -1824,6 +1826,18 @@ class LangServer:
         except (URLError, KeyError):
             self.post_message("Failed to update the fortls", Severity.warn)
         return False
+
+
+def update_recursion_limit(limit: int) -> None:
+    """Update the recursion limit of the Python interpreter
+
+    Parameters
+    ----------
+    limit : int
+        New recursion limit
+    """
+    if limit != sys.getrecursionlimit():
+        sys.setrecursionlimit(limit)
 
 
 class JSONRPC2Error(Exception):
