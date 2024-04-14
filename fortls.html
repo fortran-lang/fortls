@@ -1435,6 +1435,24 @@ Fortran file, line number, column number</p>
 
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="fortls.langserver.update_recursion_limit">
+<span class="sig-prename descclassname"><span class="pre">fortls.langserver.</span></span><span class="sig-name descname"><span class="pre">update_recursion_limit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.langserver.update_recursion_limit" title="Permalink to this definition">#</a></dt>
+<dd><p>Update the recursion limit of the Python interpreter</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>limit</strong> (<a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – New recursion limit</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">update_recursion_limit</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </section>
 <section id="fortls-objects-module">
 <h2>fortls.objects module<a class="headerlink" href="#fortls-objects-module" title="Permalink to this heading">#</a></h2>
@@ -2165,6 +2183,7 @@ For more info see create_src_file_exts_regex</p>
 <li><a class="reference internal" href="#fortls.langserver.LangServer.workspace_init"><code class="docutils literal notranslate"><span class="pre">LangServer.workspace_init()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#fortls.langserver.update_recursion_limit"><code class="docutils literal notranslate"><span class="pre">update_recursion_limit()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#fortls-objects-module">fortls.objects module</a></li>
@@ -2273,7 +2292,7 @@ For more info see create_src_file_exts_regex</p>
       
     </aside>
   </div>
-</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=ccaf8c81"></script>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=1a9b43f3"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>

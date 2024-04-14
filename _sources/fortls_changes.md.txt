@@ -2,6 +2,8 @@
 
 ## Added
 
+- Added support for changing the default Python recursion depth
+  ([#312](https://github.com/fortran-lang/fortls/issues/312))
 - Added support for preprocessor macro expansions
   ([#368](https://github.com/fortran-lang/fortls/pull/368))
 - Added support for leading white spaces in preprocessor directives
