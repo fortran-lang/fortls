@@ -1835,6 +1835,10 @@ def update_recursion_limit(limit: int) -> None:
     ----------
     limit : int
         New recursion limit
+
+    Examples
+    --------
+    >>> update_recursion_limit(10000)
     """
     if limit != sys.getrecursionlimit():
         sys.setrecursionlimit(limit)
