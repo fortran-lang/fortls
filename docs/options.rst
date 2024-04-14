@@ -47,6 +47,7 @@ All the ``fortls`` settings with their default arguments can be found below
       "nthreads": 4,
       "notify_init": false,
       "incremental_sync": false,
+      "recursion_limit": 1000,
       "sort_keywords": false,
       "disable_autoupdate": false,
       "debug_log": false,

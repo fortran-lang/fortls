@@ -27,6 +27,12 @@
       "default": false,
       "type": "boolean"
     },
+    "recursion_limit": {
+      "title": "Recursion Limit",
+      "description": "Set the maximum recursion depth for the parser (default: 1000)",
+      "default": 1000,
+      "type": "integer"
+    },
     "sort_keywords": {
       "title": "Sort Keywords",
       "description": "Display variable keywords information, function/subroutine definitions, etc. in a consistent (sorted) manner default: no sorting, display code as is)",

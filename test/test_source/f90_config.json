@@ -2,6 +2,7 @@
   "nthreads": 8,
   "notify_init": true,
   "incremental_sync": true,
+  "recursion_limit": 1500,
   "sort_keywords": true,
   "disable_autoupdate": true,
 
