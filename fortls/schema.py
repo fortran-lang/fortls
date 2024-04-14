@@ -28,7 +28,7 @@ def create_schema(root: pathlib.Path | None = None):
     m = create_model("fortls schema", **only_vals)
     m.__doc__ = "Schema for the fortls Fortran Language Server"
 
-    with open(str(root / "fortls.schema.json"), "w") as f:
+    with open(str(root / "fortls.schema.json"), "w", encoding="utf-8") as f:
         print(m.schema_json(indent=2), file=f)
     print(f"Created schema file: {root / 'fortls.schema.json'}")
 
