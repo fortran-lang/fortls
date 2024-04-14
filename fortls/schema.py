@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import pathlib
 
 from pydantic import Field, create_model
@@ -23,13 +24,13 @@ def create_schema(root: pathlib.Path | None = None):
             continue
         val = arg.default
         desc: str = arg.help.replace("%(default)s", str(val))  # type: ignore
-        only_vals[arg.dest] = Field(val, description=desc)  # type: ignore
+        only_vals[arg.dest] = (type(val), Field(val, description=desc))  # type: ignore
 
     m = create_model("fortls schema", **only_vals)
     m.__doc__ = "Schema for the fortls Fortran Language Server"
 
     with open(str(root / "fortls.schema.json"), "w", encoding="utf-8") as f:
-        print(m.schema_json(indent=2), file=f)
+        print(json.dumps(m.model_json_schema(), indent=2), file=f)
     print(f"Created schema file: {root / 'fortls.schema.json'}")
 
 
