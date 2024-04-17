@@ -144,16 +144,24 @@ class FortranRegularExpressions:
         r" |MODULE|PROGRAM|SUBROUTINE|FUNCTION|PROCEDURE|TYPE|DO|IF|SELECT)?",
         I,
     )
-    FOLD_START: Pattern = compile(
-        # r"^(\s*)((IF(\s*)\((.)*\)(\s*)THEN)|DO(\s*)\(PROGRAM|MODULE|SUBROUTINE|FUNCTION)",
-        r"^(\s*)((IF(\s*)\((.)*\)(\s*)THEN)|(DO(\s*)\)|PROGRAM))",
-        I,
-    )
-    FOLD_END: Pattern = compile(
-        # r"^(\s*)(END)(\s*)(IF|DO|PROGRAM|MODULE|SUBROUTINE|FUNCTION)",
-        r"^(\s*)(END)(\s*)(IF|PROGRAM)",
-        I,
-    )
+
+    IF_THEN_IN: Pattern = compile(r"((^IF|.*\sIF)\s*\(.*\)\s*THEN)", I)
+    DO_IN: Pattern = compile(r"((^DO|.*\sDO)\s.)", I)
+    SELECT_IN: Pattern = compile(r"((^SELECT|.*\sSELECT)\s*(CASE|TYPE)(\s|\())", I)
+    PROGRAM_IN: Pattern = compile(r"((^PROGRAM|.*\sPROGRAM)\s\s*[a-z])", I)
+    SUBROUTINE_IN: Pattern = compile(r"((^SUBROUTINE|.*\sSUBROUTINE)\s\s*[a-z])", I)
+    FUNCTION_IN: Pattern = compile(r"((^FUNCTION|.*\sFUNCTION)\s\s*[a-z])", I)
+
+    IF_THEN_OUT: Pattern = compile(r"(^|.*\s)END\s*IF($|\s)", I)
+    DO_OUT: Pattern = compile(r"(^|.*\s)END((\s*)DO($|\s))", I)
+    SELECT_OUT: Pattern = compile(r"(^|.*\s)END((\s*)SELECT($|\s))", I)
+    PROGRAM_OUT: Pattern = compile(r"(^|.*\s)END((\s*)PROGRAM($|\s))", I)
+    SUBROUTINE_OUT: Pattern = compile(r"(^|.*\s)END((\s*)SUBROUTINE($|\s))", I)
+    FUNCTION_OUT: Pattern = compile(r"(^|.*\s)END((\s*)FUNCTION($|\s))", I)
+
+    IF_THEN_INOUT: Pattern = compile(r"(^|.*\s)(ELSE$|ELSE(\s)|ELSEIF(\s|\())", I)
+    SELECT_INOUT: Pattern = compile(r"((^|.*\s)(CASE|TYPE)(\s|\())", I)
+
     # Object regex patterns
     CLASS_VAR: Pattern = compile(r"(TYPE|CLASS)[ ]*\(", I)
     DEF_KIND: Pattern = compile(r"(\w*)[ ]*\((?:KIND|LEN)?[ =]*(\w*)", I)

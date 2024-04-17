@@ -36,6 +36,7 @@ class FortranAST:
         self.inherit_objs: list = []
         self.linkable_objs: list = []
         self.external_objs: list = []
+        self.fold_patterns = []
         self.folding_start: list = []
         self.folding_end: list = []
         self.lines_to_fold: list = []
