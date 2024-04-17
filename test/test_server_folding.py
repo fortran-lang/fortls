@@ -27,7 +27,8 @@ def test_folding():
         {"startLine": 6, "endLine": 10},
         {"startLine": 5, "endLine": 11},
         {"startLine": 14, "endLine": 15},
-        {"startLine": 16, "endLine": 17},
-        {"startLine": 0, "endLine": 19},
+        {"startLine": 16, "endLine": 18},
+        {"startLine": 19, "endLine": 20},
+        {"startLine": 0, "endLine": 22},
     ]
     validate_folding(results[1], ref)
