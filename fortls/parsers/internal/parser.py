@@ -1276,8 +1276,6 @@ class FortranFile:
             pp_skips = []
             pp_defines = []
 
-        self.populate_fold_patterns_list(file_ast)
-
         line_no = 0
         line_no_end = 0
         block_id_stack = []
@@ -1354,37 +1352,40 @@ class FortranFile:
                 line = multi_lines.pop()
                 line_stripped = line
 
-            for fold_pattern in file_ast.fold_patterns:
-                fold_pattern_found = fold_pattern[0].match(line_no_comment)
-                if fold_pattern_found is not None:
-                    var_found = FRegex.VAR.match(line)
-                    if (
-                            (var_found is None or 
-                             "function" in fold_pattern_found[0].lower()) or
-                            (line_no_comment.find(var_found.group(0)) > 
-                             line_no_comment.find(fold_pattern_found.group(0)))
-                        ):                       
-                        if fold_pattern[1] == "in":
-                            file_ast.lines_to_fold.append(line_no)
-                        elif fold_pattern[1] == "out":
-                            file_ast.folding_start.append(file_ast.lines_to_fold.pop())
-                            file_ast.folding_end.append(line_no - 1)
-                        else:
-                            file_ast.folding_start.append(file_ast.lines_to_fold.pop())
-                            file_ast.folding_end.append(line_no - 1)
-                            file_ast.lines_to_fold.append(line_no)
-                        break
+            # these are not yet treated in scopes, to be added?
+            if (
+                FRegex.IF_INOUT.match(line) is not None
+                or FRegex.SELECT_INOUT.match(line) is not None
+            ):
+                self.treat_inout_line(
+                    file_ast.lines_to_fold,
+                    file_ast.folding_start,
+                    file_ast.folding_end,
+                    line_no,
+                )
 
             # Test for scope end
             if file_ast.END_SCOPE_REGEX is not None:
                 match = FRegex.END_WORD.match(line_no_comment)
                 # Handle end statement
                 if self.parse_end_scope_word(line_no_comment, line_no, file_ast, match):
+                    self.treat_out_line(
+                        file_ast.lines_to_fold,
+                        file_ast.folding_start,
+                        file_ast.folding_end,
+                        line_no,
+                    )
                     continue
                 # Look for old-style end of DO loops with line labels
                 if self.parse_do_fixed_format(
                     line, line_no, file_ast, line_label, block_id_stack
                 ):
+                    self.treat_out_line(
+                        file_ast.lines_to_fold,
+                        file_ast.folding_start,
+                        file_ast.folding_end,
+                        line_no,
+                    )
                     continue
 
             # Skip if known generic code line
@@ -2042,27 +2043,29 @@ class FortranFile:
             if obj is not None:
                 return obj
         return None
-    
-    def populate_fold_patterns_list(self, file_ast: FortranAST) :
-        # Order is important, some "in" patterns are included in "out"/"inout",
-        # so always check "out"/"inout" patterns first
-        # Fold ifs
-        file_ast.fold_patterns.append( [FRegex.IF_THEN_OUT, "out"] )
-        file_ast.fold_patterns.append( [FRegex.IF_THEN_INOUT, "inout"] )
-        file_ast.fold_patterns.append( [FRegex.IF_THEN_IN, "in"] )
-        # Fold dos
-        file_ast.fold_patterns.append( [FRegex.DO_OUT, "out"] )
-        file_ast.fold_patterns.append( [FRegex.DO_IN, "in"] )
-        # Fold program
-        file_ast.fold_patterns.append( [FRegex.PROGRAM_OUT, "out"] )
-        file_ast.fold_patterns.append( [FRegex.PROGRAM_IN, "in"] )
-        # Fold function
-        file_ast.fold_patterns.append( [FRegex.FUNCTION_OUT, "out"] )
-        file_ast.fold_patterns.append( [FRegex.FUNCTION_IN, "in"] )
-        # Fold subroutine
-        file_ast.fold_patterns.append( [FRegex.SUBROUTINE_OUT, "out"] )
-        file_ast.fold_patterns.append( [FRegex.SUBROUTINE_IN, "in"] )
-        
+
+    def treat_out_line(
+        self,
+        lines_to_fold: list[int],
+        folding_start: list[int],
+        folding_end: list[int],
+        line_no: int,
+    ):
+        folding_start.append(lines_to_fold.pop())
+        folding_end.append(line_no - 1)
+        return
+
+    def treat_inout_line(
+        self,
+        lines_to_fold: list[int],
+        folding_start: list[int],
+        folding_end: list[int],
+        line_no: int,
+    ):
+        folding_start.append(lines_to_fold.pop())
+        folding_end.append(line_no - 1)
+        lines_to_fold.append(line_no)
+        return
 
 
 def preprocess_file(

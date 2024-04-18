@@ -48,7 +48,6 @@ class FortranRegularExpressions:
     END_WHERE: Pattern = compile(r"WHERE", I)
     IF: Pattern = compile(r"[ ]*(?:[a-z_]\w*[ ]*:[ ]*)?IF[ ]*\(", I)
     THEN: Pattern = compile(r"\)[ ]*THEN$", I)
-    ELSE: Pattern = compile(r"(\s*)(ELSE|ELSE(\s*)IF)", I)
     END_IF: Pattern = compile(r"IF", I)
     ASSOCIATE: Pattern = compile(r"[ ]*ASSOCIATE[ ]*\(", I)
     END_ASSOCIATE: Pattern = compile(r"ASSOCIATE", I)
@@ -145,22 +144,8 @@ class FortranRegularExpressions:
         I,
     )
 
-    IF_THEN_IN: Pattern = compile(r"((^IF|.*\sIF)\s*\(.*\)\s*THEN)", I)
-    DO_IN: Pattern = compile(r"((^DO|.*\sDO)\s.)", I)
-    SELECT_IN: Pattern = compile(r"((^SELECT|.*\sSELECT)\s*(CASE|TYPE)(\s|\())", I)
-    PROGRAM_IN: Pattern = compile(r"((^PROGRAM|.*\sPROGRAM)\s\s*[a-z])", I)
-    SUBROUTINE_IN: Pattern = compile(r"((^SUBROUTINE|.*\sSUBROUTINE)\s\s*[a-z])", I)
-    FUNCTION_IN: Pattern = compile(r"((^FUNCTION|.*\sFUNCTION)\s\s*[a-z])", I)
-
-    IF_THEN_OUT: Pattern = compile(r"(^|.*\s)END\s*IF($|\s)", I)
-    DO_OUT: Pattern = compile(r"(^|.*\s)END((\s*)DO($|\s))", I)
-    SELECT_OUT: Pattern = compile(r"(^|.*\s)END((\s*)SELECT($|\s))", I)
-    PROGRAM_OUT: Pattern = compile(r"(^|.*\s)END((\s*)PROGRAM($|\s))", I)
-    SUBROUTINE_OUT: Pattern = compile(r"(^|.*\s)END((\s*)SUBROUTINE($|\s))", I)
-    FUNCTION_OUT: Pattern = compile(r"(^|.*\s)END((\s*)FUNCTION($|\s))", I)
-
-    IF_THEN_INOUT: Pattern = compile(r"(^|.*\s)(ELSE$|ELSE(\s)|ELSEIF(\s|\())", I)
-    SELECT_INOUT: Pattern = compile(r"((^|.*\s)(CASE|TYPE)(\s|\())", I)
+    IF_INOUT: Pattern = compile(r"(^|.*\s)(ELSE$|ELSE(\s)|ELSEIF(\s*\())", I)
+    SELECT_INOUT: Pattern = compile(r"((^|\s*\s)(CASE)(\s*\())", I)
 
     # Object regex patterns
     CLASS_VAR: Pattern = compile(r"(TYPE|CLASS)[ ]*\(", I)

@@ -1227,18 +1227,24 @@ class LangServer:
         file_obj = self.workspace.get(path)
         if file_obj is None:
             return None
-        # need generic definition for foldingRange here
-        var_obj = self.get_definition(file_obj, 0, 9)
-        if var_obj is None:
+        if file_obj.ast is None:
+            return None
+        else:
+            folding_start = file_obj.ast.folding_start
+            folding_end = file_obj.ast.folding_end
+        if (
+            folding_start is None
+            or folding_end is None
+            or len(folding_start) != len(folding_end)
+        ):
             return None
         # Construct folding_rage list
         folding_ranges = []
-        file_ast = var_obj.file_ast
-        folds = len(file_ast.folding_start)
+        folds = len(folding_start)
         for i in range(0, folds):
             fold_range = {
-                "startLine": file_ast.folding_start[i] - 1,
-                "endLine": file_ast.folding_end[i] - 1,
+                "startLine": folding_start[i] - 1,
+                "endLine": folding_end[i] - 1,
             }
             folding_ranges.append(fold_range)
 

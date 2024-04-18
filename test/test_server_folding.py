@@ -15,7 +15,7 @@ def validate_folding(results: list, ref: list):
         assert results[i] == ref[i]
 
 
-def test_folding():
+def test_if_folding():
     """Test the ranges for several blocks are correct"""
     string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
     file_path = test_dir / "subdir" / "test_if_folding.f90"
