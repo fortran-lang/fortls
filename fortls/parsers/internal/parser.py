@@ -1354,8 +1354,8 @@ class FortranFile:
 
             # these are not yet treated in scopes, to be added?
             if (
-                FRegex.IF_INOUT.match(line) is not None
-                or FRegex.SELECT_INOUT.match(line) is not None
+                FRegex.IF_INOUT.match(line_no_comment) is not None
+                or FRegex.SELECT_INOUT.match(line_no_comment) is not None
             ):
                 self.treat_inout_line(
                     file_ast.lines_to_fold,
