@@ -104,6 +104,7 @@ def test_config_file_general_options():
     assert server.incremental_sync
     assert server.sort_keywords
     assert server.disable_autoupdate
+    assert server.recursion_limit == 1500
 
 
 def test_config_file_dir_parsing_options():

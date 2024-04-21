@@ -199,6 +199,7 @@ class LangServer:
         self.source_dirs.add(self.root_path)
 
         self._load_config_file()
+        update_recursion_limit(self.recursion_limit)
         self._resolve_globs_in_paths()
         self._config_logger(request)
         self._load_intrinsics()
@@ -211,7 +212,7 @@ class LangServer:
 
         # Initialize workspace
         self.workspace_init()
-        log.info(f"fortls - Fortran Language Server {__version__} Initialized")
+        log.info("fortls - Fortran Language Server %s Initialized", __version__)
         #
         server_capabilities = {
             "completionProvider": {
@@ -753,11 +754,18 @@ class LangServer:
             return None
         # Search in Preprocessor defined variables
         if def_name in def_file.pp_defs:
+            def_value = def_file.pp_defs.get(def_name)
+            def_arg_str = ""
+            if isinstance(def_value, tuple):
+                def_arg_str, def_value = def_value
+                def_arg_str = ", ".join([x.strip() for x in def_arg_str.split(",")])
+                def_arg_str = f"({def_arg_str})"
+
             var = Variable(
                 def_file.ast,
                 def_line + 1,
                 def_name,
-                f"#define {def_name} {def_file.pp_defs.get(def_name)}",
+                f"#define {def_name}{def_arg_str} {def_value}",
                 [],
             )
             return var
@@ -1418,7 +1426,7 @@ class LangServer:
                             return False, "File does not exist"  # Error during load
                 err_string, file_changed = file_obj.load_from_disk()
                 if err_string:
-                    log.error(f"{err_string} : {filepath}")
+                    log.error("%s : %s", err_string, filepath)
                     return False, err_string  # Error during file read
                 if not file_changed:
                     return False, None
@@ -1620,6 +1628,7 @@ class LangServer:
             "incremental_sync", self.incremental_sync
         )
         self.sync_type: int = 2 if self.incremental_sync else 1
+        self.recursion_limit = config_dict.get("recursion_limit", self.recursion_limit)
         self.sort_keywords = config_dict.get("sort_keywords", self.sort_keywords)
         self.disable_autoupdate = config_dict.get(
             "disable_autoupdate", self.disable_autoupdate
@@ -1854,6 +1863,22 @@ class LangServer:
         except (URLError, KeyError):
             self.post_message("Failed to update the fortls", Severity.warn)
         return False
+
+
+def update_recursion_limit(limit: int) -> None:
+    """Update the recursion limit of the Python interpreter
+
+    Parameters
+    ----------
+    limit : int
+        New recursion limit
+
+    Examples
+    --------
+    >>> update_recursion_limit(10000)
+    """
+    if limit != sys.getrecursionlimit():
+        sys.setrecursionlimit(limit)
 
 
 class JSONRPC2Error(Exception):

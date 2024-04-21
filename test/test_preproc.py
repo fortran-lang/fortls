@@ -52,12 +52,12 @@ def test_hover():
         "```fortran90\n#define PETSC_ERR_INT_OVERFLOW 84\n```",
         "```fortran90\n#define varVar 55\n```",
         (
-            "```fortran90\n#define ewrite if (priority <= 3) write((priority),"
-            " format)\n```"
+            "```fortran90\n#define ewrite(priority, format)"
+            " if (priority <= 3) write((priority), format)\n```"
         ),
         (
-            "```fortran90\n#define ewrite2 if (priority <= 3) write((priority),"
-            " format)\n```"
+            "```fortran90\n#define ewrite2(priority, format)"
+            " if (priority <= 3) write((priority), format)\n```"
         ),
         "```fortran90\n#define SUCCESS .true.\n```",
         "```fortran90\nREAL, CONTIGUOUS, POINTER, DIMENSION(:) :: var1\n```",

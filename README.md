@@ -2,6 +2,7 @@
 
 # fortls - Fortran Language Server
 
+[![Powered by NumFOCUS](https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat-square&colorA=E1523D&colorB=007D8A)](https://numfocus.org)
 ![PyPI](https://img.shields.io/pypi/v/fortls?style=flat-square)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fortls?style=flat-square)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/fortls?style=flat-square&label=PyPi)](https://pepy.tech/project/fortls)

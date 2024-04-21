@@ -75,6 +75,13 @@ def cli(name: str = "fortls") -> argparse.ArgumentParser:
         help="Use incremental document synchronization (beta)",
     )
     parser.add_argument(
+        "--recursion_limit",
+        type=int,
+        default=1000,
+        metavar="INTEGER",
+        help="Set the maximum recursion depth for the parser (default: %(default)s)",
+    )
+    parser.add_argument(
         "--sort_keywords",
         action="store_true",
         help=(

@@ -1702,11 +1702,11 @@ class FortranFile:
                         message = f"Unexpected end of scope at line {error[0]}"
                     else:
                         message = "Unexpected end statement: No open scopes"
-                    log.debug(f"{error[1]}: {message}")
+                    log.debug("%s: %s", error[1], message)
             if len(file_ast.parse_errors) > 0:
                 log.debug("\n=== Parsing Errors ===\n")
                 for error in file_ast.parse_errors:
-                    log.debug(f"{error['range']}: {error['message']}")
+                    log.debug("%s: %s", error["range"], error["message"])
         return file_ast
 
     def parse_imp_dim(self, line: str):
@@ -1944,7 +1944,7 @@ class FortranFile:
             # Handle dangling comments from previous line
             if docs:
                 file_ast.add_doc(format(docs))
-                log.debug(f"{format(docs)} !!! Doc string - Line:{ln}")
+                log.debug("%s !!! Doc string - Line:%d", format(docs), ln)
                 docs[:] = []  # empty the documentation stack
 
         # Check for comments in line
@@ -1965,7 +1965,7 @@ class FortranFile:
         if len("".join(docs)) > 0:
             file_ast.add_doc(format(docs), forward=predocmark)
         for i, doc_line in enumerate(docs):
-            log.debug(f"{doc_line} !!! Doc string - Line:{_ln + i}")
+            log.debug("%s !!! Doc string - Line:%d", doc_line, _ln + i)
         docs[:] = []
         return ln
 
@@ -2127,6 +2127,23 @@ def preprocess_file(
         else:
             return line_res
 
+    def expand_func_macro(def_name: str, def_value: tuple[str, str]):
+        def_args, sub = def_value
+        def_args = def_args.split(",")
+        regex = re.compile(rf"\b{def_name}\s*\({','.join(['(.*)']*len(def_args))}\)")
+
+        for i, arg in enumerate(def_args, start=1):
+            sub = re.sub(rf"\b({arg.strip()})\b", rf"\\{i}", sub)
+
+        return regex, sub
+
+    def append_multiline_macro(def_value: str | tuple, line: str):
+        if isinstance(def_value, tuple):
+            def_args, def_value = def_value
+            def_value += line
+            return (def_args, def_value)
+        return def_value + line
+
     if pp_defs is None:
         pp_defs = {}
     if include_dirs is None:
@@ -2145,11 +2162,13 @@ def preprocess_file(
         # Handle multiline macro continuation
         if def_cont_name is not None:
             output_file.append("")
-            if line.rstrip()[-1] != "\\":
-                defs_tmp[def_cont_name] += line.strip()
+            is_multiline = line.strip()[-1] != "\\"
+            line_to_append = line.strip() if is_multiline else line[0:-1].strip()
+            defs_tmp[def_cont_name] = append_multiline_macro(
+                defs_tmp[def_cont_name], line_to_append
+            )
+            if is_multiline:
                 def_cont_name = None
-            else:
-                defs_tmp[def_cont_name] += line[0:-1].strip()
             continue
         # Handle conditional statements
         match = FRegex.PP_REGEX.match(line)
@@ -2158,24 +2177,24 @@ def preprocess_file(
             def_name = None
             if_start = False
             # Opening conditional statements
-            if match.group(1) == "if ":
+            if match.group(1).lower() == "if ":
                 is_path = eval_pp_if(line[match.end(1) :], defs_tmp)
                 if_start = True
-            elif match.group(1) == "ifdef":
+            elif match.group(1).lower() == "ifdef":
                 if_start = True
                 def_name = line[match.end(0) :].strip()
                 is_path = def_name in defs_tmp
-            elif match.group(1) == "ifndef":
+            elif match.group(1).lower() == "ifndef":
                 if_start = True
                 def_name = line[match.end(0) :].strip()
                 is_path = not (def_name in defs_tmp)
             if if_start:
                 if is_path:
                     pp_stack.append([-1, -1])
-                    log.debug(f"{line.strip()} !!! Conditional TRUE({i + 1})")
+                    log.debug("%s !!! Conditional TRUE(%d)", line.strip(), i + 1)
                 else:
                     pp_stack.append([i + 1, -1])
-                    log.debug(f"{line.strip()} !!! Conditional FALSE({i + 1})")
+                    log.debug("%s !!! Conditional FALSE(%d)", line.strip(), i + 1)
                 continue
             if len(pp_stack) == 0:
                 continue
@@ -2183,7 +2202,7 @@ def preprocess_file(
             inc_start = False
             exc_start = False
             exc_continue = False
-            if match.group(1) == "elif":
+            if match.group(1).lower() == "elif":
                 if (not pp_stack_group) or (pp_stack_group[-1][0] != len(pp_stack)):
                     # First elif statement for this elif group
                     if pp_stack[-1][0] < 0:
@@ -2203,7 +2222,7 @@ def preprocess_file(
                     inc_start = True
                 else:
                     exc_start = True
-            elif match.group(1) == "else":
+            elif match.group(1).lower() == "else":
                 if pp_stack[-1][0] < 0:
                     pp_stack[-1][0] = i + 1
                     exc_start = True
@@ -2219,24 +2238,24 @@ def preprocess_file(
                     pp_skips.append(pp_stack.pop())
                     pp_stack.append([-1, -1])
                     inc_start = True
-            elif match.group(1) == "endif":
+            elif match.group(1).lower() == "endif":
                 if pp_stack_group and (pp_stack_group[-1][0] == len(pp_stack)):
                     pp_stack_group.pop()
                 if pp_stack[-1][0] < 0:
                     pp_stack.pop()
-                    log.debug(f"{line.strip()} !!! Conditional TRUE/END({i + 1})")
+                    log.debug("%s !!! Conditional TRUE/END(%d)", line.strip(), i + 1)
                     continue
                 if pp_stack[-1][1] < 0:
                     pp_stack[-1][1] = i + 1
-                    log.debug(f"{line.strip()} !!! Conditional FALSE/END({i + 1})")
+                    log.debug("%s !!! Conditional FALSE/END(%d)", line.strip(), i + 1)
                 pp_skips.append(pp_stack.pop())
             if debug:
                 if inc_start:
-                    log.debug(f"{line.strip()} !!! Conditional TRUE({i + 1})")
+                    log.debug("%s !!! Conditional TRUE(%d)", line.strip(), i + 1)
                 elif exc_start:
-                    log.debug(f"{line.strip()} !!! Conditional FALSE({i + 1})")
+                    log.debug("%s !!! Conditional FALSE(%d)", line.strip(), i + 1)
                 elif exc_continue:
-                    log.debug(f"{line.strip()} !!! Conditional EXCLUDED({i + 1})")
+                    log.debug("%s !!! Conditional EXCLUDED(%d)", line.strip(), i + 1)
             continue
         # Handle variable/macro definitions files
         match = FRegex.PP_DEF.match(line)
@@ -2257,20 +2276,26 @@ def preprocess_file(
                 if eq_ind >= 0:
                     # Handle multiline macros
                     if line.rstrip()[-1] == "\\":
-                        defs_tmp[def_name] = line[match.end(0) + eq_ind : -1].strip()
+                        def_value = line[match.end(0) + eq_ind : -1].strip()
                         def_cont_name = def_name
                     else:
-                        defs_tmp[def_name] = line[match.end(0) + eq_ind :].strip()
+                        def_value = line[match.end(0) + eq_ind :].strip()
                 else:
-                    defs_tmp[def_name] = "True"
+                    def_value = "True"
+
+                # are there arguments to parse?
+                if match.group(3):
+                    def_value = (match.group(4), def_value)
+
+                defs_tmp[def_name] = def_value
             elif (match.group(1) == "undef") and (def_name in defs_tmp):
                 defs_tmp.pop(def_name, None)
-            log.debug(f"{line.strip()} !!! Define statement({i + 1})")
+            log.debug("%s !!! Define statement(%d)", line.strip(), i + 1)
             continue
         # Handle include files
         match = FRegex.PP_INCLUDE.match(line)
         if (match is not None) and ((len(pp_stack) == 0) or (pp_stack[-1][0] < 0)):
-            log.debug(f"{line.strip()} !!! Include statement({i + 1})")
+            log.debug("%s !!! Include statement(%d)", line.strip(), i + 1)
             include_filename = match.group(1).replace('"', "")
             include_path = None
             # Intentionally keep this as a list and not a set. There are cases
@@ -2286,7 +2311,7 @@ def preprocess_file(
                     include_file = FortranFile(include_path)
                     err_string, _ = include_file.load_from_disk()
                     if err_string is None:
-                        log.debug(f'\n!!! Parsing include file "{include_path}"')
+                        log.debug("\n!!! Parsing include file '%s'", include_path)
                         _, _, _, defs_tmp = preprocess_file(
                             include_file.contents_split,
                             file_path=include_path,
@@ -2297,13 +2322,15 @@ def preprocess_file(
                         log.debug("!!! Completed parsing include file\n")
 
                     else:
-                        log.debug(f"!!! Failed to parse include file: {err_string}")
+                        log.debug("!!! Failed to parse include file: %s", err_string)
 
                 except:
                     log.debug("!!! Failed to parse include file: exception")
 
             else:
-                log.debug(f"{line.strip()} !!! Could not locate include file ({i + 1})")
+                log.debug(
+                    "%s !!! Could not locate include file (%d)", line.strip(), i + 1
+                )
 
         # Substitute (if any) read in preprocessor macros
         for def_tmp, value in defs_tmp.items():
@@ -2313,12 +2340,23 @@ def preprocess_file(
                 continue
             def_regex = def_regexes.get(def_tmp)
             if def_regex is None:
-                def_regex = re.compile(rf"\b{def_tmp}\b")
+                if isinstance(value, tuple):
+                    def_regex = expand_func_macro(def_tmp, value)
+                else:
+                    def_regex = re.compile(rf"\b{def_tmp}\b")
                 def_regexes[def_tmp] = def_regex
+
+            if isinstance(def_regex, tuple):
+                def_regex, value = def_regex
+
             line_new, nsubs = def_regex.subn(value, line)
             if nsubs > 0:
                 log.debug(
-                    f"{line.strip()} !!! Macro sub({i + 1}) '{def_tmp}' -> {value}"
+                    "%s !!! Macro sub(%d) '%s' -> '%s'",
+                    line.strip(),
+                    i + 1,
+                    def_tmp,
+                    value,
                 )
                 line = line_new
         output_file.append(line)

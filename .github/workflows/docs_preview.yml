@@ -1,0 +1,34 @@
+name: Docs Preview
+
+permissions:
+  pull-requests: write
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
+      - closed
+    paths:
+      - "docs/**"
+      - "fortls/interface.py"
+  workflow_dispatch:
+
+concurrency: preview-${{github.ref}}
+
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: sphinx-toolbox/sphinx-action@master
+        with:
+          pre-build-command: "pip install .[docs]"
+          docs-folder: "docs/"
+      - name: Deploy Preview
+        uses: rossjrw/pr-preview-action@v1.4.7
+        with:
+          source-dir: docs/_build/html
+          preview-branch: gh-pages
