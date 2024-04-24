@@ -25,26 +25,11 @@ def main():
     freeze_support()
     args = cli(__name__).parse_args()
 
-    debug_server = (
-        args.debug_diagnostics
-        or args.debug_symbols
-        or args.debug_completion
-        or args.debug_signature
-        or args.debug_definition
-        or args.debug_hover
-        or args.debug_implementation
-        or args.debug_references
-        or args.debug_rename
-        or args.debug_actions
-        or args.debug_rootpath
-        or args.debug_workspace_symbols
-    )
-
     if args.debug_parser:
         debug_server_parser(args)
 
-    elif debug_server:
-        debug_server_general(args, vars(args))
+    elif is_debug_mode(args):
+        debug_lsp(args, vars(args))
 
     else:
         stdin, stdout = sys.stdin.buffer, sys.stdout.buffer
@@ -54,388 +39,412 @@ def main():
         ).run()
 
 
-def debug_server_general(args, settings):
-    """Outputs debug information about the server.
-    Triggers with any option under the DEBUG group except debug parser.
-    For the parser see `debug_server_parser`
+def is_debug_mode(args):
+    debug_flags = [
+        "debug_diagnostics",
+        "debug_symbols",
+        "debug_completion",
+        "debug_signature",
+        "debug_definition",
+        "debug_hover",
+        "debug_implementation",
+        "debug_references",
+        "debug_rename",
+        "debug_actions",
+        "debug_rootpath",
+        "debug_workspace_symbols",
+    ]
+    return any(getattr(args, flag, False) for flag in debug_flags)
 
-    Parameters
-    ----------
-    args : Namespace
-        The arguments parsed from the `ArgumentParser`
-    settings : dict
-        Language server settings
-    """
+
+def debug_lsp(args, settings):
+    debug_functions = {
+        "debug_rootpath": debug_rootpath,
+        "debug_diagnostics": debug_diagnostics,
+        "debug_symbols": debug_symbols,
+        "debug_workspace_symbols": debug_workspace_symbols,
+        "debug_completion": debug_completion,
+        "debug_hover": debug_hover,
+        "debug_signature": debug_signature,
+        "debug_definition": debug_definition,
+        "debug_references": debug_references,
+        "debug_implementation": debug_implementation,
+        "debug_rename": debug_rename,
+        "debug_actions": debug_actions,
+    }
+
     prb, pwb = os.pipe()
-    tmpin = os.fdopen(prb, "rb")
-    tmpout = os.fdopen(pwb, "wb")
-    s = LangServer(
-        conn=JSONRPC2Connection(ReadWriter(tmpin, tmpout)),
-        settings=settings,
+    with os.fdopen(prb, "rb") as tmpin, os.fdopen(pwb, "wb") as tmpout:
+        server = LangServer(
+            conn=JSONRPC2Connection(ReadWriter(tmpin, tmpout)),
+            settings=settings,
+        )
+        for flag, function in debug_functions.items():
+            if getattr(args, flag, False):
+                function(args, server)
+
+
+def debug_rootpath(args, server):
+    if not os.path.isdir(args.debug_rootpath):
+        error_exit("'debug_rootpath' not specified for debug request")
+    print('\nTesting "initialize" request:')
+    print(f'  Root = "{args.debug_rootpath}"')
+    server.serve_initialize({"params": {"rootPath": args.debug_rootpath}})
+    if len(server.post_messages) == 0:
+        print("  Successful!")
+    else:
+        print("  Successful with errors:")
+        for message in server.post_messages:
+            print(f"    {message[1]}")
+    print("\n  Source directories:")
+    for source_dir in server.source_dirs:
+        print(f"    {source_dir}")
+
+
+def debug_diagnostics(args, server):
+    print('\nTesting "textDocument/publishDiagnostics" notification:')
+    check_request_params(args, loc_needed=False)
+    server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
+    results, _ = server.get_diagnostics(args.debug_filepath)
+    if results is not None:
+        if args.debug_full_result:
+            print(json.dumps(results, indent=2))
+        else:
+            sev_map = ["ERROR", "WARNING", "INFO"]
+            if len(results) == 0:
+                print("\nNo errors or warnings")
+            else:
+                print("\nReported errors or warnings:")
+            for diag in results:
+                sline = diag["range"]["start"]["line"]
+                message = diag["message"]
+                sev = sev_map[diag["severity"] - 1]
+                print(f'  {sline:5d}:{sev}  "{message}"')
+
+
+def debug_symbols(args, server):
+    print('\nTesting "textDocument/documentSymbol" request:')
+    check_request_params(args, loc_needed=False)
+    server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
+    results = server.serve_document_symbols(
+        {"params": {"textDocument": {"uri": args.debug_filepath}}}
     )
-    #
-    if args.debug_rootpath:
-        dir_exists = os.path.isdir(args.debug_rootpath)
-        if dir_exists is False:
-            error_exit(
-                "Specified 'debug_rootpath' does not exist or is not a directory"
-            )
-        print('\nTesting "initialize" request:')
-        print('  Root = "{}"'.format(args.debug_rootpath))
-        s.serve_initialize({"params": {"rootPath": args.debug_rootpath}})
-        if len(s.post_messages) == 0:
-            print("  Successful!")
-        else:
-            print("  Successful with errors:")
-            for message in s.post_messages:
-                print("    {}".format(message[1]))
-        # Print module directories
-        print("\n  Source directories:")
-        for source_dir in s.source_dirs:
-            print("    {}".format(source_dir))
-    #
-    if args.debug_diagnostics:
-        print('\nTesting "textDocument/publishDiagnostics" notification:')
-        check_request_params(args, loc_needed=False)
-        s.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
-        diag_results, _ = s.get_diagnostics(args.debug_filepath)
-        if diag_results is not None:
-            if args.debug_full_result:
-                print(json.dumps(diag_results, indent=2))
+    if args.debug_full_result:
+        print(json.dumps(results, indent=2))
+    else:
+        for symbol in results:
+            sline = symbol["location"]["range"]["start"]["line"]
+            if "containerName" in symbol:
+                parent = symbol["containerName"]
             else:
-                sev_map = ["ERROR", "WARNING", "INFO"]
-                if len(diag_results) == 0:
-                    print("\nNo errors or warnings")
-                else:
-                    print("\nReported errors or warnings:")
-                for diag in diag_results:
-                    sline = diag["range"]["start"]["line"]
-                    message = diag["message"]
-                    sev = sev_map[diag["severity"] - 1]
-                    print('  {:5d}:{}  "{}"'.format(sline, sev, message))
-    #
-    if args.debug_symbols:
-        print('\nTesting "textDocument/documentSymbol" request:')
-        check_request_params(args, loc_needed=False)
-        s.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
-        symbol_results = s.serve_document_symbols(
-            {"params": {"textDocument": {"uri": args.debug_filepath}}}
-        )
+                parent = "null"
+            print(
+                f"  line {sline:5d}  symbol -> "
+                f"{symbol['kind']:3d}:{symbol['name']:30} parent = {parent}"
+            )
+
+
+def debug_workspace_symbols(args, server):
+    print('\nTesting "workspace/symbol" request:')
+    if args.debug_rootpath is None:
+        error_exit("'debug_rootpath' not specified for debug request")
+    results = server.serve_workspace_symbol(
+        {"params": {"query": args.debug_workspace_symbols}}
+    )
+    if args.debug_full_result:
+        print(json.dumps(results, indent=2))
+    else:
+        for symbol in results:
+            path = path_from_uri(symbol["location"]["uri"])
+            sline = symbol["location"]["range"]["start"]["line"]
+            if "containerName" in symbol:
+                parent = symbol["containerName"]
+            else:
+                parent = "null"
+            print(
+                f"  {parent}::{sline}  symbol -> {symbol['name']:30} parent = "
+                f"{os.path.relpath(path, args.debug_rootpath)}"
+            )
+
+
+def debug_completion(args, server):
+    print('\nTesting "textDocument/completion" request:')
+    check_request_params(args)
+    server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
+    results = server.serve_autocomplete(
+        {
+            "params": {
+                "textDocument": {"uri": args.debug_filepath},
+                "position": {
+                    "line": args.debug_line - 1,
+                    "character": args.debug_char - 1,
+                },
+            }
+        }
+    )
+    if results is None:
+        print("  No results!")
+    else:
+        print("  Results:")
         if args.debug_full_result:
-            print(json.dumps(symbol_results, indent=2))
+            print(json.dumps(results, indent=2))
         else:
-            for symbol in symbol_results:
-                sline = symbol["location"]["range"]["start"]["line"]
-                if "containerName" in symbol:
-                    parent = symbol["containerName"]
-                else:
-                    parent = "null"
-                print(
-                    "  line {2:5d}  symbol -> {1:3d}:{0:30} parent = {3}".format(
-                        symbol["name"], symbol["kind"], sline, parent
-                    )
-                )
-    #
-    if args.debug_workspace_symbols is not None:
-        print('\nTesting "workspace/symbol" request:')
-        if args.debug_rootpath is None:
-            error_exit("'debug_rootpath' not specified for debug request")
-        symbol_results = s.serve_workspace_symbol(
-            {"params": {"query": args.debug_workspace_symbols}}
-        )
+            for obj in results:
+                print(f"    {obj['kind']}: {obj['label']} -> {obj['detail']}")
+
+
+def debug_hover(args, server):
+    print('\nTesting "textDocument/hover" request:')
+    check_request_params(args)
+    server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
+    results = server.serve_hover(
+        {
+            "params": {
+                "textDocument": {"uri": args.debug_filepath},
+                "position": {
+                    "line": args.debug_line - 1,
+                    "character": args.debug_char - 1,
+                },
+            }
+        }
+    )
+    print("  Result:")
+    if results is None:
+        print("    No result found!")
+    else:
         if args.debug_full_result:
-            print(json.dumps(symbol_results, indent=2))
+            print(json.dumps(results, indent=2))
         else:
-            for symbol in symbol_results:
-                path = path_from_uri(symbol["location"]["uri"])
-                sline = symbol["location"]["range"]["start"]["line"]
-                if "containerName" in symbol:
-                    parent = symbol["containerName"]
-                else:
-                    parent = "null"
-                print(
-                    "  {2}::{3:d}  symbol -> {1:3d}:{0:30} parent = {4}".format(
-                        symbol["name"],
-                        symbol["kind"],
-                        os.path.relpath(path, args.debug_rootpath),
-                        sline,
-                        parent,
-                    )
-                )
-    #
-    if args.debug_completion:
-        print('\nTesting "textDocument/completion" request:')
-        check_request_params(args)
-        s.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
-        completion_results = s.serve_autocomplete(
-            {
-                "params": {
-                    "textDocument": {"uri": args.debug_filepath},
-                    "position": {
-                        "line": args.debug_line - 1,
-                        "character": args.debug_char - 1,
-                    },
-                }
+            contents = results["contents"]
+            print("=======")
+            if isinstance(contents, dict):
+                print(contents["value"])
+            else:
+                print(contents)
+            print("=======")
+
+
+def debug_signature(args, server):
+    print('\nTesting "textDocument/signatureHelp" request:')
+    check_request_params(args)
+    server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
+    results = server.serve_signature(
+        {
+            "params": {
+                "textDocument": {"uri": args.debug_filepath},
+                "position": {
+                    "line": args.debug_line - 1,
+                    "character": args.debug_char - 1,
+                },
             }
-        )
-        if completion_results is None:
-            print("  No results!")
+        }
+    )
+    print("  Result:")
+    if results is None:
+        print("  No Results!")
+    else:
+        print("  Results:")
+        if args.debug_full_result:
+            print(json.dumps(results, indent=2))
         else:
-            print("  Results:")
-            if args.debug_full_result:
-                print(json.dumps(completion_results, indent=2))
-            else:
-                for obj in completion_results:
-                    print(
-                        "    {}: {} -> {}".format(
-                            obj["kind"], obj["label"], obj["detail"]
-                        )
-                    )
-    #
-    if args.debug_signature:
-        print('\nTesting "textDocument/signatureHelp" request:')
-        check_request_params(args)
-        s.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
-        signature_results = s.serve_signature(
-            {
-                "params": {
-                    "textDocument": {"uri": args.debug_filepath},
-                    "position": {
-                        "line": args.debug_line - 1,
-                        "character": args.debug_char - 1,
-                    },
-                }
-            }
-        )
-        if signature_results is None:
-            print("  No Results!")
-        else:
-            print("  Results:")
-            if args.debug_full_result:
-                print(json.dumps(signature_results, indent=2))
-            else:
-                active_param = signature_results.get("activeParameter", 0)
-                print("    Active param = {}".format(active_param))
-                active_signature = signature_results.get("activeSignature", 0)
-                print("    Active sig   = {}".format(active_signature))
-                for i, signature in enumerate(signature_results["signatures"]):
-                    print("    {}".format(signature["label"]))
-                    for j, obj in enumerate(signature["parameters"]):
-                        if (i == active_signature) and (j == active_param):
-                            active_mark = "*"
-                        else:
-                            active_mark = " "
-                        arg_desc = obj.get("documentation")
-                        if arg_desc is not None:
-                            print(
-                                "{2}     {0} :: {1}".format(
-                                    arg_desc, obj["label"], active_mark
-                                )
-                            )
-                        else:
-                            print("{1}     {0}".format(obj["label"], active_mark))
-    #
-    if args.debug_definition or args.debug_implementation:
-        if args.debug_definition:
-            print('\nTesting "textDocument/definition" request:')
-        elif args.debug_implementation:
-            print('\nTesting "textDocument/implementation" request:')
-        check_request_params(args)
-        s.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
-        if args.debug_definition:
-            definition_results = s.serve_definition(
-                {
-                    "params": {
-                        "textDocument": {"uri": args.debug_filepath},
-                        "position": {
-                            "line": args.debug_line - 1,
-                            "character": args.debug_char - 1,
-                        },
-                    }
-                }
-            )
-        elif args.debug_implementation:
-            definition_results = s.serve_implementation(
-                {
-                    "params": {
-                        "textDocument": {"uri": args.debug_filepath},
-                        "position": {
-                            "line": args.debug_line - 1,
-                            "character": args.debug_char - 1,
-                        },
-                    }
-                }
-            )
-        print("  Result:")
-        if definition_results is None:
-            print("    No result found!")
-        else:
-            if args.debug_full_result:
-                print(json.dumps(definition_results, indent=2))
-            else:
-                print('    URI  = "{}"'.format(definition_results["uri"]))
-                print(
-                    "    Line = {}".format(
-                        definition_results["range"]["start"]["line"] + 1
-                    )
-                )
-                print(
-                    "    Char = {}".format(
-                        definition_results["range"]["start"]["character"] + 1
-                    )
-                )
-    #
-    if args.debug_hover:
-        print('\nTesting "textDocument/hover" request:')
-        check_request_params(args)
-        s.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
-        hover_results = s.serve_hover(
-            {
-                "params": {
-                    "textDocument": {"uri": args.debug_filepath},
-                    "position": {
-                        "line": args.debug_line - 1,
-                        "character": args.debug_char - 1,
-                    },
-                }
-            }
-        )
-        print("  Result:")
-        if hover_results is None:
-            print("    No result found!")
-        else:
-            if args.debug_full_result:
-                print(json.dumps(hover_results, indent=2))
-            else:
-                contents = hover_results["contents"]
-                print("=======")
-                if isinstance(contents, dict):
-                    print(contents["value"])
-                else:
-                    print(contents)
-                print("=======")
-    #
-    if args.debug_references:
-        print('\nTesting "textDocument/references" request:')
-        check_request_params(args)
-        s.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
-        ref_results = s.serve_references(
-            {
-                "params": {
-                    "textDocument": {"uri": args.debug_filepath},
-                    "position": {
-                        "line": args.debug_line - 1,
-                        "character": args.debug_char - 1,
-                    },
-                }
-            }
-        )
-        print("  Result:")
-        if ref_results is None:
-            print("    No result found!")
-        else:
-            if args.debug_full_result:
-                print(json.dumps(ref_results, indent=2))
-            else:
-                print("=======")
-                for result in ref_results:
-                    print(
-                        "  {}  ({}, {})".format(
-                            result["uri"],
-                            result["range"]["start"]["line"] + 1,
-                            result["range"]["start"]["character"] + 1,
-                        )
-                    )
-                print("=======")
-    #
-    if args.debug_rename is not None:
-        print('\nTesting "textDocument/rename" request:')
-        check_request_params(args)
-        s.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
-        ref_results = s.serve_rename(
-            {
-                "params": {
-                    "textDocument": {"uri": args.debug_filepath},
-                    "position": {
-                        "line": args.debug_line - 1,
-                        "character": args.debug_char - 1,
-                    },
-                    "newName": args.debug_rename,
-                }
-            }
-        )
-        print("  Result:")
-        if ref_results is None:
-            print("    No changes found!")
-        else:
-            if args.debug_full_result:
-                print(json.dumps(ref_results, indent=2))
-            else:
-                print("=======")
-                for uri, result in ref_results["changes"].items():
-                    path = path_from_uri(uri)
-                    print('File: "{}"'.format(path))
-                    file_obj = s.workspace.get(path)
-                    if file_obj is not None:
-                        file_contents = file_obj.contents_split
-                        for change in result:
-                            start_line = change["range"]["start"]["line"]
-                            end_line = change["range"]["end"]["line"]
-                            start_col = change["range"]["start"]["character"]
-                            end_col = change["range"]["end"]["character"]
-                            print("  {}, {}".format(start_line + 1, end_line + 1))
-                            new_contents = []
-                            for i in range(start_line, end_line + 1):
-                                line = file_contents[i]
-                                print("  - {}".format(line))
-                                if i == start_line:
-                                    new_contents.append(
-                                        line[:start_col] + change["newText"]
-                                    )
-                                if i == end_line:
-                                    new_contents[-1] += line[end_col:]
-                            for line in new_contents:
-                                print("  + {}".format(line))
-                            print()
+            active_param = results.get("activeParameter", 0)
+            print(f"    Active param = {active_param}")
+            active_signature = results.get("activeSignature", 0)
+            print(f"    Active sig   = {active_signature}")
+            for i, signature in enumerate(results["signatures"]):
+                print(f"    {signature['label']}")
+                for j, obj in enumerate(signature["parameters"]):
+                    if (i == active_signature) and (j == active_param):
+                        active_mark = "*"
                     else:
-                        print('Unknown file: "{}"'.format(path))
-                print("=======")
-    #
-    if args.debug_actions:
-        pp = pprint.PrettyPrinter(indent=2, width=120)
-        print('\nTesting "textDocument/getActions" request:')
-        check_request_params(args)
-        s.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
-        action_results = s.serve_codeActions(
-            {
-                "params": {
-                    "textDocument": {"uri": args.debug_filepath},
-                    "range": {
-                        "start": {
-                            "line": args.debug_line - 1,
-                            "character": args.debug_char - 1,
-                        },
-                        "end": {
-                            "line": args.debug_line - 1,
-                            "character": args.debug_char - 1,
-                        },
-                    },
-                }
+                        active_mark = " "
+                    arg_desc = obj.get("documentation")
+                    if arg_desc is not None:
+                        print(f"{active_mark}     {arg_desc} :: {obj['label']}")
+                    else:
+                        print(f"{active_mark}     {obj['label']}")
+
+
+def debug_definition(args, server):
+    print('\nTesting "textDocument/definition" request:')
+    check_request_params(args)
+    server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
+    results = server.serve_definition(
+        {
+            "params": {
+                "textDocument": {"uri": args.debug_filepath},
+                "position": {
+                    "line": args.debug_line - 1,
+                    "character": args.debug_char - 1,
+                },
             }
-        )
+        }
+    )
+    print("  Result:")
+    if results is None:
+        print("    No result found!")
+    else:
         if args.debug_full_result:
-            print(json.dumps(action_results, indent=2))
+            print(json.dumps(results, indent=2))
         else:
-            for result in action_results:
+            print(f'    URI  = "{results["uri"]}"')
+            print(f'    Line = {results["range"]["start"]["line"] + 1}')
+            print(f'    Char = {results["range"]["start"]["character"] + 1}')
+
+
+def debug_references(args, server):
+    print('\nTesting "textDocument/references" request:')
+    check_request_params(args)
+    server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
+    results = server.serve_references(
+        {
+            "params": {
+                "textDocument": {"uri": args.debug_filepath},
+                "position": {
+                    "line": args.debug_line - 1,
+                    "character": args.debug_char - 1,
+                },
+            }
+        }
+    )
+    print("  Result:")
+    if results is None:
+        print("    No result found!")
+    else:
+        if args.debug_full_result:
+            print(json.dumps(results, indent=2))
+        else:
+            print("=======")
+            for result in results:
                 print(
-                    "Kind = '{}', Title = '{}'".format(result["kind"], result["title"])
+                    f"  {result['uri']}  ({result['range']['start']['line'] + 1}"
+                    f", {result['range']['start']['character'] + 1})"
                 )
-                for editUri, editChange in result["edit"]["changes"].items():
-                    print("\nChange: URI = '{}'".format(editUri))
-                    pp.pprint(editChange)
+            print("=======")
+
+
+def debug_implementation(args, server):
+    print('\nTesting "textDocument/implementation" request:')
+    check_request_params(args)
+    server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
+    results = server.serve_implementation(
+        {
+            "params": {
+                "textDocument": {"uri": args.debug_filepath},
+                "position": {
+                    "line": args.debug_line - 1,
+                    "character": args.debug_char - 1,
+                },
+            }
+        }
+    )
+    print("  Result:")
+    if results is None:
+        print("    No result found!")
+    else:
+        if args.debug_full_result:
+            print(json.dumps(results, indent=2))
+        else:
+            print(f'    URI  = "{results["uri"]}"')
+            print(f'    Line = {results["range"]["start"]["line"] + 1}')
+            print(f'    Char = {results["range"]["start"]["character"] + 1}')
+
+
+def debug_rename(args, server):
+    print('\nTesting "textDocument/rename" request:')
+    check_request_params(args)
+    server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
+    results = server.serve_rename(
+        {
+            "params": {
+                "textDocument": {"uri": args.debug_filepath},
+                "position": {
+                    "line": args.debug_line - 1,
+                    "character": args.debug_char - 1,
+                },
+                "newName": args.debug_rename,
+            }
+        }
+    )
+    print("  Result:")
+    if results is None:
+        print("    No changes found!")
+    else:
+        if args.debug_full_result:
+            print(json.dumps(results, indent=2))
+        else:
+            print("=======")
+            for uri, changes in results["changes"].items():
+                path = path_from_uri(uri)
+                file_obj = server.workspace.get(path)
+                if file_obj is not None:
+                    file_contents = file_obj.contents_split
+                    process_file_changes(path, changes, file_contents)
+                else:
+                    print(f'Unknown file: "{path}"')
+            print("=======")
+
+
+def process_file_changes(file_path, changes, file_contents):
+    print(f'File: "{file_path}"')
+    for change in changes:
+        start_line = change["range"]["start"]["line"]
+        end_line = change["range"]["end"]["line"]
+        start_col = change["range"]["start"]["character"]
+        end_col = change["range"]["end"]["character"]
+        print(f"  {start_line + 1}, {end_line + 1}")
+        new_contents = []
+        for i in range(start_line, end_line + 1):
+            line = file_contents[i]
+            print(f"  - {line}")
+            line_content = line
+            if i == start_line:
+                line_content = line[:start_col] + change["newText"]
+            if i == end_line:
+                line_content += line[end_col:]
+            new_contents.append(line_content)
+        for line in new_contents:
+            print(f"  + {line}")
+        print()
+
+
+def debug_actions(args, server):
+    print('\nTesting "textDocument/getActions" request:')
+    check_request_params(args)
+    server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
+    results = server.serve_codeActions(
+        {
+            "params": {
+                "textDocument": {"uri": args.debug_filepath},
+                "range": {
+                    "start": {
+                        "line": args.debug_line - 1,
+                        "character": args.debug_char - 1,
+                    },
+                    "end": {
+                        "line": args.debug_line - 1,
+                        "character": args.debug_char - 1,
+                    },
+                },
+            }
+        }
+    )
+    print("  Result:")
+    pp = pprint.PrettyPrinter(indent=2, width=120)
+    if results is None:
+        print("    No actions found!")
+    else:
+        print("=======")
+        if args.debug_full_result:
+            print(json.dumps(results, indent=2))
+        else:
+            for result in results:
+                print(f"Kind = '{result['kind']}', Title = '{result['title']}'")
+                for edit_uri, edit_change in result["edit"]["changes"].items():
+                    print(f"\nChange: URI = '{edit_uri}'")
+                    pp.pprint(edit_change)
                 print()
-    tmpout.close()
-    tmpin.close()
+        print("=======")
 
 
 def debug_server_parser(args):
