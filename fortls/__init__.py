@@ -472,11 +472,7 @@ def debug_server_parser(args):
             config_path = os.path.join(root, f)
             return config_path
 
-    if args.debug_filepath is None:
-        error_exit("'debug_filepath' not specified for parsing test")
-    file_exists = os.path.isfile(args.debug_filepath)
-    if file_exists is False:
-        error_exit("Specified 'debug_filepath' does not exist")
+    ensure_file_accessible(args.debug_filepath)
     # Get preprocessor definitions from config file
     pp_suffixes = None
     pp_defs = {}
@@ -520,13 +516,15 @@ def debug_server_parser(args):
         print("{}: {}".format(obj.get_type(), obj.FQSN))
 
 
+def ensure_file_accessible(filepath: str):
+    """Ensure the file exists and is accessible, raising an error if not."""
+    if not os.path.isfile(filepath):
+        error_exit(f"File '{filepath}' does not exist or is not accessible")
+    print(f'  File = "{filepath}"')
+
+
 def check_request_params(args, loc_needed=True):
-    if args.debug_filepath is None:
-        error_exit("'debug_filepath' not specified for debug request")
-    file_exists = os.path.isfile(args.debug_filepath)
-    if file_exists is False:
-        error_exit("Specified 'debug_filepath' does not exist")
-    print(f'  File = "{args.debug_filepath}"')
+    ensure_file_accessible(args.debug_filepath)
     if loc_needed:
         if args.debug_line is None:
             error_exit("'debug_line' not specified for debug request")
