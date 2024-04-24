@@ -526,17 +526,17 @@ def check_request_params(args, loc_needed=True):
     file_exists = os.path.isfile(args.debug_filepath)
     if file_exists is False:
         error_exit("Specified 'debug_filepath' does not exist")
-    print('  File = "{}"'.format(args.debug_filepath))
+    print(f'  File = "{args.debug_filepath}"')
     if loc_needed:
         if args.debug_line is None:
             error_exit("'debug_line' not specified for debug request")
-        print("  Line = {}".format(args.debug_line))
+        print(f"  Line = {args.debug_line}")
         if args.debug_char is None:
             error_exit("'debug_char' not specified for debug request")
-        print("  Char = {}\n".format(args.debug_char))
+        print(f"  Char = {args.debug_char}\n")
 
 
 def print_children(obj, indent=""):
     for child in obj.get_children():
-        print("  {}{}: {}".format(indent, child.get_type(), child.FQSN))
+        print(f"  {indent}{child.get_type()}: {child.FQSN}")
         print_children(child, indent + "  ")
