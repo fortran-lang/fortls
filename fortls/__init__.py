@@ -114,7 +114,7 @@ def debug_diagnostics(args, server):
             if len(results) == 0:
                 print("\nNo errors or warnings")
             else:
-                print("\nReported errors or warnings:")
+                print("\nReported Diagnostics:")
             for diag in results:
                 sline = diag["range"]["start"]["line"]
                 message = diag["message"]
