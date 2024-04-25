@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-import json
 import os
 import pprint
+
+import json5
 
 from .helper_functions import only_dirs, resolve_globs
 from .jsonrpc import JSONRPC2Connection, ReadWriter, path_from_uri
@@ -96,7 +97,7 @@ def debug_diagnostics(args, server):
 
     print("  Results:")
     if args.debug_full_result:
-        print(json.dumps(results, indent=2))
+        print(json5.dumps(results, indent=2))
         separator()
         return
 
@@ -127,7 +128,7 @@ def debug_symbols(args, server):
 
     print("  Results:")
     if args.debug_full_result:
-        print(json.dumps(results, indent=2))
+        print(json5.dumps(results, indent=2))
         return
 
     for symbol in results:
@@ -157,7 +158,7 @@ def debug_workspace_symbols(args, server):
 
     print("  Results:")
     if args.debug_full_result:
-        print(json.dumps(results, indent=2))
+        print(json5.dumps(results, indent=2))
         return
 
     for symbol in results:
@@ -195,7 +196,7 @@ def debug_completion(args, server):
 
     print("  Results:")
     if args.debug_full_result:
-        print(json.dumps(results, indent=2))
+        print(json5.dumps(results, indent=2))
         return
 
     for obj in results:
@@ -225,7 +226,7 @@ def debug_hover(args, server):
 
     print("  Result:")
     if args.debug_full_result:
-        print(json.dumps(results, indent=2))
+        print(json5.dumps(results, indent=2))
         return
 
     contents = results["contents"]
@@ -258,7 +259,7 @@ def debug_signature(args, server):
 
     print("  Results:")
     if args.debug_full_result:
-        print(json.dumps(results, indent=2))
+        print(json5.dumps(results, indent=2))
         return
 
     active_param = results.get("activeParameter", 0)
@@ -302,7 +303,7 @@ def debug_definition(args, server):
 
     print("  Results:")
     if args.debug_full_result:
-        print(json.dumps(results, indent=2))
+        print(json5.dumps(results, indent=2))
         return
 
     print(f'    URI  = "{results["uri"]}"')
@@ -333,7 +334,7 @@ def debug_references(args, server):
 
     print("  Results:")
     if args.debug_full_result:
-        print(json.dumps(results, indent=2))
+        print(json5.dumps(results, indent=2))
         return
 
     for result in results:
@@ -366,7 +367,7 @@ def debug_implementation(args, server):
 
     print("  Results:")
     if args.debug_full_result:
-        print(json.dumps(results, indent=2))
+        print(json5.dumps(results, indent=2))
         return
 
     print(f'    URI  = "{results["uri"]}"')
@@ -398,7 +399,7 @@ def debug_rename(args, server):
 
     print("  Results:")
     if args.debug_full_result:
-        print(json.dumps(results, indent=2))
+        print(json5.dumps(results, indent=2))
         return
 
     for uri, changes in results["changes"].items():
@@ -464,7 +465,7 @@ def debug_actions(args, server):
 
     print("  Results:")
     if args.debug_full_result:
-        print(json.dumps(results, indent=2))
+        print(json5.dumps(results, indent=2))
         return
 
     for result in results:
@@ -486,7 +487,7 @@ def debug_server_parser(args):
     """
 
     def locate_config(root: str) -> str | None:
-        default_conf_files = [args.config, ".fortlsrc", ".fortls.json", ".fortls"]
+        default_conf_files = [args.config, ".fortlsrc", ".fortls.json5", ".fortls"]
         present_conf_files = [
             os.path.isfile(os.path.join(root, f)) for f in default_conf_files
         ]
@@ -514,7 +515,7 @@ def debug_server_parser(args):
 
         try:
             with open(config_path, encoding="utf-8") as fhandle:
-                config_dict = json.load(fhandle)
+                config_dict = json5.load(fhandle)
                 pp_suffixes = config_dict.get("pp_suffixes", None)
                 pp_defs = config_dict.get("pp_defs", {})
                 for path in config_dict.get("include_dirs", set()):
