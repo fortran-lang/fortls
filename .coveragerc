@@ -1,6 +1,7 @@
 [run]
 omit =
     fortls/__init__.py
+    fortls/debug.py
     fortls/version.py
     fortls/schema.py
 concurrency = multiprocessing
