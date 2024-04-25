@@ -73,10 +73,10 @@ def debug_lsp(args, settings):
         "debug_actions": debug_actions,
     }
 
-    prb, pwb = os.pipe()
-    with os.fdopen(prb, "rb") as tmpin, os.fdopen(pwb, "wb") as tmpout:
+    r, w = os.pipe()
+    with os.fdopen(r, "rb") as buffer_in, os.fdopen(w, "wb") as buffer_out:
         server = LangServer(
-            conn=JSONRPC2Connection(ReadWriter(tmpin, tmpout)),
+            conn=JSONRPC2Connection(ReadWriter(buffer_in, buffer_out)),
             settings=settings,
         )
         for flag, function in debug_functions.items():
