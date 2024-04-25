@@ -539,7 +539,7 @@ def debug_server_parser(args):
         config_exists = os.path.isfile(config_path)
         if config_exists:
             try:
-                with open(config_path) as fhandle:
+                with open(config_path, encoding="utf-8") as fhandle:
                     config_dict = json.load(fhandle)
                     pp_suffixes = config_dict.get("pp_suffixes", None)
                     pp_defs = config_dict.get("pp_defs", {})
