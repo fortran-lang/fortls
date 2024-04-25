@@ -528,33 +528,39 @@ def debug_server_parser(args):
             config_path = os.path.join(root, f)
             return config_path
 
-    ensure_file_accessible(args.debug_filepath)
-    # Get preprocessor definitions from config file
-    pp_suffixes = None
-    pp_defs = {}
-    include_dirs = set()
-    if args.debug_rootpath:
-        # Check for config files
-        config_path = locate_config(args.debug_rootpath)
-        config_exists = os.path.isfile(config_path)
-        if config_exists:
-            try:
-                with open(config_path, encoding="utf-8") as fhandle:
-                    config_dict = json.load(fhandle)
-                    pp_suffixes = config_dict.get("pp_suffixes", None)
-                    pp_defs = config_dict.get("pp_defs", {})
-                    for path in config_dict.get("include_dirs", set()):
-                        include_dirs.update(
-                            only_dirs(resolve_globs(path, args.debug_rootpath))
-                        )
+    def read_config(root: str | None):
+        pp_suffixes = None
+        pp_defs = {}
+        include_dirs = set()
+        if root is None:
+            return pp_suffixes, pp_defs, include_dirs
 
-                    if isinstance(pp_defs, list):
-                        pp_defs = {key: "" for key in pp_defs}
-            except ValueError as e:
-                print(f"Error {e} while parsing '{args.config}' settings file")
+        # Check for config files
+        config_path = locate_config(root)
+        if not os.path.isfile(config_path):
+            return pp_suffixes, pp_defs, include_dirs
+
+        try:
+            with open(config_path, encoding="utf-8") as fhandle:
+                config_dict = json.load(fhandle)
+                pp_suffixes = config_dict.get("pp_suffixes", None)
+                pp_defs = config_dict.get("pp_defs", {})
+                for path in config_dict.get("include_dirs", set()):
+                    include_dirs.update(only_dirs(resolve_globs(path, root)))
+
+                if isinstance(pp_defs, list):
+                    pp_defs = {key: "" for key in pp_defs}
+        except ValueError as e:
+            print(f"Error {e} while parsing '{config_path}' settings file")
+
+        return pp_suffixes, pp_defs, include_dirs
 
     print("\nTesting parser")
     separator()
+
+    ensure_file_accessible(args.debug_filepath)
+    pp_suffixes, pp_defs, include_dirs = read_config(args.debug_rootpath)
+
     print(f'  File = "{args.debug_filepath}"')
     file_obj = FortranFile(args.debug_filepath, pp_suffixes)
     err_str, _ = file_obj.load_from_disk()
