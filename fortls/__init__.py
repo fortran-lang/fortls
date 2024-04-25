@@ -554,21 +554,23 @@ def debug_server_parser(args):
                 print(f"Error {e} while parsing '{args.config}' settings file")
 
     print("\nTesting parser")
-    print('  File = "{}"'.format(args.debug_filepath))
+    separator()
+    print(f'  File = "{args.debug_filepath}"')
     file_obj = FortranFile(args.debug_filepath, pp_suffixes)
     err_str, _ = file_obj.load_from_disk()
     if err_str:
         raise DebugError(f"Reading file failed: {err_str}")
     print(f"  Detected format: {'fixed' if file_obj.fixed else 'free'}")
-    print("\n=========\nParser Output\n=========\n")
+    print("\n" + "=" * 80 + "\nParser Output\n" + "=" * 80 + "\n")
     file_ast = file_obj.parse(debug=True, pp_defs=pp_defs, include_dirs=include_dirs)
-    print("\n=========\nObject Tree\n=========\n")
+    print("\n" + "=" * 80 + "\nObject Tree\n" + "=" * 80 + "\n")
     for obj in file_ast.get_scopes():
-        print("{}: {}".format(obj.get_type(), obj.FQSN))
+        print(f"{obj.get_type()}: {obj.FQSN}")
         print_children(obj)
-    print("\n=========\nExportable Objects\n=========\n")
+    print("\n" + "=" * 80 + "\nExportable Objects\n" + "=" * 80 + "\n")
     for _, obj in file_ast.global_dict.items():
-        print("{}: {}".format(obj.get_type(), obj.FQSN))
+        print(f"{obj.get_type()}: {obj.FQSN}")
+    separator()
 
 
 def ensure_file_accessible(filepath: str):
