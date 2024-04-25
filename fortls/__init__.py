@@ -89,6 +89,7 @@ def debug_lsp(args, settings):
         for flag, function in debug_functions.items():
             if getattr(args, flag, False):
                 function(args, server)
+                separator()
 
 
 def debug_rootpath(args, server):
@@ -97,6 +98,8 @@ def debug_rootpath(args, server):
     print('\nTesting "initialize" request:')
     print(f'  Root = "{args.debug_rootpath}"')
     server.serve_initialize({"params": {"rootPath": args.debug_rootpath}})
+
+    separator()
     if len(server.post_messages) == 0:
         print("  Successful!")
     else:
@@ -113,20 +116,28 @@ def debug_diagnostics(args, server):
     check_request_params(args, loc_needed=False)
     server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
     results, _ = server.get_diagnostics(args.debug_filepath)
-    if results is not None:
-        if args.debug_full_result:
-            print(json.dumps(results, indent=2))
-        else:
-            sev_map = ["ERROR", "WARNING", "INFO"]
-            if len(results) == 0:
-                print("\nNo errors or warnings")
-            else:
-                print("\nReported Diagnostics:")
-            for diag in results:
-                sline = diag["range"]["start"]["line"]
-                message = diag["message"]
-                sev = sev_map[diag["severity"] - 1]
-                print(f'  {sline:5d}:{sev}  "{message}"')
+
+    separator()
+    if results is None:
+        print("  No results!")
+        return
+
+    print("  Results:")
+    if args.debug_full_result:
+        print(json.dumps(results, indent=2))
+        separator()
+        return
+
+    sev_map = ["ERROR", "WARNING", "INFO"]
+    if len(results) == 0:
+        print("No errors or warnings")
+    else:
+        print("Reported Diagnostics:")
+    for diag in results:
+        sline = diag["range"]["start"]["line"]
+        message = diag["message"]
+        sev = sev_map[diag["severity"] - 1]
+        print(f'  {sline:5d}:{sev}  "{message}"')
 
 
 def debug_symbols(args, server):
@@ -136,19 +147,27 @@ def debug_symbols(args, server):
     results = server.serve_document_symbols(
         {"params": {"textDocument": {"uri": args.debug_filepath}}}
     )
+
+    separator()
+    if results is None:
+        print("  No results!")
+        return
+
+    print("  Results:")
     if args.debug_full_result:
         print(json.dumps(results, indent=2))
-    else:
-        for symbol in results:
-            sline = symbol["location"]["range"]["start"]["line"]
-            if "containerName" in symbol:
-                parent = symbol["containerName"]
-            else:
-                parent = "null"
-            print(
-                f"  line {sline:5d}  symbol -> "
-                f"{symbol['kind']:3d}:{symbol['name']:30} parent = {parent}"
-            )
+        return
+
+    for symbol in results:
+        sline = symbol["location"]["range"]["start"]["line"]
+        if "containerName" in symbol:
+            parent = symbol["containerName"]
+        else:
+            parent = "null"
+        print(
+            f"  line {sline:5d}  symbol -> "
+            f"{symbol['kind']:3d}:{symbol['name']:30} parent = {parent}"
+        )
 
 
 def debug_workspace_symbols(args, server):
@@ -158,19 +177,27 @@ def debug_workspace_symbols(args, server):
     results = server.serve_workspace_symbol(
         {"params": {"query": args.debug_workspace_symbols}}
     )
+
+    separator()
+    if results is None:
+        print("  No results!")
+        return
+
+    print("  Results:")
     if args.debug_full_result:
         print(json.dumps(results, indent=2))
-    else:
-        for symbol in results:
-            path = path_from_uri(symbol["location"]["uri"])
-            sline = symbol["location"]["range"]["start"]["line"]
-            parent = "null"
-            if "containerName" in symbol:
-                parent = symbol["containerName"]
-            print(
-                f"  {parent}::{sline}  symbol -> {symbol['name']:30} parent = "
-                f"{os.path.relpath(path, args.debug_rootpath)}"
-            )
+        return
+
+    for symbol in results:
+        path = path_from_uri(symbol["location"]["uri"])
+        sline = symbol["location"]["range"]["start"]["line"]
+        parent = "null"
+        if "containerName" in symbol:
+            parent = symbol["containerName"]
+        print(
+            f"  {parent}::{sline}  symbol -> {symbol['name']:30} parent = "
+            f"{os.path.relpath(path, args.debug_rootpath)}"
+        )
 
 
 def debug_completion(args, server):
@@ -188,15 +215,19 @@ def debug_completion(args, server):
             }
         }
     )
+
+    separator()
     if results is None:
         print("  No results!")
-    else:
-        print("  Results:")
-        if args.debug_full_result:
-            print(json.dumps(results, indent=2))
-        else:
-            for obj in results:
-                print(f"    {obj['kind']}: {obj['label']} -> {obj['detail']}")
+        return
+
+    print("  Results:")
+    if args.debug_full_result:
+        print(json.dumps(results, indent=2))
+        return
+
+    for obj in results:
+        print(f"    {obj['kind']}: {obj['label']} -> {obj['detail']}")
 
 
 def debug_hover(args, server):
@@ -214,20 +245,22 @@ def debug_hover(args, server):
             }
         }
     )
-    print("  Result:")
+
+    separator()
     if results is None:
         print("    No result found!")
+        return
+
+    print("  Result:")
+    if args.debug_full_result:
+        print(json.dumps(results, indent=2))
+        return
+
+    contents = results["contents"]
+    if isinstance(contents, dict):
+        print(contents["value"])
     else:
-        if args.debug_full_result:
-            print(json.dumps(results, indent=2))
-        else:
-            contents = results["contents"]
-            print("=======")
-            if isinstance(contents, dict):
-                print(contents["value"])
-            else:
-                print(contents)
-            print("=======")
+        print(contents)
 
 
 def debug_signature(args, server):
@@ -245,30 +278,33 @@ def debug_signature(args, server):
             }
         }
     )
-    print("  Result:")
+
+    separator()
     if results is None:
         print("  No Results!")
-    else:
-        print("  Results:")
-        if args.debug_full_result:
-            print(json.dumps(results, indent=2))
-        else:
-            active_param = results.get("activeParameter", 0)
-            print(f"    Active param = {active_param}")
-            active_signature = results.get("activeSignature", 0)
-            print(f"    Active sig   = {active_signature}")
-            for i, signature in enumerate(results["signatures"]):
-                print(f"    {signature['label']}")
-                for j, obj in enumerate(signature["parameters"]):
-                    if (i == active_signature) and (j == active_param):
-                        active_mark = "*"
-                    else:
-                        active_mark = " "
-                    arg_desc = obj.get("documentation")
-                    if arg_desc is not None:
-                        print(f"{active_mark}     {arg_desc} :: {obj['label']}")
-                    else:
-                        print(f"{active_mark}     {obj['label']}")
+        return
+
+    print("  Results:")
+    if args.debug_full_result:
+        print(json.dumps(results, indent=2))
+        return
+
+    active_param = results.get("activeParameter", 0)
+    print(f"    Active param = {active_param}")
+    active_signature = results.get("activeSignature", 0)
+    print(f"    Active sig   = {active_signature}")
+    for i, signature in enumerate(results["signatures"]):
+        print(f"    {signature['label']}")
+        for j, obj in enumerate(signature["parameters"]):
+            if (i == active_signature) and (j == active_param):
+                active_mark = "*"
+            else:
+                active_mark = " "
+            arg_desc = obj.get("documentation")
+            if arg_desc is not None:
+                print(f"{active_mark}     {arg_desc} :: {obj['label']}")
+            else:
+                print(f"{active_mark}     {obj['label']}")
 
 
 def debug_definition(args, server):
@@ -286,16 +322,20 @@ def debug_definition(args, server):
             }
         }
     )
-    print("  Result:")
+
+    separator()
     if results is None:
         print("    No result found!")
-    else:
-        if args.debug_full_result:
-            print(json.dumps(results, indent=2))
-        else:
-            print(f'    URI  = "{results["uri"]}"')
-            print(f'    Line = {results["range"]["start"]["line"] + 1}')
-            print(f'    Char = {results["range"]["start"]["character"] + 1}')
+        return
+
+    print("  Results:")
+    if args.debug_full_result:
+        print(json.dumps(results, indent=2))
+        return
+
+    print(f'    URI  = "{results["uri"]}"')
+    print(f'    Line = {results["range"]["start"]["line"] + 1}')
+    print(f'    Char = {results["range"]["start"]["character"] + 1}')
 
 
 def debug_references(args, server):
@@ -313,20 +353,22 @@ def debug_references(args, server):
             }
         }
     )
-    print("  Result:")
+
+    separator()
     if results is None:
         print("    No result found!")
-    else:
-        if args.debug_full_result:
-            print(json.dumps(results, indent=2))
-        else:
-            print("=======")
-            for result in results:
-                print(
-                    f"  {result['uri']}  ({result['range']['start']['line'] + 1}"
-                    f", {result['range']['start']['character'] + 1})"
-                )
-            print("=======")
+        return
+
+    print("  Results:")
+    if args.debug_full_result:
+        print(json.dumps(results, indent=2))
+        return
+
+    for result in results:
+        print(
+            f"  {result['uri']}  ({result['range']['start']['line'] + 1}"
+            f", {result['range']['start']['character'] + 1})"
+        )
 
 
 def debug_implementation(args, server):
@@ -344,16 +386,20 @@ def debug_implementation(args, server):
             }
         }
     )
-    print("  Result:")
+
+    separator()
     if results is None:
         print("    No result found!")
-    else:
-        if args.debug_full_result:
-            print(json.dumps(results, indent=2))
-        else:
-            print(f'    URI  = "{results["uri"]}"')
-            print(f'    Line = {results["range"]["start"]["line"] + 1}')
-            print(f'    Char = {results["range"]["start"]["character"] + 1}')
+        return
+
+    print("  Results:")
+    if args.debug_full_result:
+        print(json.dumps(results, indent=2))
+        return
+
+    print(f'    URI  = "{results["uri"]}"')
+    print(f'    Line = {results["range"]["start"]["line"] + 1}')
+    print(f'    Char = {results["range"]["start"]["character"] + 1}')
 
 
 def debug_rename(args, server):
@@ -372,23 +418,25 @@ def debug_rename(args, server):
             }
         }
     )
-    print("  Result:")
+
+    separator()
     if results is None:
         print("    No changes found!")
-    else:
-        if args.debug_full_result:
-            print(json.dumps(results, indent=2))
+        return
+
+    print("  Results:")
+    if args.debug_full_result:
+        print(json.dumps(results, indent=2))
+        return
+
+    for uri, changes in results["changes"].items():
+        path = path_from_uri(uri)
+        file_obj = server.workspace.get(path)
+        if file_obj is not None:
+            file_contents = file_obj.contents_split
+            process_file_changes(path, changes, file_contents)
         else:
-            print("=======")
-            for uri, changes in results["changes"].items():
-                path = path_from_uri(uri)
-                file_obj = server.workspace.get(path)
-                if file_obj is not None:
-                    file_contents = file_obj.contents_split
-                    process_file_changes(path, changes, file_contents)
-                else:
-                    print(f'Unknown file: "{path}"')
-            print("=======")
+            print(f'Unknown file: "{path}"')
 
 
 def process_file_changes(file_path, changes, file_contents):
@@ -435,22 +483,24 @@ def debug_actions(args, server):
             }
         }
     )
-    print("  Result:")
+
+    separator()
     pp = pprint.PrettyPrinter(indent=2, width=120)
     if results is None:
         print("    No actions found!")
-    else:
-        print("=======")
-        if args.debug_full_result:
-            print(json.dumps(results, indent=2))
-        else:
-            for result in results:
-                print(f"Kind = '{result['kind']}', Title = '{result['title']}'")
-                for edit_uri, edit_change in result["edit"]["changes"].items():
-                    print(f"\nChange: URI = '{edit_uri}'")
-                    pp.pprint(edit_change)
-                print()
-        print("=======")
+        return
+
+    print("  Results:")
+    if args.debug_full_result:
+        print(json.dumps(results, indent=2))
+        return
+
+    for result in results:
+        print(f"Kind = '{result['kind']}', Title = '{result['title']}'")
+        for edit_uri, edit_change in result["edit"]["changes"].items():
+            print(f"\nChange: URI = '{edit_uri}'")
+            pp.pprint(edit_change)
+        print()
 
 
 def debug_server_parser(args):
@@ -544,3 +594,7 @@ def print_children(obj, indent=""):
     for child in obj.get_children():
         print(f"  {indent}{child.get_type()}: {child.FQSN}")
         print_children(child, indent + "  ")
+
+
+def separator():
+    print("=" * 80)
