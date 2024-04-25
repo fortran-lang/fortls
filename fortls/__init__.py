@@ -157,10 +157,9 @@ def debug_workspace_symbols(args, server):
         for symbol in results:
             path = path_from_uri(symbol["location"]["uri"])
             sline = symbol["location"]["range"]["start"]["line"]
+            parent = "null"
             if "containerName" in symbol:
                 parent = symbol["containerName"]
-            else:
-                parent = "null"
             print(
                 f"  {parent}::{sline}  symbol -> {symbol['name']:30} parent = "
                 f"{os.path.relpath(path, args.debug_rootpath)}"
