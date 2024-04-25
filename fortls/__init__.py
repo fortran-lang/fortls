@@ -16,27 +16,34 @@ from .version import __version__
 __all__ = ["__version__"]
 
 
-def error_exit(error_str: str):
-    print(f"ERROR: {error_str}")
-    sys.exit(-1)
+class DebugError(Exception):
+    """Base class for debug CLI."""
+
+
+class ParameterError(DebugError):
+    """Exception raised for errors in the parameters."""
 
 
 def main():
     freeze_support()
     args = cli(__name__).parse_args()
 
-    if args.debug_parser:
-        debug_server_parser(args)
+    try:
+        if args.debug_parser:
+            debug_server_parser(args)
 
-    elif is_debug_mode(args):
-        debug_lsp(args, vars(args))
+        elif is_debug_mode(args):
+            debug_lsp(args, vars(args))
 
-    else:
-        stdin, stdout = sys.stdin.buffer, sys.stdout.buffer
-        LangServer(
-            conn=JSONRPC2Connection(ReadWriter(stdin, stdout)),
-            settings=vars(args),
-        ).run()
+        else:
+            stdin, stdout = sys.stdin.buffer, sys.stdout.buffer
+            LangServer(
+                conn=JSONRPC2Connection(ReadWriter(stdin, stdout)),
+                settings=vars(args),
+            ).run()
+    except DebugError as e:
+        print(f"ERROR: {e}")
+        sys.exit(-1)
 
 
 def is_debug_mode(args):
@@ -86,7 +93,7 @@ def debug_lsp(args, settings):
 
 def debug_rootpath(args, server):
     if not os.path.isdir(args.debug_rootpath):
-        error_exit("'debug_rootpath' not specified for debug request")
+        raise DebugError("'debug_rootpath' not specified for debug request")
     print('\nTesting "initialize" request:')
     print(f'  Root = "{args.debug_rootpath}"')
     server.serve_initialize({"params": {"rootPath": args.debug_rootpath}})
@@ -147,7 +154,7 @@ def debug_symbols(args, server):
 def debug_workspace_symbols(args, server):
     print('\nTesting "workspace/symbol" request:')
     if args.debug_rootpath is None:
-        error_exit("'debug_rootpath' not specified for debug request")
+        raise DebugError("'debug_rootpath' not specified for debug request")
     results = server.serve_workspace_symbol(
         {"params": {"query": args.debug_workspace_symbols}}
     )
@@ -502,7 +509,7 @@ def debug_server_parser(args):
     file_obj = FortranFile(args.debug_filepath, pp_suffixes)
     err_str, _ = file_obj.load_from_disk()
     if err_str:
-        error_exit(f"Reading file failed: {err_str}")
+        raise DebugError(f"Reading file failed: {err_str}")
     print(f"  Detected format: {'fixed' if file_obj.fixed else 'free'}")
     print("\n=========\nParser Output\n=========\n")
     file_ast = file_obj.parse(debug=True, pp_defs=pp_defs, include_dirs=include_dirs)
@@ -518,7 +525,7 @@ def debug_server_parser(args):
 def ensure_file_accessible(filepath: str):
     """Ensure the file exists and is accessible, raising an error if not."""
     if not os.path.isfile(filepath):
-        error_exit(f"File '{filepath}' does not exist or is not accessible")
+        raise DebugError(f"File '{filepath}' does not exist or is not accessible")
     print(f'  File = "{filepath}"')
 
 
@@ -526,10 +533,10 @@ def check_request_params(args, loc_needed=True):
     ensure_file_accessible(args.debug_filepath)
     if loc_needed:
         if args.debug_line is None:
-            error_exit("'debug_line' not specified for debug request")
+            raise ParameterError("'debug_line' not specified for debug request")
         print(f"  Line = {args.debug_line}")
         if args.debug_char is None:
-            error_exit("'debug_char' not specified for debug request")
+            raise ParameterError("'debug_char' not specified for debug request")
         print(f"  Char = {args.debug_char}\n")
 
 
