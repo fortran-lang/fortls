@@ -102,7 +102,7 @@ def debug_rootpath(args, server):
 
 
 def debug_diagnostics(args, server):
-    print('\nTesting "textDocument/publishDiagnostics" notification:')
+    print('\nTesting "textDocument/publishDiagnostics" request:')
     check_request_params(args, loc_needed=False)
     server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
     results, _ = server.get_diagnostics(args.debug_filepath)
