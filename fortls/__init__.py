@@ -543,7 +543,6 @@ def debug_server_parser(args):
                     config_dict = json.load(fhandle)
                     pp_suffixes = config_dict.get("pp_suffixes", None)
                     pp_defs = config_dict.get("pp_defs", {})
-                    include_dirs = set()
                     for path in config_dict.get("include_dirs", set()):
                         include_dirs.update(
                             only_dirs(resolve_globs(path, args.debug_rootpath))
@@ -551,8 +550,8 @@ def debug_server_parser(args):
 
                     if isinstance(pp_defs, list):
                         pp_defs = {key: "" for key in pp_defs}
-            except:
-                print(f"Error while parsing '{args.config}' settings file")
+            except ValueError as e:
+                print(f"Error {e} while parsing '{args.config}' settings file")
 
     print("\nTesting parser")
     print('  File = "{}"'.format(args.debug_filepath))
