@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from multiprocessing import freeze_support
 
-from .debug import DebugError, debug_lsp, debug_server_parser, is_debug_mode
+from .debug import DebugError, debug_lsp, debug_parser, is_debug_mode
 from .interface import cli
 from .jsonrpc import JSONRPC2Connection, ReadWriter
 from .langserver import LangServer
@@ -18,7 +18,7 @@ def main():
 
     try:
         if args.debug_parser:
-            debug_server_parser(args)
+            debug_parser(args)
 
         elif is_debug_mode(args):
             debug_lsp(args, vars(args))

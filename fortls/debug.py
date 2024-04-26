@@ -405,7 +405,7 @@ def process_file_changes(file_path, changes, file_contents):
         print()
 
 
-def debug_server_parser(args):
+def debug_parser(args):
     """Debug the parser of the Language Server
     Triggered by `--debug_parser` option.
 
