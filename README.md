@@ -65,20 +65,6 @@ and [Emacs](https://fortls.fortran-lang.org/editor_integration.html#emacs).
 
 - Signature help and hover does not handle elegantly overloaded functions i.e. interfaces
 
-## `fortls` vs `fortran-language-server`
-
-This project was originally based on `fortran-language-server` LSP implementation, but the two projects have since diverged.
-
-`fortls` (this project) is now developed independently of the upstream `hansec/fortran-language-server` project and contains numerous new features and bug fixes
-the original `fortran-language-server` does not.
-
-For a complete and detailed list of the differences between the two Language Servers
-see the Documentation section: [Unique fortls features (not in fortran-language-server)](https://fortls.fortran-lang.org/fortls_changes.html)
-
-The name of executable for this project has been chosen to remain `fortls`
-to allow for integration with pre-existing plugins and workflows, but it could
-change in the future.
-
 ## Future plans
 
 `fortls` has reached a point where it is feature complete and stable enough to be used in many modern Fortran projects without any issues.
@@ -175,6 +161,20 @@ An example for a Configuration file is given below
 | `textDocument/didClose`          | Document synchronisation upon closing                  |
 | `textDocument/didChange`         | Document synchronisation upon changes to the document  |
 | `textDocument/codeAction`        | **Experimental** Generate code                         |
+
+## `fortls` vs `fortran-language-server`
+
+This project was originally based on `fortran-language-server` LSP implementation, but the two projects have since diverged.
+
+`fortls` (this project) is now developed independently of the upstream `hansec/fortran-language-server` project and contains numerous new features and bug fixes
+the original `fortran-language-server` does not.
+
+For a complete and detailed list of the differences between the two Language Servers
+see the Documentation section: [Unique fortls features (not in fortran-language-server)](https://fortls.fortran-lang.org/fortls_changes.html)
+
+The name of executable for this project has been chosen to remain `fortls`
+to allow for integration with pre-existing plugins and workflows, but it could
+change in the future.
 
 ## Acknowledgements
 
