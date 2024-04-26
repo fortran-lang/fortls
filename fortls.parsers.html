@@ -1,0 +1,731 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="fortls.parsers.internal package" href="fortls.parsers.internal.html" /><link rel="prev" title="fortls package" href="fortls.html" />
+        <link rel="canonical" href="https://fortls.fortran-lang.org/fortls.parsers.html" />
+
+    <link rel="shortcut icon" href="_static/icon.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
+        <title>fortls.parsers package - fortls</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">fortls</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="_static/logo.svg" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">fortls</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Get Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Components</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="editor_integration.html">Editor Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="options.html">Configuration options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fortls_changes.html">Unique fortls features (not in fortran-language-server)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Involved</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to fortls</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contact Us</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact Us</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="modules.html">Documentation</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="fortls.html">fortls package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of fortls package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 current has-children current-page"><a class="current reference internal" href="#">fortls.parsers package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of fortls.parsers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html">fortls.parsers.internal package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="fortls-parsers-package">
+<h1>fortls.parsers package<a class="headerlink" href="#fortls-parsers-package" title="Permalink to this heading">#</a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="fortls.parsers.internal.html">fortls.parsers.internal package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.associate">fortls.parsers.internal.associate module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.associate.Associate"><code class="docutils literal notranslate"><span class="pre">Associate</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.associate.Associate.create_binding_variable"><code class="docutils literal notranslate"><span class="pre">Associate.create_binding_variable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.associate.Associate.get_desc"><code class="docutils literal notranslate"><span class="pre">Associate.get_desc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.associate.Associate.get_type"><code class="docutils literal notranslate"><span class="pre">Associate.get_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.associate.Associate.require_link"><code class="docutils literal notranslate"><span class="pre">Associate.require_link()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.associate.Associate.resolve_link"><code class="docutils literal notranslate"><span class="pre">Associate.resolve_link()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.associate.AssociateMap"><code class="docutils literal notranslate"><span class="pre">AssociateMap</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.associate.AssociateMap.bind_name"><code class="docutils literal notranslate"><span class="pre">AssociateMap.bind_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.associate.AssociateMap.link_name"><code class="docutils literal notranslate"><span class="pre">AssociateMap.link_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.associate.AssociateMap.var"><code class="docutils literal notranslate"><span class="pre">AssociateMap.var</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.ast">fortls.parsers.internal.ast module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.ast.FortranAST"><code class="docutils literal notranslate"><span class="pre">FortranAST</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.ast.FortranAST.add_doc"><code class="docutils literal notranslate"><span class="pre">FortranAST.add_doc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.ast.FortranAST.add_error"><code class="docutils literal notranslate"><span class="pre">FortranAST.add_error()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.ast.FortranAST.add_include"><code class="docutils literal notranslate"><span class="pre">FortranAST.add_include()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.ast.FortranAST.add_int_member"><code class="docutils literal notranslate"><span class="pre">FortranAST.add_int_member()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.ast.FortranAST.add_private"><code class="docutils literal notranslate"><span class="pre">FortranAST.add_private()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.ast.FortranAST.add_public"><code class="docutils literal notranslate"><span class="pre">FortranAST.add_public()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.ast.FortranAST.add_scope"><code class="docutils literal notranslate"><span class="pre">FortranAST.add_scope()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.ast.FortranAST.add_use"><code class="docutils literal notranslate"><span class="pre">FortranAST.add_use()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.ast.FortranAST.add_variable"><code class="docutils literal notranslate"><span class="pre">FortranAST.add_variable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.ast.FortranAST.check_file"><code class="docutils literal notranslate"><span class="pre">FortranAST.check_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.ast.FortranAST.close_file"><code class="docutils literal notranslate"><span class="pre">FortranAST.close_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.ast.FortranAST.create_none_scope"><code class="docutils literal notranslate"><span class="pre">FortranAST.create_none_scope()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.ast.FortranAST.end_ppif"><code class="docutils literal notranslate"><span class="pre">FortranAST.end_ppif()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.ast.FortranAST.end_scope"><code class="docutils literal notranslate"><span class="pre">FortranAST.end_scope()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.ast.FortranAST.get_enc_scope_name"><code class="docutils literal notranslate"><span class="pre">FortranAST.get_enc_scope_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.ast.FortranAST.get_inner_scope"><code class="docutils literal notranslate"><span class="pre">FortranAST.get_inner_scope()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.ast.FortranAST.get_object"><code class="docutils literal notranslate"><span class="pre">FortranAST.get_object()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.ast.FortranAST.get_scopes"><code class="docutils literal notranslate"><span class="pre">FortranAST.get_scopes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.ast.FortranAST.resolve_includes"><code class="docutils literal notranslate"><span class="pre">FortranAST.resolve_includes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.ast.FortranAST.resolve_links"><code class="docutils literal notranslate"><span class="pre">FortranAST.resolve_links()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.ast.FortranAST.start_ppif"><code class="docutils literal notranslate"><span class="pre">FortranAST.start_ppif()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.base">fortls.parsers.internal.base module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj"><code class="docutils literal notranslate"><span class="pre">FortranObj</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.add_doc"><code class="docutils literal notranslate"><span class="pre">FortranObj.add_doc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.check_definition"><code class="docutils literal notranslate"><span class="pre">FortranObj.check_definition()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.check_valid_parent"><code class="docutils literal notranslate"><span class="pre">FortranObj.check_valid_parent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.end"><code class="docutils literal notranslate"><span class="pre">FortranObj.end()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.get_actions"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_actions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.get_ancestors"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_ancestors()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.get_children"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_children()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.get_desc"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_desc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.get_diagnostics"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_diagnostics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.get_documentation"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_documentation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.get_hover"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_hover()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.get_hover_md"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_hover_md()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.get_implicit"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_implicit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.get_interface"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_interface()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.get_signature"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_signature()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.get_snippet"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_snippet()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.get_type"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.get_type_obj"><code class="docutils literal notranslate"><span class="pre">FortranObj.get_type_obj()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.is_abstract"><code class="docutils literal notranslate"><span class="pre">FortranObj.is_abstract()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.is_callable"><code class="docutils literal notranslate"><span class="pre">FortranObj.is_callable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.is_external_int"><code class="docutils literal notranslate"><span class="pre">FortranObj.is_external_int()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.is_mod_scope"><code class="docutils literal notranslate"><span class="pre">FortranObj.is_mod_scope()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.is_optional"><code class="docutils literal notranslate"><span class="pre">FortranObj.is_optional()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.req_named_end"><code class="docutils literal notranslate"><span class="pre">FortranObj.req_named_end()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.require_inherit"><code class="docutils literal notranslate"><span class="pre">FortranObj.require_inherit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.require_link"><code class="docutils literal notranslate"><span class="pre">FortranObj.require_link()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.resolve_inherit"><code class="docutils literal notranslate"><span class="pre">FortranObj.resolve_inherit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.resolve_link"><code class="docutils literal notranslate"><span class="pre">FortranObj.resolve_link()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.set_default_vis"><code class="docutils literal notranslate"><span class="pre">FortranObj.set_default_vis()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.set_parent"><code class="docutils literal notranslate"><span class="pre">FortranObj.set_parent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.set_visibility"><code class="docutils literal notranslate"><span class="pre">FortranObj.set_visibility()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.base.FortranObj.update_fqsn"><code class="docutils literal notranslate"><span class="pre">FortranObj.update_fqsn()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.block">fortls.parsers.internal.block module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.block.Block"><code class="docutils literal notranslate"><span class="pre">Block</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.block.Block.get_children"><code class="docutils literal notranslate"><span class="pre">Block.get_children()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.block.Block.get_desc"><code class="docutils literal notranslate"><span class="pre">Block.get_desc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.block.Block.get_type"><code class="docutils literal notranslate"><span class="pre">Block.get_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.block.Block.req_named_end"><code class="docutils literal notranslate"><span class="pre">Block.req_named_end()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.diagnostics">fortls.parsers.internal.diagnostics module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.diagnostics.Diagnostic"><code class="docutils literal notranslate"><span class="pre">Diagnostic</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.diagnostics.Diagnostic.add_related"><code class="docutils literal notranslate"><span class="pre">Diagnostic.add_related()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.diagnostics.Diagnostic.build"><code class="docutils literal notranslate"><span class="pre">Diagnostic.build()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.do">fortls.parsers.internal.do module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.do.Do"><code class="docutils literal notranslate"><span class="pre">Do</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.do.Do.get_desc"><code class="docutils literal notranslate"><span class="pre">Do.get_desc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.do.Do.get_type"><code class="docutils literal notranslate"><span class="pre">Do.get_type()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.enum">fortls.parsers.internal.enum module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.enum.Enum"><code class="docutils literal notranslate"><span class="pre">Enum</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.enum.Enum.get_desc"><code class="docutils literal notranslate"><span class="pre">Enum.get_desc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.enum.Enum.get_type"><code class="docutils literal notranslate"><span class="pre">Enum.get_type()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.function">fortls.parsers.internal.function module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.function.Function"><code class="docutils literal notranslate"><span class="pre">Function</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.function.Function.copy_interface"><code class="docutils literal notranslate"><span class="pre">Function.copy_interface()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.function.Function.get_desc"><code class="docutils literal notranslate"><span class="pre">Function.get_desc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.function.Function.get_hover"><code class="docutils literal notranslate"><span class="pre">Function.get_hover()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.function.Function.get_interface"><code class="docutils literal notranslate"><span class="pre">Function.get_interface()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.function.Function.get_type"><code class="docutils literal notranslate"><span class="pre">Function.get_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.function.Function.is_callable"><code class="docutils literal notranslate"><span class="pre">Function.is_callable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.function.Function.resolve_link"><code class="docutils literal notranslate"><span class="pre">Function.resolve_link()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.if_block">fortls.parsers.internal.if_block module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.if_block.If"><code class="docutils literal notranslate"><span class="pre">If</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.if_block.If.get_desc"><code class="docutils literal notranslate"><span class="pre">If.get_desc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.if_block.If.get_type"><code class="docutils literal notranslate"><span class="pre">If.get_type()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.imports">fortls.parsers.internal.imports module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.imports.Import"><code class="docutils literal notranslate"><span class="pre">Import</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.imports.Import.scope"><code class="docutils literal notranslate"><span class="pre">Import.scope</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.imports.ImportTypes"><code class="docutils literal notranslate"><span class="pre">ImportTypes</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.imports.ImportTypes.ALL"><code class="docutils literal notranslate"><span class="pre">ImportTypes.ALL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.imports.ImportTypes.DEFAULT"><code class="docutils literal notranslate"><span class="pre">ImportTypes.DEFAULT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.imports.ImportTypes.NONE"><code class="docutils literal notranslate"><span class="pre">ImportTypes.NONE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.imports.ImportTypes.ONLY"><code class="docutils literal notranslate"><span class="pre">ImportTypes.ONLY</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.include">fortls.parsers.internal.include module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.include.Include"><code class="docutils literal notranslate"><span class="pre">Include</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.include.Include.get_desc"><code class="docutils literal notranslate"><span class="pre">Include.get_desc()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.interface">fortls.parsers.internal.interface module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.interface.Interface"><code class="docutils literal notranslate"><span class="pre">Interface</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.interface.Interface.get_desc"><code class="docutils literal notranslate"><span class="pre">Interface.get_desc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.interface.Interface.get_type"><code class="docutils literal notranslate"><span class="pre">Interface.get_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.interface.Interface.is_abstract"><code class="docutils literal notranslate"><span class="pre">Interface.is_abstract()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.interface.Interface.is_callable"><code class="docutils literal notranslate"><span class="pre">Interface.is_callable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.interface.Interface.is_external_int"><code class="docutils literal notranslate"><span class="pre">Interface.is_external_int()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.interface.Interface.require_link"><code class="docutils literal notranslate"><span class="pre">Interface.require_link()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.interface.Interface.resolve_link"><code class="docutils literal notranslate"><span class="pre">Interface.resolve_link()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.intrinsics">fortls.parsers.internal.intrinsics module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.intrinsics.Intrinsic"><code class="docutils literal notranslate"><span class="pre">Intrinsic</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.intrinsics.Intrinsic.get_desc"><code class="docutils literal notranslate"><span class="pre">Intrinsic.get_desc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.intrinsics.Intrinsic.get_hover"><code class="docutils literal notranslate"><span class="pre">Intrinsic.get_hover()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.intrinsics.Intrinsic.get_hover_md"><code class="docutils literal notranslate"><span class="pre">Intrinsic.get_hover_md()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.intrinsics.Intrinsic.get_signature"><code class="docutils literal notranslate"><span class="pre">Intrinsic.get_signature()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.intrinsics.Intrinsic.get_snippet"><code class="docutils literal notranslate"><span class="pre">Intrinsic.get_snippet()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.intrinsics.Intrinsic.get_type"><code class="docutils literal notranslate"><span class="pre">Intrinsic.get_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.intrinsics.Intrinsic.is_callable"><code class="docutils literal notranslate"><span class="pre">Intrinsic.is_callable()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.intrinsics.get_intrinsic_keywords"><code class="docutils literal notranslate"><span class="pre">get_intrinsic_keywords()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.intrinsics.intrinsics_case"><code class="docutils literal notranslate"><span class="pre">intrinsics_case()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.intrinsics.load_intrinsics"><code class="docutils literal notranslate"><span class="pre">load_intrinsics()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.intrinsics.set_lowercase_intrinsics"><code class="docutils literal notranslate"><span class="pre">set_lowercase_intrinsics()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.intrinsics.update_m_intrinsics"><code class="docutils literal notranslate"><span class="pre">update_m_intrinsics()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.method">fortls.parsers.internal.method module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.method.Method"><code class="docutils literal notranslate"><span class="pre">Method</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.method.Method.check_definition"><code class="docutils literal notranslate"><span class="pre">Method.check_definition()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.method.Method.get_documentation"><code class="docutils literal notranslate"><span class="pre">Method.get_documentation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.method.Method.get_hover"><code class="docutils literal notranslate"><span class="pre">Method.get_hover()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.method.Method.get_interface"><code class="docutils literal notranslate"><span class="pre">Method.get_interface()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.method.Method.get_signature"><code class="docutils literal notranslate"><span class="pre">Method.get_signature()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.method.Method.get_snippet"><code class="docutils literal notranslate"><span class="pre">Method.get_snippet()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.method.Method.get_type"><code class="docutils literal notranslate"><span class="pre">Method.get_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.method.Method.is_callable"><code class="docutils literal notranslate"><span class="pre">Method.is_callable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.method.Method.resolve_link"><code class="docutils literal notranslate"><span class="pre">Method.resolve_link()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.method.Method.set_parent"><code class="docutils literal notranslate"><span class="pre">Method.set_parent()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.module">fortls.parsers.internal.module module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.module.Module"><code class="docutils literal notranslate"><span class="pre">Module</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.module.Module.check_valid_parent"><code class="docutils literal notranslate"><span class="pre">Module.check_valid_parent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.module.Module.get_desc"><code class="docutils literal notranslate"><span class="pre">Module.get_desc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.module.Module.get_hover"><code class="docutils literal notranslate"><span class="pre">Module.get_hover()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.module.Module.get_type"><code class="docutils literal notranslate"><span class="pre">Module.get_type()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.parser">fortls.parsers.internal.parser module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.FortranFile"><code class="docutils literal notranslate"><span class="pre">FortranFile</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.FortranFile.apply_change"><code class="docutils literal notranslate"><span class="pre">FortranFile.apply_change()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.FortranFile.check_file"><code class="docutils literal notranslate"><span class="pre">FortranFile.check_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.FortranFile.copy"><code class="docutils literal notranslate"><span class="pre">FortranFile.copy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.FortranFile.find_word_in_code_line"><code class="docutils literal notranslate"><span class="pre">FortranFile.find_word_in_code_line()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.FortranFile.get_code_line"><code class="docutils literal notranslate"><span class="pre">FortranFile.get_code_line()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.FortranFile.get_comment_regexs"><code class="docutils literal notranslate"><span class="pre">FortranFile.get_comment_regexs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.FortranFile.get_docstring"><code class="docutils literal notranslate"><span class="pre">FortranFile.get_docstring()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.FortranFile.get_fortran_definition"><code class="docutils literal notranslate"><span class="pre">FortranFile.get_fortran_definition()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.FortranFile.get_line"><code class="docutils literal notranslate"><span class="pre">FortranFile.get_line()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.FortranFile.get_single_line_docstring"><code class="docutils literal notranslate"><span class="pre">FortranFile.get_single_line_docstring()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.FortranFile.load_from_disk"><code class="docutils literal notranslate"><span class="pre">FortranFile.load_from_disk()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.FortranFile.parse"><code class="docutils literal notranslate"><span class="pre">FortranFile.parse()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.FortranFile.parse_contains"><code class="docutils literal notranslate"><span class="pre">FortranFile.parse_contains()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.FortranFile.parse_do_fixed_format"><code class="docutils literal notranslate"><span class="pre">FortranFile.parse_do_fixed_format()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.FortranFile.parse_docs"><code class="docutils literal notranslate"><span class="pre">FortranFile.parse_docs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.FortranFile.parse_end_scope_word"><code class="docutils literal notranslate"><span class="pre">FortranFile.parse_end_scope_word()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.FortranFile.parse_imp_char"><code class="docutils literal notranslate"><span class="pre">FortranFile.parse_imp_char()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.FortranFile.parse_imp_dim"><code class="docutils literal notranslate"><span class="pre">FortranFile.parse_imp_dim()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.FortranFile.parse_implicit"><code class="docutils literal notranslate"><span class="pre">FortranFile.parse_implicit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.FortranFile.preprocess"><code class="docutils literal notranslate"><span class="pre">FortranFile.preprocess()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.FortranFile.set_contents"><code class="docutils literal notranslate"><span class="pre">FortranFile.set_contents()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.FortranFile.strip_comment"><code class="docutils literal notranslate"><span class="pre">FortranFile.strip_comment()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.find_external"><code class="docutils literal notranslate"><span class="pre">find_external()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.find_external_attr"><code class="docutils literal notranslate"><span class="pre">find_external_attr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.find_external_type"><code class="docutils literal notranslate"><span class="pre">find_external_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.get_line_context"><code class="docutils literal notranslate"><span class="pre">get_line_context()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.get_procedure_modifiers"><code class="docutils literal notranslate"><span class="pre">get_procedure_modifiers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.parse_var_keywords"><code class="docutils literal notranslate"><span class="pre">parse_var_keywords()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.preprocess_file"><code class="docutils literal notranslate"><span class="pre">preprocess_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.read_associate_def"><code class="docutils literal notranslate"><span class="pre">read_associate_def()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.read_block_def"><code class="docutils literal notranslate"><span class="pre">read_block_def()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.read_do_def"><code class="docutils literal notranslate"><span class="pre">read_do_def()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.read_enum_def"><code class="docutils literal notranslate"><span class="pre">read_enum_def()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.read_fun_def"><code class="docutils literal notranslate"><span class="pre">read_fun_def()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.read_generic_def"><code class="docutils literal notranslate"><span class="pre">read_generic_def()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.read_if_def"><code class="docutils literal notranslate"><span class="pre">read_if_def()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.read_imp_stmt"><code class="docutils literal notranslate"><span class="pre">read_imp_stmt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.read_inc_stmt"><code class="docutils literal notranslate"><span class="pre">read_inc_stmt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.read_int_def"><code class="docutils literal notranslate"><span class="pre">read_int_def()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.read_mod_def"><code class="docutils literal notranslate"><span class="pre">read_mod_def()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.read_prog_def"><code class="docutils literal notranslate"><span class="pre">read_prog_def()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.read_select_def"><code class="docutils literal notranslate"><span class="pre">read_select_def()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.read_sub_def"><code class="docutils literal notranslate"><span class="pre">read_sub_def()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.read_submod_def"><code class="docutils literal notranslate"><span class="pre">read_submod_def()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.read_type_def"><code class="docutils literal notranslate"><span class="pre">read_type_def()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.read_use_stmt"><code class="docutils literal notranslate"><span class="pre">read_use_stmt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.read_var_def"><code class="docutils literal notranslate"><span class="pre">read_var_def()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.read_vis_stmnt"><code class="docutils literal notranslate"><span class="pre">read_vis_stmnt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.parser.read_where_def"><code class="docutils literal notranslate"><span class="pre">read_where_def()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.program">fortls.parsers.internal.program module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.program.Program"><code class="docutils literal notranslate"><span class="pre">Program</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.program.Program.get_desc"><code class="docutils literal notranslate"><span class="pre">Program.get_desc()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.scope">fortls.parsers.internal.scope module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.scope.Scope"><code class="docutils literal notranslate"><span class="pre">Scope</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.scope.Scope.add_child"><code class="docutils literal notranslate"><span class="pre">Scope.add_child()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.scope.Scope.add_member"><code class="docutils literal notranslate"><span class="pre">Scope.add_member()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.scope.Scope.add_subroutine"><code class="docutils literal notranslate"><span class="pre">Scope.add_subroutine()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.scope.Scope.add_use"><code class="docutils literal notranslate"><span class="pre">Scope.add_use()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.scope.Scope.check_definitions"><code class="docutils literal notranslate"><span class="pre">Scope.check_definitions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.scope.Scope.check_use"><code class="docutils literal notranslate"><span class="pre">Scope.check_use()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.scope.Scope.copy_from"><code class="docutils literal notranslate"><span class="pre">Scope.copy_from()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.scope.Scope.get_children"><code class="docutils literal notranslate"><span class="pre">Scope.get_children()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.scope.Scope.mark_contains"><code class="docutils literal notranslate"><span class="pre">Scope.mark_contains()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.scope.Scope.set_implicit"><code class="docutils literal notranslate"><span class="pre">Scope.set_implicit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.scope.Scope.set_inherit"><code class="docutils literal notranslate"><span class="pre">Scope.set_inherit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.scope.Scope.set_parent"><code class="docutils literal notranslate"><span class="pre">Scope.set_parent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.scope.Scope.update_fqsn"><code class="docutils literal notranslate"><span class="pre">Scope.update_fqsn()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.select">fortls.parsers.internal.select module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.select.Select"><code class="docutils literal notranslate"><span class="pre">Select</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.select.Select.create_binding_variable"><code class="docutils literal notranslate"><span class="pre">Select.create_binding_variable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.select.Select.get_desc"><code class="docutils literal notranslate"><span class="pre">Select.get_desc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.select.Select.get_type"><code class="docutils literal notranslate"><span class="pre">Select.get_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.select.Select.is_type_binding"><code class="docutils literal notranslate"><span class="pre">Select.is_type_binding()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.select.Select.is_type_region"><code class="docutils literal notranslate"><span class="pre">Select.is_type_region()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.submodule">fortls.parsers.internal.submodule module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.submodule.Submodule"><code class="docutils literal notranslate"><span class="pre">Submodule</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.submodule.Submodule.get_ancestors"><code class="docutils literal notranslate"><span class="pre">Submodule.get_ancestors()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.submodule.Submodule.get_desc"><code class="docutils literal notranslate"><span class="pre">Submodule.get_desc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.submodule.Submodule.get_type"><code class="docutils literal notranslate"><span class="pre">Submodule.get_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.submodule.Submodule.require_inherit"><code class="docutils literal notranslate"><span class="pre">Submodule.require_inherit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.submodule.Submodule.require_link"><code class="docutils literal notranslate"><span class="pre">Submodule.require_link()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.submodule.Submodule.resolve_inherit"><code class="docutils literal notranslate"><span class="pre">Submodule.resolve_inherit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.submodule.Submodule.resolve_link"><code class="docutils literal notranslate"><span class="pre">Submodule.resolve_link()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.subroutine">fortls.parsers.internal.subroutine module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.subroutine.Subroutine"><code class="docutils literal notranslate"><span class="pre">Subroutine</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.subroutine.Subroutine.check_valid_parent"><code class="docutils literal notranslate"><span class="pre">Subroutine.check_valid_parent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.subroutine.Subroutine.copy_interface"><code class="docutils literal notranslate"><span class="pre">Subroutine.copy_interface()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.subroutine.Subroutine.get_children"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_children()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.subroutine.Subroutine.get_desc"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_desc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.subroutine.Subroutine.get_diagnostics"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_diagnostics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.subroutine.Subroutine.get_docs_full"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_docs_full()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.subroutine.Subroutine.get_hover"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_hover()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.subroutine.Subroutine.get_hover_md"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_hover_md()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.subroutine.Subroutine.get_interface"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_interface()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.subroutine.Subroutine.get_interface_array"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_interface_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.subroutine.Subroutine.get_signature"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_signature()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.subroutine.Subroutine.get_snippet"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_snippet()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.subroutine.Subroutine.get_type"><code class="docutils literal notranslate"><span class="pre">Subroutine.get_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.subroutine.Subroutine.is_callable"><code class="docutils literal notranslate"><span class="pre">Subroutine.is_callable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.subroutine.Subroutine.is_mod_scope"><code class="docutils literal notranslate"><span class="pre">Subroutine.is_mod_scope()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.subroutine.Subroutine.require_link"><code class="docutils literal notranslate"><span class="pre">Subroutine.require_link()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.subroutine.Subroutine.resolve_arg_link"><code class="docutils literal notranslate"><span class="pre">Subroutine.resolve_arg_link()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.subroutine.Subroutine.resolve_link"><code class="docutils literal notranslate"><span class="pre">Subroutine.resolve_link()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.type">fortls.parsers.internal.type module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.type.Type"><code class="docutils literal notranslate"><span class="pre">Type</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.type.Type.check_valid_parent"><code class="docutils literal notranslate"><span class="pre">Type.check_valid_parent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.type.Type.get_actions"><code class="docutils literal notranslate"><span class="pre">Type.get_actions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.type.Type.get_children"><code class="docutils literal notranslate"><span class="pre">Type.get_children()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.type.Type.get_desc"><code class="docutils literal notranslate"><span class="pre">Type.get_desc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.type.Type.get_diagnostics"><code class="docutils literal notranslate"><span class="pre">Type.get_diagnostics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.type.Type.get_hover"><code class="docutils literal notranslate"><span class="pre">Type.get_hover()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.type.Type.get_overridden"><code class="docutils literal notranslate"><span class="pre">Type.get_overridden()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.type.Type.get_type"><code class="docutils literal notranslate"><span class="pre">Type.get_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.type.Type.require_inherit"><code class="docutils literal notranslate"><span class="pre">Type.require_inherit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.type.Type.resolve_inherit"><code class="docutils literal notranslate"><span class="pre">Type.resolve_inherit()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.use">fortls.parsers.internal.use module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.use.Use"><code class="docutils literal notranslate"><span class="pre">Use</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.use.Use.line_number"><code class="docutils literal notranslate"><span class="pre">Use.line_number</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.use.Use.rename"><code class="docutils literal notranslate"><span class="pre">Use.rename()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.utilities">fortls.parsers.internal.utilities module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.utilities.climb_type_tree"><code class="docutils literal notranslate"><span class="pre">climb_type_tree()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.utilities.find_in_scope"><code class="docutils literal notranslate"><span class="pre">find_in_scope()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.utilities.find_in_workspace"><code class="docutils literal notranslate"><span class="pre">find_in_workspace()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.utilities.get_use_tree"><code class="docutils literal notranslate"><span class="pre">get_use_tree()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.variable">fortls.parsers.internal.variable module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.variable.Variable"><code class="docutils literal notranslate"><span class="pre">Variable</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.variable.Variable.check_definition"><code class="docutils literal notranslate"><span class="pre">Variable.check_definition()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.variable.Variable.get_desc"><code class="docutils literal notranslate"><span class="pre">Variable.get_desc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.variable.Variable.get_hover"><code class="docutils literal notranslate"><span class="pre">Variable.get_hover()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.variable.Variable.get_hover_md"><code class="docutils literal notranslate"><span class="pre">Variable.get_hover_md()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.variable.Variable.get_keywords"><code class="docutils literal notranslate"><span class="pre">Variable.get_keywords()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.variable.Variable.get_snippet"><code class="docutils literal notranslate"><span class="pre">Variable.get_snippet()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.variable.Variable.get_type"><code class="docutils literal notranslate"><span class="pre">Variable.get_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.variable.Variable.get_type_obj"><code class="docutils literal notranslate"><span class="pre">Variable.get_type_obj()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.variable.Variable.is_callable"><code class="docutils literal notranslate"><span class="pre">Variable.is_callable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.variable.Variable.is_optional"><code class="docutils literal notranslate"><span class="pre">Variable.is_optional()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.variable.Variable.is_parameter"><code class="docutils literal notranslate"><span class="pre">Variable.is_parameter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.variable.Variable.require_link"><code class="docutils literal notranslate"><span class="pre">Variable.require_link()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.variable.Variable.resolve_link"><code class="docutils literal notranslate"><span class="pre">Variable.resolve_link()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.variable.Variable.set_dim"><code class="docutils literal notranslate"><span class="pre">Variable.set_dim()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.variable.Variable.set_external_attr"><code class="docutils literal notranslate"><span class="pre">Variable.set_external_attr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.variable.Variable.set_parameter_val"><code class="docutils literal notranslate"><span class="pre">Variable.set_parameter_val()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.variable.Variable.update_fqsn"><code class="docutils literal notranslate"><span class="pre">Variable.update_fqsn()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal.where">fortls.parsers.internal.where module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.where.Where"><code class="docutils literal notranslate"><span class="pre">Where</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.where.Where.get_desc"><code class="docutils literal notranslate"><span class="pre">Where.get_desc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fortls.parsers.internal.html#fortls.parsers.internal.where.Where.get_type"><code class="docutils literal notranslate"><span class="pre">Where.get_type()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fortls.parsers.internal.html#module-fortls.parsers.internal">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="module-fortls.parsers">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-fortls.parsers" title="Permalink to this heading">#</a></h2>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="fortls.parsers.internal.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">fortls.parsers.internal package</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="fortls.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">fortls package</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2021-2022, Giannis Nikiteas
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">fortls.parsers package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#module-fortls.parsers">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=d5b27427"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/design-tabs.js?v=36754332"></script>
+    </body>
+</html>

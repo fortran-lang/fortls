@@ -1,6 +1,14 @@
 fortls package
 ==============
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fortls.parsers
+
 Submodules
 ----------
 
@@ -8,6 +16,14 @@ fortls.constants module
 -----------------------
 
 .. automodule:: fortls.constants
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+fortls.debug module
+-------------------
+
+.. automodule:: fortls.debug
    :members:
    :undoc-members:
    :show-inheritance:
@@ -36,14 +52,6 @@ fortls.interface module
    :undoc-members:
    :show-inheritance:
 
-fortls.intrinsics module
-------------------------
-
-.. automodule:: fortls.intrinsics
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 fortls.json\_templates module
 -----------------------------
 
@@ -68,26 +76,18 @@ fortls.langserver module
    :undoc-members:
    :show-inheritance:
 
-fortls.objects module
----------------------
-
-.. automodule:: fortls.objects
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-fortls.parse\_fortran module
-----------------------------
-
-.. automodule:: fortls.parse_fortran
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 fortls.regex\_patterns module
 -----------------------------
 
 .. automodule:: fortls.regex_patterns
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+fortls.schema module
+--------------------
+
+.. automodule:: fortls.schema
    :members:
    :undoc-members:
    :show-inheritance:
