@@ -85,331 +85,301 @@ def debug_rootpath(args, server):
 
 
 def debug_diagnostics(args, server):
-    print('\nTesting "textDocument/publishDiagnostics" request:')
-    check_request_params(args, loc_needed=False)
-    server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
-    results, _ = server.get_diagnostics(args.debug_filepath)
+    def lsp_request():
+        server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
+        results, _ = server.get_diagnostics(args.debug_filepath)
+        return results
 
-    separator()
-    if results is None:
-        print("  No results!")
-        return
+    def format_results(results, _):
+        sev_map = ["ERROR", "WARNING", "INFO"]
+        if len(results) == 0:
+            print("No errors or warnings")
+        else:
+            print("Reported Diagnostics:")
+        for diag in results:
+            sline = diag["range"]["start"]["line"]
+            message = diag["message"]
+            sev = sev_map[diag["severity"] - 1]
+            print(f'  {sline:5d}:{sev}  "{message}"')
 
-    print("  Results:")
-    if args.debug_full_result:
-        print(json5.dumps(results, indent=2))
-        separator()
-        return
-
-    sev_map = ["ERROR", "WARNING", "INFO"]
-    if len(results) == 0:
-        print("No errors or warnings")
-    else:
-        print("Reported Diagnostics:")
-    for diag in results:
-        sline = diag["range"]["start"]["line"]
-        message = diag["message"]
-        sev = sev_map[diag["severity"] - 1]
-        print(f'  {sline:5d}:{sev}  "{message}"')
+    debug_generic(
+        args,
+        "textDocument/publishDiagnostics",
+        lsp_request,
+        format_results,
+        loc_needed=False,
+    )
 
 
 def debug_symbols(args, server):
-    print('\nTesting "textDocument/documentSymbol" request:')
-    check_request_params(args, loc_needed=False)
-    server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
-    results = server.serve_document_symbols(
-        {"params": {"textDocument": {"uri": args.debug_filepath}}}
-    )
-
-    separator()
-    if results is None:
-        print("  No results!")
-        return
-
-    print("  Results:")
-    if args.debug_full_result:
-        print(json5.dumps(results, indent=2))
-        return
-
-    for symbol in results:
-        sline = symbol["location"]["range"]["start"]["line"]
-        if "containerName" in symbol:
-            parent = symbol["containerName"]
-        else:
-            parent = "null"
-        print(
-            f"  line {sline:5d}  symbol -> "
-            f"{symbol['kind']:3d}:{symbol['name']:30} parent = {parent}"
+    def lsp_request():
+        server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
+        return server.serve_document_symbols(
+            {"params": {"textDocument": {"uri": args.debug_filepath}}}
         )
+
+    def format_results(results, _):
+        for symbol in results:
+            sline = symbol["location"]["range"]["start"]["line"]
+            parent = "null"
+            if "containerName" in symbol:
+                parent = symbol["containerName"]
+            print(
+                f"  line {sline:5d}  symbol -> "
+                f"{symbol['kind']:3d}:{symbol['name']:30} parent = {parent}"
+            )
+
+    debug_generic(
+        args,
+        "textDocument/documentSymbol",
+        lsp_request,
+        format_results,
+        loc_needed=False,
+    )
 
 
 def debug_workspace_symbols(args, server):
-    print('\nTesting "workspace/symbol" request:')
-    if args.debug_rootpath is None:
-        raise DebugError("'debug_rootpath' not specified for debug request")
-    results = server.serve_workspace_symbol(
-        {"params": {"query": args.debug_workspace_symbols}}
-    )
-
-    separator()
-    if results is None:
-        print("  No results!")
-        return
-
-    print("  Results:")
-    if args.debug_full_result:
-        print(json5.dumps(results, indent=2))
-        return
-
-    for symbol in results:
-        path = path_from_uri(symbol["location"]["uri"])
-        sline = symbol["location"]["range"]["start"]["line"]
-        parent = "null"
-        if "containerName" in symbol:
-            parent = symbol["containerName"]
-        print(
-            f"  {parent}::{sline}  symbol -> {symbol['name']:30} parent = "
-            f"{os.path.relpath(path, args.debug_rootpath)}"
+    def lsp_request():
+        if args.debug_rootpath is None:
+            raise DebugError("'debug_rootpath' not specified for debug request")
+        return server.serve_workspace_symbol(
+            {"params": {"query": args.debug_workspace_symbols}}
         )
+
+    def format_results(results, args):
+        for symbol in results:
+            path = path_from_uri(symbol["location"]["uri"])
+            sline = symbol["location"]["range"]["start"]["line"]
+            parent = "null"
+            if "containerName" in symbol:
+                parent = symbol["containerName"]
+            print(
+                f"  {parent}::{sline}  symbol -> {symbol['name']:30} parent = "
+                f"{os.path.relpath(path, args.debug_rootpath)}"
+            )
+
+    debug_generic(
+        args,
+        "workspace/symbol",
+        lsp_request,
+        format_results,
+        loc_needed=False,
+    )
 
 
 def debug_completion(args, server):
-    print('\nTesting "textDocument/completion" request:')
-    check_request_params(args)
-    server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
-    results = server.serve_autocomplete(
-        {
-            "params": {
-                "textDocument": {"uri": args.debug_filepath},
-                "position": {
-                    "line": args.debug_line - 1,
-                    "character": args.debug_char - 1,
-                },
+    def lsp_request():
+        server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
+        return server.serve_autocomplete(
+            {
+                "params": {
+                    "textDocument": {"uri": args.debug_filepath},
+                    "position": {
+                        "line": args.debug_line - 1,
+                        "character": args.debug_char - 1,
+                    },
+                }
             }
-        }
-    )
+        )
 
-    separator()
-    if results is None:
-        print("  No results!")
-        return
+    def format_results(results, _):
+        for obj in results:
+            print(f"    {obj['kind']}: {obj['label']} -> {obj['detail']}")
 
-    print("  Results:")
-    if args.debug_full_result:
-        print(json5.dumps(results, indent=2))
-        return
-
-    for obj in results:
-        print(f"    {obj['kind']}: {obj['label']} -> {obj['detail']}")
+    debug_generic(args, "textDocument/completion", lsp_request, format_results)
 
 
 def debug_hover(args, server):
-    print('\nTesting "textDocument/hover" request:')
-    check_request_params(args)
-    server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
-    results = server.serve_hover(
-        {
-            "params": {
-                "textDocument": {"uri": args.debug_filepath},
-                "position": {
-                    "line": args.debug_line - 1,
-                    "character": args.debug_char - 1,
-                },
+    def lsp_request():
+        server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
+        return server.serve_hover(
+            {
+                "params": {
+                    "textDocument": {"uri": args.debug_filepath},
+                    "position": {
+                        "line": args.debug_line - 1,
+                        "character": args.debug_char - 1,
+                    },
+                }
             }
-        }
-    )
+        )
 
-    separator()
-    if results is None:
-        print("    No result found!")
-        return
+    def format_results(results, _):
+        contents = results["contents"]
+        if isinstance(contents, dict):
+            print(contents["value"])
+        else:
+            print(contents)
 
-    print("  Result:")
-    if args.debug_full_result:
-        print(json5.dumps(results, indent=2))
-        return
-
-    contents = results["contents"]
-    if isinstance(contents, dict):
-        print(contents["value"])
-    else:
-        print(contents)
+    debug_generic(args, "textDocument/hover", lsp_request, format_results)
 
 
 def debug_signature(args, server):
-    print('\nTesting "textDocument/signatureHelp" request:')
-    check_request_params(args)
-    server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
-    results = server.serve_signature(
-        {
-            "params": {
-                "textDocument": {"uri": args.debug_filepath},
-                "position": {
-                    "line": args.debug_line - 1,
-                    "character": args.debug_char - 1,
-                },
+    def lsp_request():
+        server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
+        return server.serve_signature(
+            {
+                "params": {
+                    "textDocument": {"uri": args.debug_filepath},
+                    "position": {
+                        "line": args.debug_line - 1,
+                        "character": args.debug_char - 1,
+                    },
+                }
             }
-        }
-    )
+        )
 
-    separator()
-    if results is None:
-        print("  No Results!")
-        return
-
-    print("  Results:")
-    if args.debug_full_result:
-        print(json5.dumps(results, indent=2))
-        return
-
-    active_param = results.get("activeParameter", 0)
-    print(f"    Active param = {active_param}")
-    active_signature = results.get("activeSignature", 0)
-    print(f"    Active sig   = {active_signature}")
-    for i, signature in enumerate(results["signatures"]):
-        print(f"    {signature['label']}")
-        for j, obj in enumerate(signature["parameters"]):
-            if (i == active_signature) and (j == active_param):
-                active_mark = "*"
-            else:
+    def format_results(results, _):
+        active_param = results.get("activeParameter", 0)
+        print(f"    Active param = {active_param}")
+        active_signature = results.get("activeSignature", 0)
+        print(f"    Active sig   = {active_signature}")
+        for i, signature in enumerate(results["signatures"]):
+            print(f"    {signature['label']}")
+            for j, obj in enumerate(signature["parameters"]):
                 active_mark = " "
-            arg_desc = obj.get("documentation")
-            if arg_desc is not None:
-                print(f"{active_mark}     {arg_desc} :: {obj['label']}")
-            else:
-                print(f"{active_mark}     {obj['label']}")
+                if (i == active_signature) and (j == active_param):
+                    active_mark = "*"
+                arg_desc = obj.get("documentation")
+                if arg_desc is not None:
+                    print(f"{active_mark}     {arg_desc} :: {obj['label']}")
+                else:
+                    print(f"{active_mark}     {obj['label']}")
+
+    debug_generic(args, "textDocument/signatureHelp", lsp_request, format_results)
 
 
 def debug_definition(args, server):
-    print('\nTesting "textDocument/definition" request:')
-    check_request_params(args)
-    server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
-    results = server.serve_definition(
-        {
-            "params": {
-                "textDocument": {"uri": args.debug_filepath},
-                "position": {
-                    "line": args.debug_line - 1,
-                    "character": args.debug_char - 1,
-                },
+    def lsp_request():
+        server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
+        return server.serve_definition(
+            {
+                "params": {
+                    "textDocument": {"uri": args.debug_filepath},
+                    "position": {
+                        "line": args.debug_line - 1,
+                        "character": args.debug_char - 1,
+                    },
+                }
             }
-        }
-    )
+        )
 
-    separator()
-    if results is None:
-        print("    No result found!")
-        return
+    def format_results(results, _):
+        print(f'    URI  = "{results["uri"]}"')
+        print(f'    Line = {results["range"]["start"]["line"] + 1}')
+        print(f'    Char = {results["range"]["start"]["character"] + 1}')
 
-    print("  Results:")
-    if args.debug_full_result:
-        print(json5.dumps(results, indent=2))
-        return
-
-    print(f'    URI  = "{results["uri"]}"')
-    print(f'    Line = {results["range"]["start"]["line"] + 1}')
-    print(f'    Char = {results["range"]["start"]["character"] + 1}')
+    debug_generic(args, "textDocument/definition", lsp_request, format_results)
 
 
 def debug_references(args, server):
-    print('\nTesting "textDocument/references" request:')
-    check_request_params(args)
-    server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
-    results = server.serve_references(
-        {
-            "params": {
-                "textDocument": {"uri": args.debug_filepath},
-                "position": {
-                    "line": args.debug_line - 1,
-                    "character": args.debug_char - 1,
-                },
+    def lsp_request():
+        server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
+        return server.serve_references(
+            {
+                "params": {
+                    "textDocument": {"uri": args.debug_filepath},
+                    "position": {
+                        "line": args.debug_line - 1,
+                        "character": args.debug_char - 1,
+                    },
+                }
             }
-        }
-    )
-
-    separator()
-    if results is None:
-        print("    No result found!")
-        return
-
-    print("  Results:")
-    if args.debug_full_result:
-        print(json5.dumps(results, indent=2))
-        return
-
-    for result in results:
-        print(
-            f"  {result['uri']}  ({result['range']['start']['line'] + 1}"
-            f", {result['range']['start']['character'] + 1})"
         )
+
+    def format_results(results, _):
+        for result in results:
+            print(
+                f"  {result['uri']}  ({result['range']['start']['line'] + 1}"
+                f", {result['range']['start']['character'] + 1})"
+            )
+
+    debug_generic(args, "textDocument/references", lsp_request, format_results)
 
 
 def debug_implementation(args, server):
-    print('\nTesting "textDocument/implementation" request:')
-    check_request_params(args)
-    server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
-    results = server.serve_implementation(
-        {
-            "params": {
-                "textDocument": {"uri": args.debug_filepath},
-                "position": {
-                    "line": args.debug_line - 1,
-                    "character": args.debug_char - 1,
-                },
+    def lsp_request():
+        server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
+        return server.serve_implementation(
+            {
+                "params": {
+                    "textDocument": {"uri": args.debug_filepath},
+                    "position": {
+                        "line": args.debug_line - 1,
+                        "character": args.debug_char - 1,
+                    },
+                }
             }
-        }
-    )
+        )
 
-    separator()
-    if results is None:
-        print("    No result found!")
-        return
+    def format_results(results, _):
+        print(f'    URI  = "{results["uri"]}"')
+        print(f'    Line = {results["range"]["start"]["line"] + 1}')
+        print(f'    Char = {results["range"]["start"]["character"] + 1}')
 
-    print("  Results:")
-    if args.debug_full_result:
-        print(json5.dumps(results, indent=2))
-        return
-
-    print(f'    URI  = "{results["uri"]}"')
-    print(f'    Line = {results["range"]["start"]["line"] + 1}')
-    print(f'    Char = {results["range"]["start"]["character"] + 1}')
+    debug_generic(args, "textDocument/implementation", lsp_request, format_results)
 
 
 def debug_rename(args, server):
-    print('\nTesting "textDocument/rename" request:')
-    check_request_params(args)
-    server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
-    results = server.serve_rename(
-        {
-            "params": {
-                "textDocument": {"uri": args.debug_filepath},
-                "position": {
-                    "line": args.debug_line - 1,
-                    "character": args.debug_char - 1,
-                },
-                "newName": args.debug_rename,
+    def lsp_request():
+        server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
+        return server.serve_rename(
+            {
+                "params": {
+                    "textDocument": {"uri": args.debug_filepath},
+                    "position": {
+                        "line": args.debug_line - 1,
+                        "character": args.debug_char - 1,
+                    },
+                    "newName": args.debug_rename,
+                }
             }
-        }
-    )
+        )
 
-    separator()
-    if results is None:
-        print("    No changes found!")
-        return
+    def format_results(results, _):
+        for uri, changes in results["changes"].items():
+            path = path_from_uri(uri)
+            file_obj = server.workspace.get(path)
+            if file_obj is not None:
+                file_contents = file_obj.contents_split
+                process_file_changes(path, changes, file_contents)
+            else:
+                print(f'Unknown file: "{path}"')
 
-    print("  Results:")
-    if args.debug_full_result:
-        print(json5.dumps(results, indent=2))
-        return
+    debug_generic(args, "textDocument/rename", lsp_request, format_results)
 
-    for uri, changes in results["changes"].items():
-        path = path_from_uri(uri)
-        file_obj = server.workspace.get(path)
-        if file_obj is not None:
-            file_contents = file_obj.contents_split
-            process_file_changes(path, changes, file_contents)
-        else:
-            print(f'Unknown file: "{path}"')
+
+def debug_actions(args, server):
+    def lsp_request():
+        server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
+        return server.serve_codeActions(
+            {
+                "params": {
+                    "textDocument": {"uri": args.debug_filepath},
+                    "range": {
+                        "start": {
+                            "line": args.debug_line - 1,
+                            "character": args.debug_char - 1,
+                        },
+                        "end": {
+                            "line": args.debug_line - 1,
+                            "character": args.debug_char - 1,
+                        },
+                    },
+                }
+            }
+        )
+
+    def process_results(results, _):
+        pp = pprint.PrettyPrinter(indent=2, width=120)
+        for result in results:
+            print(f"Kind = '{result['kind']}', Title = '{result['title']}'")
+            for edit_uri, edit_change in result["edit"]["changes"].items():
+                print(f"\nChange: URI = '{edit_uri}'")
+                pp.pprint(edit_change)
+            print()
+
+    debug_generic(args, "textDocument/getActions", lsp_request, process_results)
 
 
 def process_file_changes(file_path, changes, file_contents):
@@ -432,47 +402,6 @@ def process_file_changes(file_path, changes, file_contents):
             new_contents.append(line_content)
         for line in new_contents:
             print(f"  + {line}")
-        print()
-
-
-def debug_actions(args, server):
-    print('\nTesting "textDocument/getActions" request:')
-    check_request_params(args)
-    server.serve_onSave({"params": {"textDocument": {"uri": args.debug_filepath}}})
-    results = server.serve_codeActions(
-        {
-            "params": {
-                "textDocument": {"uri": args.debug_filepath},
-                "range": {
-                    "start": {
-                        "line": args.debug_line - 1,
-                        "character": args.debug_char - 1,
-                    },
-                    "end": {
-                        "line": args.debug_line - 1,
-                        "character": args.debug_char - 1,
-                    },
-                },
-            }
-        }
-    )
-
-    separator()
-    pp = pprint.PrettyPrinter(indent=2, width=120)
-    if results is None:
-        print("    No actions found!")
-        return
-
-    print("  Results:")
-    if args.debug_full_result:
-        print(json5.dumps(results, indent=2))
-        return
-
-    for result in results:
-        print(f"Kind = '{result['kind']}', Title = '{result['title']}'")
-        for edit_uri, edit_change in result["edit"]["changes"].items():
-            print(f"\nChange: URI = '{edit_uri}'")
-            pp.pprint(edit_change)
         print()
 
 
@@ -568,6 +497,27 @@ def check_request_params(args, loc_needed=True):
         if args.debug_char is None:
             raise ParameterError("'debug_char' not specified for debug request")
         print(f"  Char = {args.debug_char}\n")
+
+
+def debug_generic(args, test_label, lsp_request, format_results, loc_needed=True):
+    print(f'\nTesting "{test_label}" request:')
+    check_request_params(args, loc_needed)
+    results = lsp_request()
+    separator()
+    print_results(results, format_results, args)
+
+
+def print_results(results, format_results, args):
+    """Helper function to print results based on detail level requested."""
+    if results is None:
+        print("    No result found!")
+        return
+
+    if args.debug_full_result:
+        print(json5.dumps(results, indent=2))
+        return
+
+    format_results(results, args)
 
 
 def print_children(obj, indent=""):
