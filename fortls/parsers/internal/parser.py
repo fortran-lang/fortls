@@ -870,41 +870,44 @@ class FortranFile:
         copy_obj.set_contents(self.contents_split)
         return copy_obj
 
-    def load_from_disk(self) -> tuple[str | None, bool | None]:
+    def load_from_disk(self) -> bool:
         """Read file from disk or update file contents only if they have changed
         A MD5 hash is used to determine that
 
         Returns
         -------
-        tuple[str|None, bool|None]
-            ``str`` : string containing IO error message else None
-            ``bool``: boolean indicating if the file has changed
+        bool
+            boolean indicating if the file has changed
+
+        Raises
+        ------
+        FileReadDecodeError
+            If the file could not be read or decoded
         """
         contents: str
         try:
             with open(self.path, encoding="utf-8", errors="replace") as f:
                 contents = re.sub(r"\t", r" ", f.read())
-        except OSError:
-            return "Could not read/decode file", None
-        else:
-            # Check if files are the same
-            try:
-                hash = hashlib.md5(
-                    contents.encode("utf-8"), usedforsecurity=False
-                ).hexdigest()
-            # Python <=3.8 does not have the `usedforsecurity` option
-            except TypeError:
-                hash = hashlib.md5(contents.encode("utf-8")).hexdigest()
+        except OSError as exc:
+            raise FileReadDecodeError("Could not read/decode file") from exc
+        # Check if files are the same
+        try:
+            hash = hashlib.md5(
+                contents.encode("utf-8"), usedforsecurity=False
+            ).hexdigest()
+        # Python <=3.8 does not have the `usedforsecurity` option
+        except TypeError:
+            hash = hashlib.md5(contents.encode("utf-8")).hexdigest()
 
-            if hash == self.hash:
-                return None, False
+        if hash == self.hash:
+            return False
 
-            self.hash = hash
-            self.contents_split = contents.splitlines()
-            self.fixed = detect_fixed_format(self.contents_split)
-            self.contents_pp = self.contents_split
-            self.nLines = len(self.contents_split)
-            return None, True
+        self.hash = hash
+        self.contents_split = contents.splitlines()
+        self.fixed = detect_fixed_format(self.contents_split)
+        self.contents_pp = self.contents_split
+        self.nLines = len(self.contents_split)
+        return True
 
     def apply_change(self, change: dict) -> bool:
         """Apply a change to the file."""
@@ -2261,24 +2264,18 @@ def preprocess_file(
             if include_path is not None:
                 try:
                     include_file = FortranFile(include_path)
-                    err_string, _ = include_file.load_from_disk()
-                    if err_string is None:
-                        log.debug("\n!!! Parsing include file '%s'", include_path)
-                        _, _, _, defs_tmp = preprocess_file(
-                            include_file.contents_split,
-                            file_path=include_path,
-                            pp_defs=defs_tmp,
-                            include_dirs=include_dirs,
-                            debug=debug,
-                        )
-                        log.debug("!!! Completed parsing include file\n")
-
-                    else:
-                        log.debug("!!! Failed to parse include file: %s", err_string)
-
-                except:
-                    log.debug("!!! Failed to parse include file: exception")
-
+                    include_file.load_from_disk()
+                    log.debug("\n!!! Parsing include file '%s'", include_path)
+                    _, _, _, defs_tmp = preprocess_file(
+                        include_file.contents_split,
+                        file_path=include_path,
+                        pp_defs=defs_tmp,
+                        include_dirs=include_dirs,
+                        debug=debug,
+                    )
+                    log.debug("!!! Completed parsing include file")
+                except ParserError as e:
+                    log.debug("!!! Failed to parse include file: %s", str(e))
             else:
                 log.debug(
                     "%s !!! Could not locate include file (%d)", line.strip(), i + 1
@@ -2313,3 +2310,11 @@ def preprocess_file(
                 line = line_new
         output_file.append(line)
     return output_file, pp_skips, pp_defines, defs_tmp
+
+
+class ParserError(Exception):
+    """Parser base class exception"""
+
+
+class FileReadDecodeError(ParserError):
+    """File could not be read/decoded"""

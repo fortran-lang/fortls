@@ -10,7 +10,7 @@ import json5
 from .helper_functions import only_dirs, resolve_globs
 from .jsonrpc import JSONRPC2Connection, ReadWriter, path_from_uri
 from .langserver import LangServer
-from .parsers.internal.parser import FortranFile, preprocess_file
+from .parsers.internal.parser import FortranFile, ParserError, preprocess_file
 
 
 class DebugError(Exception):
@@ -421,13 +421,16 @@ def debug_parser(args):
     separator()
 
     ensure_file_accessible(args.debug_filepath)
-    pp_suffixes, pp_defs, include_dirs = read_config(args.debug_rootpath, args.config)
+    pp_suffixes, pp_defs, include_dirs = read_config(args.debug_rootpath)
 
     print(f'  File = "{args.debug_filepath}"')
     file_obj = FortranFile(args.debug_filepath, pp_suffixes)
-    err_str, _ = file_obj.load_from_disk()
-    if err_str:
-        raise DebugError(f"Reading file failed: {err_str}")
+    try:
+        file_obj.load_from_disk()
+    except ParserError as exc:
+        msg = f"Reading file {args.debug_filepath} failed: {str(exc)}"
+        raise DebugError(msg) from exc
+    print(f'  File = "{args.debug_filepath}"')
     print(f"  Detected format: {'fixed' if file_obj.fixed else 'free'}")
     print("\n" + "=" * 80 + "\nParser Output\n" + "=" * 80 + "\n")
     file_ast = file_obj.parse(debug=True, pp_defs=pp_defs, include_dirs=include_dirs)

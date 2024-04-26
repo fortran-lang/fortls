@@ -1,13 +1,13 @@
+import pytest
 from setup_tests import test_dir
 
-from fortls.parsers.internal.parser import FortranFile
+from fortls.parsers.internal.parser import FileReadDecodeError, FortranFile
 
 
 def test_line_continuations():
     file_path = test_dir / "parse" / "line_continuations.f90"
     file = FortranFile(str(file_path))
-    err_str, _ = file.load_from_disk()
-    assert err_str is None
+    file.load_from_disk()
     try:
         file.parse()
         assert True
@@ -19,8 +19,7 @@ def test_line_continuations():
 def test_submodule():
     file_path = test_dir / "parse" / "submodule.f90"
     file = FortranFile(str(file_path))
-    err_str, _ = file.load_from_disk()
-    assert err_str is None
+    file.load_from_disk()
     try:
         ast = file.parse()
         assert True
@@ -48,3 +47,9 @@ def test_end_scopes_semicolon():
     ast = file.parse()
     assert err_str is None
     assert not ast.end_errors
+
+
+def test_load_from_disk_exception():
+    file = FortranFile("/path/to/nonexistent/file.f90")
+    with pytest.raises(FileReadDecodeError):
+        file.load_from_disk()

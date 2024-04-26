@@ -51,7 +51,7 @@ from fortls.parsers.internal.intrinsics import (
     load_intrinsics,
     set_lowercase_intrinsics,
 )
-from fortls.parsers.internal.parser import FortranFile, get_line_context
+from fortls.parsers.internal.parser import FortranFile, ParserError, get_line_context
 from fortls.parsers.internal.scope import Scope
 from fortls.parsers.internal.use import Use
 from fortls.parsers.internal.utilities import (
@@ -1313,9 +1313,10 @@ class LangServer:
                     return
         # Parse newly updated file
         if reparse_req:
-            _, err_str = self.update_workspace_file(path, update_links=True)
-            if err_str is not None:
-                self.post_message(f"Change request failed for file '{path}': {err_str}")
+            try:
+                self.update_workspace_file(path, update_links=True)
+            except LSPError as e:
+                self.post_message(f"Change request failed for file '{path}': {str(e)}")
                 return
             # Update include statements linking to this file
             for _, tmp_file in self.workspace.items():
@@ -1350,11 +1351,12 @@ class LangServer:
                     for key in ast_old.global_dict:
                         self.obj_tree.pop(key, None)
             return
-        did_change, err_str = self.update_workspace_file(
-            filepath, read_file=True, allow_empty=did_open
-        )
-        if err_str is not None:
-            self.post_message(f"Save request failed for file '{filepath}': {err_str}")
+        try:
+            did_change = self.update_workspace_file(
+                filepath, read_file=True, allow_empty=did_open
+            )
+        except LSPError as e:
+            self.post_message(f"Save request failed for file '{filepath}': {str(e)}")
             return
         if did_change:
             # Update include statements linking to this file
@@ -1390,12 +1392,14 @@ class LangServer:
                             return False, None
                         else:
                             return False, "File does not exist"  # Error during load
-                err_string, file_changed = file_obj.load_from_disk()
-                if err_string:
-                    log.error("%s : %s", err_string, filepath)
-                    return False, err_string  # Error during file read
-                if not file_changed:
-                    return False, None
+                try:
+                    file_changed = file_obj.load_from_disk()
+                    if not file_changed:
+                        return False, None
+                except ParserError as exc:
+                    log.error("%s : %s", str(exc), filepath)
+                    raise LSPError from exc
+
             ast_new = file_obj.parse(
                 pp_defs=self.pp_defs, include_dirs=self.include_dirs
             )
@@ -1452,9 +1456,11 @@ class LangServer:
             A Fortran file object or a string containing the error message
         """
         file_obj = FortranFile(filepath, pp_suffixes)
-        err_str, _ = file_obj.load_from_disk()
-        if err_str:
-            return err_str
+        # TODO: allow to bubble up the error message
+        try:
+            file_obj.load_from_disk()
+        except ParserError as e:
+            return str(e)
         try:
             # On Windows multiprocess does not propagate global variables in a shell.
             # Windows uses 'spawn' while Unix uses 'fork' which propagates globals.
@@ -1842,6 +1848,10 @@ def update_recursion_limit(limit: int) -> None:
     """
     if limit != sys.getrecursionlimit():
         sys.setrecursionlimit(limit)
+
+
+class LSPError(Exception):
+    """Base class for Language Server Protocol errors"""
 
 
 class JSONRPC2Error(Exception):
