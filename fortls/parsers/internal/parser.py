@@ -2074,10 +2074,8 @@ def preprocess_file(
 
         if defs is None:
             defs = {}
-        out_line = replace_defined(text)
-        out_line = replace_vars(out_line)
         try:
-            line_res = eval(replace_ops(out_line))
+            line_res = eval(replace_ops(replace_vars(replace_defined(text))))
         except:
             return False
         else:
