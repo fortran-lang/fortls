@@ -61,3 +61,7 @@ def test_load_from_disk_exception():
 
 def test_preprocess_missing_includes_exception():
     preprocess_file(["#include 'nonexistent_file.f90'"])
+
+
+def test_preprocess_eval_if_exception():
+    preprocess_file(["#if (1=and=1)", 'print*, "1==1"', "#endif"])
