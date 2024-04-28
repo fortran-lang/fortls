@@ -9,9 +9,9 @@ from collections import Counter, deque
 
 # Python < 3.8 does not have typing.Literals
 try:
-    from typing import Literal
+    from typing import Iterable, Literal
 except ImportError:
-    from typing_extensions import Literal
+    from typing_extensions import Literal, Iterable
 
 from re import Match, Pattern
 
@@ -2097,6 +2097,14 @@ def preprocess_file(
             return (def_args, def_value)
         return def_value + line
 
+    def find_file_in_directories(directories: Iterable[str], filename: str) -> str:
+        for include_dir in directories:
+            file = os.path.join(include_dir, filename)
+            if os.path.isfile(file):
+                return file
+        msg = f"Could not locate include file: {filename} in {directories}"
+        raise FortranFileNotFoundError(msg)
+
     if pp_defs is None:
         pp_defs = {}
     if include_dirs is None:
@@ -2250,34 +2258,21 @@ def preprocess_file(
         if (match is not None) and ((len(pp_stack) == 0) or (pp_stack[-1][0] < 0)):
             log.debug("%s !!! Include statement(%d)", line.strip(), i + 1)
             include_filename = match.group(1).replace('"', "")
-            include_path = None
-            # Intentionally keep this as a list and not a set. There are cases
-            # where projects play tricks with the include order of their headers
-            # to get their codes to compile. Using a set would not permit that.
-            for include_dir in include_dirs:
-                include_path_tmp = os.path.join(include_dir, include_filename)
-                if os.path.isfile(include_path_tmp):
-                    include_path = os.path.abspath(include_path_tmp)
-                    break
-            if include_path is not None:
-                try:
-                    include_file = FortranFile(include_path)
-                    include_file.load_from_disk()
-                    log.debug("\n!!! Parsing include file '%s'", include_path)
-                    _, _, _, defs_tmp = preprocess_file(
-                        include_file.contents_split,
-                        file_path=include_path,
-                        pp_defs=defs_tmp,
-                        include_dirs=include_dirs,
-                        debug=debug,
-                    )
-                    log.debug("!!! Completed parsing include file")
-                except FortranFileNotFoundError as e:
-                    log.debug("!!! Failed to parse include file: %s", str(e))
-            else:
-                log.debug(
-                    "%s !!! Could not locate include file (%d)", line.strip(), i + 1
+            try:
+                include_path = find_file_in_directories(include_dirs, include_filename)
+                include_file = FortranFile(include_path)
+                include_file.load_from_disk()
+                log.debug("\n!!! Parsing include file '%s'", include_path)
+                _, _, _, defs_tmp = preprocess_file(
+                    include_file.contents_split,
+                    file_path=include_path,
+                    pp_defs=defs_tmp,
+                    include_dirs=include_dirs,
+                    debug=debug,
                 )
+                log.debug("!!! Completed parsing include file")
+            except FortranFileNotFoundError as e:
+                log.debug("%s !!! %s - Ln:%d", line.strip(), str(e), i + 1)
 
         # Substitute (if any) read in preprocessor macros
         for def_tmp, value in defs_tmp.items():

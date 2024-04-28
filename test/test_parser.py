@@ -1,7 +1,11 @@
 import pytest
 from setup_tests import test_dir
 
-from fortls.parsers.internal.parser import FortranFile, FortranFileNotFoundError
+from fortls.parsers.internal.parser import (
+    FortranFile,
+    FortranFileNotFoundError,
+    preprocess_file,
+)
 
 
 def test_line_continuations():
@@ -53,3 +57,7 @@ def test_load_from_disk_exception():
     file = FortranFile("/path/to/nonexistent/file.f90")
     with pytest.raises(FortranFileNotFoundError):
         file.load_from_disk()
+
+
+def test_preprocess_missing_includes_exception():
+    preprocess_file(["#include 'nonexistent_file.f90'"])
