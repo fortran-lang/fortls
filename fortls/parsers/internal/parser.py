@@ -2075,11 +2075,10 @@ def preprocess_file(
         if defs is None:
             defs = {}
         try:
-            line_res = eval(replace_ops(replace_vars(replace_defined(text))))
-        except:
-            return False
-        else:
-            return line_res
+            return eval(replace_ops(replace_vars(replace_defined(text))))
+        except Exception as exc:
+            log.error("Error evaluating preprocessor IF statement: %s", exc)
+            raise ParserError(exc) from exc
 
     def expand_func_macro(def_name: str, def_value: tuple[str, str]):
         def_args, sub = def_value
