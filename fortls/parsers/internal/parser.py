@@ -1306,6 +1306,21 @@ class FortranFile:
                 line = multi_lines.pop()
                 get_full = False
 
+            # Add comment blocks to folding patterns
+            if FRegex.FREE_COMMENT.match(line) is not None:
+                if file_ast.comment_block_start == 0:
+                    file_ast.comment_block_start = line_no
+                else:
+                    file_ast.comment_block_end = line_no
+            elif (
+                file_ast.comment_block_start != 0
+                and file_ast.comment_block_end > file_ast.comment_block_start + 1
+            ):
+                file_ast.folding_start.append(file_ast.comment_block_start)
+                file_ast.folding_end.append(line_no - 1)
+                file_ast.comment_block_start = 0
+                file_ast.comment_block_end = 0
+
             if line == "":
                 continue  # Skip empty lines
 

@@ -40,6 +40,8 @@ class FortranAST:
         self.folding_start: list = []
         self.folding_end: list = []
         self.lines_to_fold: list = []
+        self.comment_block_start = 0
+        self.comment_block_end = 0
         self.none_scope = None
         self.inc_scope = None
         self.current_scope = None
