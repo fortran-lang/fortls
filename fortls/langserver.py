@@ -51,7 +51,11 @@ from fortls.parsers.internal.intrinsics import (
     load_intrinsics,
     set_lowercase_intrinsics,
 )
-from fortls.parsers.internal.parser import FortranFile, ParserError, get_line_context
+from fortls.parsers.internal.parser import (
+    FortranFile,
+    FortranFileNotFoundError,
+    get_line_context,
+)
 from fortls.parsers.internal.scope import Scope
 from fortls.parsers.internal.use import Use
 from fortls.parsers.internal.utilities import (
@@ -1396,7 +1400,7 @@ class LangServer:
                     file_changed = file_obj.load_from_disk()
                     if not file_changed:
                         return False, None
-                except ParserError as exc:
+                except FortranFileNotFoundError as exc:
                     log.error("%s : %s", str(exc), filepath)
                     raise LSPError from exc
 
@@ -1459,7 +1463,7 @@ class LangServer:
         # TODO: allow to bubble up the error message
         try:
             file_obj.load_from_disk()
-        except ParserError as e:
+        except FortranFileNotFoundError as e:
             return str(e)
         try:
             # On Windows multiprocess does not propagate global variables in a shell.

@@ -1,7 +1,7 @@
 import pytest
 from setup_tests import test_dir
 
-from fortls.parsers.internal.parser import FileReadDecodeError, FortranFile
+from fortls.parsers.internal.parser import FortranFile, FortranFileNotFoundError
 
 
 def test_line_continuations():
@@ -51,5 +51,5 @@ def test_end_scopes_semicolon():
 
 def test_load_from_disk_exception():
     file = FortranFile("/path/to/nonexistent/file.f90")
-    with pytest.raises(FileReadDecodeError):
+    with pytest.raises(FortranFileNotFoundError):
         file.load_from_disk()

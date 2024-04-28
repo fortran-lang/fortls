@@ -881,15 +881,16 @@ class FortranFile:
 
         Raises
         ------
-        FileReadDecodeError
-            If the file could not be read or decoded
+        FortranFileNotFoundError
+            If the file could not be found
         """
         contents: str
         try:
+            # errors="replace" prevents UnicodeDecodeError being raised
             with open(self.path, encoding="utf-8", errors="replace") as f:
                 contents = re.sub(r"\t", r" ", f.read())
-        except OSError as exc:
-            raise FileReadDecodeError("Could not read/decode file") from exc
+        except FileNotFoundError as exc:
+            raise FortranFileNotFoundError(exc) from exc
         # Check if files are the same
         try:
             hash = hashlib.md5(
@@ -2274,7 +2275,7 @@ def preprocess_file(
                         debug=debug,
                     )
                     log.debug("!!! Completed parsing include file")
-                except ParserError as e:
+                except FortranFileNotFoundError as e:
                     log.debug("!!! Failed to parse include file: %s", str(e))
             else:
                 log.debug(
@@ -2316,5 +2317,5 @@ class ParserError(Exception):
     """Parser base class exception"""
 
 
-class FileReadDecodeError(ParserError):
-    """File could not be read/decoded"""
+class FortranFileNotFoundError(ParserError, FileNotFoundError):
+    """File not found"""
