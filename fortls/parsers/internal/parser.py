@@ -11,7 +11,7 @@ from collections import Counter, deque
 try:
     from typing import Iterable, Literal
 except ImportError:
-    from typing_extensions import Literal, Iterable
+    from typing_extensions import Iterable, Literal
 
 from re import Match, Pattern
 
