@@ -36,10 +36,8 @@ class FortranAST:
         self.inherit_objs: list = []
         self.linkable_objs: list = []
         self.external_objs: list = []
-        self.fold_patterns = []
         self.folding_start: list = []
         self.folding_end: list = []
-        self.lines_to_fold: list = []
         self.comment_block_start = 0
         self.comment_block_end = 0
         self.none_scope = None
@@ -71,9 +69,6 @@ class FortranAST:
         req_container: bool = False,
     ):
         self.scope_list.append(new_scope)
-        # avoid duplication from create_none_scope
-        if len(self.lines_to_fold) == 0 or new_scope.sline > self.lines_to_fold[-1]:
-            self.lines_to_fold.append(new_scope.sline)
         if new_scope.require_inherit():
             self.inherit_objs.append(new_scope)
         if new_scope.require_link():

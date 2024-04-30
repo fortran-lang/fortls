@@ -1387,12 +1387,6 @@ class FortranFile:
                 if self.parse_do_fixed_format(
                     line, line_no, file_ast, line_label, block_id_stack
                 ):
-                    self.treat_out_line(
-                        file_ast.lines_to_fold,
-                        file_ast.folding_start,
-                        file_ast.folding_end,
-                        line_no,
-                    )
                     continue
 
             # Skip if known generic code line
@@ -2050,29 +2044,6 @@ class FortranFile:
             if obj is not None:
                 return obj
         return None
-
-    def treat_out_line(
-        self,
-        lines_to_fold: list[int],
-        folding_start: list[int],
-        folding_end: list[int],
-        line_no: int,
-    ):
-        folding_start.append(lines_to_fold.pop())
-        folding_end.append(line_no - 1)
-        return
-
-    def treat_inout_line(
-        self,
-        lines_to_fold: list[int],
-        folding_start: list[int],
-        folding_end: list[int],
-        line_no: int,
-    ):
-        folding_start.append(lines_to_fold.pop())
-        folding_end.append(line_no - 1)
-        lines_to_fold.append(line_no)
-        return
 
 
 def preprocess_file(
