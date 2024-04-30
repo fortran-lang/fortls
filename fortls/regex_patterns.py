@@ -147,8 +147,8 @@ class FortranRegularExpressions:
         I,
     )
 
-    IF_INOUT: Pattern = compile(r"(^|.*\s)(ELSE$|ELSE(\s)|ELSEIF(\s*\())", I)
-    SELECT_INOUT: Pattern = compile(r"((^|\s*\s)(CASE)(\s*\())", I)
+    ELSE_IF: Pattern = compile(r"(^|.*\s)(ELSE$|ELSE(\s)|ELSEIF(\s*\())", I)
+    SELECT_CASE: Pattern = compile(r"((^|\s*\s)(CASE)(\s*\())", I)
 
     # Object regex patterns
     CLASS_VAR: Pattern = compile(r"(TYPE|CLASS)[ ]*\(", I)

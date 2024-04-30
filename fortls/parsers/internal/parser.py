@@ -1367,29 +1367,21 @@ class FortranFile:
                 line = multi_lines.pop()
                 line_stripped = line
 
-            # these are not yet treated in scopes, to be added?
-            if (
-                FRegex.IF_INOUT.match(line_no_comment) is not None
-                or FRegex.SELECT_INOUT.match(line_no_comment) is not None
-            ):
-                self.treat_inout_line(
-                    file_ast.lines_to_fold,
-                    file_ast.folding_start,
-                    file_ast.folding_end,
-                    line_no,
-                )
-
             # Test for scope end
             if file_ast.END_SCOPE_REGEX is not None:
+                # treat intermediate folding lines in scopes they exist
+                if (
+                    file_ast.END_SCOPE_REGEX == FRegex.END_IF
+                    and FRegex.ELSE_IF.match(line_no_comment) is not None
+                ) or (
+                    file_ast.END_SCOPE_REGEX == FRegex.END_SELECT
+                    and FRegex.SELECT_CASE.match(line_no_comment) is not None
+                ):
+                    file_ast.scope_list[-1].mlines.append(line_no)
+
                 match = FRegex.END_WORD.match(line_no_comment)
                 # Handle end statement
                 if self.parse_end_scope_word(line_no_comment, line_no, file_ast, match):
-                    self.treat_out_line(
-                        file_ast.lines_to_fold,
-                        file_ast.folding_start,
-                        file_ast.folding_end,
-                        line_no,
-                    )
                     continue
                 # Look for old-style end of DO loops with line labels
                 if self.parse_do_fixed_format(
