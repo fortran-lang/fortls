@@ -24,9 +24,6 @@ jobs:
       - name: Setup
         run: pip install .[dev]
 
-      - name: Unittests
-        run: pytest --doctest-modules
-
       - name: Lint
         run: black --diff --check --verbose .
 
@@ -35,25 +32,8 @@ jobs:
           python3 -m fortls.schema
           git diff --exit-code ./fortls/fortls.schema.json
 
-  coverage:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        python-version: ["3.8","3.10"]
-      fail-fast: false
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Coverage report
-        run: |
-          pip install .[dev]
-          pytest --doctest-modules
-        shell: bash
+      - name: Unittests
+        run: pytest --doctest-modules
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
