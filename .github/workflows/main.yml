@@ -24,9 +24,6 @@ jobs:
       - name: Setup
         run: pip install .[dev]
 
-      - name: Unittests
-        run: pytest --doctest-modules
-
       - name: Lint
         run: black --diff --check --verbose .
 
@@ -34,6 +31,9 @@ jobs:
         run: |
           python3 -m fortls.schema
           git diff --exit-code ./fortls/fortls.schema.json
+
+      - name: Unittests
+        run: pytest --doctest-modules
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
