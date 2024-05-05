@@ -19,9 +19,7 @@ from .variable import Variable
 class FortranAST:
     def __init__(self, file_obj=None):
         self.file = file_obj
-        self.path: str = None
-        if file_obj is not None:
-            self.path = file_obj.path
+        self.path: str | None = file_obj.path if file_obj is not None else None
         self.global_dict: dict = {}
         self.scope_list: list = []
         self.variable_list: list = []
@@ -39,10 +37,10 @@ class FortranAST:
         self.none_scope = None
         self.inc_scope = None
         self.current_scope = None
-        self.end_scope_regex: Pattern = None
-        self.enc_scope_name: str = None
+        self.end_scope_regex: Pattern | None = None
+        self.enc_scope_name: str | None = None
         self.last_obj = None
-        self.pending_doc: str = None
+        self.pending_doc: str | None = None
 
     def create_none_scope(self):
         """Create empty scope to hold non-module contained items"""
