@@ -216,34 +216,40 @@ class FortranAST:
         return curr_scope
 
     def get_object(self, FQSN: str):
-        FQSN_split = FQSN.split("::")
-        curr_obj = self.global_dict.get(FQSN_split[0])
-        if curr_obj is None:
-            # Look for non-exportable scopes
-            for scope in self.scope_list:
-                if FQSN_split[0] == scope.FQSN:
-                    curr_obj = scope
-                    break
-        if curr_obj is None:
+        def find_child_by_name(parent, name):
+            for child in parent.children:
+                if child.name == name:
+                    return child
+                if child.name.startswith("#GEN_INT"):
+                    found = next(
+                        (
+                            int_child
+                            for int_child in child.get_children()
+                            if int_child.name == name
+                        ),
+                        None,
+                    )
+                    if found:
+                        return found
             return None
-        if len(FQSN_split) > 1:
-            for name in FQSN_split[1:]:
-                next_obj = None
-                for child in curr_obj.children:
-                    if child.name.startswith("#GEN_INT"):
-                        for int_child in child.get_children():
-                            if int_child.name == name:
-                                next_obj = int_child
-                                break
-                        if next_obj is not None:
-                            break
-                    if child.name == name:
-                        next_obj = child
-                        break
-                if next_obj is None:
-                    return None
-                curr_obj = next_obj
-        return curr_obj
+
+        parts = FQSN.split("::")
+        current = self.global_dict.get(parts[0])
+
+        # Look for non-exportable scopes
+        if current is None:
+            current = next(
+                (scope for scope in self.scope_list if scope.FQSN == parts[0]), None
+            )
+            if current is None:
+                return None
+
+        for part in parts[1:]:
+            current = find_child_by_name(current, part)
+            if current is None:
+                return None
+
+        return current
 
     def resolve_includes(self, workspace, path: str = None):
         file_dir = os.path.dirname(self.path)
