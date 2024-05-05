@@ -35,6 +35,10 @@
 - Changed automatic detection of fixed/free-form of files to ignore
   preprocessor lines.
   ([#302](https://github.com/fortran-lang/fortls/pull/302))
+- Moved project setup from `setup.cfg` to `pyproject.toml`
+  ([#384](https://github.com/fortran-lang/fortls/pull/384))
+- Bumped `setuptools` version to `>=61.0.0`
+  ([#384](https://github.com/fortran-lang/fortls/pull/384))
 
 ### Fixed
 
