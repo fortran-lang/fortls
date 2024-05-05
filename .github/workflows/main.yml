@@ -33,7 +33,7 @@ jobs:
           git diff --exit-code ./fortls/fortls.schema.json
 
       - name: Unittests
-        run: pytest --doctest-modules
+        run: pytest --doctest-modules -n auto
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
