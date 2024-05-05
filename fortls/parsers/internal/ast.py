@@ -191,28 +191,26 @@ class FortranAST:
             return self.scope_list
         scope_list = []
         for scope in self.scope_list:
-            if (line_number >= scope.sline) and (line_number <= scope.eline):
-                if type(scope.parent) is Interface:
-                    for use_stmnt in scope.use:
-                        if type(use_stmnt) is not Import:
-                            continue
-                        # Exclude the parent and all other scopes
-                        if use_stmnt.import_type == ImportTypes.NONE:
-                            return [scope]
-                scope_list.append(scope)
-                scope_list.extend(iter(scope.get_ancestors()))
+            if not scope.sline <= line_number <= scope.eline:
+                continue
+            if type(scope.parent) is Interface:
+                for use_stmnt in scope.use:
+                    if type(use_stmnt) is not Import:
+                        continue
+                    # Exclude the parent and all other scopes
+                    if use_stmnt.import_type == ImportTypes.NONE:
+                        return [scope]
+            scope_list.append(scope)
+            scope_list.extend(iter(scope.get_ancestors()))
         if scope_list or self.none_scope is None:
             return scope_list
-        else:
-            return [self.none_scope]
+        return [self.none_scope]
 
     def get_inner_scope(self, line_number: int):
         scope_sline = -1
         curr_scope = None
         for scope in self.scope_list:
-            if scope.sline > scope_sline and (
-                (line_number >= scope.sline) and (line_number <= scope.eline)
-            ):
+            if scope.sline > scope_sline and scope.sline <= line_number <= scope.eline:
                 curr_scope = scope
                 scope_sline = scope.sline
         if (curr_scope is None) and (self.none_scope is not None):
