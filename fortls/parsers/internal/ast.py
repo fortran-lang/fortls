@@ -192,9 +192,9 @@ class FortranAST:
         scope_list = []
         for scope in self.scope_list:
             if (line_number >= scope.sline) and (line_number <= scope.eline):
-                if type(scope.parent) == Interface:
+                if type(scope.parent) is Interface:
                     for use_stmnt in scope.use:
-                        if type(use_stmnt) != Import:
+                        if type(use_stmnt) is not Import:
                             continue
                         # Exclude the parent and all other scopes
                         if use_stmnt.import_type == ImportTypes.NONE:
