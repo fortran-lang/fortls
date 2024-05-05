@@ -39,7 +39,7 @@ class FortranAST:
         self.none_scope = None
         self.inc_scope = None
         self.current_scope = None
-        self.END_SCOPE_REGEX: Pattern = None
+        self.end_scope_regex: Pattern = None
         self.enc_scope_name: str = None
         self.last_obj = None
         self.pending_doc: str = None
@@ -60,7 +60,7 @@ class FortranAST:
     def add_scope(
         self,
         new_scope: Scope,
-        END_SCOPE_REGEX: Pattern[str],
+        end_scope_regex: Pattern[str],
         exportable: bool = True,
         req_container: bool = False,
     ):
@@ -80,10 +80,10 @@ class FortranAST:
         else:
             self.current_scope.add_child(new_scope)
             self.scope_stack.append(self.current_scope)
-        if self.END_SCOPE_REGEX is not None:
-            self.end_stack.append(self.END_SCOPE_REGEX)
+        if self.end_scope_regex is not None:
+            self.end_stack.append(self.end_scope_regex)
         self.current_scope = new_scope
-        self.END_SCOPE_REGEX = END_SCOPE_REGEX
+        self.end_scope_regex = end_scope_regex
         self.enc_scope_name = self.get_enc_scope_name()
         self.last_obj = new_scope
         if self.pending_doc is not None:
@@ -102,9 +102,9 @@ class FortranAST:
         else:
             self.current_scope = None
         if len(self.end_stack) > 0:
-            self.END_SCOPE_REGEX = self.end_stack.pop()
+            self.end_scope_regex = self.end_stack.pop()
         else:
-            self.END_SCOPE_REGEX = None
+            self.end_scope_regex = None
         self.enc_scope_name = self.get_enc_scope_name()
 
     def add_variable(self, new_var: Variable):
