@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools >= 61", "wheel", "setuptools_scm[toml] >= 7.0"]
+requires = ["setuptools >= 64", "wheel", "setuptools_scm >= 8"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -82,7 +82,7 @@ include = ["fortls"]
 fortls = ["parsers/internal/*.json"]
 
 [tool.setuptools_scm]
-write_to = "fortls/_version.py"
+version_file = "fortls/_version.py"
 
 [tool.isort]
 profile = "black"
