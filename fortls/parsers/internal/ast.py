@@ -251,7 +251,7 @@ class FortranAST:
 
         return current
 
-    def resolve_includes(self, workspace, path: str = None):
+    def resolve_includes(self, workspace, path: str | None = None):
         file_dir = os.path.dirname(self.path)
         for inc in self.include_statements:
             file_path = os.path.normpath(os.path.join(file_dir, inc.path))
