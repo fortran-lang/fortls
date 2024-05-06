@@ -76,7 +76,7 @@ Tracker = "https://github.com/fortran-lang/fortls/issues"
 fortls = "fortls.__init__:main"
 
 [tool.setuptools.packages.find]
-include = ["fortls"]
+include = ["fortls*"]
 
 [tool.setuptools.package-data]
 fortls = ["parsers/internal/*.json"]
