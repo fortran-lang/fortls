@@ -18,7 +18,6 @@ from re import Match, Pattern
 from fortls.constants import (
     DO_TYPE_ID,
     INTERFACE_TYPE_ID,
-    MODULE_TYPE_ID,
     SELECT_TYPE_ID,
     SUBMODULE_TYPE_ID,
     FRegex,
@@ -1657,10 +1656,10 @@ class FortranFile:
                     msg = "Visibility statement without enclosing scope"
                     file_ast.add_error(msg, Severity.error, line_no, 0)
                 else:
-                    if (len(obj_info.obj_names) == 0) and (obj_info.type == 1):
+                    if len(obj_info.obj_names) == 0 and obj_info.type == 1:  # private
                         file_ast.current_scope.set_default_vis(-1)
                     else:
-                        if obj_info.type == MODULE_TYPE_ID:
+                        if obj_info.type == 1:  # private
                             for word in obj_info.obj_names:
                                 file_ast.add_private(word)
                         else:
