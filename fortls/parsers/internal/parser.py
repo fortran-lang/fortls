@@ -18,7 +18,6 @@ from re import Match, Pattern
 from fortls.constants import (
     DO_TYPE_ID,
     INTERFACE_TYPE_ID,
-    MODULE_TYPE_ID,
     SELECT_TYPE_ID,
     SUBMODULE_TYPE_ID,
     FRegex,
@@ -1352,7 +1351,7 @@ class FortranFile:
                 line = multi_lines.pop()
                 line_stripped = line
             # Test for scope end
-            if file_ast.END_SCOPE_REGEX is not None:
+            if file_ast.end_scope_regex is not None:
                 match = FRegex.END_WORD.match(line_no_comment)
                 # Handle end statement
                 if self.parse_end_scope_word(line_no_comment, line_no, file_ast, match):
@@ -1657,10 +1656,10 @@ class FortranFile:
                     msg = "Visibility statement without enclosing scope"
                     file_ast.add_error(msg, Severity.error, line_no, 0)
                 else:
-                    if (len(obj_info.obj_names) == 0) and (obj_info.type == 1):
+                    if len(obj_info.obj_names) == 0 and obj_info.type == 1:  # private
                         file_ast.current_scope.set_default_vis(-1)
                     else:
-                        if obj_info.type == MODULE_TYPE_ID:
+                        if obj_info.type == 1:  # private
                             for word in obj_info.obj_names:
                                 file_ast.add_private(word)
                         else:
@@ -1766,7 +1765,7 @@ class FortranFile:
             ):
                 file_ast.end_errors.append([ln, file_ast.current_scope.sline])
         else:
-            scope_match = file_ast.END_SCOPE_REGEX.match(line[match.start(1) :])
+            scope_match = file_ast.end_scope_regex.match(line[match.start(1) :])
             if scope_match is not None:
                 end_scope_word = scope_match.group(0)
         if end_scope_word is not None:

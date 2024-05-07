@@ -31,3 +31,11 @@ def test_submodule():
     except Exception as e:
         print(e)
         assert False
+
+
+def test_private_visibility_interfaces():
+    file_path = test_dir / "vis" / "private.f90"
+    file = FortranFile(str(file_path))
+    err_str, _ = file.load_from_disk()
+    file.parse()
+    assert err_str is None

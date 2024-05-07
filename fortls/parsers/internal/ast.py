@@ -19,9 +19,7 @@ from .variable import Variable
 class FortranAST:
     def __init__(self, file_obj=None):
         self.file = file_obj
-        self.path: str = None
-        if file_obj is not None:
-            self.path = file_obj.path
+        self.path: str | None = file_obj.path if file_obj is not None else None
         self.global_dict: dict = {}
         self.scope_list: list = []
         self.variable_list: list = []
@@ -39,10 +37,10 @@ class FortranAST:
         self.none_scope = None
         self.inc_scope = None
         self.current_scope = None
-        self.END_SCOPE_REGEX: Pattern = None
-        self.enc_scope_name: str = None
+        self.end_scope_regex: Pattern | None = None
+        self.enc_scope_name: str | None = None
         self.last_obj = None
-        self.pending_doc: str = None
+        self.pending_doc: str | None = None
 
     def create_none_scope(self):
         """Create empty scope to hold non-module contained items"""
@@ -60,7 +58,7 @@ class FortranAST:
     def add_scope(
         self,
         new_scope: Scope,
-        END_SCOPE_REGEX: Pattern[str],
+        end_scope_regex: Pattern[str],
         exportable: bool = True,
         req_container: bool = False,
     ):
@@ -80,10 +78,10 @@ class FortranAST:
         else:
             self.current_scope.add_child(new_scope)
             self.scope_stack.append(self.current_scope)
-        if self.END_SCOPE_REGEX is not None:
-            self.end_stack.append(self.END_SCOPE_REGEX)
+        if self.end_scope_regex is not None:
+            self.end_stack.append(self.end_scope_regex)
         self.current_scope = new_scope
-        self.END_SCOPE_REGEX = END_SCOPE_REGEX
+        self.end_scope_regex = end_scope_regex
         self.enc_scope_name = self.get_enc_scope_name()
         self.last_obj = new_scope
         if self.pending_doc is not None:
@@ -102,9 +100,9 @@ class FortranAST:
         else:
             self.current_scope = None
         if len(self.end_stack) > 0:
-            self.END_SCOPE_REGEX = self.end_stack.pop()
+            self.end_scope_regex = self.end_stack.pop()
         else:
-            self.END_SCOPE_REGEX = None
+            self.end_scope_regex = None
         self.enc_scope_name = self.get_enc_scope_name()
 
     def add_variable(self, new_var: Variable):
@@ -170,11 +168,11 @@ class FortranAST:
     def start_ppif(self, line_number: int):
         self.pp_if.append([line_number - 1, -1])
 
-    def end_ppif(self, line_number):
+    def end_ppif(self, line_number: int):
         if len(self.pp_if) > 0:
             self.pp_if[-1][1] = line_number - 1
 
-    def get_scopes(self, line_number: int = None):
+    def get_scopes(self, line_number: int | None = None):
         """Get a list of all the scopes present in the line number provided.
 
         Parameters
@@ -191,28 +189,26 @@ class FortranAST:
             return self.scope_list
         scope_list = []
         for scope in self.scope_list:
-            if (line_number >= scope.sline) and (line_number <= scope.eline):
-                if type(scope.parent) is Interface:
-                    for use_stmnt in scope.use:
-                        if type(use_stmnt) is not Import:
-                            continue
-                        # Exclude the parent and all other scopes
-                        if use_stmnt.import_type == ImportTypes.NONE:
-                            return [scope]
-                scope_list.append(scope)
-                scope_list.extend(iter(scope.get_ancestors()))
+            if not scope.sline <= line_number <= scope.eline:
+                continue
+            if type(scope.parent) is Interface:
+                for use_stmnt in scope.use:
+                    if type(use_stmnt) is not Import:
+                        continue
+                    # Exclude the parent and all other scopes
+                    if use_stmnt.import_type == ImportTypes.NONE:
+                        return [scope]
+            scope_list.append(scope)
+            scope_list.extend(iter(scope.get_ancestors()))
         if scope_list or self.none_scope is None:
             return scope_list
-        else:
-            return [self.none_scope]
+        return [self.none_scope]
 
     def get_inner_scope(self, line_number: int):
         scope_sline = -1
         curr_scope = None
         for scope in self.scope_list:
-            if scope.sline > scope_sline and (
-                (line_number >= scope.sline) and (line_number <= scope.eline)
-            ):
+            if scope.sline > scope_sline and scope.sline <= line_number <= scope.eline:
                 curr_scope = scope
                 scope_sline = scope.sline
         if (curr_scope is None) and (self.none_scope is not None):
@@ -220,36 +216,42 @@ class FortranAST:
         return curr_scope
 
     def get_object(self, FQSN: str):
-        FQSN_split = FQSN.split("::")
-        curr_obj = self.global_dict.get(FQSN_split[0])
-        if curr_obj is None:
-            # Look for non-exportable scopes
-            for scope in self.scope_list:
-                if FQSN_split[0] == scope.FQSN:
-                    curr_obj = scope
-                    break
-        if curr_obj is None:
+        def find_child_by_name(parent, name):
+            for child in parent.children:
+                if child.name == name:
+                    return child
+                if child.name.startswith("#GEN_INT"):
+                    found = next(
+                        (
+                            int_child
+                            for int_child in child.get_children()
+                            if int_child.name == name
+                        ),
+                        None,
+                    )
+                    if found:
+                        return found
             return None
-        if len(FQSN_split) > 1:
-            for name in FQSN_split[1:]:
-                next_obj = None
-                for child in curr_obj.children:
-                    if child.name.startswith("#GEN_INT"):
-                        for int_child in child.get_children():
-                            if int_child.name == name:
-                                next_obj = int_child
-                                break
-                        if next_obj is not None:
-                            break
-                    if child.name == name:
-                        next_obj = child
-                        break
-                if next_obj is None:
-                    return None
-                curr_obj = next_obj
-        return curr_obj
 
-    def resolve_includes(self, workspace, path: str = None):
+        parts = FQSN.split("::")
+        current = self.global_dict.get(parts[0])
+
+        # Look for non-exportable scopes
+        if current is None:
+            current = next(
+                (scope for scope in self.scope_list if scope.FQSN == parts[0]), None
+            )
+            if current is None:
+                return None
+
+        for part in parts[1:]:
+            current = find_child_by_name(current, part)
+            if current is None:
+                return None
+
+        return current
+
+    def resolve_includes(self, workspace, path: str | None = None):
         file_dir = os.path.dirname(self.path)
         for inc in self.include_statements:
             file_path = os.path.normpath(os.path.join(file_dir, inc.path))
