@@ -24,6 +24,7 @@ from fortls.constants import (
     Severity,
     log,
 )
+from fortls.exceptions import FortranFileNotFoundError
 from fortls.ftypes import (
     ClassInfo,
     FunSig,
@@ -2303,11 +2304,3 @@ def preprocess_file(
                 line = line_new
         output_file.append(line)
     return output_file, pp_skips, pp_defines, defs_tmp
-
-
-class ParserError(Exception):
-    """Parser base class exception"""
-
-
-class FortranFileNotFoundError(ParserError, FileNotFoundError):
-    """File not found"""

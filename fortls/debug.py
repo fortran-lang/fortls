@@ -7,6 +7,7 @@ import sys
 
 import json5
 
+from .exceptions import DebugError, ParameterError, ParserError
 from .helper_functions import only_dirs, resolve_globs
 from .jsonrpc import JSONRPC2Connection, ReadWriter, path_from_uri
 from .langserver import LangServer
