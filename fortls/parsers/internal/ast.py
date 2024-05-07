@@ -168,11 +168,11 @@ class FortranAST:
     def start_ppif(self, line_number: int):
         self.pp_if.append([line_number - 1, -1])
 
-    def end_ppif(self, line_number):
+    def end_ppif(self, line_number: int):
         if len(self.pp_if) > 0:
             self.pp_if[-1][1] = line_number - 1
 
-    def get_scopes(self, line_number: int = None):
+    def get_scopes(self, line_number: int | None = None):
         """Get a list of all the scopes present in the line number provided.
 
         Parameters
