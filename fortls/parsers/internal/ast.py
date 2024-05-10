@@ -272,8 +272,9 @@ class FortranAST:
                     added_entities = []
                     for child in include_ast.inc_scope.children:
                         added_entities.append(child)
-                        parent_scope.add_child(child)
-                        child.update_fqsn(parent_scope.FQSN)
+                        if parent_scope is not None:
+                            parent_scope.add_child(child)
+                            child.update_fqsn(parent_scope.FQSN)
                     include_ast.none_scope = parent_scope
                     inc.scope_objs = added_entities
 
