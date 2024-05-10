@@ -65,6 +65,11 @@ and [Emacs](https://fortls.fortran-lang.org/editor_integration.html#emacs).
 
 - Signature help and hover does not handle elegantly overloaded functions i.e. interfaces
 
+## Documentation
+
+The full documentation for `fortls` can be found at
+[fortls.fortran-lang.org](https://fortls.fortran-lang.org/).
+
 ## Installation
 
 ### PyPi
