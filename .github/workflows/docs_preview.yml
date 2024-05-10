@@ -23,10 +23,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: sphinx-toolbox/sphinx-action@master
+      - uses: actions/setup-python@v5
         with:
-          pre-build-command: "pip install .[docs]"
-          docs-folder: "docs/"
+          python-version: "3.11"
+      - name: Build docs
+        run: |
+          pip install .[docs]
+          make -C docs html
       - name: Deploy Preview
         uses: rossjrw/pr-preview-action@v1.4.7
         with:
