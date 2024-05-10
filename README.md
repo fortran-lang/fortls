@@ -65,23 +65,6 @@ and [Emacs](https://fortls.fortran-lang.org/editor_integration.html#emacs).
 
 - Signature help and hover does not handle elegantly overloaded functions i.e. interfaces
 
-## Future plans
-
-`fortls` has reached a point where it is feature complete and stable enough to be used in many modern Fortran projects without any issues.
-It does however still have fundamental limitations,
-namely its ability to understand all Fortran syntax and semantics that has been used throughout the 65+ years of the language. **The good news is that we have a plan to address this issue!**
-
-We are excited to announce that we are working on creating a new Fortran Language Server
-based on the actively developed [LFortran](https://lfortran.org/) compiler 🎉.
-The new Language Server will be able to understand all Fortran syntax, be faster,
-and give more accurate autocompletion, hover and diagnostic information. That means we plan on investing any future funding on creating our new language server and ultimately creating a better user experience for everyone.
-
-<!--  Have a look at our roadmap (link) and consider contributing to our efforts (donations and contribution tasks link).  -->
-
-### What about `fortls`?
-
-Not to worry, `fortls` will continue to be here. We will keep `fortls` in maintenance mode with bug fixes and new features from volunteer contributors, but otherwise we will be focusing our efforts into making the new LFortran language server a reality.
-
 ## Installation
 
 ### PyPi
@@ -161,6 +144,23 @@ An example for a Configuration file is given below
 | `textDocument/didClose`          | Document synchronisation upon closing                  |
 | `textDocument/didChange`         | Document synchronisation upon changes to the document  |
 | `textDocument/codeAction`        | **Experimental** Generate code                         |
+
+## Future plans
+
+`fortls` has reached a point where it is feature complete and stable enough to be used in many modern Fortran projects without any issues.
+It does however still have fundamental limitations,
+namely its ability to understand all Fortran syntax and semantics that has been used throughout the 65+ years of the language. **The good news is that we have a plan to address this issue!**
+
+We are excited to announce that we are working on creating a new Fortran Language Server
+based on the actively developed [LFortran](https://lfortran.org/) compiler 🎉.
+The new Language Server will be able to understand all Fortran syntax, be faster,
+and give more accurate autocompletion, hover and diagnostic information. That means we plan on investing any future funding on creating our new language server and ultimately creating a better user experience for everyone.
+
+<!--  Have a look at our roadmap (link) and consider contributing to our efforts (donations and contribution tasks link).  -->
+
+### What about `fortls`?
+
+Not to worry, `fortls` will continue to be here. We will keep `fortls` in maintenance mode with bug fixes and new features from volunteer contributors, but otherwise we will be focusing our efforts into making the new LFortran language server a reality.
 
 ## `fortls` vs `fortran-language-server`
 
