@@ -186,12 +186,10 @@ change in the future.
 This project would not have been possible without the original work of [@hansec](https://github.com/hansec/)
 in [`fortran-language-server`](https://github.com/hansec/fortran-language-server)
 
-<!-- ## Support
+## Support
 
-If you want to support this project you can do it through
-
-[![Alt](https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-150px.png)](https://paypal.me/inikit)
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/gnikit) -->
+You can support Fortran-lang as a whole by donating at
+[Fortran-lang - NumFOCUS](https://numfocus.org/donate-for-fortran-lang).
 
 ## Bug reports
 
