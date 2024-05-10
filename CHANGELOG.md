@@ -42,6 +42,8 @@
 
 ### Fixed
 
+- Fixed bug where parent scope for includes in AST could be `None`
+  ([#329](https://github.com/fortran-lang/fortls/issues/329))
 - Fixed preprocessor bug with `if` and `elif` conditionals
   ([#322](https://github.com/fortran-lang/fortls/issues/322))
 - Fixed bug where type fields or methods were not detected if spaces were
