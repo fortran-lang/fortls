@@ -439,7 +439,8 @@ def debug_parser(args):
 
         # Check for config files
         config_path = locate_config(root)
-        if not os.path.isfile(config_path):
+        print(f"  Config file = {config_path}")
+        if config_path is None or not os.path.isfile(config_path):
             return pp_suffixes, pp_defs, include_dirs
 
         try:
