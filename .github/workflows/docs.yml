@@ -11,7 +11,7 @@ jobs:
           python-version: "3.11"
       - name: Build docs
         run: |
-          pip install .[docs]
+          pip install -e .[dev,docs]
           make -C docs html
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
