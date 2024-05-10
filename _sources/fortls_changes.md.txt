@@ -147,6 +147,8 @@
 
 ## Fixed
 
+- Fixed end of scope errors raised by trailing semicolon in native parser
+  ([#265](https://github.com/fortran-lang/fortls/issues/265))
 - Fixed bug where parent scope for includes in AST could be `None`
   ([#329](https://github.com/fortran-lang/fortls/issues/329))
 - Fixed preprocessor bug with `if` and `elif` conditionals
