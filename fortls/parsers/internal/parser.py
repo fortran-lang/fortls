@@ -1350,6 +1350,7 @@ class FortranFile:
                 multi_lines.extendleft(line_stripped.split(";"))
                 line = multi_lines.pop()
                 line_stripped = line
+                line_no_comment = line
             # Test for scope end
             if file_ast.end_scope_regex is not None:
                 match = FRegex.END_WORD.match(line_no_comment)

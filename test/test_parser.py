@@ -39,3 +39,12 @@ def test_private_visibility_interfaces():
     err_str, _ = file.load_from_disk()
     file.parse()
     assert err_str is None
+
+
+def test_end_scopes_semicolon():
+    file_path = test_dir / "parse" / "trailing_semicolon.f90"
+    file = FortranFile(str(file_path))
+    err_str, _ = file.load_from_disk()
+    ast = file.parse()
+    assert err_str is None
+    assert not ast.end_errors
