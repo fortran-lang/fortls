@@ -35,4 +35,4 @@ jobs:
         with:
           source-dir: docs/_build/html
           preview-branch: gh-pages
-          custom-url: https://fortls.fortran-lang.org
+          custom-url: fortls.fortran-lang.org
