@@ -165,7 +165,7 @@ and give more accurate autocompletion, hover and diagnostic information. That me
 
 ### What about `fortls`?
 
-Not to worry, `fortls` will continue to be here. We will keep `fortls` in maintenance mode with bug fixes and new features from volunteer contributors, but otherwise we will be focusing our efforts into making the new LFortran language server a reality.
+Not to worry, `fortls` will continue to be here. We will keep `fortls` in active maintenance mode with bug fixes and new features from volunteer contributors, but otherwise we will be focusing our efforts into making the new language server using LFortran's parser a reality.
 
 ## `fortls` vs `fortran-language-server`
 
