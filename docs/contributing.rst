@@ -7,16 +7,11 @@ There are a few ways you can support the ``fortls`` project.
 Financial Support
 ------------------
 
-.. You can support us financially by becoming a **GitHub Sponsor** or by
-.. making a **PayPal Donation**.
+You can fiscally support Fortran-lang by donating to the project, see
+`Fortran-lang - NumFOCUS`_.
 
-.. note::
-    We are in the process of restructuring our Sponsorship structure.
-    In the meantime, please get in contact with ``gnikit`` via email at
-    ``gnikit [@] duck [.] com`` or any other `Administrator of Fortran-lang`_
-    for instructions to financially back the project.
+.. _Fortran-lang - NumFOCUS: https://numfocus.org/donate-for-fortran-lang
 
-.. _Administrator of Fortran-lang: https://github.com/orgs/fortran-lang/teams/admins/members
 
 .. .. grid:: 2
 ..     :gutter: 0
