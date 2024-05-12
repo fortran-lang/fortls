@@ -1,14 +1,16 @@
 from __future__ import annotations
 
+import logging
 import os
 import pprint
+import sys
 
 import json5
 
 from .helper_functions import only_dirs, resolve_globs
 from .jsonrpc import JSONRPC2Connection, ReadWriter, path_from_uri
 from .langserver import LangServer
-from .parsers.internal.parser import FortranFile
+from .parsers.internal.parser import FortranFile, preprocess_file
 
 
 class DebugError(Exception):
@@ -436,6 +438,56 @@ def debug_parser(args):
     print("\n" + "=" * 80 + "\nExportable Objects\n" + "=" * 80 + "\n")
     for _, obj in file_ast.global_dict.items():
         print(f"{obj.get_type()}: {obj.FQSN}")
+    separator()
+
+
+def debug_preprocessor(args):
+    """Debug the preprocessor of the Language Server
+    Triggered by `--debug_preprocessor` option.
+
+    Parameters
+    ----------
+    args : Namespace
+        The arguments parsed from the `ArgumentParser`
+    """
+
+    def sep_lvl2(heading: str):
+        print("\n" + "=" * 75 + f"\n{heading}\n" + "=" * 75)
+
+    print("\nTesting preprocessor")
+    separator()
+
+    logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, format="%(message)s")
+
+    file = args.debug_filepath
+    ensure_file_accessible(file)
+    with open(file, encoding="utf-8") as f:
+        lines = f.readlines()
+
+    root = args.debug_rootpath if args.debug_rootpath else os.path.dirname(file)
+    _, pp_defs, include_dirs = read_config(root, args.config)
+
+    sep_lvl2("Preprocessor Pass:")
+    output, skips, defines, defs = preprocess_file(
+        lines, file, pp_defs, include_dirs, debug=True
+    )
+
+    sep_lvl2("Preprocessor Skipped Lines:")
+    for line in skips:
+        print(f"  {line}")
+
+    sep_lvl2("Preprocessor Macros:")
+    for key, value in defs.items():
+        print(f"  {key} = {value}")
+
+    sep_lvl2("Preprocessor Defines (#define):")
+    for line in defines:
+        print(f"  {line}")
+
+    sep_lvl2("Preprocessor Final Output:")
+    for line in output:
+        print(rf"  {line.rstrip()}")
+
     separator()
 
 
