@@ -448,6 +448,18 @@ Triggered by <cite>–debug_parser</cite> option.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="fortls.debug.debug_preprocessor">
+<span class="sig-prename descclassname"><span class="pre">fortls.debug.</span></span><span class="sig-name descname"><span class="pre">debug_preprocessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.debug.debug_preprocessor" title="Link to this definition">¶</a></dt>
+<dd><p>Debug the preprocessor of the Language Server
+Triggered by <cite>–debug_preprocessor</cite> option.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>Namespace</em>) – The arguments parsed from the <cite>ArgumentParser</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="fortls.debug.debug_references">
 <span class="sig-prename descclassname"><span class="pre">fortls.debug.</span></span><span class="sig-name descname"><span class="pre">debug_references</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.debug.debug_references" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -489,6 +501,16 @@ Triggered by <cite>–debug_parser</cite> option.</p>
 <dd></dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="fortls.debug.locate_config">
+<span class="sig-prename descclassname"><span class="pre">fortls.debug.</span></span><span class="sig-name descname"><span class="pre">locate_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.debug.locate_config" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="fortls.debug.print_children">
 <span class="sig-prename descclassname"><span class="pre">fortls.debug.</span></span><span class="sig-name descname"><span class="pre">print_children</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.debug.print_children" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -502,6 +524,11 @@ Triggered by <cite>–debug_parser</cite> option.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="fortls.debug.process_file_changes">
 <span class="sig-prename descclassname"><span class="pre">fortls.debug.</span></span><span class="sig-name descname"><span class="pre">process_file_changes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">changes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_contents</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.debug.process_file_changes" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fortls.debug.read_config">
+<span class="sig-prename descclassname"><span class="pre">fortls.debug.</span></span><span class="sig-name descname"><span class="pre">read_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fortls.debug.read_config" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -2280,6 +2307,7 @@ For more info see create_src_file_exts_regex</p>
 <li><a class="reference internal" href="#fortls.debug.debug_implementation"><code class="docutils literal notranslate"><span class="pre">debug_implementation()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.debug.debug_lsp"><code class="docutils literal notranslate"><span class="pre">debug_lsp()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.debug.debug_parser"><code class="docutils literal notranslate"><span class="pre">debug_parser()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.debug.debug_preprocessor"><code class="docutils literal notranslate"><span class="pre">debug_preprocessor()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.debug.debug_references"><code class="docutils literal notranslate"><span class="pre">debug_references()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.debug.debug_rename"><code class="docutils literal notranslate"><span class="pre">debug_rename()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.debug.debug_rootpath"><code class="docutils literal notranslate"><span class="pre">debug_rootpath()</span></code></a></li>
@@ -2288,9 +2316,11 @@ For more info see create_src_file_exts_regex</p>
 <li><a class="reference internal" href="#fortls.debug.debug_workspace_symbols"><code class="docutils literal notranslate"><span class="pre">debug_workspace_symbols()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.debug.ensure_file_accessible"><code class="docutils literal notranslate"><span class="pre">ensure_file_accessible()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.debug.is_debug_mode"><code class="docutils literal notranslate"><span class="pre">is_debug_mode()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.debug.locate_config"><code class="docutils literal notranslate"><span class="pre">locate_config()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.debug.print_children"><code class="docutils literal notranslate"><span class="pre">print_children()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.debug.print_results"><code class="docutils literal notranslate"><span class="pre">print_results()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.debug.process_file_changes"><code class="docutils literal notranslate"><span class="pre">process_file_changes()</span></code></a></li>
+<li><a class="reference internal" href="#fortls.debug.read_config"><code class="docutils literal notranslate"><span class="pre">read_config()</span></code></a></li>
 <li><a class="reference internal" href="#fortls.debug.separator"><code class="docutils literal notranslate"><span class="pre">separator()</span></code></a></li>
 </ul>
 </li>
@@ -2583,7 +2613,7 @@ For more info see create_src_file_exts_regex</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=d4cfb3b6"></script>
+</div><script src="_static/documentation_options.js?v=ff5d353f"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=4e2eecee"></script>
