@@ -219,6 +219,7 @@ Options for debugging language server
 -  ``--debug_filepath DEBUG_FILEPATH``         File path for language server tests
 -  ``--debug_rootpath DEBUG_ROOTPATH``         Root path for language server tests
 -  ``--debug_parser``                          Test source code parser on specified file
+-  ``--debug_preproc``                         Test preprocessor on specified file
 -  ``--debug_hover``                           Test `textDocument/hover` request for specified file and position
 -  ``--debug_rename RENAME_STRING``            Test `textDocument/rename` request for specified file and position
 -  ``--debug_actions``                         Test `textDocument/codeAction` request for specified file and position
