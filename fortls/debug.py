@@ -415,54 +415,11 @@ def debug_parser(args):
         The arguments parsed from the `ArgumentParser`
     """
 
-    def locate_config(root: str) -> str | None:
-        default_conf_files = [args.config, ".fortlsrc", ".fortls.json5", ".fortls"]
-        present_conf_files = [
-            os.path.isfile(os.path.join(root, f)) for f in default_conf_files
-        ]
-        if not any(present_conf_files):
-            return None
-
-        # Load the first config file found
-        for f, present in zip(default_conf_files, present_conf_files):
-            if not present:
-                continue
-            config_path = os.path.join(root, f)
-            return config_path
-
-    def read_config(root: str | None):
-        pp_suffixes = None
-        pp_defs = {}
-        include_dirs = set()
-        if root is None:
-            return pp_suffixes, pp_defs, include_dirs
-
-        # Check for config files
-        config_path = locate_config(root)
-        print(f"  Config file = {config_path}")
-        if config_path is None or not os.path.isfile(config_path):
-            return pp_suffixes, pp_defs, include_dirs
-
-        try:
-            with open(config_path, encoding="utf-8") as fhandle:
-                config_dict = json5.load(fhandle)
-                pp_suffixes = config_dict.get("pp_suffixes", None)
-                pp_defs = config_dict.get("pp_defs", {})
-                for path in config_dict.get("include_dirs", set()):
-                    include_dirs.update(only_dirs(resolve_globs(path, root)))
-
-                if isinstance(pp_defs, list):
-                    pp_defs = {key: "" for key in pp_defs}
-        except ValueError as e:
-            print(f"Error {e} while parsing '{config_path}' settings file")
-
-        return pp_suffixes, pp_defs, include_dirs
-
     print("\nTesting parser")
     separator()
 
     ensure_file_accessible(args.debug_filepath)
-    pp_suffixes, pp_defs, include_dirs = read_config(args.debug_rootpath)
+    pp_suffixes, pp_defs, include_dirs = read_config(args.debug_rootpath, args.config)
 
     print(f'  File = "{args.debug_filepath}"')
     file_obj = FortranFile(args.debug_filepath, pp_suffixes)
@@ -498,6 +455,51 @@ def check_request_params(args, loc_needed=True):
         if args.debug_char is None:
             raise ParameterError("'debug_char' not specified for debug request")
         print(f"  Char = {args.debug_char}\n")
+
+
+def locate_config(root: str, input_config: str) -> str | None:
+    default_conf_files = [input_config, ".fortlsrc", ".fortls.json5", ".fortls"]
+    present_conf_files = [
+        os.path.isfile(os.path.join(root, f)) for f in default_conf_files
+    ]
+    if not any(present_conf_files):
+        return None
+
+    # Load the first config file found
+    for f, present in zip(default_conf_files, present_conf_files):
+        if not present:
+            continue
+        config_path = os.path.join(root, f)
+        return config_path
+
+
+def read_config(root: str | None, input_config: str):
+    pp_suffixes = None
+    pp_defs = {}
+    include_dirs = set()
+    if root is None:
+        return pp_suffixes, pp_defs, include_dirs
+
+    # Check for config files
+    config_path = locate_config(root, input_config)
+    print(f"  Config file = {config_path}")
+    if config_path is None or not os.path.isfile(config_path):
+        return pp_suffixes, pp_defs, include_dirs
+
+    try:
+        with open(config_path, encoding="utf-8") as fhandle:
+            config_dict = json5.load(fhandle)
+            pp_suffixes = config_dict.get("pp_suffixes", None)
+            pp_defs = config_dict.get("pp_defs", {})
+            for path in config_dict.get("include_dirs", set()):
+                include_dirs.update(only_dirs(resolve_globs(path, root)))
+
+            if isinstance(pp_defs, list):
+                pp_defs = {key: "" for key in pp_defs}
+    except ValueError as e:
+        print(f"Error {e} while parsing '{config_path}' settings file")
+
+    return pp_suffixes, pp_defs, include_dirs
 
 
 def debug_generic(args, test_label, lsp_request, format_results, loc_needed=True):
