@@ -11,15 +11,7 @@ from .exceptions import DebugError, ParameterError, ParserError
 from .helper_functions import only_dirs, resolve_globs
 from .jsonrpc import JSONRPC2Connection, ReadWriter, path_from_uri
 from .langserver import LangServer
-from .parsers.internal.parser import FortranFile, ParserError, preprocess_file
-
-
-class DebugError(Exception):
-    """Base class for debug CLI."""
-
-
-class ParameterError(DebugError):
-    """Exception raised for errors in the parameters."""
+from .parsers.internal.parser import FortranFile, preprocess_file
 
 
 def is_debug_mode(args):
