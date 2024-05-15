@@ -414,7 +414,7 @@ def debug_parser(args):
     separator()
 
     ensure_file_accessible(args.debug_filepath)
-    pp_suffixes, pp_defs, include_dirs = read_config(args.debug_rootpath)
+    pp_suffixes, pp_defs, include_dirs = read_config(args.debug_rootpath, args.config)
 
     print(f'  File = "{args.debug_filepath}"')
     file_obj = FortranFile(args.debug_filepath, pp_suffixes)
