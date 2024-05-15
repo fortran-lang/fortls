@@ -7,18 +7,11 @@ import sys
 
 import json5
 
+from .exceptions import DebugError, ParameterError, ParserError
 from .helper_functions import only_dirs, resolve_globs
 from .jsonrpc import JSONRPC2Connection, ReadWriter, path_from_uri
 from .langserver import LangServer
 from .parsers.internal.parser import FortranFile, preprocess_file
-
-
-class DebugError(Exception):
-    """Base class for debug CLI."""
-
-
-class ParameterError(DebugError):
-    """Exception raised for errors in the parameters."""
 
 
 def is_debug_mode(args):
@@ -425,9 +418,12 @@ def debug_parser(args):
 
     print(f'  File = "{args.debug_filepath}"')
     file_obj = FortranFile(args.debug_filepath, pp_suffixes)
-    err_str, _ = file_obj.load_from_disk()
-    if err_str:
-        raise DebugError(f"Reading file failed: {err_str}")
+    try:
+        file_obj.load_from_disk()
+    except ParserError as exc:
+        msg = f"Reading file {args.debug_filepath} failed: {str(exc)}"
+        raise DebugError(msg) from exc
+    print(f'  File = "{args.debug_filepath}"')
     print(f"  Detected format: {'fixed' if file_obj.fixed else 'free'}")
     print("\n" + "=" * 80 + "\nParser Output\n" + "=" * 80 + "\n")
     file_ast = file_obj.parse(debug=True, pp_defs=pp_defs, include_dirs=include_dirs)
