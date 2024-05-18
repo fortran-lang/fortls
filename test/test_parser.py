@@ -48,3 +48,12 @@ def test_end_scopes_semicolon():
     ast = file.parse()
     assert err_str is None
     assert not ast.end_errors
+
+
+def test_weird_parser_bug():
+    file_path = test_dir / "parse" / "mixed" / "preproc_and_normal_syntax.F90"
+    file = FortranFile(str(file_path))
+    err_str, _ = file.load_from_disk()
+    ast = file.parse()
+    assert err_str is None
+    assert not ast.end_errors
