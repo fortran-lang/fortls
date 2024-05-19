@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Fixed
+
+- Fixed bug where parser would crash when trying to retrieve an invalid line no.
+  ([#398](https://github.com/fortran-lang/fortls/issues/398))
+
 ## 3.0.0
 
 ### Added
