@@ -10,6 +10,7 @@
     "docs",
     "rename",
     "parse",
+    "parse/mixed/**",
     "vis"
   ]
 

@@ -1104,6 +1104,9 @@ class FortranFile:
                     elif next_line != "":
                         post_lines[-1] = next_line[:iAmper]
                     next_line = self.get_line(line_ind, pp_content)
+                    if next_line is None:
+                        break
+
                     line_ind += 1
                     # Skip any preprocessor statements when seeking the next line
                     if FRegex.PP_ANY.match(next_line):
