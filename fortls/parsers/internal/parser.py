@@ -1121,10 +1121,7 @@ class FortranFile:
                         continue
                     opt_cont_match = FRegex.FREE_CONT.match(next_line)
                     if opt_cont_match:
-                        next_line = (
-                            " " * opt_cont_match.end(0)
-                            + next_line[opt_cont_match.end(0) :]
-                        )
+                        next_line = next_line[opt_cont_match.end(0) :]
                     post_lines.append(next_line)
                     line_stripped = strip_strings(next_line, maintain_len=True)
                     iAmper = line_stripped.find("&")
