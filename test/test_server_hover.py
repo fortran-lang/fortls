@@ -680,3 +680,17 @@ def test_complicated_kind_spec():
         '```fortran90\nREAL(int(sin(0.5))+8+len("ab))c")-3) :: z\n```',
     ]
     validate_hover(results, ref_results)
+
+
+def test_multiline_lexical_token():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
+    file_path = test_dir / "hover" / "multiline_lexical_tokens.f90"
+    string += hover_req(file_path, 4, 8)
+    string += hover_req(file_path, 8, 16)
+    errcode, results = run_request(string, fortls_args=["-n", "1"])
+    assert errcode == 0
+    ref_results = [
+        "```fortran90\nINTEGER :: i\n```",
+        '```fortran90\nREAL(int(sin(0.5))+8+len("ab))c")-3) :: Z\n```',
+    ]
+    validate_hover(results, ref_results)

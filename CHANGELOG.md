@@ -8,6 +8,8 @@
   ([#398](https://github.com/fortran-lang/fortls/issues/398))
 - Fixed bug with string quotes not being escaped when looking for parenthesis
   ([#250](https://github.com/fortran-lang/fortls/issues/250))
+- Fixed bug with line continuations in lexical tokens
+  ([#235](https://github.com/fortran-lang/fortls/issues/235))
 
 ## 3.0.0
 
