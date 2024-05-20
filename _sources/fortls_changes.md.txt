@@ -151,6 +151,8 @@
   ([#398](https://github.com/fortran-lang/fortls/issues/398))
 - Fixed bug with string quotes not being escaped when looking for parenthesis
   ([#250](https://github.com/fortran-lang/fortls/issues/250))
+- Fixed bug with line continuations in lexical tokens
+  ([#235](https://github.com/fortran-lang/fortls/issues/235))
 - Fixed end of scope errors raised by trailing semicolon in native parser
   ([#265](https://github.com/fortran-lang/fortls/issues/265))
 - Fixed bug where parent scope for includes in AST could be `None`
