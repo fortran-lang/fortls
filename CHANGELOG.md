@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.1.0
+
 ### Fixed
 
 - Fixed bug where parser would crash when trying to retrieve an invalid line no.
