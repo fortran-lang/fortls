@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 3.1.1
+
+### Fixed
+
+- Fixed bug with nested preprocessor blocks erroneously evaluating as active
+  ([#404](https://github.com/fortran-lang/fortls/issues/404))
+
 ## 3.1.0
 
 ### Fixed
