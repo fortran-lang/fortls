@@ -2209,9 +2209,10 @@ def preprocess_file(
                 elif exc_continue:
                     log.debug("%s !!! Conditional EXCLUDED(%d)", line.strip(), i + 1)
             continue
+        stack_is_true = all(scope[0] < 0 for scope in pp_stack)
         # Handle variable/macro definitions files
         match = FRegex.PP_DEF.match(line)
-        if (match is not None) and ((len(pp_stack) == 0) or (pp_stack[-1][0] < 0)):
+        if (match is not None) and stack_is_true:
             output_file.append(line)
             pp_defines.append(i + 1)
             def_name = match.group(2)
@@ -2246,7 +2247,7 @@ def preprocess_file(
             continue
         # Handle include files
         match = FRegex.PP_INCLUDE.match(line)
-        if (match is not None) and ((len(pp_stack) == 0) or (pp_stack[-1][0] < 0)):
+        if (match is not None) and stack_is_true:
             log.debug("%s !!! Include statement(%d)", line.strip(), i + 1)
             include_filename = match.group(1).replace('"', "")
             include_path = None
