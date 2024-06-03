@@ -147,6 +147,8 @@
 
 ## Fixed
 
+- Fixed bug with nested preprocessor blocks erroneously evaluating as active
+  ([#404](https://github.com/fortran-lang/fortls/issues/404))
 - Fixed bug where parser would crash when trying to retrieve an invalid line no.
   ([#398](https://github.com/fortran-lang/fortls/issues/398))
 - Fixed bug with string quotes not being escaped when looking for parenthesis
