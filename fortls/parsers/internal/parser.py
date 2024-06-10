@@ -1368,15 +1368,17 @@ class FortranFile:
 
             # Test for scope end
             if file_ast.END_SCOPE_REGEX is not None:
-                # treat intermediate folding lines in scopes they exist
+                # treat intermediate folding lines in scopes if they exist
                 if (
                     file_ast.END_SCOPE_REGEX == FRegex.END_IF
                     and FRegex.ELSE_IF.match(line_no_comment) is not None
-                ) or (
+                ):
+                    self.update_scope_mlist(file_ast, "#IF", line_no)
+                elif (
                     file_ast.END_SCOPE_REGEX == FRegex.END_SELECT
                     and FRegex.SELECT_CASE.match(line_no_comment) is not None
                 ):
-                    file_ast.scope_list[-1].mlines.append(line_no)
+                    self.update_scope_mlist(file_ast, "#SELECT", line_no)
 
                 match = FRegex.END_WORD.match(line_no_comment)
                 # Handle end statement
@@ -1708,6 +1710,17 @@ class FortranFile:
                 for error in file_ast.parse_errors:
                     log.debug("%s: %s", error["range"], error["message"])
         return file_ast
+
+    def update_scope_mlist(
+        self, file_ast: FortranAST, scope_name_prefix: str, line_no: int
+    ):
+        last_prefix_pos = file_ast.scope_list[-1].FQSN.rfind(scope_name_prefix.lower())
+        concerned_scope_name = file_ast.scope_list[-1].FQSN[last_prefix_pos:]
+        concerned_scope_name = concerned_scope_name.split(":")[0]
+        for scope in file_ast.scope_list:
+            if scope.name.lower() == concerned_scope_name:
+                scope.mlines.append(line_no)
+                return
 
     def parse_imp_dim(self, line: str):
         """Parse the implicit dimension of an array e.g.
