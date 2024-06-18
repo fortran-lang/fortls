@@ -13,6 +13,7 @@
 ![Codecov](https://img.shields.io/codecov/c/github/fortran-lang/fortls?style=flat-square)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
 ![GitHub Repo stars](https://img.shields.io/github/stars/fortran-lang/fortls?color=yellow&style=flat-square)
+[![DOI](https://zenodo.org/badge/412392321.svg?style=flat-square)](https://zenodo.org/badge/latestdoi/412392321)
 
 <!-- [<img alt="https://github.com/sponsors/gnikit" src="https://img.shields.io/static/v1?style=social&label=Sponsor&message=%E2%9D%A4&logo=GitHub&color&link=%3Curl%3E" height="30" />](https://github.com/sponsors/gnikit)
 [<img alt="https://paypal.me/inikit" src="https://img.shields.io/static/v1?style=social&label=Donate&message=%E2%9D%A4&logo=Paypal&color&link=%3Curl%3E" height="30" />](https://paypal.me/inikit) -->
@@ -65,36 +66,10 @@ and [Emacs](https://fortls.fortran-lang.org/editor_integration.html#emacs).
 
 - Signature help and hover does not handle elegantly overloaded functions i.e. interfaces
 
-## `fortls` vs `fortran-language-server`
+## Documentation
 
-This project was originally based on `fortran-language-server` LSP implementation, but the two projects have since diverged.
-
-`fortls` (this project) is now developed independently of the upstream `hansec/fortran-language-server` project and contains numerous new features and bug fixes
-the original `fortran-language-server` does not.
-
-For a complete and detailed list of the differences between the two Language Servers
-see the Documentation section: [Unique fortls features (not in fortran-language-server)](https://fortls.fortran-lang.org/fortls_changes.html)
-
-The name of executable for this project has been chosen to remain `fortls`
-to allow for integration with pre-existing plugins and workflows, but it could
-change in the future.
-
-## Future plans
-
-`fortls` has reached a point where it is feature complete and stable enough to be used in many modern Fortran projects without any issues.
-It does however still have fundamental limitations,
-namely its ability to understand all Fortran syntax and semantics that has been used throughout the 65+ years of the language. **The good news is that we have a plan to address this issue!**
-
-We are excited to announce that we are working on creating a new Fortran Language Server
-based on the actively developed [LFortran](https://lfortran.org/) compiler 🎉.
-The new Language Server will be able to understand all Fortran syntax, be faster,
-and give more accurate autocompletion, hover and diagnostic information. That means we plan on investing any future funding on creating our new language server and ultimately creating a better user experience for everyone.
-
-<!--  Have a look at our roadmap (link) and consider contributing to our efforts (donations and contribution tasks link).  -->
-
-### What about `fortls`?
-
-Not to worry, `fortls` will continue to be here. We will keep `fortls` in maintenance mode with bug fixes and new features from volunteer contributors, but otherwise we will be focusing our efforts into making the new LFortran language server a reality.
+The full documentation for `fortls` can be found at
+[fortls.fortran-lang.org](https://fortls.fortran-lang.org/).
 
 ## Installation
 
@@ -177,17 +152,46 @@ An example for a Configuration file is given below
 | `textDocument/didChange`         | Document synchronisation upon changes to the document  |
 | `textDocument/codeAction`        | **Experimental** Generate code                         |
 
+## Future plans
+
+`fortls` has reached a point where it is feature complete and stable enough to be used in many modern Fortran projects without any issues.
+It does however still have fundamental limitations,
+namely its ability to understand all Fortran syntax and semantics that has been used throughout the 65+ years of the language. **The good news is that we have a plan to address this issue!**
+
+We are excited to announce that we are working on creating a new Fortran Language Server
+based on the actively developed [LFortran](https://lfortran.org/) compiler 🎉.
+The new Language Server will be able to understand all Fortran syntax, be faster,
+and give more accurate autocompletion, hover and diagnostic information. That means we plan on investing any future funding on creating our new language server and ultimately creating a better user experience for everyone.
+
+<!--  Have a look at our roadmap (link) and consider contributing to our efforts (donations and contribution tasks link).  -->
+
+### What about `fortls`?
+
+Not to worry, `fortls` will continue to be here. We will keep `fortls` in active maintenance mode with bug fixes and new features from volunteer contributors, but otherwise we will be focusing our efforts into making the new language server using LFortran's parser a reality.
+
+## `fortls` vs `fortran-language-server`
+
+This project was originally based on `fortran-language-server` LSP implementation, but the two projects have since diverged.
+
+`fortls` (this project) is now developed independently of the upstream `hansec/fortran-language-server` project and contains numerous new features and bug fixes
+the original `fortran-language-server` does not.
+
+For a complete and detailed list of the differences between the two Language Servers
+see the Documentation section: [Unique fortls features (not in fortran-language-server)](https://fortls.fortran-lang.org/fortls_changes.html)
+
+The name of executable for this project has been chosen to remain `fortls`
+to allow for integration with pre-existing plugins and workflows, but it could
+change in the future.
+
 ## Acknowledgements
 
 This project would not have been possible without the original work of [@hansec](https://github.com/hansec/)
 in [`fortran-language-server`](https://github.com/hansec/fortran-language-server)
 
-<!-- ## Support
+## Support
 
-If you want to support this project you can do it through
-
-[![Alt](https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-150px.png)](https://paypal.me/inikit)
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/gnikit) -->
+You can support Fortran-lang as a whole by donating at
+[Fortran-lang - NumFOCUS](https://numfocus.org/donate-for-fortran-lang).
 
 ## Bug reports
 

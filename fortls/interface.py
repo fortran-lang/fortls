@@ -341,6 +341,11 @@ def _debug_commandline_args(parser: argparse.ArgumentParser) -> None:
         help=hide_opt("Test source code parser on specified file"),
     )
     group.add_argument(
+        "--debug_preproc",
+        action="store_true",
+        help=hide_opt("Test source code preprocessor parser on specified file"),
+    )
+    group.add_argument(
         "--debug_hover",
         action="store_true",
         help=hide_opt(

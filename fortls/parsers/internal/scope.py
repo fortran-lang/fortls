@@ -217,7 +217,7 @@ class Scope(FortranObj):
         last_use_line = -1
         for use_stmnt in self.use:
             last_use_line = max(last_use_line, use_stmnt.line_number)
-            if type(use_stmnt) == Import:
+            if type(use_stmnt) is Import:
                 if (self.parent is None) or (
                     self.parent.get_type() != INTERFACE_TYPE_ID
                 ):

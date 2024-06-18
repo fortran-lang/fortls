@@ -9,7 +9,9 @@
     "./diag/",
     "docs",
     "rename",
-    "parse"
+    "parse",
+    "parse/mixed/**",
+    "vis"
   ]
 
 }

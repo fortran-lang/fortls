@@ -260,9 +260,21 @@ def find_paren_match(string: str) -> int:
 
     >>> find_paren_match('a, (b, (c, d)')
     -1
+
+    >>> find_paren_match('nt(sin(0.5))+8+len("ab((c")-3) :: y')
+    29
+
+    >>> find_paren_match("nt(sin(0.5))+8+len('ab))c')-3) :: y")
+    29
     """
     paren_count = 1
+    quote_state = {"'": False, '"': False}
     for i, char in enumerate(string):
+        if char in quote_state:
+            quote_state[char] = not quote_state[char]
+        if any(quote_state.values()):
+            continue
+
         if char == "(":
             paren_count += 1
         elif char == ")":

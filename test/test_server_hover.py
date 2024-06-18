@@ -666,3 +666,31 @@ def test_types():
         "```fortran90\nTYPE, EXTENDS(extends_t) :: a_t\n```",
     ]
     validate_hover(results, ref_results)
+
+
+def test_complicated_kind_spec():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
+    file_path = test_dir / "hover" / "complicated_kind_spec.f90"
+    string += hover_req(file_path, 1, 40)
+    string += hover_req(file_path, 2, 40)
+    errcode, results = run_request(string, fortls_args=["-n", "1"])
+    assert errcode == 0
+    ref_results = [
+        '```fortran90\nREAL(int(sin(0.5))+8+len("ab((c")-3) :: y\n```',
+        '```fortran90\nREAL(int(sin(0.5))+8+len("ab))c")-3) :: z\n```',
+    ]
+    validate_hover(results, ref_results)
+
+
+def test_multiline_lexical_token():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
+    file_path = test_dir / "hover" / "multiline_lexical_tokens.f90"
+    string += hover_req(file_path, 4, 8)
+    string += hover_req(file_path, 8, 16)
+    errcode, results = run_request(string, fortls_args=["-n", "1"])
+    assert errcode == 0
+    ref_results = [
+        "```fortran90\nINTEGER :: i\n```",
+        '```fortran90\nREAL(int(sin(0.5))+8+len("ab))c")-3) :: Z\n```',
+    ]
+    validate_hover(results, ref_results)

@@ -2,6 +2,24 @@
 
 ## Unreleased
 
+## 3.1.1
+
+### Fixed
+
+- Fixed bug with nested preprocessor blocks erroneously evaluating as active
+  ([#404](https://github.com/fortran-lang/fortls/issues/404))
+
+## 3.1.0
+
+### Fixed
+
+- Fixed bug where parser would crash when trying to retrieve an invalid line no.
+  ([#398](https://github.com/fortran-lang/fortls/issues/398))
+- Fixed bug with string quotes not being escaped when looking for parenthesis
+  ([#250](https://github.com/fortran-lang/fortls/issues/250))
+- Fixed bug with line continuations in lexical tokens
+  ([#235](https://github.com/fortran-lang/fortls/issues/235))
+
 ## 3.0.0
 
 ### Added
@@ -35,9 +53,17 @@
 - Changed automatic detection of fixed/free-form of files to ignore
   preprocessor lines.
   ([#302](https://github.com/fortran-lang/fortls/pull/302))
+- Moved project setup from `setup.cfg` to `pyproject.toml`
+  ([#384](https://github.com/fortran-lang/fortls/pull/384))
+- Bumped `setuptools` version to `>=61.0.0`
+  ([#384](https://github.com/fortran-lang/fortls/pull/384))
 
 ### Fixed
 
+- Fixed end of scope errors raised by trailing semicolon in native parser
+  ([#265](https://github.com/fortran-lang/fortls/issues/265))
+- Fixed bug where parent scope for includes in AST could be `None`
+  ([#329](https://github.com/fortran-lang/fortls/issues/329))
 - Fixed preprocessor bug with `if` and `elif` conditionals
   ([#322](https://github.com/fortran-lang/fortls/issues/322))
 - Fixed bug where type fields or methods were not detected if spaces were

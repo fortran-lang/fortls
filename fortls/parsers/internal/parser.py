@@ -18,7 +18,6 @@ from re import Match, Pattern
 from fortls.constants import (
     DO_TYPE_ID,
     INTERFACE_TYPE_ID,
-    MODULE_TYPE_ID,
     SELECT_TYPE_ID,
     SUBMODULE_TYPE_ID,
     FRegex,
@@ -1105,6 +1104,9 @@ class FortranFile:
                     elif next_line != "":
                         post_lines[-1] = next_line[:iAmper]
                     next_line = self.get_line(line_ind, pp_content)
+                    if next_line is None:
+                        break
+
                     line_ind += 1
                     # Skip any preprocessor statements when seeking the next line
                     if FRegex.PP_ANY.match(next_line):
@@ -1119,10 +1121,7 @@ class FortranFile:
                         continue
                     opt_cont_match = FRegex.FREE_CONT.match(next_line)
                     if opt_cont_match:
-                        next_line = (
-                            " " * opt_cont_match.end(0)
-                            + next_line[opt_cont_match.end(0) :]
-                        )
+                        next_line = next_line[opt_cont_match.end(0) :]
                     post_lines.append(next_line)
                     line_stripped = strip_strings(next_line, maintain_len=True)
                     iAmper = line_stripped.find("&")
@@ -1369,17 +1368,17 @@ class FortranFile:
                 multi_lines.extendleft(line_stripped.split(";"))
                 line = multi_lines.pop()
                 line_stripped = line
-
+                line_no_comment = line
             # Test for scope end
-            if file_ast.END_SCOPE_REGEX is not None:
+            if file_ast.end_scope_regex is not None:
                 # treat intermediate folding lines in scopes if they exist
                 if (
-                    file_ast.END_SCOPE_REGEX == FRegex.END_IF
+                    file_ast.end_scope_regex == FRegex.END_IF
                     and FRegex.ELSE_IF.match(line_no_comment) is not None
                 ):
                     self.update_scope_mlist(file_ast, "#IF", line_no)
                 elif (
-                    file_ast.END_SCOPE_REGEX == FRegex.END_SELECT
+                    file_ast.end_scope_regex == FRegex.END_SELECT
                     and FRegex.SELECT_CASE.match(line_no_comment) is not None
                 ):
                     self.update_scope_mlist(file_ast, "#SELECT", line_no)
@@ -1688,10 +1687,10 @@ class FortranFile:
                     msg = "Visibility statement without enclosing scope"
                     file_ast.add_error(msg, Severity.error, line_no, 0)
                 else:
-                    if (len(obj_info.obj_names) == 0) and (obj_info.type == 1):
+                    if len(obj_info.obj_names) == 0 and obj_info.type == 1:  # private
                         file_ast.current_scope.set_default_vis(-1)
                     else:
-                        if obj_info.type == MODULE_TYPE_ID:
+                        if obj_info.type == 1:  # private
                             for word in obj_info.obj_names:
                                 file_ast.add_private(word)
                         else:
@@ -1811,7 +1810,7 @@ class FortranFile:
             ):
                 file_ast.end_errors.append([ln, file_ast.current_scope.sline])
         else:
-            scope_match = file_ast.END_SCOPE_REGEX.match(line[match.start(1) :])
+            scope_match = file_ast.end_scope_regex.match(line[match.start(1) :])
             if scope_match is not None:
                 end_scope_word = scope_match.group(0)
         if end_scope_word is not None:
@@ -2254,9 +2253,10 @@ def preprocess_file(
                 elif exc_continue:
                     log.debug("%s !!! Conditional EXCLUDED(%d)", line.strip(), i + 1)
             continue
+        stack_is_true = all(scope[0] < 0 for scope in pp_stack)
         # Handle variable/macro definitions files
         match = FRegex.PP_DEF.match(line)
-        if (match is not None) and ((len(pp_stack) == 0) or (pp_stack[-1][0] < 0)):
+        if (match is not None) and stack_is_true:
             output_file.append(line)
             pp_defines.append(i + 1)
             def_name = match.group(2)
@@ -2291,7 +2291,7 @@ def preprocess_file(
             continue
         # Handle include files
         match = FRegex.PP_INCLUDE.match(line)
-        if (match is not None) and ((len(pp_stack) == 0) or (pp_stack[-1][0] < 0)):
+        if (match is not None) and stack_is_true:
             log.debug("%s !!! Include statement(%d)", line.strip(), i + 1)
             include_filename = match.group(1).replace('"', "")
             include_path = None

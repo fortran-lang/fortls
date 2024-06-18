@@ -6,10 +6,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: sphinx-toolbox/sphinx-action@master
+      - uses: actions/setup-python@v5
         with:
-          pre-build-command: "pip install .[docs]"
-          docs-folder: "docs/"
+          python-version: "3.11"
+      - name: Build docs
+        run: |
+          pip install -e .[dev,docs]
+          make -C docs html
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         if: github.ref == 'refs/heads/master'

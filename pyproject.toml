@@ -1,10 +1,85 @@
 [build-system]
-requires = [
-    "setuptools >= 45",
-    "wheel",
-    "setuptools_scm[toml] >= 7.0",
-]
+requires = ["setuptools >= 61", "wheel", "setuptools_scm[toml] >= 7.0"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "fortls"
+description = "fortls - Fortran Language Server"
+readme = "README.md"
+authors = [{ name = "Giannis Nikiteas", email = "giannis.nikiteas@gmail.com" }]
+license = { text = "MIT" }
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Fortran",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Operating System :: Unix",
+    "Operating System :: MacOS",
+]
+keywords = [
+    "fortran",
+    "language server",
+    "language server protocol",
+    "lsp",
+    "fortls",
+]
+dynamic = ["version"]
+requires-python = ">=3.7"
+dependencies = [
+    "json5",
+    "packaging",
+    "importlib-metadata; python_version < '3.8'",
+    "typing-extensions; python_version < '3.8'",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest >= 7.2.0",
+    "pytest-cov >= 4.0.0",
+    "pytest-xdist >= 3.0.2",
+    "black",
+    "isort",
+    "pre-commit",
+    "pydantic",
+]
+docs = [
+    "sphinx >= 4.0.0",
+    "sphinx-argparse",
+    "sphinx-autodoc-typehints",
+    "sphinx_design",
+    "sphinx-copybutton",
+    "furo",
+    "myst-parser",
+    "sphinx-sitemap",
+]
+
+[project.urls]
+homepage = "https://fortls.fortran-lang.org"
+Documentation = "https://fortls.fortran-lang.org"
+Changes = "https://github.com/fortran-lang/fortls/blob/master/CHANGELOG.md"
+Tracker = "https://github.com/fortran-lang/fortls/issues"
+"Source Code" = "https://github.com/fortran-lang/fortls"
+
+[project.scripts]
+fortls = "fortls.__init__:main"
+
+[tool.setuptools.packages.find]
+include = ["fortls*"]
+
+[tool.setuptools.package-data]
+fortls = ["parsers/internal/*.json"]
 
 [tool.setuptools_scm]
 write_to = "fortls/_version.py"
