@@ -1350,6 +1350,10 @@ class FortranFile:
                 # Need to keep the line number for registering start of Scopes
                 line_no_end += len(post_lines)
                 line = "".join([line] + post_lines)
+                # Add multilines to folding blocks
+                if line_no != line_no_end:
+                    file_ast.folding_start.append(line_no)
+                    file_ast.folding_end.append(line_no_end)
             line, line_label = strip_line_label(line)
             line_stripped = strip_strings(line, maintain_len=True)
             # Find trailing comments

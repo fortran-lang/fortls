@@ -23,6 +23,11 @@ program test_if_folding
         print*, i-j
     end if
 
+    if (i==0) &
+    i = 1;    &
+    j = 2
+
+
     if (j == i) then
       ! testing some
       ! comment lines
