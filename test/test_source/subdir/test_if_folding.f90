@@ -13,8 +13,14 @@ program test_if_folding
         j = j + 1
             if (mod(j,100) == 0) then
                 print*, "j = ", j
+            else if (mod(j,100) < 50) then
+                print*, "j = ", j
+            else
+                print*, "j = ", j
             end if
         end if
+    else
+        print*, i-j
     end if
 
     if (j == i) then

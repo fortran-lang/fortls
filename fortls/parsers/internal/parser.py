@@ -1714,13 +1714,16 @@ class FortranFile:
     def update_scope_mlist(
         self, file_ast: FortranAST, scope_name_prefix: str, line_no: int
     ):
-        last_prefix_pos = file_ast.scope_list[-1].FQSN.rfind(scope_name_prefix.lower())
-        concerned_scope_name = file_ast.scope_list[-1].FQSN[last_prefix_pos:]
-        concerned_scope_name = concerned_scope_name.split(":")[0]
-        for scope in file_ast.scope_list:
-            if scope.name.lower() == concerned_scope_name:
+        """Find the last unclosed scope (eline == sline) containing the
+        scope_name_prefix and add update its mlines"""
+
+        i = 1
+        while True:
+            scope = file_ast.scope_list[-i]
+            if (scope_name_prefix in scope.name) and (scope.eline == scope.sline):
                 scope.mlines.append(line_no)
                 return
+            i += 1
 
     def parse_imp_dim(self, line: str):
         """Parse the implicit dimension of an array e.g.
