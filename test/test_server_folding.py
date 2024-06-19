@@ -39,4 +39,19 @@ def test_if_folding():
     ]
     validate_folding(results[1], ref)
 
-test_if_folding()
+
+def test_mline_sub_folding():
+    """Test the ranges for several blocks are correct"""
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    file_path = test_dir / "subdir" / "test_mline_sub_folding.f90"
+    string += folding_req(file_path)
+    errcode, results = run_request(string)
+    assert errcode == 0
+    ref = [
+        {"startLine": 0, "endLine": 3},
+        {"startLine": 4, "endLine": 14},
+        {"startLine": 0, "endLine": 4},
+        {"startLine": 6, "endLine": 9},
+        {"startLine": 12, "endLine": 13},
+    ]
+    validate_folding(results[1], ref)

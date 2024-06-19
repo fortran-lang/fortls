@@ -1518,6 +1518,8 @@ class FortranFile:
                     keywords=keywords,
                 )
                 file_ast.add_scope(new_sub, FRegex.END_SUB)
+                if line_no != line_no_end:
+                    file_ast.scope_list[-1].mlines.append(line_no_end)
                 log.debug("%s !!! SUBROUTINE - Ln:%d", line, line_no)
 
             elif obj_type == "fun":
