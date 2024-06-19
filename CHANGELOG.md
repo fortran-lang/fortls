@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Fixed
+
+- Fixed incorrect document symbol for `SUBMODULE` statements
+  ([#413](https://github.com/fortran-lang/fortls/issues/413))
+
 ## 3.1.1
 
 ### Fixed
