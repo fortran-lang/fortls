@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.1.2
+
 ### Fixed
 
 - Fixed incorrect document symbol for `SUBMODULE` statements
