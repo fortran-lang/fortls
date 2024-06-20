@@ -281,7 +281,7 @@ class LangServer:
 
     def serve_document_symbols(self, request: dict):
         def map_types(type, in_class: bool = False):
-            if type == 1:
+            if type in (1, 8):
                 return 2
             elif type in (2, 3):
                 if in_class:
