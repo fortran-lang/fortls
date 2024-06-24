@@ -3,6 +3,7 @@
   "use_signature_help": true,
   "variable_hover": true,
   "hover_signature": true,
+  "folding_range": true,
   "enable_code_actions": true,
   "pp_suffixes": [".h", ".F90"],
   "incl_suffixes": [".h"],

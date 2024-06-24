@@ -181,6 +181,7 @@ def test_workspace_symbols():
             ["test_free", 2, 0],
             ["test_gen_type", 5, 1],
             ["test_generic", 2, 0],
+            ["test_if_folding", 2, 0],
             ["test_inherit", 2, 0],
             ["test_int", 2, 0],
             ["test_mod", 2, 0],

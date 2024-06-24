@@ -135,6 +135,12 @@
       "title": "Hover Language",
       "type": "string"
     },
+    "folding_range": {
+      "title": "Folding Range",
+      "description": "Fold editor based on language keywords",
+      "default": false,
+      "type": "boolean"
+    },
     "max_line_length": {
       "default": -1,
       "description": "Maximum line length (default: -1)",
