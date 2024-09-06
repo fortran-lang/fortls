@@ -6,14 +6,14 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Unique fortls features (not in fortran-language-server)" href="fortls_changes.html" /><link rel="prev" title="Editor Integration" href="editor_integration.html" />
         <link rel="canonical" href="https://fortls.fortran-lang.org/options.html" />
 
-    <link rel="shortcut icon" href="_static/icon.svg"/><!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
+    <link rel="shortcut icon" href="_static/icon.svg"/><!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
         <title>Configuration options - fortls</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=387cc868" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
     
     
 
@@ -92,19 +92,6 @@
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
-    </svg>
-  </symbol>
   <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
     <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -145,7 +132,7 @@
       <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
       <path d="M13.5 6.5l4 4" />
       <path d="M20 21l2 -2l-2 -2" />
-      <path d="M17 17l-2 2l2 2" /
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
   <symbol id="svg-eye" viewBox="0 0 24 24">
@@ -307,14 +294,14 @@ are identical and interchangeable.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">fortls</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="p">[</span><span class="n">debug</span> <span class="n">options</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="named-arguments">
-<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">¶</a></h3>
+<section id="fortls-cli-named-arguments">
+<h3>Named Arguments<a class="headerlink" href="#fortls-cli-named-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-v, --version</kbd></dt>
 <dd><p>Print server version number and exit</p>
 </dd>
 <dt><kbd>-c, --config</kbd></dt>
-<dd><p>Configuration options file (default file name: “.fortlsrc”, other default supported names: .fortls.json, .fortls)</p>
+<dd><p>Configuration options file (default file name: ‘.fortlsrc’, other default supported names: .fortls.json, .fortls)</p>
 </dd>
 <dt><kbd>-n, --nthreads</kbd></dt>
 <dd><p>Number of threads to use during workspace initialization (default: 4)</p>
@@ -342,8 +329,8 @@ are identical and interchangeable.</p>
 </dd>
 </dl>
 </section>
-<section id="sources-file-parsing-options">
-<h3>Sources file parsing options<a class="headerlink" href="#sources-file-parsing-options" title="Link to this heading">¶</a></h3>
+<section id="fortls-cli-sources-file-parsing-options">
+<h3>Sources file parsing options<a class="headerlink" href="#fortls-cli-sources-file-parsing-options" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>--source_dirs</kbd></dt>
 <dd><p>Folders containing source files (default: set())</p>
@@ -359,8 +346,8 @@ are identical and interchangeable.</p>
 </dd>
 </dl>
 </section>
-<section id="autocomplete-options">
-<h3>Autocomplete options<a class="headerlink" href="#autocomplete-options" title="Link to this heading">¶</a></h3>
+<section id="fortls-cli-autocomplete-options">
+<h3>Autocomplete options<a class="headerlink" href="#fortls-cli-autocomplete-options" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>--autocomplete_no_prefix</kbd></dt>
 <dd><p>Do not filter autocomplete results by variable prefix</p>
@@ -379,8 +366,8 @@ are identical and interchangeable.</p>
 </dd>
 </dl>
 </section>
-<section id="hover-options">
-<h3>Hover options<a class="headerlink" href="#hover-options" title="Link to this heading">¶</a></h3>
+<section id="fortls-cli-hover-options">
+<h3>Hover options<a class="headerlink" href="#fortls-cli-hover-options" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>--variable_hover</kbd></dt>
 <dd><p>DEPRECATED: This option is always on. Show hover information for variables</p>
@@ -389,12 +376,12 @@ are identical and interchangeable.</p>
 <dd><p>Show signature information in hover for arguments</p>
 </dd>
 <dt><kbd>--hover_language</kbd></dt>
-<dd><p>Language used for responses to hover requests a VSCode language id (default: “fortran90”)</p>
+<dd><p>Language used for responses to hover requests a VSCode language id (default: ‘fortran90’)</p>
 </dd>
 </dl>
 </section>
-<section id="diagnostic-options-(error-swigles)">
-<h3>Diagnostic options (error swigles)<a class="headerlink" href="#diagnostic-options-(error-swigles)" title="Link to this heading">¶</a></h3>
+<section id="fortls-cli-diagnostic-options-(error-swigles)">
+<h3>Diagnostic options (error swigles)<a class="headerlink" href="#fortls-cli-diagnostic-options-(error-swigles)" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>--max_line_length</kbd></dt>
 <dd><p>Maximum line length (default: -1)</p>
@@ -407,8 +394,8 @@ are identical and interchangeable.</p>
 </dd>
 </dl>
 </section>
-<section id="preprocessor-options">
-<h3>Preprocessor options<a class="headerlink" href="#preprocessor-options" title="Link to this heading">¶</a></h3>
+<section id="fortls-cli-preprocessor-options">
+<h3>Preprocessor options<a class="headerlink" href="#fortls-cli-preprocessor-options" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>--pp_suffixes</kbd></dt>
 <dd><p>File extensions to be parsed ONLY for preprocessor commands (default: all uppercase source file suffixes)</p>
@@ -421,16 +408,16 @@ are identical and interchangeable.</p>
 </dd>
 </dl>
 </section>
-<section id="symbols-options">
-<h3>Symbols options<a class="headerlink" href="#symbols-options" title="Link to this heading">¶</a></h3>
+<section id="fortls-cli-symbols-options">
+<h3>Symbols options<a class="headerlink" href="#fortls-cli-symbols-options" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>--symbol_skip_mem</kbd></dt>
 <dd><p>Do not include type members in document symbol results</p>
 </dd>
 </dl>
 </section>
-<section id="codeactions-options-[limited]">
-<h3>CodeActions options [limited]<a class="headerlink" href="#codeactions-options-[limited]" title="Link to this heading">¶</a></h3>
+<section id="fortls-cli-codeactions-options-[limited]">
+<h3>CodeActions options [limited]<a class="headerlink" href="#fortls-cli-codeactions-options-[limited]" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>--enable_code_actions</kbd></dt>
 <dd><p>Enable experimental code actions (default: false)</p>
@@ -702,14 +689,14 @@ files are external to the project, their locations can be specific via
             <ul>
 <li><a class="reference internal" href="#">Configuration options</a><ul>
 <li><a class="reference internal" href="#configuration-using-the-command-line">Configuration using the command line</a><ul>
-<li><a class="reference internal" href="#named-arguments">Named Arguments</a></li>
-<li><a class="reference internal" href="#sources-file-parsing-options">Sources file parsing options</a></li>
-<li><a class="reference internal" href="#autocomplete-options">Autocomplete options</a></li>
-<li><a class="reference internal" href="#hover-options">Hover options</a></li>
-<li><a class="reference internal" href="#diagnostic-options-(error-swigles)">Diagnostic options (error swigles)</a></li>
-<li><a class="reference internal" href="#preprocessor-options">Preprocessor options</a></li>
-<li><a class="reference internal" href="#symbols-options">Symbols options</a></li>
-<li><a class="reference internal" href="#codeactions-options-[limited]">CodeActions options [limited]</a></li>
+<li><a class="reference internal" href="#fortls-cli-named-arguments">Named Arguments</a></li>
+<li><a class="reference internal" href="#fortls-cli-sources-file-parsing-options">Sources file parsing options</a></li>
+<li><a class="reference internal" href="#fortls-cli-autocomplete-options">Autocomplete options</a></li>
+<li><a class="reference internal" href="#fortls-cli-hover-options">Hover options</a></li>
+<li><a class="reference internal" href="#fortls-cli-diagnostic-options-(error-swigles)">Diagnostic options (error swigles)</a></li>
+<li><a class="reference internal" href="#fortls-cli-preprocessor-options">Preprocessor options</a></li>
+<li><a class="reference internal" href="#fortls-cli-symbols-options">Symbols options</a></li>
+<li><a class="reference internal" href="#fortls-cli-codeactions-options-[limited]">CodeActions options [limited]</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#configuration-using-a-file">Configuration using a file</a><ul>
@@ -742,10 +729,10 @@ files are external to the project, their locations can be specific via
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=94a20be4"></script>
+</div><script src="_static/documentation_options.js?v=8bac7cf2"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="_static/scripts/furo.js?v=4e2eecee"></script>
+    <script src="_static/scripts/furo.js?v=5fa4622c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
     <script src="_static/design-tabs.js?v=f930bc37"></script>
