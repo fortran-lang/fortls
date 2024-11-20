@@ -36,7 +36,7 @@ jobs:
         run: pytest --doctest-modules -n auto
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5.0.0
+        uses: codecov/codecov-action@v5.0.4
         with:
           fail_ci_if_error: true
           verbose: true
