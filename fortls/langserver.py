@@ -1489,7 +1489,10 @@ class LangServer:
         pool.close()
         pool.join()
         for path, result in results.items():
-            result_obj = result.get()
+            try:
+                result_obj = result.get()
+            except:
+                result_obj = traceback.format_exc()
             if isinstance(result_obj, str):
                 self.post_message(
                     f"Initialization failed for file {path}: {result_obj}"
