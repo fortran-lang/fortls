@@ -136,9 +136,9 @@
       "type": "string"
     },
     "folding_range": {
-      "title": "Folding Range",
-      "description": "Fold editor based on language keywords",
       "default": false,
+      "description": "Fold editor based on language keywords",
+      "title": "Folding Range",
       "type": "boolean"
     },
     "max_line_length": {
