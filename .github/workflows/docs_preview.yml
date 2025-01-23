@@ -1,6 +1,7 @@
 name: Docs Preview
 
 permissions:
+  contents: write
   pull-requests: write
 
 on:
@@ -36,3 +37,11 @@ jobs:
           source-dir: docs/_build/html
           preview-branch: gh-pages
           custom-url: fortls.fortran-lang.org
+      - name: Push Changes
+        env:
+          GH_TOKEN: ${{ bot_token.GH_TOKEN }}
+        run: |
+          git remote set-url origin https://x-access-token:${{ bot_token.GH_TOKEN }}@github.com/${{ github.repository }}.git
+          git add .
+          git commit -m "Deploy preview for PR ${{ github.event.number }} 🛫"
+          git push origin HEAD:gh-pages
