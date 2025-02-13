@@ -234,7 +234,7 @@ class LangServer:
         if self.enable_code_actions:
             server_capabilities["codeActionProvider"] = True
         if self.notify_init:
-            self.post_message("fortls initialization complete", Severity.info)
+            self.post_message("FoRtLs initialization complete", Severity.info)
         return {"capabilities": server_capabilities}
 
     def serve_workspace_symbol(self, request):
