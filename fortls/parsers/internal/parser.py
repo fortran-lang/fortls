@@ -1305,6 +1305,20 @@ class FortranFile:
                 line = multi_lines.pop()
                 get_full = False
 
+            # Add comment blocks to folding patterns
+            if FRegex.FREE_COMMENT.match(line) is not None:
+                if file_ast.comment_block_start == 0:
+                    file_ast.comment_block_start = line_no
+                else:
+                    file_ast.comment_block_end = line_no
+            elif file_ast.comment_block_start != 0:
+                # Only fold consecutive comment lines
+                if file_ast.comment_block_end > file_ast.comment_block_start + 1:
+                    file_ast.folding_start.append(file_ast.comment_block_start)
+                    file_ast.folding_end.append(line_no - 1)
+                    file_ast.comment_block_end = 0
+                file_ast.comment_block_start = 0
+
             if line == "":
                 continue  # Skip empty lines
 
@@ -1335,6 +1349,10 @@ class FortranFile:
                 # Need to keep the line number for registering start of Scopes
                 line_no_end += len(post_lines)
                 line = "".join([line] + post_lines)
+                # Add multilines to folding blocks
+                if line_no != line_no_end:
+                    file_ast.folding_start.append(line_no)
+                    file_ast.folding_end.append(line_no_end)
             line, line_label = strip_line_label(line)
             line_stripped = strip_strings(line, maintain_len=True)
             # Find trailing comments
@@ -1353,6 +1371,22 @@ class FortranFile:
                 line_no_comment = line
             # Test for scope end
             if file_ast.end_scope_regex is not None:
+                # treat intermediate folding lines in scopes if they exist
+                if (
+                    file_ast.end_scope_regex == FRegex.END_IF
+                    and FRegex.ELSE_IF.match(line_no_comment) is not None
+                ):
+                    self.update_scope_mlist(file_ast, "#IF", line_no)
+                elif (
+                    file_ast.end_scope_regex == FRegex.END_SELECT
+                    and (
+                        FRegex.SELECT_CASE.match(line_no_comment)
+                        or FRegex.CASE_DEFAULT.match(line_no_comment)
+                    )
+                    is not None
+                ):
+                    self.update_scope_mlist(file_ast, "#SELECT", line_no)
+
                 match = FRegex.END_WORD.match(line_no_comment)
                 # Handle end statement
                 if self.parse_end_scope_word(line_no_comment, line_no, file_ast, match):
@@ -1488,6 +1522,8 @@ class FortranFile:
                     keywords=keywords,
                 )
                 file_ast.add_scope(new_sub, FRegex.END_SUB)
+                if line_no != line_no_end:
+                    file_ast.scope_list[-1].mlines.append(line_no_end)
                 log.debug("%s !!! SUBROUTINE - Ln:%d", line, line_no)
 
             elif obj_type == "fun":
@@ -1683,6 +1719,20 @@ class FortranFile:
                 for error in file_ast.parse_errors:
                     log.debug("%s: %s", error["range"], error["message"])
         return file_ast
+
+    def update_scope_mlist(
+        self, file_ast: FortranAST, scope_name_prefix: str, line_no: int
+    ):
+        """Find the last unclosed scope (eline == sline) containing the
+        scope_name_prefix and add update its nb of intermediate lines (mlines)"""
+
+        i = 1
+        while True:
+            scope = file_ast.scope_list[-i]
+            if (scope_name_prefix in scope.name) and (scope.eline == scope.sline):
+                scope.mlines.append(line_no)
+                return
+            i += 1
 
     def parse_imp_dim(self, line: str):
         """Parse the implicit dimension of an array e.g.

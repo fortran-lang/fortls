@@ -151,6 +151,7 @@ class LangServer:
             "textDocument/didClose": self.serve_onClose,
             "textDocument/didChange": self.serve_onChange,
             "textDocument/codeAction": self.serve_codeActions,
+            "textDocument/foldingRange": self.serve_folding_range,
             "initialized": noop,
             "workspace/didChangeWatchedFiles": noop,
             "workspace/didChangeConfiguration": noop,
@@ -226,6 +227,7 @@ class LangServer:
             "renameProvider": True,
             "workspaceSymbolProvider": True,
             "textDocumentSync": self.sync_type,
+            "foldingRangeProvider": True,
         }
         if self.use_signature_help:
             server_capabilities["signatureHelpProvider"] = {
@@ -1250,6 +1252,56 @@ class LangServer:
                 action["diagnostics"] = new_diags
         return action_list
 
+    def serve_folding_range(self, request: dict):
+        # Get parameters from request
+        params: dict = request["params"]
+        uri: str = params["textDocument"]["uri"]
+        path = path_from_uri(uri)
+        # Find object
+        file_obj = self.workspace.get(path)
+        if file_obj is None:
+            return None
+        if file_obj.ast is None:
+            return None
+        else:
+            folding_start = file_obj.ast.folding_start
+            folding_end = file_obj.ast.folding_end
+        if (
+            folding_start is None
+            or folding_end is None
+            or len(folding_start) != len(folding_end)
+        ):
+            return None
+        # Construct folding_rage list:
+        folding_ranges = []
+        # first treat scope objects ...
+        for scope in file_obj.ast.scope_list:
+            n_mlines = len(scope.mlines)
+            # ...with intermediate folding lines (if, select case) ...
+            if n_mlines > 0:
+                self.add_range(folding_ranges, scope.sline - 1, scope.mlines[0] - 2)
+                for i in range(1, n_mlines):
+                    self.add_range(
+                        folding_ranges, scope.mlines[i - 1] - 1, scope.mlines[i] - 2
+                    )
+                self.add_range(folding_ranges, scope.mlines[-1] - 1, scope.eline - 2)
+            # ...and without, ...
+            else:
+                self.add_range(folding_ranges, scope.sline - 1, scope.eline - 2)
+        # ...and finally treat comment blocks
+        folds = len(folding_start)
+        for i in range(0, folds):
+            self.add_range(folding_ranges, folding_start[i] - 1, folding_end[i] - 1)
+
+        return folding_ranges
+
+    def add_range(self, folding_ranges: list, start: int, end: int):
+        folding_range = {
+            "startLine": start,
+            "endLine": end,
+        }
+        folding_ranges.append(folding_range)
+
     def send_diagnostics(self, uri: str):
         diag_results, diag_exp = self.get_diagnostics(uri)
         if diag_results is not None:
@@ -1620,6 +1672,9 @@ class LangServer:
         # Hover options --------------------------------------------------------
         self.hover_signature = config_dict.get("hover_signature", self.hover_signature)
         self.hover_language = config_dict.get("hover_language", self.hover_language)
+
+        # Folding range --------------------------------------------------------
+        self.folding_range = config_dict.get("folding_range", self.folding_range)
 
         # Diagnostic options ---------------------------------------------------
         self.max_line_length = config_dict.get("max_line_length", self.max_line_length)
