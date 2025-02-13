@@ -1381,7 +1381,7 @@ class FortranFile:
                     file_ast.end_scope_regex == FRegex.END_SELECT
                     and (
                         FRegex.SELECT_CASE.match(line_no_comment)
-                        or FRegex.SELECT_DEFAULT.match(line_no_comment)
+                        or FRegex.CASE_DEFAULT.match(line_no_comment)
                     )
                     is not None
                 ):

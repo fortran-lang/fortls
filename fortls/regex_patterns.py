@@ -148,6 +148,7 @@ class FortranRegularExpressions:
     )
     ELSE_IF: Pattern = compile(r"(^|.*\s)(ELSE$|ELSE(\s)|ELSEIF(\s*\())", I)
     SELECT_CASE: Pattern = compile(r"((^|\s*\s)(CASE)(\s*\())", I)
+    CASE_DEFAULT: Pattern = compile(r"[ ]*CASE[ ]+DEFAULT", I)
     # Object regex patterns
     CLASS_VAR: Pattern = compile(r"(TYPE|CLASS)[ ]*\(", I)
     DEF_KIND: Pattern = compile(r"(\w*)[ ]*\((?:KIND|LEN)?[ =]*(\w*)", I)
