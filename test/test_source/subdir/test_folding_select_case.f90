@@ -1,3 +1,7 @@
+program select_case
+
+integer :: to_test, six
+
 select case (to_test)
 case (1)
     six = 6*to_test
@@ -8,3 +12,5 @@ case (3)
 case default
     six = 6
 end select
+
+end program select_case

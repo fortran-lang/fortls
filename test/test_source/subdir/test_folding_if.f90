@@ -1,12 +1,13 @@
-program test_if_folding
+program if
 
+!test comment folding
     ! adding some comment lines
     ! to check is comment folding
     ! works
     ! as expected
 
-        implicit none
-        integer   :: i, j
+implicit none
+integer   :: i, j
 
         if (i > 0 .and. j > 0) then
             if (i > j) then
@@ -41,4 +42,4 @@ program test_if_folding
         print*, "something else"
         end if
 
-    end program test_if_folding
+    end program if
