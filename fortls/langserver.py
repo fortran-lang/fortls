@@ -1272,9 +1272,9 @@ class LangServer:
             or len(folding_start) != len(folding_end)
         ):
             return None
-        # Construct folding_rage list
+        # Construct folding_rage list:
         folding_ranges = []
-        # First treat scope objects ...
+        # first treat scope objects ...
         for scope in file_obj.ast.scope_list:
             n_mlines = len(scope.mlines)
             # ...with intermediate folding lines (if, select case) ...
