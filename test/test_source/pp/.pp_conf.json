@@ -4,6 +4,7 @@
   "variable_hover": true,
   "hover_signature": true,
   "enable_code_actions": true,
+  "folding_range": true,
   "pp_suffixes": [".h", ".F90"],
   "incl_suffixes": [".h"],
   "include_dirs": ["include"],

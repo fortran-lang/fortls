@@ -38,6 +38,7 @@ class Scope(FortranObj):
         self.file_ast: FortranAST = file_ast
         self.sline: int = line_number
         self.eline: int = line_number
+        self.mlines: list = []
         self.name: str = name
         self.children: list[T[Scope]] = []
         self.members: list = []

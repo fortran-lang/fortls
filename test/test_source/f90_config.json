@@ -20,6 +20,7 @@
   "variable_hover": true,
   "hover_signature": true,
   "hover_language": "FortranFreeForm",
+  "folding_range": true,
 
   "max_line_length": 80,
   "max_comment_line_length": 80,
