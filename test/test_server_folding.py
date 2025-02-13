@@ -22,7 +22,6 @@ def test_folding_if():
     string += folding_req(file_path)
     errcode, results = run_request(string)
     assert errcode == 0
-    print(results[1])
     ref = [
         {"startLine": 0, "endLine": 43},
         {"startLine": 11, "endLine": 21},

@@ -178,9 +178,6 @@ def test_workspace_symbols():
             ["test", 6, 7],
             ["test_abstract", 2, 0],
             ["test_associate_block", 2, 0],
-            ["test_folding_if", 2, 0],
-            ["test_folding_select_case", 2, 0],
-            ["test_folding_subroutine", 2, 0],
             ["test_free", 2, 0],
             ["test_gen_type", 5, 1],
             ["test_generic", 2, 0],
@@ -200,6 +197,7 @@ def test_workspace_symbols():
             ["test_str2", 13, 5],
             ["test_sub", 6, 8],
             ["test_vis_mod", 2, 0],
+            ["to_test", 13, 2],
         )
         assert len(result_array) == len(objs)
         for i, obj in enumerate(objs):
