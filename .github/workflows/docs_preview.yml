@@ -19,16 +19,13 @@ on:
 concurrency: preview-${{github.ref}}
 
 jobs:
-  job-name:
-    permissions:
-      contents: write
   deploy-preview:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.11"
       - name: Build docs
         run: |
           pip install -e .[dev,docs]
@@ -39,14 +36,3 @@ jobs:
           source-dir: docs/_build/html
           preview-branch: gh-pages
           custom-url: fortls.fortran-lang.org
-      - name: Setup Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-      - name: Build and Deploy
-        run: |
-          # Commands to build and deploy documentation
-          git checkout -b gh-pages
-          git add -A
-          git commit -m "Deploy preview for PR ${GITHUB_REF##*/} 🛫"
-          git push --force origin gh-pages
