@@ -1274,10 +1274,10 @@ class LangServer:
             return None
         # Construct folding_rage list
         folding_ranges = []
-        # First treating scope objects...
+        # First treat scope objects ...
         for scope in file_obj.ast.scope_list:
             n_mlines = len(scope.mlines)
-            # ...with intermediate folding lines (if, select)...
+            # ...with intermediate folding lines (if, select case) ...
             if n_mlines > 0:
                 self.add_range(folding_ranges, scope.sline - 1, scope.mlines[0] - 2)
                 for i in range(1, n_mlines):
@@ -1285,10 +1285,10 @@ class LangServer:
                         folding_ranges, scope.mlines[i - 1] - 1, scope.mlines[i] - 2
                     )
                 self.add_range(folding_ranges, scope.mlines[-1] - 1, scope.eline - 2)
-            # ...and without
+            # ...and without, ...
             else:
                 self.add_range(folding_ranges, scope.sline - 1, scope.eline - 2)
-        # Then treat comment blocks
+        # ...and finally treat comment blocks
         folds = len(folding_start)
         for i in range(0, folds):
             self.add_range(folding_ranges, folding_start[i] - 1, folding_end[i] - 1)
