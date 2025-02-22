@@ -840,6 +840,11 @@ def find_external(
     return False
 
 
+def splitlines(text: str) -> list[str]:
+    """Split text into lines by \r\n, \n, or \r"""
+    return re.split(r"\n|\r\n?", text)
+
+
 class FortranFile:
     def __init__(self, path: str = None, pp_suffixes: list = None):
         self.path: str = path
@@ -900,7 +905,7 @@ class FortranFile:
                 return None, False
 
             self.hash = hash
-            self.contents_split = contents.splitlines()
+            self.contents_split = splitlines(contents)
             self.fixed = detect_fixed_format(self.contents_split)
             self.contents_pp = self.contents_split
             self.nLines = len(self.contents_split)
@@ -956,7 +961,7 @@ class FortranFile:
         if len(text) == 0:
             text_split = [""]
         else:
-            text_split = text.splitlines()
+            text_split = splitlines(text)
             # Check for ending newline
             if (text[-1] == "\n") or (text[-1] == "\r"):
                 text_split.append("")
