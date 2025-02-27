@@ -266,10 +266,10 @@ def get_intrinsic_keywords(statements, keywords, context=-1):
 
 def update_m_intrinsics():
     try:
-        files = glob.glob("M_intrinsics/md/*.md")
+        files = glob.glob("M_intrinsics/md3/*.md")
         markdown_intrinsics = {}
         for f in sorted(files):
-            key = f.replace("M_intrinsics/md/", "")
+            key = f.replace("M_intrinsics/md3/", "")
             key = key.replace(".md", "").upper()  # remove md extension
             val = Path(f).read_text()
             # remove manpage tag
@@ -284,7 +284,3 @@ def update_m_intrinsics():
             f.write("\n")  # add newline at end of file
     except Exception as e:
         print(e)
-
-
-if __name__ == "__main__":
-    update_m_intrinsics()
