@@ -1137,7 +1137,7 @@ class FortranFile:
     def strip_comment(self, line: str) -> str:
         """Strip comment from line"""
         if self.fixed:
-            if FRegex.FIXED_COMMENT.match(line) and FRegex.FIXED_OPENMP.match(line):
+            if FRegex.FIXED_COMMENT.match(line) and not FRegex.FIXED_OPENMP.match(line):
                 return ""
         else:
             if FRegex.FREE_OPENMP.match(line) is None:

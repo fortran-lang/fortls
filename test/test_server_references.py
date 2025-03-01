@@ -51,3 +51,12 @@ def test_references():
             [free_path, 78, 6, 12],
         ),
     )
+
+
+def test_references_ignore_comments_fixed():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "fixed")})
+    file_path = test_dir / "fixed" / "comment_as_reference.f"
+    string += ref_req(file_path, 3, 22)
+    errcode, results = run_request(string)
+    assert errcode == 0
+    assert len(results[1]) == 2
