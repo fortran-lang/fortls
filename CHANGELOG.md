@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Fixed
+
+- Fixed bug with Fixed Format references being incorrectly detected in comments
+  ([#447](https://github.com/fortran-lang/fortls/issues/447))
+
 ## 3.1.2
 
 ### Fixed
