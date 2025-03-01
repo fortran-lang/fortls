@@ -6,6 +6,8 @@
 
 - Fixed bug with Fixed Format references being incorrectly detected in comments
   ([#447](https://github.com/fortran-lang/fortls/issues/447))
+- Fixed bug with where form feed characters broke LSP features
+  ([#443](https://github.com/fortran-lang/fortls/issues/443))
 
 ## 3.1.2
 
