@@ -149,6 +149,8 @@
 
 - Fixed bug with Fixed Format references being incorrectly detected in comments
   ([#447](https://github.com/fortran-lang/fortls/issues/447))
+- Fixed bug with where form feed characters broke LSP features
+  ([#443](https://github.com/fortran-lang/fortls/issues/443))
 - Fixed incorrect document symbol for `SUBMODULE` statements
   ([#413](https://github.com/fortran-lang/fortls/issues/413))
 - Fixed bug with nested preprocessor blocks erroneously evaluating as active
