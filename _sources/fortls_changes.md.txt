@@ -147,6 +147,8 @@
 
 ## Fixed
 
+- Fixed bug with Fixed Format references being incorrectly detected in comments
+  ([#447](https://github.com/fortran-lang/fortls/issues/447))
 - Fixed incorrect document symbol for `SUBMODULE` statements
   ([#413](https://github.com/fortran-lang/fortls/issues/413))
 - Fixed bug with nested preprocessor blocks erroneously evaluating as active
