@@ -1491,8 +1491,12 @@ class LangServer:
         for path, result in results.items():
             try:
                 result_obj = result.get()
-            except:
-                result_obj = traceback.format_exc()
+            except Exception as e:
+                result_obj = (
+                    "An exception has occured while initialising the workspace.\n"
+                    f"Exception({(type(e))}): {e}\n"
+                    + f"Traceback: {traceback.format_exc()}"
+                )
             if isinstance(result_obj, str):
                 self.post_message(
                     f"Initialization failed for file {path}: {result_obj}"
