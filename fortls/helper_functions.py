@@ -204,7 +204,7 @@ def separate_def_list(test_str: str) -> list[str] | None:
     return def_list
 
 
-def find_word_in_line(line: str, word: str) -> Range:
+def find_word_in_line(line: str, word: str) -> Range | None:
     """Find Fortran word in line
 
     Parameters
@@ -228,7 +228,8 @@ def find_word_in_line(line: str, word: str) -> Range:
         ),
         -1,
     )
-    # TODO: if i == -1: return None makes more sense
+    if i == -1:
+        return None
     return Range(i, i + len(word))
 
 

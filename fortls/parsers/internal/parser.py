@@ -1156,25 +1156,25 @@ class FortranFile:
         forward: bool = True,
         backward: bool = False,
         pp_content: bool = False,
-    ) -> tuple[int, Range]:
+    ) -> tuple[int, Range | None]:
         back_lines, curr_line, forward_lines = self.get_code_line(
             line_no, forward=forward, backward=backward, pp_content=pp_content
         )
-        word_range = Range(-1, -1)
+        word_range = None
         if curr_line is not None:
             find_word_lower = word.lower()
             word_range = find_word_in_line(curr_line.lower(), find_word_lower)
-        if backward and (word_range.start < 0):
+        if backward and (word_range is None):
             back_lines.reverse()
             for i, line in enumerate(back_lines):
                 word_range = find_word_in_line(line.lower(), find_word_lower)
-                if word_range.start >= 0:
+                if word_range is not None:
                     line_no -= i + 1
                     return line_no, word_range
-        if forward and (word_range.start < 0):
+        if forward and (word_range is None):
             for i, line in enumerate(forward_lines):
                 word_range = find_word_in_line(line.lower(), find_word_lower)
-                if word_range.start >= 0:
+                if word_range is not None:
                     line_no += i + 1
                     return line_no, word_range
         return line_no, word_range
