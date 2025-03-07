@@ -9,8 +9,11 @@ def validate_def(result_array, checks):
         assert not checks[0]
         return None
     assert result_array["uri"] == path_to_uri(checks[2])
-    assert result_array["range"]["start"]["line"] == checks[0]
-    assert result_array["range"]["start"]["line"] == checks[1]
+    if result_array["range"] is not None:
+        assert result_array["range"]["start"]["line"] == checks[0]
+        assert result_array["range"]["start"]["line"] == checks[1]
+    else:
+        assert checks[0] is None
 
 
 def def_request(uri: Path, line, char):
