@@ -66,6 +66,8 @@ All the ``fortls`` settings with their default arguments can be found below
       "hover_signature": false,
       "hover_language": "fortran90",
 
+      "folding_range": false,
+
       "max_line_length": -1,
       "max_comment_line_length": -1,
       "disable_diagnostics": false,

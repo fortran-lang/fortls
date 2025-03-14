@@ -19,6 +19,9 @@ on:
 concurrency: preview-${{github.ref}}
 
 jobs:
+  job-name:
+    permissions:
+      contents: write
   deploy-preview:
     runs-on: ubuntu-latest
     steps:
