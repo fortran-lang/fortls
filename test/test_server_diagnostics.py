@@ -440,3 +440,18 @@ def test_critical_scope():
     errcode, results = run_request(string, ["-n", "1"])
     assert errcode == 0
     assert results[1]["diagnostics"] == []
+
+
+def test_mixed_case_interface_sub_child():
+    """
+    Test that interface sub_child arguments are correctly resolved
+    regardless of their case.
+    """
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "diag")})
+    file_path = str(test_dir / "diag" / "mixed_case_interface_sub_child.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
+    errcode, results = run_request(string, ["-n", "1"])
+    assert errcode == 0
+    assert results[1]["diagnostics"] == []
