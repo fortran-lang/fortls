@@ -86,7 +86,7 @@ class Subroutine(Scope):
                 # block's children i.e. functions and subroutines to see if one matches
                 elif child.name.lower().startswith("#gen_int"):
                     for sub_child in child.children:
-                        if arg == sub_child.name:
+                        if arg == sub_child.name.lower():
                             self.arg_objs[i] = sub_child
                             break
 
