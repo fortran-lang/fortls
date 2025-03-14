@@ -1771,7 +1771,17 @@ class LangServer:
     def _create_ref_link(self, obj) -> dict:
         """Create a link reference to an object"""
         obj_file: FortranFile = obj.file_ast.file
-        sline, (schar, echar) = obj_file.find_word_in_code_line(obj.sline - 1, obj.name)
+        result = obj_file.find_word_in_code_line(obj.sline - 1, obj.name)
+        if result is None:
+            return uri_json(
+                path_to_uri(obj_file.path), obj.sline - 1, 0, obj.sline - 1, 0
+            )
+        sline, word_range = result
+        if word_range is None:
+            return uri_json(
+                path_to_uri(obj_file.path), obj.sline - 1, 0, obj.sline - 1, 0
+            )
+        schar, echar = word_range.start, word_range.end
         if schar < 0:
             schar = echar = 0
         return uri_json(path_to_uri(obj_file.path), sline, schar, sline, echar)
