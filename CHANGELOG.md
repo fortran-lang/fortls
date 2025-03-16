@@ -2,6 +2,28 @@
 
 ## Unreleased
 
+## 3.2.2
+
+### Fixed
+
+- Fixed bug where comments in `USE` statements disabled reference finding
+  ([#450](https://github.com/fortran-lang/fortls/issues/450))
+
+## 3.2.1
+
+### Fixed
+
+- Fixed bug where no matching declarations were found for interface subchildren
+  depending on their letter casing
+  ([#471](https://github.com/fortran-lang/fortls/issues/471))
+
+## 3.2.0
+
+### Added
+
+- Added more verbose reporting for recursion errors arising from nested projects
+  ([#445](https://github.com/fortran-lang/fortls/issues/445))
+
 ### Fixed
 
 - Fixed bug with Fixed Format references being incorrectly detected in comments
