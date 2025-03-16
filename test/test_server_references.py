@@ -60,3 +60,18 @@ def test_references_ignore_comments_fixed():
     errcode, results = run_request(string)
     assert errcode == 0
     assert len(results[1]) == 2
+
+
+def test_references_ignore_comments_on_use_import():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "use")})
+    file_path = test_dir / "use" / "comment_after_use.f90"
+    string += ref_req(file_path, 6, 31)
+    errcode, results = run_request(string, ["-n", "1"])
+    assert errcode == 0
+    validate_refs(
+        results[1],
+        (
+            [str(file_path), 1, 15, 27],
+            [str(file_path), 5, 23, 35],
+        ),
+    )
