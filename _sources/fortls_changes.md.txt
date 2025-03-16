@@ -149,6 +149,8 @@
 
 ## Fixed
 
+- Fixed missing registered capability for `textDocument/documentHighlight`
+  ([#421](https://github.com/fortran-lang/fortls/issues/421s))
 - Fixed bug where comments in `USE` statements disabled reference finding
   ([#450](https://github.com/fortran-lang/fortls/issues/450))
 - Fixed bug where no matching declarations were found for interface subchildren
