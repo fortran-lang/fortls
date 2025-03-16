@@ -220,6 +220,7 @@ class LangServer:
             },
             "definitionProvider": True,
             "documentSymbolProvider": True,
+            "documentHighlightProvider": True,
             "referencesProvider": True,
             "hoverProvider": True,
             "implementationProvider": True,

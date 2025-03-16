@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Fixed
+
+- Fixed missing registered capability for `textDocument/documentHighlight`
+  ([#421](https://github.com/fortran-lang/fortls/issues/421s))
+
 ## 3.2.2
 
 ### Fixed
