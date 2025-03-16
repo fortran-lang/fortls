@@ -281,6 +281,8 @@
 <section id="added">
 <h2>Added<a class="headerlink" href="#added" title="Link to this heading">¶</a></h2>
 <ul class="simple">
+<li><p>Added more verbose reporting for recursion errors arising from nested projects
+(<a class="reference external" href="https://github.com/fortran-lang/fortls/issues/445">#445</a>)</p></li>
 <li><p>Added support for changing the default Python recursion depth
 (<a class="reference external" href="https://github.com/fortran-lang/fortls/issues/312">#312</a>)</p></li>
 <li><p>Added support for preprocessor macro expansions
@@ -434,6 +436,11 @@ handle their dependencies through <code class="docutils literal notranslate"><sp
 <section id="fixed">
 <h2>Fixed<a class="headerlink" href="#fixed" title="Link to this heading">¶</a></h2>
 <ul class="simple">
+<li><p>Fixed bug where comments in <code class="docutils literal notranslate"><span class="pre">USE</span></code> statements disabled reference finding
+(<a class="reference external" href="https://github.com/fortran-lang/fortls/issues/450">#450</a>)</p></li>
+<li><p>Fixed bug where no matching declarations were found for interface subchildren
+depending on their letter casing
+(<a class="reference external" href="https://github.com/fortran-lang/fortls/issues/471">#471</a>)</p></li>
 <li><p>Fixed bug with Fixed Format references being incorrectly detected in comments
 (<a class="reference external" href="https://github.com/fortran-lang/fortls/issues/447">#447</a>)</p></li>
 <li><p>Fixed bug with where form feed characters broke LSP features
@@ -632,7 +639,7 @@ multiline but the function body can.</p></li>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=a2f27e87"></script>
+</div><script src="_static/documentation_options.js?v=b4b5c5ca"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=5fa4622c"></script>

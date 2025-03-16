@@ -2,6 +2,8 @@
 
 ## Added
 
+- Added more verbose reporting for recursion errors arising from nested projects
+  ([#445](https://github.com/fortran-lang/fortls/issues/445))
 - Added support for changing the default Python recursion depth
   ([#312](https://github.com/fortran-lang/fortls/issues/312))
 - Added support for preprocessor macro expansions
@@ -147,6 +149,11 @@
 
 ## Fixed
 
+- Fixed bug where comments in `USE` statements disabled reference finding
+  ([#450](https://github.com/fortran-lang/fortls/issues/450))
+- Fixed bug where no matching declarations were found for interface subchildren
+  depending on their letter casing
+  ([#471](https://github.com/fortran-lang/fortls/issues/471))
 - Fixed bug with Fixed Format references being incorrectly detected in comments
   ([#447](https://github.com/fortran-lang/fortls/issues/447))
 - Fixed bug with where form feed characters broke LSP features
