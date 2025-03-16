@@ -637,7 +637,7 @@ def read_use_stmt(line: str) -> tuple[Literal["use"], Use] | None:
     if use_match is None:
         return None
 
-    trailing_line = line[use_match.end(0) :].lower()
+    trailing_line = line[use_match.end(0) :].lower().split("!")[0]
     use_mod = use_match.group(2)
     only_list: set[str] = set()
     rename_map: dict[str, str] = {}
