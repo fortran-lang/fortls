@@ -123,6 +123,7 @@ An example for a Configuration file is given below
   "lowercase_intrinsics": true,
   "hover_signature": true,
   "use_signature_help": true,
+  "folding_range": true,
   "excl_paths": ["tests/**", "tools/**"],
   "excl_suffixes": ["_skip.f90"],
   "include_dirs": ["include/**"],
