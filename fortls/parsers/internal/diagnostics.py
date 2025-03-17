@@ -29,7 +29,7 @@ class Diagnostic:
             self.sline, obj_range = file_obj.find_word_in_code_line(
                 self.sline, self.find_word
             )
-            if obj_range.start >= 0:
+            if obj_range is not None:
                 schar = obj_range.start
                 echar = obj_range.end
         diag = diagnostic_json(
