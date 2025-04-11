@@ -31,7 +31,7 @@ jobs:
           pip install -e .[dev,docs]
           make -C docs html
       - name: Deploy Preview
-        uses: rossjrw/pr-preview-action@v1.6.0
+        uses: rossjrw/pr-preview-action@v1.6.1
         with:
           source-dir: docs/_build/html
           preview-branch: gh-pages
