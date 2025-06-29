@@ -22,7 +22,7 @@ class FoldingRange(TypedDict, total=False):
 
 def get_folding_ranges_by_block_comment(file_obj: FortranFile, min_block_size: int):
     """
-    Get the folding ranges in this file based on the block comment
+    Get the folding ranges in the given file based on the block comment
 
     Returns
     -------
@@ -82,7 +82,7 @@ class BlockCommentTracker:
 
 def get_folding_ranges_by_indent(file_obj: FortranFile) -> list[FoldingRange]:
     """
-    Get the folding ranges in this file based on the indent
+    Get the folding ranges in the given file based on the indent
 
     Returns
     -------
@@ -174,7 +174,7 @@ RANGE_CLOSE_PATTENS: dict[int, re.Pattern] = {
 
 def get_folding_ranges_by_syntax(file_obj: FortranFile) -> list[FoldingRange]:
     """
-    Get the folding ranges in this file based on the syntax
+    Get the folding ranges in the given file based on the syntax
 
     Returns
     -------

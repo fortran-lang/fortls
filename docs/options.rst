@@ -76,7 +76,10 @@ All the ``fortls`` settings with their default arguments can be found below
 
       "symbol_skip_mem": false,
 
-      "enable_code_actions": false
+      "enable_code_actions": false,
+
+      "folding_range_mode": "indent",
+      "folding_range_comment_lines": 3
    }
 
 Sources file parsing
