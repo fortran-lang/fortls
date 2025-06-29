@@ -1554,12 +1554,18 @@ class LangServer:
         if file_obj is None:
             return None
 
-        result = get_folding_ranges_by_block_comment(file_obj, min_block_size=3)
-        use_indent = True  # If False, use syntax
-        if use_indent:
+        result = []
+
+        result += get_folding_ranges_by_block_comment(
+            file_obj,
+            min_block_size=self.folding_range_comment_lines,
+        )
+
+        if self.folding_range_mode == "indent":
             result += get_folding_ranges_by_indent(file_obj)
-        else:
+        elif self.folding_range_mode == "syntax":
             result += get_folding_ranges_by_syntax(file_obj)
+        
         return result
 
     def _load_config_file(self) -> None:
@@ -1666,6 +1672,13 @@ class LangServer:
         # Code Actions options -------------------------------------------------
         self.enable_code_actions = config_dict.get(
             "enable_code_actions", self.enable_code_actions
+        )
+        # Folding Range Options ------------------------------------------------
+        self.folding_range_mode = config_dict.get(
+            "folding_range_mode", self.folding_range_mode
+        )
+        self.folding_range_comment_lines = config_dict.get(
+            "folding_range_comment_lines", self.folding_range_comment_lines
         )
 
     def _load_config_file_preproc(self, config_dict: dict) -> None:
