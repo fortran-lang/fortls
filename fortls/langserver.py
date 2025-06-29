@@ -13,6 +13,11 @@ from pathlib import Path
 from typing import Pattern
 from urllib.error import URLError
 
+from fortls.folding_ranges import (
+    get_folding_ranges_by_block_comment,
+    get_folding_ranges_by_indent,
+    get_folding_ranges_by_syntax,
+)
 import json5
 from packaging import version
 
@@ -151,6 +156,7 @@ class LangServer:
             "textDocument/didClose": self.serve_onClose,
             "textDocument/didChange": self.serve_onChange,
             "textDocument/codeAction": self.serve_codeActions,
+            "textDocument/foldingRange": self.serve_folding_range,
             "initialized": noop,
             "workspace/didChangeWatchedFiles": noop,
             "workspace/didChangeConfiguration": noop,
@@ -227,6 +233,7 @@ class LangServer:
             "renameProvider": True,
             "workspaceSymbolProvider": True,
             "textDocumentSync": self.sync_type,
+            "foldingRangeProvider": True,
         }
         if self.use_signature_help:
             server_capabilities["signatureHelpProvider"] = {
@@ -1539,6 +1546,21 @@ class LangServer:
         raise JSONRPC2Error(
             code=-32601, message=f"method {request['method']} not found"
         )
+
+    def serve_folding_range(self, request: dict):
+        uri = request["params"]["textDocument"]["uri"]
+        path = path_from_uri(uri)
+        file_obj = self.workspace[path]
+        if file_obj is None:
+            return None
+
+        result = get_folding_ranges_by_block_comment(file_obj, min_block_size=3)
+        use_indent = True  # If False, use syntax
+        if use_indent:
+            result += get_folding_ranges_by_indent(file_obj)
+        else:
+            result += get_folding_ranges_by_syntax(file_obj)
+        return result
 
     def _load_config_file(self) -> None:
         """Loads the configuration file for the Language Server"""
