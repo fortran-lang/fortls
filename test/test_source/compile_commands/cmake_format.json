@@ -1,0 +1,12 @@
+[
+  {
+    "directory": "/home/user/project/build",
+    "command": "/usr/bin/gfortran -I/home/user/project/include -I/home/user/project/src -J/home/user/project/build/mod -DDEBUG=1 -DVERSION=1.0 -c /home/user/project/src/main.f90 -o main.o",
+    "file": "/home/user/project/src/main.f90"
+  },
+  {
+    "directory": "/home/user/project/build",
+    "command": "/usr/bin/gfortran -I/home/user/project/include -I/home/user/project/src -J/home/user/project/build/mod -DDEBUG=1 -DVERSION=1.0 -c /home/user/project/src/module.f90 -o module.o",
+    "file": "/home/user/project/src/module.f90"
+  }
+]
