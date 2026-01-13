@@ -19,6 +19,7 @@ def get_use_tree(
     only_list: list[str] = None,
     rename_map: dict[str, str] = None,
     curr_path: list[str] = None,
+    obj_tree_getter=None,
 ):
     if only_list is None:
         only_list = set()
@@ -26,6 +27,13 @@ def get_use_tree(
         rename_map = {}
     if curr_path is None:
         curr_path = []
+
+    def get_obj_from_tree(key: str):
+        if obj_tree_getter is not None:
+            return obj_tree_getter(key)
+        if key in obj_tree and obj_tree[key]:
+            return obj_tree[key][0][0]
+        return None
 
     def intersect_only(use_stmnt: Use | Import):
         tmp_list = []
@@ -111,13 +119,17 @@ def get_use_tree(
         if type(use_stmnt) is Import:
             continue
         # Descend USE tree
+        mod_obj = get_obj_from_tree(use_stmnt.mod_name)
+        if mod_obj is None:
+            continue
         use_dict = get_use_tree(
-            obj_tree[use_stmnt.mod_name][0],
+            mod_obj,
             use_dict,
             obj_tree,
             merged_use_list,
             merged_rename,
             new_path,
+            obj_tree_getter,
         )
     return use_dict
 
@@ -129,8 +141,16 @@ def find_in_scope(
     interface: bool = False,
     local_only: bool = False,
     var_line_number: int = None,
+    obj_tree_getter=None,
 ):
     from .include import Include
+
+    def get_obj_from_tree(key: str):
+        if obj_tree_getter is not None:
+            return obj_tree_getter(key)
+        if key in obj_tree and obj_tree[key]:
+            return obj_tree[key][0][0]
+        return None
 
     def check_scope(
         local_scope: Scope,
@@ -200,13 +220,15 @@ def find_in_scope(
                 return Include(inc.file.ast, inc.line_number, inc.path)
 
     # Setup USE search
-    use_dict = get_use_tree(scope, {}, obj_tree)
+    use_dict = get_use_tree(scope, {}, obj_tree, obj_tree_getter=obj_tree_getter)
     # Look in found use modules
     for use_mod, use_info in use_dict.items():
         # If use_mod is Import then it will not exist in the obj_tree
         if type(use_info) is Import:
             continue
-        use_scope = obj_tree[use_mod][0]
+        use_scope = get_obj_from_tree(use_mod)
+        if use_scope is None:
+            continue
         # Module name is request
         if use_mod.lower() == var_name_lower:
             return use_scope
@@ -225,12 +247,16 @@ def find_in_scope(
             return None
     # Check parent scopes
     if scope.parent is not None and import_type != ImportTypes.NONE:
-        tmp_var = find_in_scope(scope.parent, var_name, obj_tree)
+        tmp_var = find_in_scope(
+            scope.parent, var_name, obj_tree, obj_tree_getter=obj_tree_getter
+        )
         if tmp_var is not None:
             return tmp_var
     # Check ancestor scopes
     for ancestor in scope.get_ancestors():
-        tmp_var = find_in_scope(ancestor, var_name, obj_tree)
+        tmp_var = find_in_scope(
+            ancestor, var_name, obj_tree, obj_tree_getter=obj_tree_getter
+        )
         if tmp_var is not None:
             return tmp_var
     return None
@@ -248,9 +274,10 @@ def find_in_workspace(
 
     matching_symbols = []
     query = query.lower()
-    for _, obj_packed in obj_tree.items():
-        top_obj = obj_packed[0]
-        top_uri = obj_packed[1]
+    for _, entries in obj_tree.items():
+        # entries is a list of [obj, filepath] pairs; use first entry
+        top_obj = entries[0][0]
+        top_uri = entries[0][1]
         if top_uri is not None:
             if top_obj.name.lower().find(query) > -1:
                 matching_symbols.append(top_obj)

@@ -16,6 +16,8 @@ from urllib.error import URLError
 import json5
 from packaging import version
 
+from fortls.compile_commands import find_compile_commands, parse_compile_commands
+
 # Local modules
 from fortls.constants import (
     CLASS_TYPE_ID,
@@ -75,7 +77,9 @@ class LangServer:
         self.running: bool = True
         self.root_path: str = None
         self.workspace: dict[str, FortranFile] = {}
-        self.obj_tree: dict = {}
+        self.obj_tree: dict = {}  # {key: [[obj, filepath], ...]}
+        self.file_to_module_dir: dict[str, str] = {}  # For compile_commands grouping
+        self.compile_commands_source_files: set[str] = set()
         self.link_version = 0
         self._version = version.parse(__version__)
         # Parse a dictionary of the command line interface and make them into
@@ -198,6 +202,7 @@ class LangServer:
         self.source_dirs.add(self.root_path)
 
         self._load_config_file()
+        self._load_compile_commands()
         update_recursion_limit(self.recursion_limit)
         self._resolve_globs_in_paths()
         self._config_logger(request)
@@ -433,7 +438,7 @@ class LangServer:
             import_var_list = []
             for use_mod, use_info in use_dict.items():
                 if type(use_info) is Use:
-                    scope = self.obj_tree[use_mod][0]
+                    scope = self.obj_tree[use_mod][0][0]
                     only_list = use_info.rename()
                     tmp_list = child_candidates(
                         scope, only_list, req_abstract=abstract_only
@@ -463,7 +468,7 @@ class LangServer:
 
             # Add globals
             if inc_globals:
-                tmp_list = [obj[0] for (_, obj) in self.obj_tree.items()]
+                tmp_list = [entries[0][0] for (_, entries) in self.obj_tree.items()]
                 var_list += tmp_list + self.intrinsic_funs
                 rename_list += [None for _ in tmp_list + self.intrinsic_funs]
             if import_var_list:
@@ -587,7 +592,7 @@ class LangServer:
         if line_context == "mod_only":
             # Module names only (USE statement)
             for key in self.obj_tree:
-                candidate = self.obj_tree[key][0]
+                candidate = self.obj_tree[key][0][0]
                 if (
                     candidate.get_type() == MODULE_TYPE_ID
                 ) and candidate.name.lower().startswith(var_prefix):
@@ -598,7 +603,7 @@ class LangServer:
             name_only = True
             mod_name = context_info.lower()
             if mod_name in self.obj_tree:
-                scope_list = [self.obj_tree[mod_name][0]]
+                scope_list = [self.obj_tree[mod_name][0][0]]
                 public_only = True
                 include_globals = False
                 type_mask[CLASS_TYPE_ID] = False
@@ -793,15 +798,22 @@ class LangServer:
             ):
                 curr_scope = curr_scope.parent
             var_obj = find_in_scope(
-                curr_scope, def_name, self.obj_tree, var_line_number=def_line + 1
+                curr_scope,
+                def_name,
+                self.obj_tree,
+                var_line_number=def_line + 1,
+                obj_tree_getter=lambda key: self._get_from_obj_tree(
+                    key, def_file.path
+                ),  # Create a getter that uses the requesting file for disambiguation
             )
         # Search in global scope
         if var_obj is None:
             if is_member:
                 return None
             key = def_name.lower()
-            if key in self.obj_tree:
-                return self.obj_tree[key][0]
+            obj = self._get_from_obj_tree(key, def_file.path)
+            if obj is not None:
+                return obj
             for obj in self.intrinsic_funs:
                 if obj.name.lower() == key:
                     return obj
@@ -905,13 +917,17 @@ class LangServer:
         # Find in available scopes
         var_obj = None
         if curr_scope is not None:
-            var_obj = find_in_scope(curr_scope, sub_name, self.obj_tree)
+            var_obj = find_in_scope(
+                curr_scope,
+                sub_name,
+                self.obj_tree,
+                obj_tree_getter=lambda key: self._get_from_obj_tree(key, path),
+            )
         # Search in global scope
         if var_obj is None:
             key = sub_name.lower()
-            if key in self.obj_tree:
-                var_obj = self.obj_tree[key][0]
-            else:
+            var_obj = self._get_from_obj_tree(key, path)
+            if var_obj is None:
                 for obj in self.intrinsic_funs:
                     if obj.name.lower() == key:
                         var_obj = obj
@@ -1349,7 +1365,7 @@ class LangServer:
                 ast_old = file_obj.ast
                 if ast_old is not None:
                     for key in ast_old.global_dict:
-                        self.obj_tree.pop(key, None)
+                        self._remove_from_obj_tree(key, filepath)
             return
         did_change, err_str = self.update_workspace_file(
             filepath, read_file=True, allow_empty=did_open
@@ -1410,14 +1426,14 @@ class LangServer:
         ast_old = file_obj.ast
         if ast_old is not None:
             for key in ast_old.global_dict:
-                self.obj_tree.pop(key, None)
+                self._remove_from_obj_tree(key, filepath)
         # Add new file to workspace
         file_obj.ast = ast_new
         if filepath not in self.workspace:
             self.workspace[filepath] = file_obj
         # Add top-level objects to object tree
         for key, obj in ast_new.global_dict.items():
-            self.obj_tree[key] = [obj, filepath]
+            self._add_to_obj_tree(key, obj, filepath)
         # Update local links/inheritance if necessary
         if update_links:
             self.link_version = (self.link_version + 1) % 1000
@@ -1507,7 +1523,7 @@ class LangServer:
             # Add top-level objects to object tree
             ast_new = self.workspace[path].ast
             for key in ast_new.global_dict:
-                self.obj_tree[key] = [ast_new.global_dict[key], path]
+                self._add_to_obj_tree(key, ast_new.global_dict[key], path)
         # Update include statements
         for _, file_obj in self.workspace.items():
             file_obj.ast.resolve_includes(self.workspace)
@@ -1593,6 +1609,13 @@ class LangServer:
         # Update the source file REGEX
         self.FORTRAN_SRC_EXT_REGEX = create_src_file_exts_str(self.incl_suffixes)
         self.excl_suffixes = set(config_dict.get("excl_suffixes", self.excl_suffixes))
+        # compile_commands.json options
+        self.compile_commands = config_dict.get(
+            "compile_commands", getattr(self, "compile_commands", None)
+        )
+        self.disable_compile_commands = config_dict.get(
+            "disable_compile_commands", getattr(self, "disable_compile_commands", False)
+        )
 
     def _load_config_file_general(self, config_dict: dict) -> None:
         # General options ------------------------------------------------------
@@ -1654,6 +1677,34 @@ class LangServer:
 
         self.include_dirs = set(config_dict.get("include_dirs", self.include_dirs))
 
+    def _load_compile_commands(self) -> None:
+        """Load configuration from compile_commands.json if present."""
+        if getattr(self, "disable_compile_commands", False):
+            return
+
+        cc_path = find_compile_commands(
+            self.root_path, getattr(self, "compile_commands", None)
+        )
+        if cc_path is None:
+            return
+
+        log.info("Loading compile_commands.json from: %s", cc_path)
+        config = parse_compile_commands(cc_path, self.root_path)
+
+        self.include_dirs = self.include_dirs | config.include_dirs
+
+        merged_pp_defs = config.pp_defs.copy()
+        merged_pp_defs.update(self.pp_defs)
+        self.pp_defs = merged_pp_defs
+
+        self.file_to_module_dir = config.file_to_module_dir
+        self.compile_commands_source_files = config.source_files
+
+        # Exclude build directory to avoid preprocessed files
+        build_dir = os.path.dirname(cc_path)
+        if build_dir and build_dir != self.root_path:
+            self.excl_paths.add(build_dir)
+
     def _resolve_globs_in_paths(self) -> None:
         """Resolves glob patterns in `excl_paths`, `source_dirs` and `include_dirs`.
         Also performs the exclusion of `excl_paths` from `source_dirs`.
@@ -1688,6 +1739,14 @@ class LangServer:
         source files only if the option `source_dirs` has not been specified
         in the configuration file or no configuration file is present
         """
+
+        def is_excluded(path: str) -> bool:
+            """Check if path is in or under any excluded path"""
+            for excl in self.excl_paths:
+                if path == excl or path.startswith(excl + os.sep):
+                    return True
+            return False
+
         # Recursively add sub-directories that only match Fortran extensions
         if len(self.source_dirs) != 1:
             return None
@@ -1695,10 +1754,14 @@ class LangServer:
             return None
         self.source_dirs = set()
         for root, dirs, files in os.walk(self.root_path):
+            # Skip excluded directories and their subdirectories
+            if is_excluded(root):
+                dirs[:] = []  # Don't descend into subdirectories
+                continue
             # Match not found
             if not list(filter(self.FORTRAN_SRC_EXT_REGEX.search, files)):
                 continue
-            if root not in self.source_dirs and root not in self.excl_paths:
+            if root not in self.source_dirs:
                 self.source_dirs.add(str(Path(root).resolve()))
 
     def _get_source_files(self) -> list[str]:
@@ -1765,7 +1828,7 @@ class LangServer:
             self.intrinsic_mods,
         ) = load_intrinsics()
         for module in self.intrinsic_mods:
-            self.obj_tree[module.FQSN] = [module, None]
+            self._add_to_obj_tree(module.FQSN, module, None)
         # Set object settings
         set_keyword_ordering(self.sort_keywords)
 
@@ -1776,6 +1839,67 @@ class LangServer:
         if schar < 0:
             schar = echar = 0
         return uri_json(path_to_uri(obj_file.path), sline, schar, sline, echar)
+
+    def _add_to_obj_tree(self, key: str, obj, filepath: str) -> None:
+        """Add an object to obj_tree (supports multiple objects with same key)."""
+        if key not in self.obj_tree:
+            self.obj_tree[key] = []
+        self.obj_tree[key].append([obj, filepath])
+
+    def _remove_from_obj_tree(self, key: str, filepath: str) -> None:
+        """Remove objects from obj_tree that belong to a specific file."""
+        if key not in self.obj_tree:
+            return
+        self.obj_tree[key] = [
+            entry for entry in self.obj_tree[key] if entry[1] != filepath
+        ]
+        if not self.obj_tree[key]:
+            del self.obj_tree[key]
+
+    def _get_from_obj_tree(self, key: str, requesting_filepath: str = None):
+        """Get object from obj_tree, preferring same compilation unit if ambiguous."""
+        if key not in self.obj_tree:
+            return None
+        entries = self.obj_tree[key]
+        if not entries:
+            return None
+
+        if len(entries) == 1 or requesting_filepath is None:
+            return entries[0][0]
+
+        req_module_dir = self._get_module_dir_for_file(requesting_filepath)
+        if req_module_dir:
+            for obj, obj_filepath in entries:
+                if self._get_module_dir_for_file(obj_filepath) == req_module_dir:
+                    return obj
+
+        return entries[0][0]
+
+    def _get_module_dir_for_file(self, filepath: str) -> str | None:
+        """Get module directory for a file from compile_commands.json info."""
+        if not filepath or not self.file_to_module_dir:
+            return None
+
+        if filepath in self.file_to_module_dir:
+            return self.file_to_module_dir[filepath]
+
+        try:
+            normalized = os.path.realpath(filepath)
+            if normalized in self.file_to_module_dir:
+                return self.file_to_module_dir[normalized]
+
+            basename = os.path.basename(filepath)
+            for stored_path, module_dir in self.file_to_module_dir.items():
+                if os.path.basename(stored_path) == basename:
+                    try:
+                        if os.path.samefile(filepath, stored_path):
+                            return module_dir
+                    except OSError:
+                        pass
+        except OSError:
+            pass
+
+        return None
 
     def _update_version_pypi(self, test: bool = False):
         """Fetch updates from PyPi for fortls
