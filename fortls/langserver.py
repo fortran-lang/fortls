@@ -1701,9 +1701,10 @@ class LangServer:
         self.compile_commands_source_files = config.source_files
 
         # Exclude build directory to avoid preprocessed files
-        build_dir = os.path.dirname(cc_path)
-        if build_dir and build_dir != self.root_path:
-            self.excl_paths.add(build_dir)
+        build_dir = Path(cc_path).parent
+        build_dir_str = str(build_dir)
+        if build_dir_str and build_dir_str != self.root_path:
+            self.excl_paths.add(build_dir_str)
 
     def _resolve_globs_in_paths(self) -> None:
         """Resolves glob patterns in `excl_paths`, `source_dirs` and `include_dirs`.
@@ -1884,15 +1885,16 @@ class LangServer:
             return self.file_to_module_dir[filepath]
 
         try:
-            normalized = os.path.realpath(filepath)
+            path_obj = Path(filepath)
+            normalized = str(path_obj.resolve(strict=False))
             if normalized in self.file_to_module_dir:
                 return self.file_to_module_dir[normalized]
 
-            basename = os.path.basename(filepath)
+            basename = path_obj.name
             for stored_path, module_dir in self.file_to_module_dir.items():
-                if os.path.basename(stored_path) == basename:
+                if Path(stored_path).name == basename:
                     try:
-                        if os.path.samefile(filepath, stored_path):
+                        if path_obj.samefile(stored_path):
                             return module_dir
                     except OSError:
                         pass

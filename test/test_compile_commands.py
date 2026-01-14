@@ -3,16 +3,11 @@
 from __future__ import annotations
 
 import json
-import os
-
-# Import the module under test
-import sys
 import tempfile
 from pathlib import Path
 
 from setup_tests import run_request, test_dir, write_rpc_request
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
 from fortls.compile_commands import (
     _parse_compiler_args,
     _parse_define,
@@ -129,20 +124,22 @@ class TestFindCompileCommands:
     def test_custom_path_absolute(self):
         """Test with absolute custom path"""
         with tempfile.TemporaryDirectory() as tmpdir:
-            cc_path = os.path.join(tmpdir, "my_compile_commands.json")
-            with open(cc_path, "w") as f:
+            tmp_path = Path(tmpdir)
+            cc_path = tmp_path / "my_compile_commands.json"
+            with cc_path.open("w") as f:
                 json.dump([], f)
-            result = find_compile_commands("/some/root", cc_path)
-            assert result == cc_path
+            result = find_compile_commands("/some/root", str(cc_path))
+            assert result == str(cc_path)
 
     def test_custom_path_relative(self):
         """Test with relative custom path"""
         with tempfile.TemporaryDirectory() as tmpdir:
-            cc_path = os.path.join(tmpdir, "custom.json")
-            with open(cc_path, "w") as f:
+            tmp_path = Path(tmpdir)
+            cc_path = tmp_path / "custom.json"
+            with cc_path.open("w") as f:
                 json.dump([], f)
-            result = find_compile_commands(tmpdir, "custom.json")
-            assert result == cc_path
+            result = find_compile_commands(str(tmp_path), "custom.json")
+            assert result == str(cc_path)
 
     def test_custom_path_not_found(self):
         """Test with non-existent custom path"""
@@ -152,22 +149,24 @@ class TestFindCompileCommands:
     def test_root_path_detection(self):
         """Test auto-detection in root path"""
         with tempfile.TemporaryDirectory() as tmpdir:
-            cc_path = os.path.join(tmpdir, "compile_commands.json")
-            with open(cc_path, "w") as f:
+            tmp_path = Path(tmpdir)
+            cc_path = tmp_path / "compile_commands.json"
+            with cc_path.open("w") as f:
                 json.dump([], f)
-            result = find_compile_commands(tmpdir)
-            assert result == cc_path
+            result = find_compile_commands(str(tmp_path))
+            assert result == str(cc_path)
 
     def test_build_dir_detection(self):
         """Test auto-detection in build/ subdirectory"""
         with tempfile.TemporaryDirectory() as tmpdir:
-            build_dir = os.path.join(tmpdir, "build")
-            os.makedirs(build_dir)
-            cc_path = os.path.join(build_dir, "compile_commands.json")
-            with open(cc_path, "w") as f:
+            tmp_path = Path(tmpdir)
+            build_dir = tmp_path / "build"
+            build_dir.mkdir()
+            cc_path = build_dir / "compile_commands.json"
+            with cc_path.open("w") as f:
                 json.dump([], f)
-            result = find_compile_commands(tmpdir)
-            assert result == cc_path
+            result = find_compile_commands(str(tmp_path))
+            assert result == str(cc_path)
 
     def test_not_found(self):
         """Test when no compile_commands.json exists"""
@@ -223,7 +222,7 @@ class TestParseCompileCommands:
             config = parse_compile_commands(f.name)
             assert len(config.include_dirs) == 0
             assert len(config.pp_defs) == 0
-            os.unlink(f.name)
+            Path(f.name).unlink()
 
     def test_nonexistent_file(self):
         """Test handling of non-existent file"""
@@ -239,7 +238,7 @@ class TestParseCompileCommands:
             config = parse_compile_commands(f.name)
             assert len(config.include_dirs) == 0
             assert len(config.pp_defs) == 0
-            os.unlink(f.name)
+            Path(f.name).unlink()
 
 
 class TestIntegration:
@@ -249,25 +248,26 @@ class TestIntegration:
         """Test that server loads compile_commands.json"""
         # Create a temporary project with compile_commands.json
         with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
             # Create build directory with compile_commands.json
-            build_dir = os.path.join(tmpdir, "build")
-            os.makedirs(build_dir)
-            cc_path = os.path.join(build_dir, "compile_commands.json")
+            build_dir = tmp_path / "build"
+            build_dir.mkdir()
+            cc_path = build_dir / "compile_commands.json"
 
             # Create a Fortran source file
-            src_file = os.path.join(tmpdir, "test.f90")
-            with open(src_file, "w") as f:
+            src_file = tmp_path / "test.f90"
+            with src_file.open("w") as f:
                 f.write("program test\nend program test\n")
 
             # Create compile_commands.json with a preprocessor define
             compile_commands = [
                 {
-                    "directory": tmpdir,
+                    "directory": str(tmp_path),
                     "arguments": ["gfortran", "-DTEST_DEFINE=42", "-c", "test.f90"],
                     "file": "test.f90",
                 }
             ]
-            with open(cc_path, "w") as f:
+            with cc_path.open("w") as f:
                 json.dump(compile_commands, f)
 
             # Initialize the server and check it works
@@ -279,25 +279,26 @@ class TestIntegration:
     def test_server_with_disabled_compile_commands(self):
         """Test that --disable_compile_commands works"""
         with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
             # Create build directory with compile_commands.json
-            build_dir = os.path.join(tmpdir, "build")
-            os.makedirs(build_dir)
-            cc_path = os.path.join(build_dir, "compile_commands.json")
+            build_dir = tmp_path / "build"
+            build_dir.mkdir()
+            cc_path = build_dir / "compile_commands.json"
 
             # Create a Fortran source file
-            src_file = os.path.join(tmpdir, "test.f90")
-            with open(src_file, "w") as f:
+            src_file = tmp_path / "test.f90"
+            with src_file.open("w") as f:
                 f.write("program test\nend program test\n")
 
             # Create compile_commands.json
             compile_commands = [
                 {
-                    "directory": tmpdir,
+                    "directory": str(tmp_path),
                     "arguments": ["gfortran", "-c", "test.f90"],
                     "file": "test.f90",
                 }
             ]
-            with open(cc_path, "w") as f:
+            with cc_path.open("w") as f:
                 json.dump(compile_commands, f)
 
             # Initialize the server with --disable_compile_commands
@@ -312,64 +313,65 @@ class TestIntegration:
         mapping should group them correctly for disambiguation.
         """
         with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
             # Create directory structure
-            build_dir = os.path.join(tmpdir, "build")
-            mod1_dir = os.path.join(build_dir, "mod", "exe1")
-            mod2_dir = os.path.join(build_dir, "mod", "exe2")
-            os.makedirs(mod1_dir)
-            os.makedirs(mod2_dir)
+            build_dir = tmp_path / "build"
+            mod1_dir = build_dir / "mod" / "exe1"
+            mod2_dir = build_dir / "mod" / "exe2"
+            mod1_dir.mkdir(parents=True)
+            mod2_dir.mkdir(parents=True)
 
-            exe1_path = os.path.join(tmpdir, "exe1.f90")
-            module1_path = os.path.join(tmpdir, "module1.f90")
-            exe2_path = os.path.join(tmpdir, "exe2.f90")
-            module2_path = os.path.join(tmpdir, "module2.f90")
+            exe1_path = tmp_path / "exe1.f90"
+            module1_path = tmp_path / "module1.f90"
+            exe2_path = tmp_path / "exe2.f90"
+            module2_path = tmp_path / "module2.f90"
 
             # Create compile_commands.json that groups exe1+module1 and exe2+module2
             compile_commands = [
                 {
-                    "directory": build_dir,
+                    "directory": str(build_dir),
                     "command": f"/usr/bin/f95 -J{mod1_dir} -c {exe1_path}",
-                    "file": exe1_path,
+                    "file": str(exe1_path),
                 },
                 {
-                    "directory": build_dir,
+                    "directory": str(build_dir),
                     "command": f"/usr/bin/f95 -J{mod1_dir} -c {module1_path}",
-                    "file": module1_path,
+                    "file": str(module1_path),
                 },
                 {
-                    "directory": build_dir,
+                    "directory": str(build_dir),
                     "command": f"/usr/bin/f95 -J{mod2_dir} -c {exe2_path}",
-                    "file": exe2_path,
+                    "file": str(exe2_path),
                 },
                 {
-                    "directory": build_dir,
+                    "directory": str(build_dir),
                     "command": f"/usr/bin/f95 -J{mod2_dir} -c {module2_path}",
-                    "file": module2_path,
+                    "file": str(module2_path),
                 },
             ]
-            cc_path = os.path.join(build_dir, "compile_commands.json")
-            with open(cc_path, "w") as f:
+            cc_path = build_dir / "compile_commands.json"
+            with cc_path.open("w") as f:
                 json.dump(compile_commands, f)
 
             # Parse the compile_commands.json
-            config = parse_compile_commands(cc_path)
+            config = parse_compile_commands(str(cc_path))
 
             # Verify file_to_module_dir mapping
-            assert exe1_path in config.file_to_module_dir
-            assert module1_path in config.file_to_module_dir
-            assert exe2_path in config.file_to_module_dir
-            assert module2_path in config.file_to_module_dir
+            assert str(exe1_path) in config.file_to_module_dir
+            assert str(module1_path) in config.file_to_module_dir
+            assert str(exe2_path) in config.file_to_module_dir
+            assert str(module2_path) in config.file_to_module_dir
 
             # exe1 and module1 should share the same module dir
-            assert config.file_to_module_dir[exe1_path] == mod1_dir
-            assert config.file_to_module_dir[module1_path] == mod1_dir
+            assert config.file_to_module_dir[str(exe1_path)] == str(mod1_dir)
+            assert config.file_to_module_dir[str(module1_path)] == str(mod1_dir)
 
             # exe2 and module2 should share the same module dir
-            assert config.file_to_module_dir[exe2_path] == mod2_dir
-            assert config.file_to_module_dir[module2_path] == mod2_dir
+            assert config.file_to_module_dir[str(exe2_path)] == str(mod2_dir)
+            assert config.file_to_module_dir[str(module2_path)] == str(mod2_dir)
 
             # The two groups should have different module dirs
             assert (
-                config.file_to_module_dir[exe1_path]
-                != config.file_to_module_dir[exe2_path]
+                config.file_to_module_dir[str(exe1_path)]
+                != config.file_to_module_dir[str(exe2_path)]
             )

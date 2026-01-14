@@ -7,6 +7,7 @@ import logging
 import os
 import shlex
 from dataclasses import dataclass, field
+from pathlib import Path
 
 log = logging.getLogger(__name__)
 
@@ -31,25 +32,24 @@ def find_compile_commands(root_path: str, custom_path: str | None = None) -> str
     4. root_path/builddir/compile_commands.json
     5. Recursive search in subdirectories
     """
+    root = Path(root_path)
     if custom_path:
-        if os.path.isabs(custom_path):
-            check_path = custom_path
-        else:
-            check_path = os.path.join(root_path, custom_path)
-        if os.path.isfile(check_path):
-            return os.path.abspath(check_path)
+        custom = Path(custom_path)
+        check_path = custom if custom.is_absolute() else root / custom
+        if check_path.is_file():
+            return str(check_path.resolve())
         log.warning("Specified compile_commands.json not found: %s", custom_path)
         return None
 
     search_paths = [
-        os.path.join(root_path, "compile_commands.json"),
-        os.path.join(root_path, "build", "compile_commands.json"),
-        os.path.join(root_path, "builddir", "compile_commands.json"),
+        root / "compile_commands.json",
+        root / "build" / "compile_commands.json",
+        root / "builddir" / "compile_commands.json",
     ]
 
     for path in search_paths:
-        if os.path.isfile(path):
-            return os.path.abspath(path)
+        if path.is_file():
+            return str(path.resolve())
 
     # Recursive search for projects in subdirectories
     for root, dirs, files in os.walk(root_path):
@@ -59,7 +59,7 @@ def find_compile_commands(root_path: str, custom_path: str | None = None) -> str
             if not d.startswith(".") and d not in ("node_modules", "__pycache__")
         ]
         if "compile_commands.json" in files:
-            return os.path.abspath(os.path.join(root, "compile_commands.json"))
+            return str((Path(root) / "compile_commands.json").resolve())
 
     return None
 
@@ -69,9 +69,10 @@ def parse_compile_commands(
 ) -> CompileCommandsConfig:
     """Parse compile_commands.json and extract configuration."""
     config = CompileCommandsConfig()
+    path_obj = Path(path)
 
     try:
-        with open(path, encoding="utf-8") as f:
+        with path_obj.open(encoding="utf-8") as f:
             entries = json.load(f)
     except (OSError, json.JSONDecodeError) as e:
         log.error("Failed to parse compile_commands.json: %s", e)
@@ -84,15 +85,16 @@ def parse_compile_commands(
     # Map basenames to workspace paths for path normalization
     workspace_files: dict[str, str] = {}
     if root_path:
-        build_dir = os.path.dirname(path)
+        build_dir = path_obj.parent
+        build_dir_str = "" if build_dir == Path(".") else str(build_dir)
         for root, _, files in os.walk(root_path):
-            if build_dir and root.startswith(build_dir):
+            if build_dir_str and root.startswith(build_dir_str):
                 continue
             for f in files:
                 if "-pp.f90" in f.lower() or "-pp.f" in f.lower():
                     continue
                 if _is_fortran_file(f):
-                    workspace_files[f] = os.path.join(root, f)
+                    workspace_files[f] = str(Path(root) / f)
 
     for entry in entries:
         if not isinstance(entry, dict):
@@ -147,17 +149,18 @@ def _normalize_source_path(
     if not source_file:
         return None
 
-    if not os.path.isabs(source_file):
-        source_file = os.path.join(directory, source_file)
+    source_path = Path(source_file)
+    if not source_path.is_absolute():
+        source_path = Path(directory) / source_path
 
-    source_file = os.path.normpath(source_file)
+    source_path = source_path.resolve(strict=False)
 
-    if root_path and not os.path.exists(source_file):
-        basename = os.path.basename(source_file)
+    if root_path and not source_path.exists():
+        basename = source_path.name
         if basename in workspace_files:
-            source_file = workspace_files[basename]
+            source_path = Path(workspace_files[basename])
 
-    return source_file
+    return str(source_path)
 
 
 def _get_arguments(entry: dict) -> list | None:
@@ -237,9 +240,10 @@ def _resolve_path(path: str, directory: str) -> str | None:
     """Resolve path relative to directory."""
     if not path:
         return None
-    if not os.path.isabs(path):
-        path = os.path.join(directory, path)
-    return os.path.normpath(path)
+    resolved = Path(path)
+    if not resolved.is_absolute():
+        resolved = Path(directory) / resolved
+    return str(resolved.resolve(strict=False))
 
 
 def _parse_define(define: str) -> tuple[str, str]:
