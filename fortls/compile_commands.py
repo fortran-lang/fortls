@@ -22,6 +22,11 @@ class CompileCommandsConfig:
     file_to_module_dir: dict[str, str] = field(default_factory=dict)
 
 
+def _normpath(path: Path) -> Path:
+    """Normalize paths without resolving symlinks."""
+    return Path(os.path.normpath(str(path)))
+
+
 def find_compile_commands(root_path: str, custom_path: str | None = None) -> str | None:
     """Search for compile_commands.json.
 
@@ -37,7 +42,7 @@ def find_compile_commands(root_path: str, custom_path: str | None = None) -> str
         custom = Path(custom_path)
         check_path = custom if custom.is_absolute() else root / custom
         if check_path.is_file():
-            return str(check_path.resolve())
+            return str(check_path.absolute())
         log.warning("Specified compile_commands.json not found: %s", custom_path)
         return None
 
@@ -49,7 +54,7 @@ def find_compile_commands(root_path: str, custom_path: str | None = None) -> str
 
     for path in search_paths:
         if path.is_file():
-            return str(path.resolve())
+            return str(path.absolute())
 
     # Recursive search for projects in subdirectories
     for root, dirs, files in os.walk(root_path):
@@ -59,7 +64,7 @@ def find_compile_commands(root_path: str, custom_path: str | None = None) -> str
             if not d.startswith(".") and d not in ("node_modules", "__pycache__")
         ]
         if "compile_commands.json" in files:
-            return str((Path(root) / "compile_commands.json").resolve())
+            return str((Path(root) / "compile_commands.json").absolute())
 
     return None
 
@@ -153,7 +158,7 @@ def _normalize_source_path(
     if not source_path.is_absolute():
         source_path = Path(directory) / source_path
 
-    source_path = source_path.resolve(strict=False)
+    source_path = _normpath(source_path)
 
     if root_path and not source_path.exists():
         basename = source_path.name
@@ -243,7 +248,7 @@ def _resolve_path(path: str, directory: str) -> str | None:
     resolved = Path(path)
     if not resolved.is_absolute():
         resolved = Path(directory) / resolved
-    return str(resolved.resolve(strict=False))
+    return str(_normpath(resolved))
 
 
 def _parse_define(define: str) -> tuple[str, str]:

@@ -293,12 +293,14 @@ def find_in_workspace(
     return matching_symbols
 
 
-def climb_type_tree(var_stack, curr_scope: Scope, obj_tree: dict):
+def climb_type_tree(var_stack, curr_scope: Scope, obj_tree: dict, obj_tree_getter=None):
     """Walk up user-defined type sequence to determine final field type"""
     # Find base variable in current scope
     iVar = 0
     var_name = var_stack[iVar].strip().lower()
-    var_obj = find_in_scope(curr_scope, var_name, obj_tree)
+    var_obj = find_in_scope(
+        curr_scope, var_name, obj_tree, obj_tree_getter=obj_tree_getter
+    )
     if var_obj is None:
         return None
     # Search for type, then next variable in stack and so on
@@ -314,7 +316,13 @@ def climb_type_tree(var_stack, curr_scope: Scope, obj_tree: dict):
             break
         # Find next variable by name in type
         var_name = var_stack[iVar].strip().lower()
-        var_obj = find_in_scope(type_obj, var_name, obj_tree, local_only=True)
+        var_obj = find_in_scope(
+            type_obj,
+            var_name,
+            obj_tree,
+            local_only=True,
+            obj_tree_getter=obj_tree_getter,
+        )
         # Return if not found
         if var_obj is None:
             return None

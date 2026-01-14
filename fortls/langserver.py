@@ -573,7 +573,12 @@ class LangServer:
         scope_list = []
         if is_member:
             curr_scope = file_obj.ast.get_inner_scope(ac_line + 1)
-            type_scope = climb_type_tree(var_stack, curr_scope, self.obj_tree)
+            type_scope = climb_type_tree(
+                var_stack,
+                curr_scope,
+                self.obj_tree,
+                obj_tree_getter=self._make_obj_getter(path),
+            )
             # Set enclosing type as scope
             if type_scope is None:
                 return None
@@ -774,9 +779,15 @@ class LangServer:
             )
             return var
         curr_scope = def_file.ast.get_inner_scope(def_line + 1)
+        obj_getter = self._make_obj_getter(def_file.path)
         # Traverse type tree if necessary
         if is_member:
-            type_scope = climb_type_tree(var_stack, curr_scope, self.obj_tree)
+            type_scope = climb_type_tree(
+                var_stack,
+                curr_scope,
+                self.obj_tree,
+                obj_tree_getter=obj_getter,
+            )
             # Set enclosing type as scope
             if type_scope is None:
                 return None
@@ -802,9 +813,7 @@ class LangServer:
                 def_name,
                 self.obj_tree,
                 var_line_number=def_line + 1,
-                obj_tree_getter=lambda key: self._get_from_obj_tree(
-                    key, def_file.path
-                ),  # Create a getter that uses the requesting file for disambiguation
+                obj_tree_getter=obj_getter,
             )
         # Search in global scope
         if var_obj is None:
@@ -905,9 +914,15 @@ class LangServer:
             return None
         #
         curr_scope = file_obj.ast.get_inner_scope(sig_line + 1)
+        obj_getter = self._make_obj_getter(path)
         # Traverse type tree if necessary
         if is_member:
-            type_scope = climb_type_tree(var_stack, curr_scope, self.obj_tree)
+            type_scope = climb_type_tree(
+                var_stack,
+                curr_scope,
+                self.obj_tree,
+                obj_tree_getter=obj_getter,
+            )
             # Set enclosing type as scope
             if type_scope is None:
                 curr_scope = None
@@ -921,7 +936,7 @@ class LangServer:
                 curr_scope,
                 sub_name,
                 self.obj_tree,
-                obj_tree_getter=lambda key: self._get_from_obj_tree(key, path),
+                obj_tree_getter=obj_getter,
             )
         # Search in global scope
         if var_obj is None:
@@ -1691,7 +1706,7 @@ class LangServer:
         log.info("Loading compile_commands.json from: %s", cc_path)
         config = parse_compile_commands(cc_path, self.root_path)
 
-        self.include_dirs = self.include_dirs | config.include_dirs
+        self.include_dirs = set(self.include_dirs) | config.include_dirs
 
         merged_pp_defs = config.pp_defs.copy()
         merged_pp_defs.update(self.pp_defs)
@@ -1702,8 +1717,10 @@ class LangServer:
 
         # Exclude build directory to avoid preprocessed files
         build_dir = Path(cc_path).parent
-        build_dir_str = str(build_dir)
+        build_dir_str = "" if build_dir == Path(".") else str(build_dir)
         if build_dir_str and build_dir_str != self.root_path:
+            if not isinstance(self.excl_paths, set):
+                self.excl_paths = set(self.excl_paths)
             self.excl_paths.add(build_dir_str)
 
     def _resolve_globs_in_paths(self) -> None:
@@ -1875,6 +1892,14 @@ class LangServer:
                     return obj
 
         return entries[0][0]
+
+    def _make_obj_getter(self, filepath: str):
+        """Create a getter function for obj_tree disambiguation."""
+
+        def getter(key: str):
+            return self._get_from_obj_tree(key, filepath)
+
+        return getter
 
     def _get_module_dir_for_file(self, filepath: str) -> str | None:
         """Get module directory for a file from compile_commands.json info."""
