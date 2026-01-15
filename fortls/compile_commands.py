@@ -98,7 +98,20 @@ def parse_compile_commands(
             for f in files:
                 if "-pp.f90" in f.lower() or "-pp.f" in f.lower():
                     continue
-                if _is_fortran_file(f):
+                if f.endswith(
+                    (
+                        ".f90",
+                        ".F90",
+                        ".f",
+                        ".F",
+                        ".f95",
+                        ".F95",
+                        ".f03",
+                        ".F03",
+                        ".f08",
+                        ".F08",
+                    )
+                ):
                     workspace_files[f] = str(Path(root) / f)
 
     for entry in entries:
@@ -135,13 +148,6 @@ def parse_compile_commands(
     )
 
     return config
-
-
-def _is_fortran_file(filename: str) -> bool:
-    """Check if filename has a Fortran extension."""
-    return filename.endswith(
-        (".f90", ".F90", ".f", ".F", ".f95", ".F95", ".f03", ".F03", ".f08", ".F08")
-    )
 
 
 def _normalize_source_path(
@@ -225,7 +231,12 @@ def _parse_compiler_args(
             if define is not None:
                 if arg == "-D":
                     i += 1
-                name, value = _parse_define(define)
+                # Parse define: NAME or NAME=VALUE
+                if "=" in define:
+                    name, value = define.split("=", 1)
+                    name = name.strip()
+                else:
+                    name, value = define.strip(), "True"
                 if name:
                     pp_defs[name] = value
 
@@ -249,13 +260,3 @@ def _resolve_path(path: str, directory: str) -> str | None:
     if not resolved.is_absolute():
         resolved = Path(directory) / resolved
     return str(_normpath(resolved))
-
-
-def _parse_define(define: str) -> tuple[str, str]:
-    """Parse preprocessor definition into (name, value)."""
-    if not define:
-        return ("", "")
-    if "=" in define:
-        name, value = define.split("=", 1)
-        return (name.strip(), value)
-    return (define.strip(), "True")

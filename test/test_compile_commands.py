@@ -10,39 +10,35 @@ from setup_tests import run_request, test_dir, write_rpc_request
 
 from fortls.compile_commands import (
     _parse_compiler_args,
-    _parse_define,
     find_compile_commands,
     parse_compile_commands,
 )
 
 
 class TestParseDefine:
-    """Tests for _parse_define function"""
+    """Tests for define parsing (via _parse_compiler_args)"""
 
     def test_simple_define(self):
-        name, value = _parse_define("DEBUG")
-        assert name == "DEBUG"
-        assert value == "True"
+        _, pp_defs, _ = _parse_compiler_args(["gfortran", "-DDEBUG"], "/home")
+        assert pp_defs["DEBUG"] == "True"
 
     def test_define_with_value(self):
-        name, value = _parse_define("VERSION=1.0")
-        assert name == "VERSION"
-        assert value == "1.0"
+        _, pp_defs, _ = _parse_compiler_args(["gfortran", "-DVERSION=1.0"], "/home")
+        assert pp_defs["VERSION"] == "1.0"
 
     def test_define_with_quoted_value(self):
-        name, value = _parse_define('STR="hello world"')
-        assert name == "STR"
-        assert value == '"hello world"'
+        _, pp_defs, _ = _parse_compiler_args(
+            ["gfortran", '-DSTR="hello world"'], "/home"
+        )
+        assert pp_defs["STR"] == '"hello world"'
 
     def test_define_with_equals_in_value(self):
-        name, value = _parse_define("EXPR=a=b")
-        assert name == "EXPR"
-        assert value == "a=b"
+        _, pp_defs, _ = _parse_compiler_args(["gfortran", "-DEXPR=a=b"], "/home")
+        assert pp_defs["EXPR"] == "a=b"
 
-    def test_empty_define(self):
-        name, value = _parse_define("")
-        assert name == ""
-        assert value == ""
+    def test_no_define(self):
+        _, pp_defs, _ = _parse_compiler_args(["gfortran", "-c", "test.f90"], "/home")
+        assert len(pp_defs) == 0
 
 
 class TestParseCompilerArgs:
