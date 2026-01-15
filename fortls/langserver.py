@@ -8,6 +8,7 @@ import subprocess
 import sys
 import traceback
 import urllib.request
+from collections import namedtuple
 from multiprocessing import Pool
 from pathlib import Path
 from typing import Pattern
@@ -65,6 +66,9 @@ from fortls.parsers.internal.utilities import (
 from fortls.parsers.internal.variable import Variable
 from fortls.regex_patterns import create_src_file_exts_str
 from fortls.version import __version__
+
+# Entry in obj_tree: stores an object and its source file path
+ObjTreeEntry = namedtuple("ObjTreeEntry", ["obj", "filepath"])
 
 # Global regexes
 # TODO: I think this can be replaced by fortls.regex_patterns type & class
@@ -438,7 +442,7 @@ class LangServer:
             import_var_list = []
             for use_mod, use_info in use_dict.items():
                 if type(use_info) is Use:
-                    scope = self.obj_tree[use_mod][0][0]
+                    scope = self.obj_tree[use_mod][0].obj
                     only_list = use_info.rename()
                     tmp_list = child_candidates(
                         scope, only_list, req_abstract=abstract_only
@@ -468,7 +472,7 @@ class LangServer:
 
             # Add globals
             if inc_globals:
-                tmp_list = [entries[0][0] for (_, entries) in self.obj_tree.items()]
+                tmp_list = [entries[0].obj for (_, entries) in self.obj_tree.items()]
                 var_list += tmp_list + self.intrinsic_funs
                 rename_list += [None for _ in tmp_list + self.intrinsic_funs]
             if import_var_list:
@@ -597,7 +601,7 @@ class LangServer:
         if line_context == "mod_only":
             # Module names only (USE statement)
             for key in self.obj_tree:
-                candidate = self.obj_tree[key][0][0]
+                candidate = self.obj_tree[key][0].obj
                 if (
                     candidate.get_type() == MODULE_TYPE_ID
                 ) and candidate.name.lower().startswith(var_prefix):
@@ -608,7 +612,7 @@ class LangServer:
             name_only = True
             mod_name = context_info.lower()
             if mod_name in self.obj_tree:
-                scope_list = [self.obj_tree[mod_name][0][0]]
+                scope_list = [self.obj_tree[mod_name][0].obj]
                 public_only = True
                 include_globals = False
                 type_mask[CLASS_TYPE_ID] = False
@@ -1862,14 +1866,14 @@ class LangServer:
         """Add an object to obj_tree (supports multiple objects with same key)."""
         if key not in self.obj_tree:
             self.obj_tree[key] = []
-        self.obj_tree[key].append([obj, filepath])
+        self.obj_tree[key].append(ObjTreeEntry(obj, filepath))
 
     def _remove_from_obj_tree(self, key: str, filepath: str) -> None:
         """Remove objects from obj_tree that belong to a specific file."""
         if key not in self.obj_tree:
             return
         self.obj_tree[key] = [
-            entry for entry in self.obj_tree[key] if entry[1] != filepath
+            entry for entry in self.obj_tree[key] if entry.filepath != filepath
         ]
         if not self.obj_tree[key]:
             del self.obj_tree[key]
@@ -1883,15 +1887,15 @@ class LangServer:
             return None
 
         if len(entries) == 1 or requesting_filepath is None:
-            return entries[0][0]
+            return entries[0].obj
 
         req_module_dir = self._get_module_dir_for_file(requesting_filepath)
         if req_module_dir:
-            for obj, obj_filepath in entries:
-                if self._get_module_dir_for_file(obj_filepath) == req_module_dir:
-                    return obj
+            for entry in entries:
+                if self._get_module_dir_for_file(entry.filepath) == req_module_dir:
+                    return entry.obj
 
-        return entries[0][0]
+        return entries[0].obj
 
     def _make_obj_getter(self, filepath: str):
         """Create a getter function for obj_tree disambiguation."""

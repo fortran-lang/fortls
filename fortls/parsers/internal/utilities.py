@@ -275,9 +275,8 @@ def find_in_workspace(
     matching_symbols = []
     query = query.lower()
     for _, entries in obj_tree.items():
-        # entries is a list of [obj, filepath] pairs; use first entry
-        top_obj = entries[0][0]
-        top_uri = entries[0][1]
+        # entries is a list of ObjTreeEntry(obj, filepath); use first entry
+        top_obj, top_uri = entries[0]
         if top_uri is not None:
             if top_obj.name.lower().find(query) > -1:
                 matching_symbols.append(top_obj)

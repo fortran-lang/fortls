@@ -51,7 +51,7 @@ class Submodule(Module):
         if not self.ancestor_name:
             return
         if self.ancestor_name in obj_tree:
-            self.ancestor_obj = obj_tree[self.ancestor_name][0][0]
+            self.ancestor_obj, _ = obj_tree[self.ancestor_name][0]
 
     def require_inherit(self):
         return True
