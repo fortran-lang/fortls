@@ -12,6 +12,15 @@ if TYPE_CHECKING:
     from .scope import Scope
 
 
+def _get_obj_from_tree(key: str, obj_tree: dict, obj_tree_getter=None):
+    """Get object from obj_tree, using getter if provided for disambiguation."""
+    if obj_tree_getter is not None:
+        return obj_tree_getter(key)
+    if key in obj_tree and obj_tree[key]:
+        return obj_tree[key][0].obj
+    return None
+
+
 def get_use_tree(
     scope: Scope,
     use_dict: dict[str, Use | Import],
@@ -27,13 +36,6 @@ def get_use_tree(
         rename_map = {}
     if curr_path is None:
         curr_path = []
-
-    def get_obj_from_tree(key: str):
-        if obj_tree_getter is not None:
-            return obj_tree_getter(key)
-        if key in obj_tree and obj_tree[key]:
-            return obj_tree[key][0][0]
-        return None
 
     def intersect_only(use_stmnt: Use | Import):
         tmp_list = []
@@ -119,7 +121,7 @@ def get_use_tree(
         if type(use_stmnt) is Import:
             continue
         # Descend USE tree
-        mod_obj = get_obj_from_tree(use_stmnt.mod_name)
+        mod_obj = _get_obj_from_tree(use_stmnt.mod_name, obj_tree, obj_tree_getter)
         if mod_obj is None:
             continue
         use_dict = get_use_tree(
@@ -144,13 +146,6 @@ def find_in_scope(
     obj_tree_getter=None,
 ):
     from .include import Include
-
-    def get_obj_from_tree(key: str):
-        if obj_tree_getter is not None:
-            return obj_tree_getter(key)
-        if key in obj_tree and obj_tree[key]:
-            return obj_tree[key][0][0]
-        return None
 
     def check_scope(
         local_scope: Scope,
@@ -226,7 +221,7 @@ def find_in_scope(
         # If use_mod is Import then it will not exist in the obj_tree
         if type(use_info) is Import:
             continue
-        use_scope = get_obj_from_tree(use_mod)
+        use_scope = _get_obj_from_tree(use_mod, obj_tree, obj_tree_getter)
         if use_scope is None:
             continue
         # Module name is request
