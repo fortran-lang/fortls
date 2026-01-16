@@ -28,6 +28,7 @@ jobs:
         run: black --diff --check --verbose .
 
       - name: Check schema is up to date
+        if: matrix.python-version >= '3.9'
         run: |
           python3 -m fortls.schema
           git diff --exit-code ./fortls/fortls.schema.json
