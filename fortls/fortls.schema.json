@@ -182,6 +182,7 @@
       "uniqueItems": true
     },
     "pp_defs": {
+      "additionalProperties": true,
       "default": {},
       "description": "A dictionary with additional preprocessor definitions. Preprocessor definitions are normally included via INCLUDE_DIRS",
       "title": "Pp Defs",
