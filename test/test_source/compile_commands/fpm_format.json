@@ -1,0 +1,12 @@
+[
+  {
+    "directory": "/home/user/fpm_project",
+    "arguments": ["gfortran", "-Iinclude", "-Ibuild", "-DUSE_MPI", "-DAPP_NAME=myapp", "-c", "src/module.f90", "-o", "build/module.o"],
+    "file": "src/module.f90"
+  },
+  {
+    "directory": "/home/user/fpm_project",
+    "arguments": ["gfortran", "-Iinclude", "-Ibuild", "-DUSE_MPI", "-DAPP_NAME=myapp", "-c", "app/main.f90", "-o", "build/main.o"],
+    "file": "app/main.f90"
+  }
+]
