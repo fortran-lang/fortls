@@ -27,13 +27,11 @@ def test_hover_abstract_int_procedure():
     string += hover_req(file_path, 7, 30)
     errcode, results = run_request(string, fortls_args=["--sort_keywords", "-n1"])
     assert errcode == 0
-    ref_results = [
-        """```fortran90
+    ref_results = ["""```fortran90
 SUBROUTINE test(a, b)
  INTEGER(4), DIMENSION(3,6), INTENT(IN) :: a
  REAL(8), DIMENSION(4), INTENT(OUT) :: b
-```"""
-    ]
+```"""]
     validate_hover(results, ref_results)
 
 
@@ -389,14 +387,12 @@ def test_hover_recursive():
     string += hover_req(file_path, 9, 40)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
     assert errcode == 0
-    ref_results = [
-        """```fortran90
+    ref_results = ["""```fortran90
 RECURSIVE SUBROUTINE recursive_assign_descending(node, vector, current_loc)
  TYPE(tree_inode), POINTER, INTENT(IN) :: node
  INTEGER, DIMENSION(:), INTENT(INOUT) :: vector
  INTEGER, INTENT(INOUT) :: current_loc
-```"""
-    ]
+```"""]
     validate_hover(results, ref_results)
 
 
