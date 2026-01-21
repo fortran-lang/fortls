@@ -83,6 +83,20 @@ def test_command_line_code_actions_options():
     assert args.enable_code_actions
 
 
+def test_command_line_folding_range_options():
+    args = parser.parse_args(
+        "--folding-range-mode syntax --folding-range-comment-lines 5".split()
+    )
+    assert args.folding_range_mode == "syntax"
+    assert args.folding_range_comment_lines == 5
+
+
+def test_command_line_folding_range_options_default():
+    args = parser.parse_args("".split())
+    assert args.folding_range_mode == "indent"
+    assert args.folding_range_comment_lines == 3
+
+
 def unittest_server_init(conn=None):
     from fortls.langserver import LangServer
 
