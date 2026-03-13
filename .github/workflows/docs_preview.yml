@@ -22,8 +22,8 @@ jobs:
   deploy-preview:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
       - name: Build docs
@@ -31,7 +31,7 @@ jobs:
           pip install -e .[dev,docs]
           make -C docs html
       - name: Deploy Preview
-        uses: rossjrw/pr-preview-action@v1.6.0
+        uses: rossjrw/pr-preview-action@v1.8.0
         with:
           source-dir: docs/_build/html
           preview-branch: gh-pages
