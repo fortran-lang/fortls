@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from re import I, compile
 from typing import Pattern
+
+log = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -199,7 +202,7 @@ def create_src_file_exts_regex(input_exts: list[str] = []) -> Pattern[str]:
         # Add its expression as an OR and force they match the end of the string
         return re.compile(rf"(({'$)|('.join(EXPRESSIONS)}$))")
     except re.error:
-        # TODO: Add a warning to the logger
+        log.warning("Invalid REGEX provided for file %s", input_exts, exc_info=True)
         return re.compile(rf"({DEFAULT}$)")
 
 
