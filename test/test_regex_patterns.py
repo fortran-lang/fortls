@@ -33,7 +33,7 @@ from fortls.regex_patterns import create_src_file_exts_regex
         ([], ["test.ff", "test.f901", "test.f90.ff"], [False, False, False]),
         ([r"\.inc"], ["test.inc", "testinc", "test.inc2"], [True, False, False]),
         (["inc.*"], ["test.inc", "testinc", "test.inc2"], [True, True, True]),
-        (["("], ["test.f90"], [True]),
+        (["("], ["test.f90", "test.f90.ff"], [True, False]),
     ],
 )
 def test_src_file_exts(
