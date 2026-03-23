@@ -1,4 +1,5 @@
 import os
+
 from fortls.parsers.internal.parser import FortranFile
 
 
