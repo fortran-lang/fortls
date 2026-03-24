@@ -1,10 +1,12 @@
 """
 Focused tests for hover documentation markdown handling to increase patch coverage.
 """
+
 import os
-import pytest
-import tempfile
 import shutil
+import tempfile
+
+import pytest
 
 from fortls.parsers.internal.parser import FortranFile
 
@@ -27,9 +29,9 @@ def _parse_fortran(code: str, temp_dir: str):
 def _get_object_from_program(ast, obj_name: str):
     """Helper to get a subroutine or function by name from AST"""
     for name, obj in ast.global_dict.items():
-        if hasattr(obj, 'get_children'):
+        if hasattr(obj, "get_children"):
             for child in obj.get_children():
-                if hasattr(child, 'name') and child.name.lower() == obj_name.lower():
+                if hasattr(child, "name") and child.name.lower() == obj_name.lower():
                     return child
     return None
 
@@ -120,8 +122,8 @@ def test_trailing_spaces_handling(temp_dir):
     code = """
 program test_prog
 contains
-!> Description with trailing spaces    
-!! Another line with spaces     
+!> Description with trailing spaces
+!! Another line with spaces
 subroutine trailing_spaces(a)
     integer, intent(in) :: a !! Arg a
 end subroutine trailing_spaces
