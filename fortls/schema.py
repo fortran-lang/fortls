@@ -24,7 +24,11 @@ def create_schema(root: pathlib.Path | None = None):
             continue
         val = arg.default
         desc: str = arg.help.replace("%(default)s", str(val))  # type: ignore
-        only_vals[arg.dest] = (type(val), Field(val, description=desc))  # type: ignore
+        if val is None and arg.type is not None:
+            field_type = arg.type | None
+        else:
+            field_type = type(val)
+        only_vals[arg.dest] = (field_type, Field(val, description=desc))  # type: ignore
 
     m = create_model("fortls schema", **only_vals)
     m.__doc__ = "Schema for the fortls Fortran Language Server"
