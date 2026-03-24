@@ -45,7 +45,7 @@ def temp_dir():
 
 
 def test_empty_docstring_case(temp_dir):
-    """TEST 1: Empty docstring case - covers get_docs_full when doc_str is None"""
+    """TEST 1: Empty docstring case"""
     code = """
 program test_prog
 contains
@@ -66,7 +66,7 @@ end program test_prog
 
 
 def test_markdown_list_with_blank_line(temp_dir):
-    """TEST 2: Markdown list with blank line - covers markdown formatting with blank lines"""
+    """TEST 2: Markdown list with blank line"""
     code = """
 program test_prog
 contains
@@ -93,7 +93,7 @@ end program test_prog
 
 
 def test_multiple_params_one_missing_doc(temp_dir):
-    """TEST 3: Multiple params (one missing doc) - covers mixed arg documentation handling"""
+    """TEST 3: Multiple params, one missing doc"""
     code = """
 program test_prog
 contains
@@ -118,7 +118,7 @@ end program test_prog
 
 
 def test_trailing_spaces_handling(temp_dir):
-    """TEST 4: Trailing spaces handling - covers docstring parsing with whitespace issues"""
+    """TEST 4: Trailing spaces handling"""
     code = """
 program test_prog
 contains
@@ -141,7 +141,7 @@ end program test_prog
 
 
 def test_multiple_markdown_blocks(temp_dir):
-    """TEST 5: Multiple markdown blocks - covers branch coverage for multiple doc blocks"""
+    """TEST 5: Multiple markdown blocks"""
     code = """
 program test_prog
 contains
@@ -166,7 +166,7 @@ end program test_prog
 
 
 def test_empty_markdown_line_before_list(temp_dir):
-    """TEST 6: Empty markdown line before list - covers edge case in doc parsing"""
+    """TEST 6: Empty markdown line before list"""
     code = """
 program test_prog
 contains
