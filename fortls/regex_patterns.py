@@ -84,7 +84,7 @@ class FortranRegularExpressions:
     VAR: Pattern = compile(
         r"[ ]*(INTEGER|REAL|DOUBLE[ ]*PRECISION|COMPLEX"
         r"|DOUBLE[ ]*COMPLEX|CHARACTER|LOGICAL|PROCEDURE"
-        r"|EXTERNAL|CLASS|TYPE)",  # external :: variable is handled by this
+        r"|EXTERNAL|CLASS|TYPE|ENUMERATOR)",  # external :: variable is handled by this
         I,
     )
     KIND_SPEC: Pattern = compile(r"[ ]*([*]?\([ ]*[\w*:]|\*[ ]*[0-9:]*)", I)
