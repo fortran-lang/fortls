@@ -45,6 +45,7 @@ def test_src_file_exts(
     results = [bool(regex.search(file)) for file in input_files]
     assert results == matches
 
+
 def test_include_with_slash():
     from fortls.regex_patterns import FortranRegularExpressions
 
