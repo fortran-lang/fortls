@@ -151,6 +151,9 @@ class FortranRegularExpressions:
     )
     # Object regex patterns
     CLASS_VAR: Pattern = compile(r"(TYPE|CLASS)[ ]*\(", I)
+    TYPE_DEF_REGEX: Pattern = compile(
+        r"\b(TYPE|CLASS)\s*\(\s*[a-zA-Z_][a-zA-Z0-9_]*\s*$", I
+    )
     DEF_KIND: Pattern = compile(r"(\w*)[ ]*\((?:KIND|LEN)?[ =]*(\w*)", I)
     OBJBREAK: Pattern = compile(r"[\/\-(.,+*<>=: ]", I)
 
