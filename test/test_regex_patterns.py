@@ -44,3 +44,12 @@ def test_src_file_exts(
     regex = create_src_file_exts_regex(input_exts)
     results = [bool(regex.search(file)) for file in input_files]
     assert results == matches
+
+def test_include_with_slash():
+    from fortls.regex_patterns import FortranRegularExpressions
+
+    line = '#include "petsc/finclude/petscvec.h"'
+    match = FortranRegularExpressions.PP_INCLUDE.match(line)
+
+    assert match is not None
+    assert match.group(1) == "petsc/finclude/petscvec.h"
