@@ -33,7 +33,7 @@ def _get_function_from_program(ast, func_name: str):
 
 def test_function_docstring_indentation():
     """Test that Function.get_hover() does not produce wrong indentation in docs.
-    
+
     Regression test for bug where documentation was joined with "  \\n" instead of "\\n",
     causing markdown lists to have incorrect indentation like "\\n  -" instead of "\\n-".
     """
@@ -59,19 +59,19 @@ end program test_prog
         ast = _parse_fortran(code, temp_dir)
         func = _get_function_from_program(ast, "my_func")
         assert func is not None, "Could not find function 'my_func'"
-        
+
         # Get hover with long=True to include docs
         hover, docs = func.get_hover(long=True)
-        
+
         # Verify docs are not incorrectly indented
         # The bug was: "  \n".join(docs) caused "\n  -" instead of "\n-"
         assert "\n  -" not in docs, f"Found wrong indentation in docs: {docs}"
         assert "\n  *" not in docs, f"Found wrong indentation in docs: {docs}"
-        
+
         # Verify markdown list items are present without wrong indentation
         assert "item1" in docs
         assert "item2" in docs
-        
+
         # Also verify the markdown version
         md = func.get_hover_md(long=True)
         assert "\n  -" not in md, f"Found wrong indentation in markdown: {md}"
@@ -102,13 +102,13 @@ end module test_mod
         ast = _parse_fortran(code, temp_dir)
         func = _get_function_from_program(ast, "add")
         assert func is not None, "Could not find function 'add'"
-        
+
         # Get hover with long=True
         hover, docs = func.get_hover(long=True)
-        
+
         # Verify no wrong indentation
         assert "\n  -" not in docs, f"Found wrong indentation in docs: {docs}"
-        
+
         # Verify markdown list items are present
         assert "option1" in docs
         assert "option2" in docs
