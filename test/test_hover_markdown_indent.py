@@ -32,10 +32,12 @@ def _get_function_from_program(ast, func_name: str):
 
 
 def test_function_docstring_indentation():
-    """Test that Function.get_hover() does not produce wrong indentation in docs.
+    """Test Function.get_hover() produces correct markdown without extra indentation.
 
-    Regression test for bug where documentation was joined with "  \\n" instead of "\\n",
-    causing markdown lists to have incorrect indentation like "\\n  -" instead of "\\n-".
+    Regression test for bug where documentation list items had extra leading
+    whitespace due to docs being joined with "  \\n" instead of "\\n".
+    Before fix: "\\n  - item" (wrong - 2 extra spaces)
+    After fix: "\\n- item" (correct - no extra spaces)
     """
     temp_dir = tempfile.mkdtemp()
     try:
