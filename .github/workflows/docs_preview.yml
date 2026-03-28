@@ -31,6 +31,7 @@ jobs:
           pip install -e .[dev,docs]
           make -C docs html
       - name: Deploy Preview
+        if: github.event.pull_request.head.repo.full_name == github.repository
         uses: rossjrw/pr-preview-action@v1.8.1
         with:
           source-dir: docs/_build/html
