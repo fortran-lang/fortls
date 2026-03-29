@@ -46,20 +46,19 @@ def test_src_file_exts(
     assert results == matches
 
 
-
 def test_issue_481_include_with_slashes():
     """Test that preprocessor includes correctly capture directory slashes."""
     # Import the class instead of the standalone variable
     from fortls.regex_patterns import FortranRegularExpressions
-    
+
     # The exact string that was failing for the user
     test_string = '#include "petsc/finclude/petscvec.h"'
-    
+
     # Call the regex pattern through the class
     match = FortranRegularExpressions.PP_INCLUDE.match(test_string)
-    
+
     # Assert that it found a match
     assert match is not None
-    
+
     # Assert that the captured group contains the full path with slashes
     assert match.group(1) == '"petsc/finclude/petscvec.h"'
