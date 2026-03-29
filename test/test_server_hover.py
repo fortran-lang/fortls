@@ -694,6 +694,7 @@ def test_multiline_lexical_token():
 
 def test_issue_28_hover_lowercase():
     """Verify that lowercase logic works as intended for Issue #28."""
+
     # We define a simple mock-up of the logic we added to langserver.py
     def mock_create_hover(string: str, lowercase_enabled: bool):
         if lowercase_enabled:
@@ -701,9 +702,9 @@ def test_issue_28_hover_lowercase():
         return string
 
     test_input = "INTEGER, INTENT(IN) :: MY_VAR"
-    
+
     # Test case 1: Setting is ON
     assert mock_create_hover(test_input, True) == "integer, intent(in) :: my_var"
-    
+
     # Test case 2: Setting is OFF (default)
     assert mock_create_hover(test_input, False) == "INTEGER, INTENT(IN) :: MY_VAR"
