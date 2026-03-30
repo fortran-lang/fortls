@@ -1,6 +1,7 @@
 import os
 import sys
-sys.path.insert(0, '.')
+
+sys.path.insert(0, ".")
 from fortls.parsers.internal.parser import FortranFile, preprocess_file
 
 # Test parsing #include with path
@@ -24,7 +25,7 @@ contents_pp, pp_skips, pp_defines, pp_defs = preprocess_file(
     file_path=file_path,
     pp_defs={},
     include_dirs=include_dirs,
-    debug=False
+    debug=False,
 )
 
 print(f"\nProcessed {len(contents_pp)} lines")
