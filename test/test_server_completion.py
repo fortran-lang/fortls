@@ -366,8 +366,8 @@ def test_comp_documentation():
                     " REAL(8), INTENT(IN) :: scale\n"
                     "```\n"
                     "-----\n"
-                    "Doc 7   \n\n"
-                    "**Parameters:**     \n"
+                    "Doc 7\n\n"
+                    "**Parameters:**\n"
                     "`scale` Doc 8"
                 ),
             },
@@ -385,9 +385,9 @@ def test_comp_documentation():
                     " REAL(8) :: norm\n"
                     "```\n"
                     "-----\n"
-                    "Top level docstring  \n\n"
-                    "**Parameters:**    \n"
-                    "`self` self value docstring  \n\n"
+                    "Top level docstring\n\n"
+                    "**Parameters:**\n"
+                    "`self` self value docstring\n\n"
                     "**Return:**  \n"
                     "`norm`return value docstring"
                 ),

@@ -130,7 +130,7 @@ class Subroutine(Scope):
         keyword_list.append(f"{self.get_desc()} ")
         hover_array = [" ".join(keyword_list) + sub_sig]
         hover_array, docs = self.get_docs_full(hover_array, long, drop_arg)
-        return "\n ".join(hover_array), "   \n".join(docs)
+        return "\n ".join(hover_array), "\n".join(docs)
 
     def get_hover_md(self, long=False, drop_arg=-1):
         return fortran_md(*self.get_hover(long, drop_arg))
@@ -169,7 +169,7 @@ class Subroutine(Scope):
                 hover_array.append(arg)
                 if doc_str:  # If doc_str is not None or ""
                     if has_args:
-                        doc_strs.append("\n**Parameters:**  ")
+                        doc_strs.append("\n**Parameters:**")
                         has_args = False
                     # stripping prevents multiple \n characters from the parser
                     doc_strs.append(f"`{arg_obj.name}` {doc_str}".strip())

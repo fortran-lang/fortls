@@ -122,7 +122,7 @@ class Function(Subroutine):
         elif self.result_type and long:
             # prepend type to function signature
             hover_array[0] = f"{self.result_type} {hover_array[0]}"
-        return "\n ".join(hover_array), "  \n".join(docs)
+        return "\n ".join(hover_array), "\n".join(docs)
 
     # TODO: fix this
     def get_interface(self, name_replace=None, drop_arg=-1, change_strings=None):
