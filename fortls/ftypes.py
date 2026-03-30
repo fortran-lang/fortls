@@ -86,9 +86,19 @@ class IncludeInfo:
     """Holds information about a Fortran INCLUDE statement"""
 
     line_number: int  #: Line number of include
-    path: str  #: File path to include
+    path: str  #: File path to include (original, as written in source)
     file: None  # fortran_file  #: fortran_file object
     scope_objs: list[str]  #: A list of available scopes
+    resolved_path: str | None = None  #: Resolved absolute path of included file
+
+
+@dataclass
+class PpIncludeInfo:
+    """Holds information about a preprocessor #include statement"""
+
+    line_number: int  #: Line number of #include
+    path: str  #: File path to include (original, as written in source)
+    resolved_path: str | None = None  #: Resolved absolute path of included file
 
 
 @dataclass

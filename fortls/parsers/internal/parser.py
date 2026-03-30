@@ -851,6 +851,9 @@ class FortranFile:
         self.contents_split: list[str] = []
         self.contents_pp: list[str] = []
         self.pp_defs: dict = {}
+        self.pp_includes: list = (
+            []
+        )  # List of (line_number, filename, resolved_path) tuples
         self.nLines: int = 0
         self.fixed: bool = False
         self.preproc: bool = False
@@ -1187,12 +1190,14 @@ class FortranFile:
         if include_dirs is None:
             include_dirs = set()
 
-        self.contents_pp, pp_skips, pp_defines, self.pp_defs = preprocess_file(
-            self.contents_split,
-            self.path,
-            pp_defs=pp_defs,
-            include_dirs=include_dirs,
-            debug=debug,
+        self.contents_pp, pp_skips, pp_defines, self.pp_defs, self.pp_includes = (
+            preprocess_file(
+                self.contents_split,
+                self.path,
+                pp_defs=pp_defs,
+                include_dirs=include_dirs,
+                debug=debug,
+            )
         )
         return pp_skips, pp_defines
 
@@ -2109,6 +2114,9 @@ def preprocess_file(
         include_dirs.add(os.path.abspath(os.path.dirname(file_path)))
     pp_skips = []
     pp_defines = []
+    pp_includes = (
+        []
+    )  # Track preprocessor include statements for go-to-definition support
     pp_stack = []
     pp_stack_group = []
     defs_tmp = pp_defs.copy()
@@ -2256,21 +2264,30 @@ def preprocess_file(
             log.debug("%s !!! Include statement(%d)", line.strip(), i + 1)
             include_filename = match.group(1).replace('"', "")
             include_path = None
+            # First try relative to the current file's directory
+            if file_path is not None:
+                file_dir = os.path.dirname(file_path)
+                include_path_tmp = os.path.join(file_dir, include_filename)
+                if os.path.isfile(include_path_tmp):
+                    include_path = os.path.abspath(include_path_tmp)
             # Intentionally keep this as a list and not a set. There are cases
             # where projects play tricks with the include order of their headers
             # to get their codes to compile. Using a set would not permit that.
-            for include_dir in include_dirs:
-                include_path_tmp = os.path.join(include_dir, include_filename)
-                if os.path.isfile(include_path_tmp):
-                    include_path = os.path.abspath(include_path_tmp)
-                    break
+            if include_path is None:
+                for include_dir in include_dirs:
+                    include_path_tmp = os.path.join(include_dir, include_filename)
+                    if os.path.isfile(include_path_tmp):
+                        include_path = os.path.abspath(include_path_tmp)
+                        break
+            # Track this include statement for go-to-definition support
+            pp_includes.append((i + 1, include_filename, include_path))
             if include_path is not None:
                 try:
                     include_file = FortranFile(include_path)
                     err_string, _ = include_file.load_from_disk()
                     if err_string is None:
                         log.debug("\n!!! Parsing include file '%s'", include_path)
-                        _, _, _, defs_tmp = preprocess_file(
+                        _, _, _, defs_tmp, _ = preprocess_file(
                             include_file.contents_split,
                             file_path=include_path,
                             pp_defs=defs_tmp,
@@ -2318,4 +2335,4 @@ def preprocess_file(
                 )
                 line = line_new
         output_file.append(line)
-    return output_file, pp_skips, pp_defines, defs_tmp
+    return output_file, pp_skips, pp_defines, defs_tmp, pp_includes
