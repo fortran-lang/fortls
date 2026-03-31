@@ -6,10 +6,7 @@ This test file specifically covers the pp_includes branch in serve_definition().
 from __future__ import annotations
 
 import os
-from pathlib import Path
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import MagicMock
 
 from fortls.parsers.internal.parser import FortranFile, preprocess_file
 
@@ -61,8 +58,6 @@ class TestServeDefinitionPpIncludes:
 
     def test_serve_definition_pp_include_with_valid_file(self, tmp_path):
         """Test go-to-definition for #include when the included file exists."""
-        from fortls.json_templates import uri_json
-
         # Create the include file
         inc_file = tmp_path / "test.inc"
         inc_file.write_text("integer :: x\n")
@@ -82,6 +77,7 @@ class TestServeDefinitionPpIncludes:
         assert inc_filename == "test.inc"
         assert inc_path is not None
         assert os.path.isfile(inc_path)
+        assert "\\" not in inc_path
 
         # Create mock workspace with our file
         mock_workspace = {str(main_file): ff}
@@ -114,7 +110,8 @@ class TestServeDefinitionPpIncludes:
         main_file = tmp_path / "main.F90"
         main_file.write_text('#include "nonexistent.inc"\nmodule test\nend module\n')
 
-        # Create FortranFile, load from disk, and parse (will track but not find file)
+        # Create FortranFile, load from disk, and parse.
+        # The include is tracked but unresolved because file is missing.
         ff = FortranFile(str(main_file), pp_suffixes=[".F90", ".f90"])
         ff.load_from_disk()  # Must load first
         ff.parse(pp_defs={}, include_dirs={str(tmp_path)})
@@ -145,7 +142,8 @@ class TestServeDefinitionPpIncludes:
         result = ls.serve_definition(request)
 
         # Should fall through to normal definition handling or return None
-        # The pp_includes branch returns None when inc_path is None or os.path.isfile fails
+        # The pp_includes branch returns None when `inc_path` is None
+        # or `os.path.isfile` fails.
         assert result is None
 
     def test_serve_definition_pp_include_empty_list(self, tmp_path):
@@ -176,7 +174,7 @@ class TestServeDefinitionPpIncludes:
         }
 
         # Call serve_definition - should not crash
-        result = ls.serve_definition(request)
+        ls.serve_definition(request)
         # Result depends on whether there's a valid definition at that position
 
     def test_serve_definition_pp_include_line_match(self, tmp_path):
@@ -249,6 +247,7 @@ class TestPpIncludesTracking:
         assert inc_filename == "test.inc"
         assert inc_path is not None
         assert os.path.isfile(inc_path)
+        assert "\\" not in inc_path
 
     def test_pp_includes_multiple_includes(self, tmp_path):
         """Test tracking multiple #include statements."""
