@@ -1082,6 +1082,26 @@ class LangServer:
         file_obj = self.workspace.get(path)
         if file_obj is None:
             return None
+
+        # Check if cursor is on a preprocessor #include statement
+        # Use robust line content matching instead of fragile line number comparison
+        if hasattr(file_obj, "pp_includes") and file_obj.pp_includes:
+            # Get the current line content
+            curr_line = file_obj.get_line(def_line)
+            if curr_line and FRegex.PP_INCLUDE.search(curr_line):
+                # Check if cursor is on the #include line
+                for inc_line, inc_filename, inc_path in file_obj.pp_includes:
+                    if inc_line == def_line + 1 and inc_path is not None:
+                        # Validate the file exists before returning
+                        if os.path.isfile(inc_path):
+                            return uri_json(
+                                path_to_uri(inc_path),  # target URI
+                                0,  # start line
+                                0,  # start character
+                                0,  # end line
+                                0,  # end character
+                            )
+
         var_obj = self.get_definition(file_obj, def_line, def_char)
         if var_obj is None:
             return None
