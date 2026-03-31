@@ -187,7 +187,7 @@ class TestServeDefinitionPpIncludes:
 
         # Create main file with #include on line 2 (0-indexed)
         main_file = tmp_path / "main.F90"
-        main_file.write_text("program main\n#include \"test.inc\"\nend program\n")
+        main_file.write_text('program main\n#include "test.inc"\nend program\n')
 
         # Create FortranFile, load from disk, and parse
         ff = FortranFile(str(main_file), pp_suffixes=[".F90", ".f90"])
@@ -265,7 +265,12 @@ class TestPpIncludesTracking:
         )
 
         # Run preprocess_file
-        contents = ['#include "inc1.inc"', '#include "inc2.inc"', "module test", "end module"]
+        contents = [
+            '#include "inc1.inc"',
+            '#include "inc2.inc"',
+            "module test",
+            "end module",
+        ]
         output, pp_skips, pp_defines, pp_defs, pp_includes = preprocess_file(
             contents,
             file_path=str(main_file),
