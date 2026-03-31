@@ -6,6 +6,7 @@ import os
 import re
 import sys
 from collections import Counter, deque
+from pathlib import Path
 
 # Python < 3.8 does not have typing.Literals
 try:
@@ -2106,6 +2107,10 @@ def preprocess_file(
             return (def_args, def_value)
         return def_value + line
 
+    def normalize_resolved_path(path: str) -> str:
+        """Normalize a resolved path to a cross-platform POSIX-style string."""
+        return Path(path).resolve().as_posix()
+
     if pp_defs is None:
         pp_defs = {}
     if include_dirs is None:
@@ -2269,7 +2274,7 @@ def preprocess_file(
                 file_dir = os.path.dirname(file_path)
                 include_path_tmp = os.path.join(file_dir, include_filename)
                 if os.path.isfile(include_path_tmp):
-                    include_path = os.path.abspath(include_path_tmp)
+                    include_path = normalize_resolved_path(include_path_tmp)
             # Intentionally keep this as a list and not a set. There are cases
             # where projects play tricks with the include order of their headers
             # to get their codes to compile. Using a set would not permit that.
@@ -2277,7 +2282,7 @@ def preprocess_file(
                 for include_dir in include_dirs:
                     include_path_tmp = os.path.join(include_dir, include_filename)
                     if os.path.isfile(include_path_tmp):
-                        include_path = os.path.abspath(include_path_tmp)
+                        include_path = normalize_resolved_path(include_path_tmp)
                         break
             # Track this include statement for go-to-definition support
             pp_includes.append((i + 1, include_filename, include_path))
