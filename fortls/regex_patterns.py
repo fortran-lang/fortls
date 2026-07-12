@@ -115,9 +115,11 @@ class FortranRegularExpressions:
     LINE_LABEL: Pattern = compile(r"[ ]*([0-9]+)[ ]+", I)
     NON_DEF: Pattern = compile(r"[ ]*(CALL[ ]+[a-z_]|[a-z_][\w%]*[ ]*=)", I)
     # Fixed format matching rules
-    FIXED_COMMENT: Pattern = compile(r"([!cd*])", I)
+    # A "!" starts a comment in any column except column 6, which is reserved for
+    # the continuation marker. Columns 1 also accepts the c/C, d/D and * markers.
+    FIXED_COMMENT: Pattern = compile(r"([!cd*]|[ ]{1,4}!|[ ]{6,}!)", I)
     FIXED_CONT: Pattern = compile(r"( {5}[\S])")
-    FIXED_DOC: Pattern = compile(r"(?:[!cd\*])([<>!])", I)
+    FIXED_DOC: Pattern = compile(r"(?:[!cd\*]|[ ]{1,4}!|[ ]{6,}!)([<>!])", I)
     FIXED_OPENMP: Pattern = compile(r"[!c\*]\$OMP", I)
     # Free format matching rules
     FREE_COMMENT: Pattern = compile(r"([ ]*!)")
