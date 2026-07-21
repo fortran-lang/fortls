@@ -141,11 +141,7 @@ def find_in_scope(
         from .function import Function
 
         for child in local_scope.get_children():
-            if child.name.startswith("#GEN_INT"):
-                tmp_var = check_scope(child, var_name_lower, filter_public)
-                if tmp_var is not None:
-                    return tmp_var
-            if child.get_type() == ENUM_TYPE_ID:
+            if child.name.startswith("#GEN_INT") or child.get_type() == ENUM_TYPE_ID:
                 tmp_var = check_scope(child, var_name_lower, filter_public)
                 if tmp_var is not None:
                     return tmp_var
