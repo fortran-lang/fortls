@@ -212,3 +212,16 @@ def test_def_function_implicit_result_variable():
     assert len(ref_res) == len(results) - 1
     for i, res in enumerate(ref_res):
         validate_def(results[i + 1], res)
+
+
+def test_def_enumerator():
+    """Test that going to definition on an enum member works."""
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    file_path = test_dir / "test_enum_ref.f90"
+    string += def_request(file_path, 9, 11)
+    errcode, results = run_request(string)
+    assert errcode == 0
+    ref_res = [[4, 4, str(file_path)]]
+    assert len(ref_res) == len(results) - 1
+    for i, res in enumerate(ref_res):
+        validate_def(results[i + 1], res)
