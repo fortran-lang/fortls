@@ -2,6 +2,7 @@ import pytest
 from setup_tests import test_dir
 
 from fortls.parsers.internal.parser import FortranFile
+from fortls.parsers.internal.utilities import find_in_scope
 
 
 def test_line_continuations():
@@ -58,6 +59,21 @@ def test_weird_parser_bug():
     ast = file.parse()
     assert err_str is None
     assert not ast.end_errors
+
+
+def test_find_in_scope_recurses_into_enum_block():
+    file_path = test_dir / "test_enum_ref.f90"
+    file = FortranFile(str(file_path))
+    err_str, _ = file.load_from_disk()
+    assert err_str is None
+
+    ast = file.parse()
+    scope = ast.get_inner_scope(9)
+    assert scope is not None
+    result = find_in_scope(scope, "blue", {})
+
+    assert result is not None
+    assert result.name == "blue"
 
 
 @pytest.mark.parametrize(
