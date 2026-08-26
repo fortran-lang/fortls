@@ -39,7 +39,7 @@ def test_pp_macro_expansion():
 
 
 def test_pp_zero_argument_function_macro():
-    """A function-like macro with no arguments expands without crashing.
+    r"""A function-like macro with no arguments expands without crashing.
 
     Regression test for #486. `"".split(",")` is `[""]`, not `[]`, so a macro
     such as `ok()` was treated as having one unnamed argument. The argument
