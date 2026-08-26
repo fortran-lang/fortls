@@ -2086,11 +2086,17 @@ def preprocess_file(
 
     def expand_func_macro(def_name: str, def_value: tuple[str, str]):
         def_args, sub = def_value
-        def_args = def_args.split(",")
+        # "".split(",") is [""], not [], so a zero-argument macro such as
+        # `#define ok() ...` used to be treated as having one unnamed argument.
+        # The substitution below then ran `\b()\b`, which matches at every word
+        # boundary, and peppered the replacement text with group references --
+        # `ie/=0` became `...\10`, i.e. a reference to group 10, and re raised
+        # "invalid group reference". Drop empty names so the count is honest.
+        def_args = [arg for arg in (a.strip() for a in def_args.split(",")) if arg]
         regex = re.compile(rf"\b{def_name}\s*\({','.join(['(.*)']*len(def_args))}\)")
 
         for i, arg in enumerate(def_args, start=1):
-            sub = re.sub(rf"\b({arg.strip()})\b", rf"\\{i}", sub)
+            sub = re.sub(rf"\b({re.escape(arg)})\b", rf"\\{i}", sub)
 
         return regex, sub
 
