@@ -969,6 +969,27 @@ class LangServer:
         # A container that includes all the FQSN signatures for objects that
         # are linked to the rename request and that should also be replaced
         override_cache: list[str] = []
+        # A function without an explicit RESULT() clause returns through an
+        # implicit result variable that shares the function's name but is a
+        # distinct object with its own FQSN, e.g. `mod::fun` vs
+        # `mod::fun::fun`. The two must always be renamed together or the code
+        # stops compiling, so link them in both directions.
+        result_obj = getattr(def_obj, "result_obj", None)
+        if (
+            def_obj.get_type() == FUNCTION_TYPE_ID
+            and result_obj is not None
+            and def_obj.result_name.lower() == def_name
+        ):
+            override_cache.append(result_obj.FQSN)
+        else:
+            parent = getattr(def_obj, "parent", None)
+            if (
+                parent is not None
+                and parent.get_type() == FUNCTION_TYPE_ID
+                and getattr(parent, "result_obj", None) is def_obj
+                and parent.result_name.lower() == parent.name.lower()
+            ):
+                override_cache.append(parent.FQSN)
         refs = {}
         ref_objs = []
         for filename, file_obj in file_set:

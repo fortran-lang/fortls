@@ -7,6 +7,10 @@
 - Fixed missing registered capability for `textDocument/documentHighlight`
   ([#421](https://github.com/fortran-lang/fortls/issues/421s))
 
+- Fixed `textDocument/rename` not renaming the implicit result variable of a
+  function declared without a `RESULT()` clause
+  ([#322](https://github.com/fortran-lang/fortls/issues/322))
+
 ## 3.2.2
 
 ### Fixed
