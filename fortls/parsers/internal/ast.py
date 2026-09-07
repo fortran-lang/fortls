@@ -89,9 +89,7 @@ class FortranAST:
             self.pending_doc = None
 
     def end_scope(self, line_number: int, check: bool = True):
-        if (
-            (self.current_scope is None) or (self.current_scope is self.none_scope)
-        ) and check:
+        if (self.current_scope is None) and check:
             self.end_errors.append([-1, line_number])
             return
         self.current_scope.end(line_number)
@@ -290,7 +288,10 @@ class FortranAST:
             self.end_scope(line_number, check=False)
         # Close and delist none_scope
         if self.none_scope is not None:
-            self.none_scope.end(line_number)
+            # If the implicit main program was already terminated by an
+            # explicit END statement, keep that end line
+            if self.none_scope.eline == -1:
+                self.none_scope.end(line_number)
             self.scope_list.remove(self.none_scope)
         # Tasks to be done when file parsing is finished
         for private_name in self.private_list:

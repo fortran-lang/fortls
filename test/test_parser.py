@@ -96,3 +96,35 @@ def test_get_code_line_multilines(ln_no: int, pp_defs: dict, reference: int):
     res = file.get_code_line(line_no=ln_no, pp_content=pp)
     result = calc_result(res)
     assert result == reference
+def test_implicit_main_program():
+    """A main program without a PROGRAM statement (implicit main) must be
+    closed by its END statement instead of raising
+    "Unexpected end statement: No open scopes", and the units following it
+    must be parsed as top-level, external procedures.
+    """
+    file_path = test_dir / "parse" / "implicit_main.f"
+    file = FortranFile(str(file_path))
+    err_str, _ = file.load_from_disk()
+    assert err_str is None
+    ast = file.parse()
+
+    # No unmatched-END diagnostics
+    assert ast.end_errors == []
+    # The implicit main scope ("main") is closed by the END on line 4
+    assert ast.none_scope is not None
+    assert ast.none_scope.eline == 6
+
+    # "calc" and "dbl" are top-level scopes, not children of the implicit main
+    names = {s.name: s for s in ast.scope_list}
+    for name, def_line in (("calc", 7), ("dbl", 11)):
+        assert name in names
+        scope = names[name]
+        assert scope.sline == def_line
+        assert scope.parent is None
+
+    # No false-positive diagnostics for this file
+    errors, _ = ast.check_file(ast.global_dict)
+    messages = [e.message for e in errors]
+    assert not any("No open scopes" in m for m in messages)
+    assert not any("before CONTAINS" in m for m in messages)
+
