@@ -4,6 +4,12 @@
 
 ### Fixed
 
+- Fixed parsing of files with an implicit main program (no `PROGRAM`
+  statement): the file no longer produces spurious
+  `Unexpected end statement: No open scopes` and
+  `Subroutine/Function definition before CONTAINS statement`
+  diagnostics, and its top-level procedures are now reported as
+  top-level symbols
 - Fixed missing registered capability for `textDocument/documentHighlight`
   ([#421](https://github.com/fortran-lang/fortls/issues/421s))
 
