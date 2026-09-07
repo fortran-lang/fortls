@@ -96,6 +96,8 @@ def test_get_code_line_multilines(ln_no: int, pp_defs: dict, reference: int):
     res = file.get_code_line(line_no=ln_no, pp_content=pp)
     result = calc_result(res)
     assert result == reference
+
+
 def test_implicit_main_program():
     """A main program without a PROGRAM statement (implicit main) must be
     closed by its END statement instead of raising
@@ -127,4 +129,3 @@ def test_implicit_main_program():
     messages = [e.message for e in errors]
     assert not any("No open scopes" in m for m in messages)
     assert not any("before CONTAINS" in m for m in messages)
-
