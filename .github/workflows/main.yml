@@ -39,7 +39,13 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5.5.2
         with:
-          fail_ci_if_error: true
+          # A pull request opened from a fork does not receive repository
+          # secrets, so CODECOV_TOKEN is empty for every external contributor
+          # and the upload cannot succeed. Failing the job on that turned all
+          # eight matrix entries red after the tests had already passed, on
+          # work that had nothing to do with coverage. Keep it fatal wherever
+          # the token does exist, so a real upload problem is still caught.
+          fail_ci_if_error: ${{ secrets.CODECOV_TOKEN != '' }}
           verbose: true
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
