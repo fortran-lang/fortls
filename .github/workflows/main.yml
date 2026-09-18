@@ -39,12 +39,15 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5.5.2
         with:
-          # A pull request opened from a fork does not receive repository
-          # secrets, so CODECOV_TOKEN is empty for every external contributor
-          # and the upload cannot succeed. Failing the job on that turned all
-          # eight matrix entries red after the tests had already passed, on
-          # work that had nothing to do with coverage. Keep it fatal wherever
-          # the token does exist, so a real upload problem is still caught.
+          # codecov.sh fetches Codecov's signing key with an unchecked
+          # `curl -s https://keybase.io/codecovsecurity/pgp_keys.asc`. That URL
+          # now returns 404 with the body "SELF-SIGNED PUBLIC KEY NOT FOUND",
+          # which is piped into `gpg --import` as if it were a key, so the
+          # signature check fails and the script exits 1. use_pypi installs the
+          # CLI from PyPI and skips that download path entirely.
+          use_pypi: true
+          # Coverage is not worth failing someone's pull request over, and a
+          # fork has no token to fix it with even when the upload itself works.
           fail_ci_if_error: ${{ secrets.CODECOV_TOKEN != '' }}
           verbose: true
         env:
