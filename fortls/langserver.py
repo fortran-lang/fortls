@@ -64,10 +64,6 @@ from fortls.parsers.internal.variable import Variable
 from fortls.regex_patterns import create_src_file_exts_str
 from fortls.version import __version__
 
-# Global regexes
-# TODO: I think this can be replaced by fortls.regex_patterns type & class
-TYPE_DEF_REGEX = re.compile(r"[ ]*(TYPE|CLASS)[ ]*\([a-z0-9_ ]*$", re.I)
-
 
 class LangServer:
     def __init__(self, conn, settings: dict):
@@ -788,7 +784,7 @@ class LangServer:
                         line_prefix.lstrip().lower().startswith("procedure")
                         and (line_prefix.count("=>") > 0)
                     )
-                    or TYPE_DEF_REGEX.match(line_prefix)
+                    or FRegex.TYPE_DEF_REGEX.match(line_prefix)
                 )
             ):
                 curr_scope = curr_scope.parent
