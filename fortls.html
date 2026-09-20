@@ -858,15 +858,15 @@ files as free format.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">detect_fixed_format</span><span class="p">([</span><span class="s1">&#39; free format&#39;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">detect_fixed_format</span><span class="p">([</span><span class="s1">' free format'</span><span class="p">])</span>
 <span class="go">False</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">detect_fixed_format</span><span class="p">([</span><span class="s1">&#39; INTEGER, PARAMETER :: N = 10&#39;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">detect_fixed_format</span><span class="p">([</span><span class="s1">' INTEGER, PARAMETER :: N = 10'</span><span class="p">])</span>
 <span class="go">False</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">detect_fixed_format</span><span class="p">([</span><span class="s1">&#39;C Fixed format&#39;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">detect_fixed_format</span><span class="p">([</span><span class="s1">'C Fixed format'</span><span class="p">])</span>
 <span class="go">True</span>
 </pre></div>
 </div>
@@ -878,7 +878,7 @@ False</p>
 …     [‘#if defined(A) &amp;&amp; !defined(B)’, ‘C Fixed format’, ‘#endif’])
 True</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">detect_fixed_format</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="p">[</span><span class="s1">&#39;#if defined(A) &amp;&amp; !defined(B)&#39;</span><span class="p">,</span> <span class="s1">&#39; free format&#39;</span><span class="p">,</span> <span class="s1">&#39;#endif&#39;</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">[</span><span class="s1">'#if defined(A) &amp;&amp; !defined(B)'</span><span class="p">,</span> <span class="s1">' free format'</span><span class="p">,</span> <span class="s1">'#endif'</span><span class="p">])</span>
 <span class="go">False</span>
 </pre></div>
 </div>
@@ -887,7 +887,7 @@ True</p>
 …     [‘#if defined(A) \ ‘, ‘ &amp;&amp; !defined(B)’, ‘C Fixed format’, ‘#endif’])
 True</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">detect_fixed_format</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="p">[</span><span class="s1">&#39;#if defined(A) </span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&amp;&amp; </span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;!defined(B)&#39;</span><span class="p">,</span> <span class="s1">&#39; free format&#39;</span><span class="p">,</span> <span class="s1">&#39;#endif&#39;</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">[</span><span class="s1">'#if defined(A) </span><span class="se">\\</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'&amp;&amp; </span><span class="se">\\</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'!defined(B)'</span><span class="p">,</span> <span class="s1">' free format'</span><span class="p">,</span> <span class="s1">'#endif'</span><span class="p">])</span>
 <span class="go">False</span>
 </pre></div>
 </div>
@@ -930,25 +930,25 @@ by forward search of the string, returns -1 if no match is found</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_paren_match</span><span class="p">(</span><span class="s1">&#39;a, b)&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_paren_match</span><span class="p">(</span><span class="s1">'a, b)'</span><span class="p">)</span>
 <span class="go">4</span>
 </pre></div>
 </div>
 <p>Multiple parenthesis that are closed</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_paren_match</span><span class="p">(</span><span class="s1">&#39;a, (b, c), d)&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_paren_match</span><span class="p">(</span><span class="s1">'a, (b, c), d)'</span><span class="p">)</span>
 <span class="go">12</span>
 </pre></div>
 </div>
 <p>If the outermost parenthesis is not closed function returns -1</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_paren_match</span><span class="p">(</span><span class="s1">&#39;a, (b, (c, d)&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_paren_match</span><span class="p">(</span><span class="s1">'a, (b, (c, d)'</span><span class="p">)</span>
 <span class="go">-1</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_paren_match</span><span class="p">(</span><span class="s1">&#39;nt(sin(0.5))+8+len(&quot;ab((c&quot;)-3) :: y&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_paren_match</span><span class="p">(</span><span class="s1">'nt(sin(0.5))+8+len("ab((c")-3) :: y'</span><span class="p">)</span>
 <span class="go">29</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_paren_match</span><span class="p">(</span><span class="s2">&quot;nt(sin(0.5))+8+len(&#39;ab))c&#39;)-3) :: y&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_paren_match</span><span class="p">(</span><span class="s2">"nt(sin(0.5))+8+len('ab))c')-3) :: y"</span><span class="p">)</span>
 <span class="go">29</span>
 </pre></div>
 </div>
@@ -1022,7 +1022,7 @@ Need this disable when hovering over string literals, by default True</p></li>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_line_prefix</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="p">],</span> <span class="s1">&#39;#pragma once&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_line_prefix</span><span class="p">([</span><span class="s1">''</span><span class="p">],</span> <span class="s1">'#pragma once'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
 <span class="go">True</span>
 </pre></div>
 </div>
@@ -1045,18 +1045,18 @@ via backward search up through the line.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_paren_level</span><span class="p">(</span><span class="s1">&#39;CALL sub1(arg1,arg2&#39;</span><span class="p">)</span>
-<span class="go">(&#39;arg1,arg2&#39;, [Range(start=10, end=19)])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_paren_level</span><span class="p">(</span><span class="s1">'CALL sub1(arg1,arg2'</span><span class="p">)</span>
+<span class="go">('arg1,arg2', [Range(start=10, end=19)])</span>
 </pre></div>
 </div>
 <p>If the range is interrupted by parenthesis, another Range variable is used
 to mark the <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code> of the argument</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_paren_level</span><span class="p">(</span><span class="s1">&#39;CALL sub1(arg1(i),arg2&#39;</span><span class="p">)</span>
-<span class="go">(&#39;arg1,arg2&#39;, [Range(start=10, end=14), Range(start=17, end=22)])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_paren_level</span><span class="p">(</span><span class="s1">'CALL sub1(arg1(i),arg2'</span><span class="p">)</span>
+<span class="go">('arg1,arg2', [Range(start=10, end=14), Range(start=17, end=22)])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_paren_level</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-<span class="go">(&#39;&#39;, [Range(start=0, end=0)])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_paren_level</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span>
+<span class="go">('', [Range(start=0, end=0)])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1077,8 +1077,8 @@ to mark the <code class="docutils literal notranslate"><span class="pre">start</
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_paren_substring</span><span class="p">(</span><span class="s1">&#39;some line(a, b, (c, d))&#39;</span><span class="p">)</span>
-<span class="go">&#39;a, b, (c, d)&#39;</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_paren_substring</span><span class="p">(</span><span class="s1">'some line(a, b, (c, d))'</span><span class="p">)</span>
+<span class="go">'a, b, (c, d)'</span>
 </pre></div>
 </div>
 <p>If the line has incomplete parenthesis however, <code class="docutils literal notranslate"><span class="pre">None</span></code> is returned
@@ -1102,16 +1102,16 @@ True</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_placeholders</span><span class="p">([</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">])</span>
-<span class="go">(&#39;(x, y)&#39;, &#39;(${1:x}, ${2:y})&#39;)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_placeholders</span><span class="p">([</span><span class="s1">'x'</span><span class="p">,</span> <span class="s1">'y'</span><span class="p">])</span>
+<span class="go">('(x, y)', '(${1:x}, ${2:y})')</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_placeholders</span><span class="p">([</span><span class="s1">&#39;x=1&#39;</span><span class="p">,</span> <span class="s1">&#39;y=2&#39;</span><span class="p">])</span>
-<span class="go">(&#39;(x=1, y=2)&#39;, &#39;(x=${1:1}, y=${2:2})&#39;)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_placeholders</span><span class="p">([</span><span class="s1">'x=1'</span><span class="p">,</span> <span class="s1">'y=2'</span><span class="p">])</span>
+<span class="go">('(x=1, y=2)', '(x=${1:1}, y=${2:2})')</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_placeholders</span><span class="p">([</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y=2&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">])</span>
-<span class="go">(&#39;(x, y=2, z)&#39;, &#39;(${1:x}, y=${2:2}, ${3:z})&#39;)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_placeholders</span><span class="p">([</span><span class="s1">'x'</span><span class="p">,</span> <span class="s1">'y=2'</span><span class="p">,</span> <span class="s1">'z'</span><span class="p">])</span>
+<span class="go">('(x, y=2, z)', '(${1:x}, y=${2:2}, ${3:z})')</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1132,25 +1132,25 @@ True</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_var_stack</span><span class="p">(</span><span class="s1">&#39;myvar</span><span class="si">%f</span><span class="s1">oo%bar&#39;</span><span class="p">)</span>
-<span class="go">[&#39;myvar&#39;, &#39;foo&#39;, &#39;bar&#39;]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_var_stack</span><span class="p">(</span><span class="s1">'myvar</span><span class="si">%f</span><span class="s1">oo%bar'</span><span class="p">)</span>
+<span class="go">['myvar', 'foo', 'bar']</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_var_stack</span><span class="p">(</span><span class="s1">&#39;myarray(i)</span><span class="si">%f</span><span class="s1">oo%bar&#39;</span><span class="p">)</span>
-<span class="go">[&#39;myarray&#39;, &#39;foo&#39;, &#39;bar&#39;]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_var_stack</span><span class="p">(</span><span class="s1">'myarray(i)</span><span class="si">%f</span><span class="s1">oo%bar'</span><span class="p">)</span>
+<span class="go">['myarray', 'foo', 'bar']</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_var_stack</span><span class="p">(</span><span class="s1">&#39;myarray( i ) </span><span class="si">% f</span><span class="s1">oo   % bar&#39;</span><span class="p">)</span>
-<span class="go">[&#39;myarray&#39;, &#39;foo&#39;, &#39;bar&#39;]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_var_stack</span><span class="p">(</span><span class="s1">'myarray( i ) </span><span class="si">% f</span><span class="s1">oo   % bar'</span><span class="p">)</span>
+<span class="go">['myarray', 'foo', 'bar']</span>
 </pre></div>
 </div>
 <p>In this case it will operate at the end of the string i.e. <code class="docutils literal notranslate"><span class="pre">'this%foo'</span></code></p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_var_stack</span><span class="p">(</span><span class="s1">&#39;CALL self%method(this</span><span class="si">%f</span><span class="s1">oo&#39;</span><span class="p">)</span>
-<span class="go">[&#39;this&#39;, &#39;foo&#39;]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_var_stack</span><span class="p">(</span><span class="s1">'CALL self%method(this</span><span class="si">%f</span><span class="s1">oo'</span><span class="p">)</span>
+<span class="go">['this', 'foo']</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_var_stack</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-<span class="go">[&#39;&#39;]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_var_stack</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span>
+<span class="go">['']</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1179,11 +1179,11 @@ True</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">only_dirs</span><span class="p">([</span><span class="s1">&#39;./test/&#39;</span><span class="p">,</span> <span class="s1">&#39;./test/test_source/&#39;</span><span class="p">,</span> <span class="s1">&#39;./test/test_source/test.f90&#39;</span><span class="p">])</span>
-<span class="go">[&#39;./test/&#39;, &#39;./test/test_source/&#39;]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">only_dirs</span><span class="p">([</span><span class="s1">'./test/'</span><span class="p">,</span> <span class="s1">'./test/test_source/'</span><span class="p">,</span> <span class="s1">'./test/test_source/test.f90'</span><span class="p">])</span>
+<span class="go">['./test/', './test/test_source/']</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">only_dirs</span><span class="p">([</span><span class="s1">&#39;/fake/dir/a&#39;</span><span class="p">,</span> <span class="s1">&#39;/fake/dir/b&#39;</span><span class="p">,</span> <span class="s1">&#39;/fake/dir/c&#39;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">only_dirs</span><span class="p">([</span><span class="s1">'/fake/dir/a'</span><span class="p">,</span> <span class="s1">'/fake/dir/b'</span><span class="p">,</span> <span class="s1">'/fake/dir/c'</span><span class="p">])</span>
 <span class="gt">Traceback (most recent call last):</span>
 <span class="gr">FileNotFoundError</span>: <span class="n">/fake/dir/a</span>
 <span class="x">/fake/dir/b</span>
@@ -1198,8 +1198,8 @@ True</p>
 <dd><p>Generate parenthesized contents in string as pairs
 (contents, start-position, level).</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">parenthetic_contents</span><span class="p">(</span><span class="s1">&#39;character*(10*size(val(1), 2)) :: name&#39;</span><span class="p">))</span>
-<span class="go">[(&#39;1&#39;, 22, 2), (&#39;val(1), 2&#39;, 18, 1), (&#39;10*size(val(1), 2)&#39;, 10, 0)]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">parenthetic_contents</span><span class="p">(</span><span class="s1">'character*(10*size(val(1), 2)) :: name'</span><span class="p">))</span>
+<span class="go">[('1', 22, 2), ('val(1), 2', 18, 1), ('10*size(val(1), 2)', 10, 0)]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1253,12 +1253,12 @@ True</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">separate_def_list</span><span class="p">(</span><span class="s1">&#39;var1, var2, var3&#39;</span><span class="p">)</span>
-<span class="go">[&#39;var1&#39;, &#39;var2&#39;, &#39;var3&#39;]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">separate_def_list</span><span class="p">(</span><span class="s1">'var1, var2, var3'</span><span class="p">)</span>
+<span class="go">['var1', 'var2', 'var3']</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">separate_def_list</span><span class="p">(</span><span class="s1">&#39;var, init_var(3) = [1,2,3], array(3,3)&#39;</span><span class="p">)</span>
-<span class="go">[&#39;var&#39;, &#39;init_var(3) = [1,2,3]&#39;, &#39;array(3,3)&#39;]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">separate_def_list</span><span class="p">(</span><span class="s1">'var, init_var(3) = [1,2,3], array(3,3)'</span><span class="p">)</span>
+<span class="go">['var', 'init_var(3) = [1,2,3]', 'array(3,3)']</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -2153,22 +2153,22 @@ that means special characters must be escaped
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span> <span class="o">=</span> <span class="n">create_src_file_exts_regex</span><span class="p">([</span><span class="sa">r</span><span class="s2">&quot;\.fypp&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\.inc&quot;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;test.fypp&quot;</span><span class="p">)</span>
-<span class="go">&lt;re.Match object; span=(4, 9), match=&#39;.fypp&#39;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;test.inc&quot;</span><span class="p">)</span>
-<span class="go">&lt;re.Match object; span=(4, 8), match=&#39;.inc&#39;&gt;</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span> <span class="o">=</span> <span class="n">create_src_file_exts_regex</span><span class="p">([</span><span class="sa">r</span><span class="s2">"\.fypp"</span><span class="p">,</span> <span class="sa">r</span><span class="s2">"\.inc"</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">"test.fypp"</span><span class="p">)</span>
+<span class="go">&lt;re.Match object; span=(4, 9), match='.fypp'&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">"test.inc"</span><span class="p">)</span>
+<span class="go">&lt;re.Match object; span=(4, 8), match='.inc'&gt;</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span> <span class="o">=</span> <span class="n">create_src_file_exts_regex</span><span class="p">([</span><span class="sa">r</span><span class="s2">&quot;\.inc.*&quot;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;test.inc.1&quot;</span><span class="p">)</span>
-<span class="go">&lt;re.Match object; span=(4, 10), match=&#39;.inc.1&#39;&gt;</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span> <span class="o">=</span> <span class="n">create_src_file_exts_regex</span><span class="p">([</span><span class="sa">r</span><span class="s2">"\.inc.*"</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">"test.inc.1"</span><span class="p">)</span>
+<span class="go">&lt;re.Match object; span=(4, 10), match='.inc.1'&gt;</span>
 </pre></div>
 </div>
 <p>Invalid regex expressions will cause the function to revert to the default
 extensions</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span> <span class="o">=</span> <span class="n">create_src_file_exts_regex</span><span class="p">([</span><span class="s2">&quot;*.inc&quot;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;test.inc&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span> <span class="o">=</span> <span class="n">create_src_file_exts_regex</span><span class="p">([</span><span class="s2">"*.inc"</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">"test.inc"</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
 <span class="go">True</span>
 </pre></div>
 </div>
@@ -2599,7 +2599,7 @@ For more info see create_src_file_exts_regex</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=365d4477"></script>
+</div><script src="_static/documentation_options.js?v=f7c119b7"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

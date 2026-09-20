@@ -282,11 +282,11 @@ are identical and interchangeable.</p>
 <span id="cmd-interface"></span><h2>Configuration using the command line<a class="headerlink" href="#configuration-using-the-command-line" title="Link to this heading">¶</a></h2>
 <p><p>fortls - Fortran Language Server</p>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">fortls</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="p">[</span><span class="n">debug</span> <span class="n">options</span><span class="p">]</span>
+<div class="highlight-default notranslate" id="fortls"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">fortls</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="p">[</span><span class="n">debug</span> <span class="n">options</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="fortls-cli-named-arguments">
-<h3>Named Arguments<a class="headerlink" href="#fortls-cli-named-arguments" title="Link to this heading">¶</a></h3>
+<section id="fortls-named-arguments">
+<span id="fortls-cli-named-arguments"></span><h3>Named Arguments<a class="headerlink" href="#fortls-named-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-v, --version</kbd></dt>
 <dd><p>Print server version number and exit</p>
@@ -320,8 +320,8 @@ are identical and interchangeable.</p>
 </dd>
 </dl>
 </section>
-<section id="fortls-cli-sources-file-parsing-options">
-<h3>Sources file parsing options<a class="headerlink" href="#fortls-cli-sources-file-parsing-options" title="Link to this heading">¶</a></h3>
+<section id="fortls-sources-file-parsing-options">
+<span id="fortls-cli-sources-file-parsing-options"></span><h3>Sources file parsing options<a class="headerlink" href="#fortls-sources-file-parsing-options" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>--source_dirs</kbd></dt>
 <dd><p>Folders containing source files (default: set())</p>
@@ -337,8 +337,8 @@ are identical and interchangeable.</p>
 </dd>
 </dl>
 </section>
-<section id="fortls-cli-autocomplete-options">
-<h3>Autocomplete options<a class="headerlink" href="#fortls-cli-autocomplete-options" title="Link to this heading">¶</a></h3>
+<section id="fortls-autocomplete-options">
+<span id="fortls-cli-autocomplete-options"></span><h3>Autocomplete options<a class="headerlink" href="#fortls-autocomplete-options" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>--autocomplete_no_prefix</kbd></dt>
 <dd><p>Do not filter autocomplete results by variable prefix</p>
@@ -357,8 +357,8 @@ are identical and interchangeable.</p>
 </dd>
 </dl>
 </section>
-<section id="fortls-cli-hover-options">
-<h3>Hover options<a class="headerlink" href="#fortls-cli-hover-options" title="Link to this heading">¶</a></h3>
+<section id="fortls-hover-options">
+<span id="fortls-cli-hover-options"></span><h3>Hover options<a class="headerlink" href="#fortls-hover-options" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>--variable_hover</kbd></dt>
 <dd><p>DEPRECATED: This option is always on. Show hover information for variables</p>
@@ -371,8 +371,8 @@ are identical and interchangeable.</p>
 </dd>
 </dl>
 </section>
-<section id="fortls-cli-diagnostic-options-(error-swigles)">
-<h3>Diagnostic options (error swigles)<a class="headerlink" href="#fortls-cli-diagnostic-options-(error-swigles)" title="Link to this heading">¶</a></h3>
+<section id="fortls-diagnostic-options-error-swigles">
+<span id="fortls-cli-diagnostic-options-(error-swigles)"></span><h3>Diagnostic options (error swigles)<a class="headerlink" href="#fortls-diagnostic-options-error-swigles" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>--max_line_length</kbd></dt>
 <dd><p>Maximum line length (default: -1)</p>
@@ -385,8 +385,8 @@ are identical and interchangeable.</p>
 </dd>
 </dl>
 </section>
-<section id="fortls-cli-preprocessor-options">
-<h3>Preprocessor options<a class="headerlink" href="#fortls-cli-preprocessor-options" title="Link to this heading">¶</a></h3>
+<section id="fortls-preprocessor-options">
+<span id="fortls-cli-preprocessor-options"></span><h3>Preprocessor options<a class="headerlink" href="#fortls-preprocessor-options" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>--pp_suffixes</kbd></dt>
 <dd><p>File extensions to be parsed ONLY for preprocessor commands (default: all uppercase source file suffixes)</p>
@@ -399,16 +399,16 @@ are identical and interchangeable.</p>
 </dd>
 </dl>
 </section>
-<section id="fortls-cli-symbols-options">
-<h3>Symbols options<a class="headerlink" href="#fortls-cli-symbols-options" title="Link to this heading">¶</a></h3>
+<section id="fortls-symbols-options">
+<span id="fortls-cli-symbols-options"></span><h3>Symbols options<a class="headerlink" href="#fortls-symbols-options" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>--symbol_skip_mem</kbd></dt>
 <dd><p>Do not include type members in document symbol results</p>
 </dd>
 </dl>
 </section>
-<section id="fortls-cli-codeactions-options-[limited]">
-<h3>CodeActions options [limited]<a class="headerlink" href="#fortls-cli-codeactions-options-[limited]" title="Link to this heading">¶</a></h3>
+<section id="fortls-codeactions-options-limited">
+<span id="fortls-cli-codeactions-options-[limited]"></span><h3>CodeActions options [limited]<a class="headerlink" href="#fortls-codeactions-options-limited" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>--enable_code_actions</kbd></dt>
 <dd><p>Enable experimental code actions (default: false)</p>
@@ -433,39 +433,39 @@ the ones available through the command line interface having removed the leading
 <h3>Available options<a class="headerlink" href="#available-options" title="Link to this heading">¶</a></h3>
 <p>All the <code class="docutils literal notranslate"><span class="pre">fortls</span></code> settings with their default arguments can be found below</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">   </span><span class="nt">&quot;nthreads&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;notify_init&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;incremental_sync&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;recursion_limit&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;sort_keywords&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;disable_autoupdate&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;debug_log&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"nthreads"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"notify_init"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"incremental_sync"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"recursion_limit"</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"sort_keywords"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"disable_autoupdate"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"debug_log"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
 
-<span class="w">   </span><span class="nt">&quot;source_dirs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;./**&quot;</span><span class="p">],</span>
-<span class="w">   </span><span class="nt">&quot;incl_suffixes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
-<span class="w">   </span><span class="nt">&quot;excl_suffixes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
-<span class="w">   </span><span class="nt">&quot;excl_paths&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">   </span><span class="nt">"source_dirs"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"./**"</span><span class="p">],</span>
+<span class="w">   </span><span class="nt">"incl_suffixes"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">   </span><span class="nt">"excl_suffixes"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">   </span><span class="nt">"excl_paths"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
 
-<span class="w">   </span><span class="nt">&quot;autocomplete_no_prefix&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;autocomplete_no_snippets&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;autocomplete_name_only&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;lowercase_intrinsics&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;use_signature_help&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"autocomplete_no_prefix"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"autocomplete_no_snippets"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"autocomplete_name_only"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"lowercase_intrinsics"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"use_signature_help"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
 
-<span class="w">   </span><span class="nt">&quot;hover_signature&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;hover_language&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fortran90&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"hover_signature"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"hover_language"</span><span class="p">:</span><span class="w"> </span><span class="s2">"fortran90"</span><span class="p">,</span>
 
-<span class="w">   </span><span class="nt">&quot;max_line_length&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;max_comment_line_length&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;disable_diagnostics&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"max_line_length"</span><span class="p">:</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"max_comment_line_length"</span><span class="p">:</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"disable_diagnostics"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
 
-<span class="w">   </span><span class="nt">&quot;pp_suffixes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
-<span class="w">   </span><span class="nt">&quot;include_dirs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
-<span class="w">   </span><span class="nt">&quot;pp_defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">   </span><span class="nt">"pp_suffixes"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">   </span><span class="nt">"include_dirs"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">   </span><span class="nt">"pp_defs"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
 
-<span class="w">   </span><span class="nt">&quot;symbol_skip_mem&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"symbol_skip_mem"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
 
-<span class="w">   </span><span class="nt">&quot;enable_code_actions&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">   </span><span class="nt">"enable_code_actions"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -475,7 +475,7 @@ the ones available through the command line interface having removed the leading
 <section id="source-dirs">
 <h4>source_dirs<a class="headerlink" href="#source-dirs" title="Link to this heading">¶</a></h4>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">   </span><span class="nt">&quot;source_dirs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;./**&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;/external/fortran/src&quot;</span><span class="p">]</span>
+<span class="w">   </span><span class="nt">"source_dirs"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"./**"</span><span class="p">,</span><span class="w"> </span><span class="s2">"/external/fortran/src"</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -490,7 +490,7 @@ for <code class="docutils literal notranslate"><span class="pre">fortls</span></
 <section id="incl-suffixes">
 <h4>incl_suffixes<a class="headerlink" href="#incl-suffixes" title="Link to this heading">¶</a></h4>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">   </span><span class="nt">&quot;incl_suffixes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;.h&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;.FYP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;inc&quot;</span><span class="p">]</span>
+<span class="w">   </span><span class="nt">"incl_suffixes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">".h"</span><span class="p">,</span><span class="w"> </span><span class="s2">".FYP"</span><span class="p">,</span><span class="w"> </span><span class="s2">"inc"</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -509,7 +509,7 @@ Additional source file extensions can be defined in <code class="docutils litera
 <section id="excl-suffixes">
 <h4>excl_suffixes<a class="headerlink" href="#excl-suffixes" title="Link to this heading">¶</a></h4>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">   </span><span class="nt">&quot;excl_suffixes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;_tmp.f90&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;_hdf5.F90&quot;</span><span class="p">]</span>
+<span class="w">   </span><span class="nt">"excl_suffixes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"_tmp.f90"</span><span class="p">,</span><span class="w"> </span><span class="s2">"_hdf5.F90"</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -526,7 +526,7 @@ deffining <code class="docutils literal notranslate"><span class="pre">excl_suff
 <p><code class="docutils literal notranslate"><span class="pre">excl_paths</span></code> uses glob patterns so if you want to exclude a directory and all
 its subdirectories from being parsed you should define it like so</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">   </span><span class="nt">&quot;excl_paths&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;exclude_dir/**&quot;</span><span class="p">]</span>
+<span class="w">   </span><span class="nt">"excl_paths"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"exclude_dir/**"</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -537,7 +537,7 @@ its subdirectories from being parsed you should define it like so</p>
 <section id="pp-suffixes">
 <h4>pp_suffixes<a class="headerlink" href="#pp-suffixes" title="Link to this heading">¶</a></h4>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">   </span><span class="nt">&quot;pp_suffixes&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;.h&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;.F90&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;.fpp&quot;</span><span class="p">]</span>
+<span class="w">   </span><span class="nt">"pp_suffixes"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">".h"</span><span class="p">,</span><span class="w"> </span><span class="s2">".F90"</span><span class="p">,</span><span class="w"> </span><span class="s2">".fpp"</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -548,7 +548,7 @@ default behaviour can be overriden by defining <code class="docutils literal not
 <section id="include-dirs">
 <h4>include_dirs<a class="headerlink" href="#include-dirs" title="Link to this heading">¶</a></h4>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">   </span><span class="nt">&quot;include_dirs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;include&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;preprocessor&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;/usr/include&quot;</span><span class="p">]</span>
+<span class="w">   </span><span class="nt">"include_dirs"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"include"</span><span class="p">,</span><span class="w"> </span><span class="s2">"preprocessor"</span><span class="p">,</span><span class="w"> </span><span class="s2">"/usr/include"</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -568,9 +568,9 @@ files are external to the project, their locations can be specific via
 <section id="pp-defs">
 <h4>pp_defs<a class="headerlink" href="#pp-defs" title="Link to this heading">¶</a></h4>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">   </span><span class="nt">&quot;pp_defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;HAVE_PETSC&quot;</span><span class="p">:</span><span class="w"> </span><span class="nt">&quot;&quot;</span>
-<span class="w">      </span><span class="nt">&quot;Mat&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;type(tMat)&quot;</span>
+<span class="w">   </span><span class="nt">"pp_defs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"HAVE_PETSC"</span><span class="p">:</span><span class="w"> </span><span class="nt">""</span>
+<span class="w">      </span><span class="nt">"Mat"</span><span class="p">:</span><span class="w"> </span><span class="s2">"type(tMat)"</span>
 <span class="w">   </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -680,14 +680,14 @@ files are external to the project, their locations can be specific via
             <ul>
 <li><a class="reference internal" href="#">Configuration options</a><ul>
 <li><a class="reference internal" href="#configuration-using-the-command-line">Configuration using the command line</a><ul>
-<li><a class="reference internal" href="#fortls-cli-named-arguments">Named Arguments</a></li>
-<li><a class="reference internal" href="#fortls-cli-sources-file-parsing-options">Sources file parsing options</a></li>
-<li><a class="reference internal" href="#fortls-cli-autocomplete-options">Autocomplete options</a></li>
-<li><a class="reference internal" href="#fortls-cli-hover-options">Hover options</a></li>
-<li><a class="reference internal" href="#fortls-cli-diagnostic-options-(error-swigles)">Diagnostic options (error swigles)</a></li>
-<li><a class="reference internal" href="#fortls-cli-preprocessor-options">Preprocessor options</a></li>
-<li><a class="reference internal" href="#fortls-cli-symbols-options">Symbols options</a></li>
-<li><a class="reference internal" href="#fortls-cli-codeactions-options-[limited]">CodeActions options [limited]</a></li>
+<li><a class="reference internal" href="#fortls-named-arguments">Named Arguments</a></li>
+<li><a class="reference internal" href="#fortls-sources-file-parsing-options">Sources file parsing options</a></li>
+<li><a class="reference internal" href="#fortls-autocomplete-options">Autocomplete options</a></li>
+<li><a class="reference internal" href="#fortls-hover-options">Hover options</a></li>
+<li><a class="reference internal" href="#fortls-diagnostic-options-error-swigles">Diagnostic options (error swigles)</a></li>
+<li><a class="reference internal" href="#fortls-preprocessor-options">Preprocessor options</a></li>
+<li><a class="reference internal" href="#fortls-symbols-options">Symbols options</a></li>
+<li><a class="reference internal" href="#fortls-codeactions-options-limited">CodeActions options [limited]</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#configuration-using-a-file">Configuration using a file</a><ul>
@@ -720,7 +720,7 @@ files are external to the project, their locations can be specific via
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=365d4477"></script>
+</div><script src="_static/documentation_options.js?v=f7c119b7"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
