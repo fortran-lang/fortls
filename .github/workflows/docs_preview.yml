@@ -1,6 +1,7 @@
 name: Docs Preview
 
 permissions:
+  contents: write
   pull-requests: write
 
 on:
