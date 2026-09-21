@@ -4,6 +4,9 @@
 
 ### Fixed
 
+- Fixed a crash (`re.error: invalid group reference`) when a source file defines
+  a function-like macro with no arguments, e.g. `#define ok() ...`
+  ([#486](https://github.com/fortran-lang/fortls/issues/486))
 - Fixed missing registered capability for `textDocument/documentHighlight`
   ([#421](https://github.com/fortran-lang/fortls/issues/421s))
 
