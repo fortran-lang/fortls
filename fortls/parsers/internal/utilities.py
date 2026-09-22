@@ -12,6 +12,15 @@ if TYPE_CHECKING:
     from .scope import Scope
 
 
+def _get_obj_from_tree(key: str, obj_tree: dict, obj_tree_getter=None):
+    """Get object from obj_tree, using getter if provided for disambiguation."""
+    if obj_tree_getter is not None:
+        return obj_tree_getter(key)
+    if key in obj_tree and obj_tree[key]:
+        return obj_tree[key][0].obj
+    return None
+
+
 def get_use_tree(
     scope: Scope,
     use_dict: dict[str, Use | Import],
@@ -19,6 +28,7 @@ def get_use_tree(
     only_list: list[str] = None,
     rename_map: dict[str, str] = None,
     curr_path: list[str] = None,
+    obj_tree_getter=None,
 ):
     if only_list is None:
         only_list = set()
@@ -111,13 +121,17 @@ def get_use_tree(
         if type(use_stmnt) is Import:
             continue
         # Descend USE tree
+        mod_obj = _get_obj_from_tree(use_stmnt.mod_name, obj_tree, obj_tree_getter)
+        if mod_obj is None:
+            continue
         use_dict = get_use_tree(
-            obj_tree[use_stmnt.mod_name][0],
+            mod_obj,
             use_dict,
             obj_tree,
             merged_use_list,
             merged_rename,
             new_path,
+            obj_tree_getter,
         )
     return use_dict
 
@@ -129,6 +143,7 @@ def find_in_scope(
     interface: bool = False,
     local_only: bool = False,
     var_line_number: int = None,
+    obj_tree_getter=None,
 ):
     from .include import Include
 
@@ -200,13 +215,15 @@ def find_in_scope(
                 return Include(inc.file.ast, inc.line_number, inc.path)
 
     # Setup USE search
-    use_dict = get_use_tree(scope, {}, obj_tree)
+    use_dict = get_use_tree(scope, {}, obj_tree, obj_tree_getter=obj_tree_getter)
     # Look in found use modules
     for use_mod, use_info in use_dict.items():
         # If use_mod is Import then it will not exist in the obj_tree
         if type(use_info) is Import:
             continue
-        use_scope = obj_tree[use_mod][0]
+        use_scope = _get_obj_from_tree(use_mod, obj_tree, obj_tree_getter)
+        if use_scope is None:
+            continue
         # Module name is request
         if use_mod.lower() == var_name_lower:
             return use_scope
@@ -225,12 +242,16 @@ def find_in_scope(
             return None
     # Check parent scopes
     if scope.parent is not None and import_type != ImportTypes.NONE:
-        tmp_var = find_in_scope(scope.parent, var_name, obj_tree)
+        tmp_var = find_in_scope(
+            scope.parent, var_name, obj_tree, obj_tree_getter=obj_tree_getter
+        )
         if tmp_var is not None:
             return tmp_var
     # Check ancestor scopes
     for ancestor in scope.get_ancestors():
-        tmp_var = find_in_scope(ancestor, var_name, obj_tree)
+        tmp_var = find_in_scope(
+            ancestor, var_name, obj_tree, obj_tree_getter=obj_tree_getter
+        )
         if tmp_var is not None:
             return tmp_var
     return None
@@ -248,9 +269,9 @@ def find_in_workspace(
 
     matching_symbols = []
     query = query.lower()
-    for _, obj_packed in obj_tree.items():
-        top_obj = obj_packed[0]
-        top_uri = obj_packed[1]
+    for _, entries in obj_tree.items():
+        # entries is a list of ObjTreeEntry(obj, filepath); use first entry
+        top_obj, top_uri = entries[0]
         if top_uri is not None:
             if top_obj.name.lower().find(query) > -1:
                 matching_symbols.append(top_obj)
@@ -266,12 +287,14 @@ def find_in_workspace(
     return matching_symbols
 
 
-def climb_type_tree(var_stack, curr_scope: Scope, obj_tree: dict):
+def climb_type_tree(var_stack, curr_scope: Scope, obj_tree: dict, obj_tree_getter=None):
     """Walk up user-defined type sequence to determine final field type"""
     # Find base variable in current scope
     iVar = 0
     var_name = var_stack[iVar].strip().lower()
-    var_obj = find_in_scope(curr_scope, var_name, obj_tree)
+    var_obj = find_in_scope(
+        curr_scope, var_name, obj_tree, obj_tree_getter=obj_tree_getter
+    )
     if var_obj is None:
         return None
     # Search for type, then next variable in stack and so on
@@ -287,7 +310,13 @@ def climb_type_tree(var_stack, curr_scope: Scope, obj_tree: dict):
             break
         # Find next variable by name in type
         var_name = var_stack[iVar].strip().lower()
-        var_obj = find_in_scope(type_obj, var_name, obj_tree, local_only=True)
+        var_obj = find_in_scope(
+            type_obj,
+            var_name,
+            obj_tree,
+            local_only=True,
+            obj_tree_getter=obj_tree_getter,
+        )
         # Return if not found
         if var_obj is None:
             return None
