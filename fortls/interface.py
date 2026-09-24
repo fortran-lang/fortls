@@ -280,6 +280,22 @@ def cli(name: str = "fortls") -> argparse.ArgumentParser:
         help="Enable experimental code actions (default: false)",
     )
 
+    # Folding Range options ----------------------------------------------------
+    group = parser.add_argument_group("FoldingRange options")
+    group.add_argument(
+        "--folding-range-mode",
+        choices=["indent", "syntax"],
+        default="indent",
+        help="How to detect folding ranges, by indent or syntax (default: indent)",
+    )
+    group.add_argument(
+        "--folding-range-comment-lines",
+        type=int,
+        default=3,
+        metavar="INTEGER",
+        help="Number of comment lines to consider for folding (default: 3)",
+    )
+
     # Debug
     # By default debug arguments are hidden
     _debug_commandline_args(parser)

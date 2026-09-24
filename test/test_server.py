@@ -178,6 +178,8 @@ def test_workspace_symbols():
             ["test", 6, 7],
             ["test_abstract", 2, 0],
             ["test_associate_block", 2, 0],
+            ["test_folding_range_fixed_form", 2, 1],
+            ["test_folding_range_free_form", 2, 0],
             ["test_free", 2, 0],
             ["test_gen_type", 5, 1],
             ["test_generic", 2, 0],
