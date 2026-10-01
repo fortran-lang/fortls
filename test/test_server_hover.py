@@ -468,6 +468,24 @@ def test_associate_block_func_result():
     validate_hover(results, ref_results)
 
 
+def test_associate_self_reference():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
+    file_path = test_dir / "hover" / "associate_self_reference.f90"
+    string += hover_req(file_path, 11, 13)
+    string += hover_req(file_path, 12, 13)
+    string += hover_req(file_path, 14, 13)
+    string += hover_req(file_path, 15, 15)
+    errcode, results = run_request(string, fortls_args=["--sort_keywords", "-n", "1"])
+    assert errcode == 0
+    ref_results = [
+        "```fortran90\nINTEGER, DIMENSION(10) :: y\n```",
+        "```fortran90\nINTEGER, DIMENSION(10) :: y\n```",
+        "```fortran90\nTYPE(inner_t) :: t\n```",
+        "```fortran90\nINTEGER :: a\n```",
+    ]
+    validate_hover(results, ref_results)
+
+
 def test_hover_submodule_procedure():
     """Test that submodule procedures and functions with modifier keywords
     are correctly displayed when hovering.

@@ -9,6 +9,9 @@
 - Fixed crash at initialization when a glob in `source_dirs` or `include_dirs`
   matched a dangling symlink
   ([#536](https://github.com/fortran-lang/fortls/issues/536))
+- Fixed infinite recursion when an `ASSOCIATE` name is the same as a variable
+  in its selector, e.g. `associate (y => y(3))`
+  ([#433](https://github.com/fortran-lang/fortls/issues/433))
 
 ## 3.2.2
 

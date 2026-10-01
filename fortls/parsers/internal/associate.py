@@ -73,13 +73,15 @@ class Associate(Block):
             assoc.link_name = re.sub(r"\(.*\)", "", assoc.link_name)
             var_stack = get_var_stack(assoc.link_name)
             is_member = len(var_stack) > 1
+            # The selector is evaluated in the enclosing scope, so start the search
+            # in the parent. Else ASSOCIATE (y => y) links the variable to itself.
             if is_member:
-                type_scope = climb_type_tree(var_stack, self, obj_tree)
+                type_scope = climb_type_tree(var_stack, self.parent, obj_tree)
                 if type_scope is None:
                     continue
                 var_obj = find_in_scope(type_scope, var_stack[-1], obj_tree)
             else:
-                var_obj = find_in_scope(self, assoc.link_name, obj_tree)
+                var_obj = find_in_scope(self.parent, assoc.link_name, obj_tree)
             if var_obj is not None:
                 assoc.var.link_obj = var_obj
 
