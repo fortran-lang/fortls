@@ -6,6 +6,9 @@
 
 - Fixed missing registered capability for `textDocument/documentHighlight`
   ([#421](https://github.com/fortran-lang/fortls/issues/421s))
+- Fixed crash at initialization when a glob in `source_dirs` or `include_dirs`
+  matched a dangling symlink
+  ([#536](https://github.com/fortran-lang/fortls/issues/536))
 
 ## 3.2.2
 
