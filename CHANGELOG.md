@@ -9,6 +9,9 @@
 - Fixed crash at initialization when a glob in `source_dirs` or `include_dirs`
   matched a dangling symlink
   ([#536](https://github.com/fortran-lang/fortls/issues/536))
+- Fixed line length diagnostics being repeated each time diagnostics were
+  recomputed for an unchanged file
+  ([#489](https://github.com/fortran-lang/fortls/issues/489))
 
 ## 3.2.2
 

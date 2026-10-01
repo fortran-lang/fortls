@@ -48,6 +48,7 @@ from fortls.helper_functions import (
     strip_line_label,
     strip_strings,
 )
+from fortls.json_templates import diagnostic_json
 
 from .associate import Associate
 from .ast import FortranAST
@@ -1198,6 +1199,8 @@ class FortranFile:
 
     def check_file(self, obj_tree, max_line_length=-1, max_comment_line_length=-1):
         diagnostics = []
+        # Kept apart from self.ast, else every call adds the same warnings again
+        line_length_diags = []
         if (max_line_length > 0) or (max_comment_line_length > 0):
             msg_line = f'Line length exceeds "max_line_length" ({max_line_length})'
             msg_comment = (
@@ -1212,20 +1215,31 @@ class FortranFile:
             for i, line in enumerate(self.contents_split):
                 if COMMENT_LINE_MATCH.match(line) is None:
                     if 0 < max_line_length < len(line):
-                        self.ast.add_error(
-                            msg_line, Severity.warn, i + 1, max_line_length, len(line)
+                        line_length_diags.append(
+                            diagnostic_json(
+                                i,
+                                max_line_length,
+                                i,
+                                len(line),
+                                msg_line,
+                                Severity.warn,
+                            )
                         )
                 else:
                     if 0 < max_comment_line_length < len(line):
-                        self.ast.add_error(
-                            msg_comment,
-                            Severity.warn,
-                            i + 1,
-                            max_comment_line_length,
-                            len(line),
+                        line_length_diags.append(
+                            diagnostic_json(
+                                i,
+                                max_comment_line_length,
+                                i,
+                                len(line),
+                                msg_comment,
+                                Severity.warn,
+                            )
                         )
         errors, diags_ast = self.ast.check_file(obj_tree)
         diagnostics += diags_ast
+        diagnostics += line_length_diags
         for error in errors:
             diagnostics.append(error.build(self))
         return diagnostics

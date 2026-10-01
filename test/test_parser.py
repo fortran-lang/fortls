@@ -96,3 +96,16 @@ def test_get_code_line_multilines(ln_no: int, pp_defs: dict, reference: int):
     res = file.get_code_line(line_no=ln_no, pp_content=pp)
     result = calc_result(res)
     assert result == reference
+
+
+def test_line_length_diagnostics_not_repeated():
+    file_path = test_dir / "diag" / "test_lines.f90"
+    file = FortranFile(str(file_path))
+    err_str, _ = file.load_from_disk()
+    assert err_str is None
+    file.ast = file.parse()
+    # Checking the same file again must give the same diagnostics
+    first = file.check_file({}, max_line_length=80, max_comment_line_length=100)
+    second = file.check_file({}, max_line_length=80, max_comment_line_length=100)
+    assert [d["range"]["start"]["line"] for d in first] == [2, 3]
+    assert second == first
