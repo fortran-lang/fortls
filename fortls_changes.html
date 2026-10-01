@@ -429,6 +429,9 @@ handle their dependencies through <code class="docutils literal notranslate"><sp
 <ul class="simple">
 <li><p>Fixed missing registered capability for <code class="docutils literal notranslate"><span class="pre">textDocument/documentHighlight</span></code>
 (<a class="reference external" href="https://github.com/fortran-lang/fortls/issues/421s">#421</a>)</p></li>
+<li><p>Fixed crash at initialization when a glob in <code class="docutils literal notranslate"><span class="pre">source_dirs</span></code> or <code class="docutils literal notranslate"><span class="pre">include_dirs</span></code>
+matched a dangling symlink
+(<a class="reference external" href="https://github.com/fortran-lang/fortls/issues/536">#536</a>)</p></li>
 <li><p>Fixed bug where comments in <code class="docutils literal notranslate"><span class="pre">USE</span></code> statements disabled reference finding
 (<a class="reference external" href="https://github.com/fortran-lang/fortls/issues/450">#450</a>)</p></li>
 <li><p>Fixed bug where no matching declarations were found for interface subchildren
@@ -632,7 +635,7 @@ multiline but the function body can.</p></li>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=9932f64e"></script>
+</div><script src="_static/documentation_options.js?v=3810b74c"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
