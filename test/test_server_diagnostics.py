@@ -215,6 +215,27 @@ def test_max_line_length():
     ]
 
 
+def test_max_line_length_not_repeated():
+    # Saving an unchanged file must not repeat the line length diagnostics
+    root = test_dir / "diag"
+    string = write_rpc_request(1, "initialize", {"rootPath": str(root)})
+    file_path = str(root / "test_lines.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
+    for _ in range(2):
+        string += write_rpc_notification(
+            "textDocument/didSave", {"textDocument": {"uri": file_path}}
+        )
+    file_path = str(root / "conf_long_lines.json")
+    errcode, results = run_request(string, [f"--config {file_path}"])
+    assert errcode == 0
+    diagnostics = [r["diagnostics"] for r in results if "diagnostics" in r]
+    assert len(diagnostics) == 3
+    for diags in diagnostics:
+        assert [d["range"]["start"]["line"] for d in diags] == [2, 3]
+
+
 def test_implicit_none():
     string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
     # Test module procedure in submodules importing scopes
