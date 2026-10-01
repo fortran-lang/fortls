@@ -111,3 +111,18 @@ def test_coarray_names():
     assert variables["s"].desc == "CHARACTER*10"
     assert variables["s"].keyword_info == {"dimension": "3"}
     assert variables["arr"].keyword_info == {"intent": "IN", "dimension": ":"}
+
+
+@pytest.mark.parametrize(
+    "name, expected",
+    [
+        ("x", "x"),
+        ("x[*]", "x"),
+        (" x [2, *]*10", " x *10"),
+        ("x[1:size([1, 2]), *]", "x"),
+        ("x[", "x["),
+    ],
+)
+def test_parse_imp_codim(name: str, expected: str):
+    file = FortranFile(str(test_dir / "diag" / "test_coarray.f90"))
+    assert file.parse_imp_codim(name) == expected
