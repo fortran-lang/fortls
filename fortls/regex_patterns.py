@@ -43,10 +43,6 @@ class FortranRegularExpressions:
     SUBMOD: Pattern = compile(r"[ ]*SUBMODULE[ ]*\(", I)
     END_SMOD: Pattern = compile(r"SUBMODULE", I)
     END_PRO: Pattern = compile(r"(MODULE)?[ ]*PROCEDURE", I)
-    BLOCK_DATA: Pattern = compile(
-        r"[ ]*BLOCK[ ]*DATA(?![\w\$])[ ]*([a-z_][\w\$]*)?[ ]*(!.*)?$", I
-    )
-    END_BLOCK_DATA: Pattern = compile(r"BLOCK[ ]*DATA", I)
     BLOCK: Pattern = compile(r"[ ]*([a-z_]\w*[ ]*:[ ]*)?BLOCK|CRITICAL(?!\w)", I)
     END_BLOCK: Pattern = compile(r"BLOCK|CRITICAL", I)
     DO: Pattern = compile(r"[ ]*(?:[a-z_]\w*[ ]*:[ ]*)?DO([ ]+[0-9]*|$)", I)
@@ -68,6 +64,10 @@ class FortranRegularExpressions:
     END_SELECT: Pattern = compile(r"SELECT", I)
     PROG: Pattern = compile(r"[ ]*PROGRAM[ ]+(\w+)", I)
     END_PROG: Pattern = compile(r"PROGRAM", I)
+    BLOCK_DATA: Pattern = compile(
+        r"[ ]*BLOCK[ ]*DATA(?![\w\$])[ ]*([a-z_][\w\$]*)?[ ]*(!.*)?$", I
+    )
+    END_BLOCK_DATA: Pattern = compile(r"BLOCK[ ]*DATA", I)
     INT: Pattern = compile(r"[ ]*(ABSTRACT)?[ ]*INTERFACE[ ]*(\w*)", I)
     END_INT: Pattern = compile(r"INTERFACE", I)
     END_WORD: Pattern = compile(
