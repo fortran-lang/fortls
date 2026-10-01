@@ -365,11 +365,14 @@ def resolve_globs(glob_path: str, root_path: str = None) -> list[str]:
     True
     """
     if not os.path.isabs(glob_path) and root_path:
-        return [str(p.resolve()) for p in Path(root_path).resolve().glob(glob_path)]
-    p = Path(glob_path).resolve()
-    root = p.anchor  # drive letter + root path
-    rel = str(p.relative_to(root))  # contains glob pattern
-    return [str(p.resolve()) for p in Path(root).glob(rel)]
+        paths = Path(root_path).resolve().glob(glob_path)
+    else:
+        p = Path(glob_path).resolve()
+        root = p.anchor  # drive letter + root path
+        rel = str(p.relative_to(root))  # contains glob pattern
+        paths = Path(root).glob(rel)
+    # glob also yields dangling symlinks, exists() is False for them
+    return [str(p.resolve()) for p in paths if p.exists()]
 
 
 def only_dirs(paths: list[str]) -> list[str]:
