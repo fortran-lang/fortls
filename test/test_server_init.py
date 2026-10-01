@@ -1,4 +1,5 @@
 import os
+import sys
 import tempfile
 
 import pytest
@@ -24,6 +25,12 @@ def setup_tmp_file():
         os.remove(filename)
 
 
+# The error comes from pickling the deeply nested AST in a worker process.
+# From Python 3.14 the C recursion check uses the stack size, pickle succeeds
+# and there is no error to report.
+@pytest.mark.skipif(
+    sys.version_info >= (3, 14), reason="Python 3.14+ pickles the nested AST"
+)
 def test_recursion_error_handling(setup_tmp_file):
     root = Path(setup_tmp_file).parent
     request_string = write_rpc_request(1, "initialize", {"rootPath": str(root)})
