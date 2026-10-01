@@ -9,6 +9,9 @@
 - Fixed crash at initialization when a glob in `source_dirs` or `include_dirs`
   matched a dangling symlink
   ([#536](https://github.com/fortran-lang/fortls/issues/536))
+- Fixed false "declared twice in scope" error when the same `EXTERNAL` is
+  declared in more than one procedure
+  ([#406](https://github.com/fortran-lang/fortls/issues/406))
 
 ## 3.2.2
 

@@ -731,6 +731,9 @@ def find_external_type(file_ast: FortranAST, desc_string: str, name: str) -> boo
     counter = 0
     # Definition without EXTERNAL has already been parsed
     for v in file_ast.variable_list:
+        # Only match declarations in the same scope
+        if v.parent is not file_ast.current_scope:
+            continue
         if name == v.name:
             # If variable is already in external objs it has
             # been parsed correctly so exit
@@ -769,6 +772,9 @@ def find_external_attr(file_ast: FortranAST, name: str, new_var: Variable) -> bo
     counter = 0
     for v in file_ast.external_objs:
         if v.name != name:
+            continue
+        # Only match declarations in the same scope
+        if v.parent is not file_ast.current_scope:
             continue
         if v.desc.upper() != "EXTERNAL":
             continue

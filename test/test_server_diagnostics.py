@@ -112,6 +112,19 @@ def test_external():
     ]
 
 
+def test_external_separate_scopes():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    # Test that the same EXTERNAL declared in different procedures is not
+    # reported as declared twice
+    file_path = str(test_dir / "diag" / "test_external_scopes.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
+    errcode, results = run_request(string)
+    assert errcode == 0
+    assert results[1]["diagnostics"] == []
+
+
 def test_forall():
     string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
     # Checks that forall with end forall inside a case select does not cause
