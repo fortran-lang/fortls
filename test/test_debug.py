@@ -12,6 +12,10 @@ def run_fortls(args: list[str], cwd) -> str:
     return subprocess.run(cmd, cwd=cwd, capture_output=True, text=True).stdout
 
 
+def section(out: str, start: str, end: str) -> str:
+    return out.split(start)[1].split(end)[0]
+
+
 @pytest.fixture()
 def pp_dir(tmp_path):
     (tmp_path / "main.F90").write_text(SOURCE)
@@ -34,7 +38,7 @@ def test_debug_parser_cli_pp_defs(pp_dir, config, extra_args, found):
         (pp_dir / ".fortls").write_text(config)
     args = ["--debug_parser", "--debug_filepath", "main.F90", "--debug_rootpath", "."]
     out = run_fortls(args + extra_args, pp_dir)
-    tree = out.split("Object Tree")[1].split("Exportable Objects")[0]
+    tree = section(out, "Object Tree", "Exportable Objects")
     assert ("foo_mod" in tree) == found
 
 
@@ -42,19 +46,15 @@ def test_debug_parser_cli_include_dirs(pp_dir):
     (pp_dir / "main.F90").write_text('#include "defs.h"\n' + SOURCE)
     args = ["--debug_parser", "--debug_filepath", "main.F90", "--include_dirs", "inc"]
     out = run_fortls(args, pp_dir)
-    tree = out.split("Object Tree")[1].split("Exportable Objects")[0]
+    tree = section(out, "Object Tree", "Exportable Objects")
     assert "foo_mod" in tree
 
 
 def test_debug_preprocessor_cli_pp_defs(pp_dir):
     args = ["--debug_preproc", "--debug_filepath", "main.F90"]
     out = run_fortls(args + ["--pp_defs", '{"HAVE_FOO": ""}'], pp_dir)
-    skipped = out.split("Preprocessor Skipped Lines:")[1].split("Preprocessor Macros")[
-        0
-    ]
+    skipped = section(out, "Preprocessor Skipped Lines:", "Preprocessor Macros")
     assert "[1, 4]" not in skipped
     out = run_fortls(args, pp_dir)
-    skipped = out.split("Preprocessor Skipped Lines:")[1].split("Preprocessor Macros")[
-        0
-    ]
+    skipped = section(out, "Preprocessor Skipped Lines:", "Preprocessor Macros")
     assert "[1, 4]" in skipped
