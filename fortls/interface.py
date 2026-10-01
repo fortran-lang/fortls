@@ -282,13 +282,12 @@ def cli(name: str = "fortls") -> argparse.ArgumentParser:
 
     # Debug
     # By default debug arguments are hidden
-    _debug_commandline_args(parser)
+    parser = _debug_commandline_args(parser)
 
     return parser
 
 
-# TODO: make this return a parser
-def _debug_commandline_args(parser: argparse.ArgumentParser) -> None:
+def _debug_commandline_args(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
     """Parse the debug arguments if any are present.
     if none are present the arguments are suppressed in the help menu
 
@@ -428,3 +427,4 @@ def _debug_commandline_args(parser: argparse.ArgumentParser) -> None:
         action="store_true",
         help=hide_opt("Print full result object instead of condensed version"),
     )
+    return parser
