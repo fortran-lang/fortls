@@ -1,6 +1,7 @@
 import pytest
 from setup_tests import test_dir
 
+from fortls.parsers.internal.associate import Associate
 from fortls.parsers.internal.parser import FortranFile
 
 
@@ -96,3 +97,21 @@ def test_get_code_line_multilines(ln_no: int, pp_defs: dict, reference: int):
     res = file.get_code_line(line_no=ln_no, pp_content=pp)
     result = calc_result(res)
     assert result == reference
+
+
+def test_associate_self_reference_links_parent_scope():
+    file_path = test_dir / "hover" / "associate_self_reference.f90"
+    file = FortranFile(str(file_path))
+    err_str, _ = file.load_from_disk()
+    assert err_str is None
+    ast = file.parse()
+    assocs = [s for s in ast.get_scopes() if isinstance(s, Associate)]
+    for assoc in assocs:
+        assoc.resolve_link({})
+    # The selector must link to the variable of the enclosing scope
+    y_var = assocs[0].links[0].var
+    assert y_var.link_obj is not y_var
+    assert y_var.link_obj.parent is assocs[0].parent
+    assert y_var.get_desc() == "INTEGER"
+    t_var = assocs[1].links[0].var
+    assert t_var.link_obj.name == "c"
