@@ -37,6 +37,7 @@ def test_dangling_symlink_in_source_dirs(tmp_path):
     (tmp_path / "sub" / "bar.f90").write_text("module bar_mod\nend module bar_mod\n")
     try:
         os.symlink(tmp_path / "nonexistent", tmp_path / "dead_link")
+        os.symlink(tmp_path / "loop_link", tmp_path / "loop_link")
     except OSError:
         pytest.skip("Creating symlinks is not supported on this system")
     request_string = write_rpc_request(1, "initialize", {"rootPath": str(tmp_path)})
