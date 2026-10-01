@@ -96,3 +96,24 @@ def test_get_code_line_multilines(ln_no: int, pp_defs: dict, reference: int):
     res = file.get_code_line(line_no=ln_no, pp_content=pp)
     result = calc_result(res)
     assert result == reference
+
+
+def test_external_separate_scopes():
+    file_path = test_dir / "diag" / "test_external_scopes.f90"
+    file = FortranFile(str(file_path))
+    err_str, _ = file.load_from_disk()
+    assert err_str is None
+    file.ast = file.parse()
+    # Each procedure keeps one merged declaration of its own EXTERNAL
+    children = {
+        s.name: [(c.name, c.desc) for c in s.children] for s in file.ast.scope_list
+    }
+    assert children == {
+        "type_first_1": [("bar", "INTEGER")],
+        "type_first_2": [("bar", "INTEGER")],
+        "external_first_1": [("baz", "REAL")],
+        "external_first_2": [("baz", "REAL")],
+        "external_only": [("qux", "EXTERNAL")],
+        "external_then_type": [("qux", "REAL")],
+    }
+    assert file.check_file({}) == []
