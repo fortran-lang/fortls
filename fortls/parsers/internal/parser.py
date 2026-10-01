@@ -1728,7 +1728,19 @@ class FortranFile:
         str
             line without the codimension
         """
-        return re.sub(r"^([ ]*\w+[ ]*)\[[^\]]*\]", r"\1", line)
+        m = re.compile(r"[ ]*[a-z_][\w\$]*[ ]*(\[)", re.I).match(line)
+        if not m:
+            return line
+        # Find the matching "]", the codimension can contain array constructors
+        depth = 1
+        for i in range(m.end(1), len(line)):
+            if line[i] == "[":
+                depth += 1
+            elif line[i] == "]":
+                depth -= 1
+                if depth == 0:
+                    return line[: m.start(1)] + line[i + 1 :]
+        return line  # triggers for autocomplete
 
     def parse_imp_char(self, line: str):
         """Parse the implicit character length from a variable e.g.

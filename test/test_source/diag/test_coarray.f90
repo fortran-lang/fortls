@@ -2,6 +2,7 @@ program test_coarray
   implicit none
   real :: a(10)[*], b[2, *]
   character :: s(3)[*]*10
+  integer :: c[1:size([1, 2]), *], d$e[*]
 contains
   subroutine co_routine(coarray, arr)
     real, allocatable, intent(inout) :: coarray[:]
