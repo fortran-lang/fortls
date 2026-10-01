@@ -41,6 +41,7 @@ from fortls.helper_functions import (
     detect_fixed_format,
     find_paren_match,
     find_word_in_line,
+    get_init_value,
     get_paren_level,
     get_paren_substring,
     map_keywords,
@@ -1452,9 +1453,8 @@ class FortranFile:
                         #  the value in hover
                         if new_var.is_parameter():
                             _, col = find_word_in_line(line, name)
-                            match = FRegex.PARAMETER_VAL.match(line[col:])
-                            if match:
-                                var = " ".join(match.group(1).strip().split())
+                            var = get_init_value(line[col:])
+                            if var is not None:
                                 new_var.set_parameter_val(var)
 
                         # Check if the "variable" is external and if so cycle

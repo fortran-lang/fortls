@@ -9,6 +9,9 @@
 - Fixed crash at initialization when a glob in `source_dirs` or `include_dirs`
   matched a dangling symlink
   ([#536](https://github.com/fortran-lang/fortls/issues/536))
+- Fixed parameter values in hover being cut at the first parenthesis, e.g.
+  `selected_real_kind(6)`
+  ([#124](https://github.com/fortran-lang/fortls/issues/124))
 
 ## 3.2.2
 

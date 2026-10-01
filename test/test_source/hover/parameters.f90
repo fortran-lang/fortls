@@ -19,4 +19,7 @@ program params
                                         23 + &
                                         2 /1        ! comment
     INTEGER(4), PARAMETER :: SIG$ERR   = -1
+    integer, parameter :: sp = selected_real_kind(6), dp = kind(1.d0)
+    character(len=4), parameter :: comma_str = 'a, b'
+    integer, parameter :: arr_sum = sum([1, 2, 3])  ! comment, with comma
 end program params
