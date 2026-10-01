@@ -87,6 +87,18 @@
       "type": "array",
       "uniqueItems": true
     },
+    "compile_commands": {
+      "default": null,
+      "description": "Path to compile_commands.json for automatic configuration of include directories and preprocessor definitions. Auto-detected in build/ if not specified.",
+      "title": "Compile Commands",
+      "type": ["string", "null"]
+    },
+    "disable_compile_commands": {
+      "default": false,
+      "description": "Disable auto-detection and use of compile_commands.json",
+      "title": "Disable Compile Commands",
+      "type": "boolean"
+    },
     "autocomplete_no_prefix": {
       "default": false,
       "description": "Do not filter autocomplete results by variable prefix",
