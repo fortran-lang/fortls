@@ -52,6 +52,7 @@ from fortls.helper_functions import (
 from .associate import Associate
 from .ast import FortranAST
 from .block import Block
+from .block_data import BlockData
 from .do import Do
 from .enum import Enum
 from .function import Function
@@ -355,6 +356,14 @@ def read_sub_def(
         return None
 
     return "sub", SubInfo(name, args, keywords, mod_flag)
+
+
+def read_block_data_def(line: str) -> tuple[Literal["block_data"], str] | None:
+    """Attempt to read BLOCK DATA definition line"""
+    block_data_match = FRegex.BLOCK_DATA.match(line)
+    if block_data_match:
+        return "block_data", block_data_match.group(1)
+    return None
 
 
 def read_block_def(line: str) -> tuple[Literal["block"], str] | None:
@@ -702,6 +711,7 @@ def_tests = [
     read_var_def,
     read_sub_def,
     read_fun_def,
+    read_block_data_def,
     read_block_def,
     read_where_def,
     read_do_def,
@@ -1288,6 +1298,7 @@ class FortranFile:
             do=0,
             ifs=0,
             block=0,
+            block_data=0,
             select=0,
             imports=0,
             interface=0,
@@ -1481,6 +1492,15 @@ class FortranFile:
                 new_prog = Program(file_ast, line_no, obj_info)
                 file_ast.add_scope(new_prog, FRegex.END_PROG)
                 log.debug("%s !!! PROGRAM - Ln:%d", line, line_no)
+
+            elif obj_type == "block_data":
+                name = obj_info
+                if name is None:
+                    counters["block_data"] += 1
+                    name = f"#BLOCK_DATA{counters['block_data']}"
+                new_block_data = BlockData(file_ast, line_no, name)
+                file_ast.add_scope(new_block_data, FRegex.END_BLOCK_DATA)
+                log.debug("%s !!! BLOCK DATA - Ln:%d", line, line_no)
 
             elif obj_type == "sub":
                 keywords, _ = map_keywords(obj_info.keywords)

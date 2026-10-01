@@ -64,10 +64,14 @@ class FortranRegularExpressions:
     END_SELECT: Pattern = compile(r"SELECT", I)
     PROG: Pattern = compile(r"[ ]*PROGRAM[ ]+(\w+)", I)
     END_PROG: Pattern = compile(r"PROGRAM", I)
+    BLOCK_DATA: Pattern = compile(
+        r"[ ]*BLOCK[ ]*DATA(?![\w\$])[ ]*([a-z_][\w\$]*)?[ ]*(!.*)?$", I
+    )
+    END_BLOCK_DATA: Pattern = compile(r"BLOCK[ ]*DATA", I)
     INT: Pattern = compile(r"[ ]*(ABSTRACT)?[ ]*INTERFACE[ ]*(\w*)", I)
     END_INT: Pattern = compile(r"INTERFACE", I)
     END_WORD: Pattern = compile(
-        r"[ ]*END[ ]*(DO|WHERE|IF|BLOCK|CRITICAL|ASSOCIATE|SELECT"
+        r"[ ]*END[ ]*(DO|WHERE|IF|BLOCK[ ]*DATA|BLOCK|CRITICAL|ASSOCIATE|SELECT"
         r"|TYPE|ENUM|MODULE|SUBMODULE|PROGRAM|INTERFACE"
         r"|SUBROUTINE|FUNCTION|PROCEDURE|FORALL)?([ ]+(?!\W)|$)",
         I,

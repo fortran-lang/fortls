@@ -1,7 +1,7 @@
 import pytest
 from setup_tests import test_dir
 
-from fortls.parsers.internal.parser import FortranFile
+from fortls.parsers.internal.parser import FortranFile, read_block_data_def
 
 
 def test_line_continuations():
@@ -96,3 +96,38 @@ def test_get_code_line_multilines(ln_no: int, pp_defs: dict, reference: int):
     res = file.get_code_line(line_no=ln_no, pp_content=pp)
     result = calc_result(res)
     assert result == reference
+
+
+def test_block_data():
+    file_path = test_dir / "diag" / "test_block_data.f90"
+    file = FortranFile(str(file_path))
+    err_str, _ = file.load_from_disk()
+    assert err_str is None
+    file.ast = file.parse()
+    scopes = [(s.FQSN, s.get_desc(), s.sline, s.eline) for s in file.ast.scope_list]
+    assert scopes == [
+        ("named_data", "BLOCK DATA", 1, 6),
+        ("#block_data1", "BLOCK DATA", 8, 13),
+        ("other_data", "BLOCK DATA", 15, 18),
+        ("test_block_data", "PROGRAM", 20, 29),
+        ("test_block_data::data", "BLOCK", 24, 27),
+        ("after_block_data", "SUBROUTINE", 31, 32),
+    ]
+    assert file.check_file({}) == []
+
+
+@pytest.mark.parametrize(
+    "line, result",
+    [
+        ("block data", ("block_data", None)),
+        ("      BLOCKDATA", ("block_data", None)),
+        ("block data bd", ("block_data", "bd")),
+        ("BlockData bd ! comment", ("block_data", "bd")),
+        ("block data_x", None),
+        ("blockdata = 1", None),
+        ("blockdata_count = 1", None),
+        ("block", None),
+    ],
+)
+def test_read_block_data_def(line: str, result):
+    assert read_block_data_def(line) == result

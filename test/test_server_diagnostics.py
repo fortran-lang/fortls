@@ -112,6 +112,20 @@ def test_external():
     ]
 
 
+def test_block_data():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    # Test that BLOCK DATA units do not break the scopes that follow them
+    for name in ("test_block_data.f90", "test_block_data_fixed.f"):
+        file_path = str(test_dir / "diag" / name)
+        string += write_rpc_notification(
+            "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+        )
+    errcode, results = run_request(string)
+    assert errcode == 0
+    assert results[1]["diagnostics"] == []
+    assert results[2]["diagnostics"] == []
+
+
 def test_forall():
     string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
     # Checks that forall with end forall inside a case select does not cause
