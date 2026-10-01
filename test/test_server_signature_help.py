@@ -164,10 +164,14 @@ def test_nested_parentheses_in_arguments_in_process():
     from fortls.langserver import LangServer
 
     conn = _Conn()
-    server = LangServer(conn, vars(cli("fortls").parse_args(["-n", "1"])))
-    root = test_dir / "signature"
-    server.handle({"id": 1, "method": "initialize", "params": {"rootPath": str(root)}})
-    uri = path_to_uri(str(root / "nested_args.f90"))
+    server = LangServer(conn, vars(cli("fortls").parse_args([])))
+    # Open the file instead of initializing the workspace: the workspace
+    # initialization uses a process pool, which is not reliable in-process
+    server._load_intrinsics()
+    uri = path_to_uri(str(test_dir / "signature" / "nested_args.f90"))
+    server.handle(
+        {"method": "textDocument/didOpen", "params": {"textDocument": {"uri": uri}}}
+    )
     positions = [(12, 13), (12, 24), (12, 35), (13, 21)]
     for i, (line, char) in enumerate(positions, start=2):
         server.handle(
