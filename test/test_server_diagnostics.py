@@ -112,6 +112,18 @@ def test_external():
     ]
 
 
+def test_coarray():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    # Test that the codimension of coarray arguments is not part of their name
+    file_path = str(test_dir / "diag" / "test_coarray.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
+    errcode, results = run_request(string)
+    assert errcode == 0
+    assert results[1]["diagnostics"] == []
+
+
 def test_forall():
     string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
     # Checks that forall with end forall inside a case select does not cause

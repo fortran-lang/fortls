@@ -9,6 +9,9 @@
 - Fixed crash at initialization when a glob in `source_dirs` or `include_dirs`
   matched a dangling symlink
   ([#536](https://github.com/fortran-lang/fortls/issues/536))
+- Fixed coarray codimensions, e.g. `x[*]`, being kept in variable names, which
+  raised false errors for coarray arguments
+  ([#172](https://github.com/fortran-lang/fortls/issues/172))
 
 ## 3.2.2
 

@@ -96,3 +96,33 @@ def test_get_code_line_multilines(ln_no: int, pp_defs: dict, reference: int):
     res = file.get_code_line(line_no=ln_no, pp_content=pp)
     result = calc_result(res)
     assert result == reference
+
+
+def test_coarray_names():
+    file_path = test_dir / "diag" / "test_coarray.f90"
+    file = FortranFile(str(file_path))
+    err_str, _ = file.load_from_disk()
+    assert err_str is None
+    ast = file.parse()
+    variables = {v.name: v for v in ast.variable_list}
+    # The codimension is not part of the name, other attributes are kept
+    assert list(variables) == ["a", "b", "s", "c", "d$e", "coarray", "arr"]
+    assert variables["a"].keyword_info == {"dimension": "10"}
+    assert variables["s"].desc == "CHARACTER*10"
+    assert variables["s"].keyword_info == {"dimension": "3"}
+    assert variables["arr"].keyword_info == {"intent": "IN", "dimension": ":"}
+
+
+@pytest.mark.parametrize(
+    "name, expected",
+    [
+        ("x", "x"),
+        ("x[*]", "x"),
+        (" x [2, *]*10", " x *10"),
+        ("x[1:size([1, 2]), *]", "x"),
+        ("x[", "x["),
+    ],
+)
+def test_parse_imp_codim(name: str, expected: str):
+    file = FortranFile(str(test_dir / "diag" / "test_coarray.f90"))
+    assert file.parse_imp_codim(name) == expected
