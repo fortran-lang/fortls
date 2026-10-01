@@ -9,6 +9,9 @@
 - Fixed crash at initialization when a glob in `source_dirs` or `include_dirs`
   matched a dangling symlink
   ([#536](https://github.com/fortran-lang/fortls/issues/536))
+- Fixed `--debug_parser` and `--debug_preproc` ignoring the `pp_suffixes`,
+  `pp_defs` and `include_dirs` given on the command line
+  ([#536](https://github.com/fortran-lang/fortls/issues/536))
 
 ## 3.2.2
 
