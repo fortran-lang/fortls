@@ -9,6 +9,9 @@
 - Fixed crash at initialization when a glob in `source_dirs` or `include_dirs`
   matched a dangling symlink
   ([#536](https://github.com/fortran-lang/fortls/issues/536))
+- Fixed `BLOCK DATA` units being parsed as `BLOCK` constructs, which raised
+  false errors for every program unit after them in the file
+  ([#470](https://github.com/fortran-lang/fortls/issues/470))
 
 ## 3.2.2
 
