@@ -1417,6 +1417,7 @@ class FortranFile:
                     if name.find("(") == 0:
                         continue
                     name, dims = self.parse_imp_dim(name)
+                    name = self.parse_imp_codim(name)
                     name, char_len = self.parse_imp_char(name)
                     if dims:
                         var_keywords.append(dims)
@@ -1712,6 +1713,22 @@ class FortranFile:
         dims = line[m.start(1) : m.end(1) + i + 1]
         line = line[: m.start(1)] + line[m.end(1) + i + 1 :]
         return line, f"dimension{dims}"
+
+    def parse_imp_codim(self, line: str):
+        """Remove the codimension of a coarray from a variable e.g.
+        var[*], var[2, *]. Array dimensions must be removed first.
+
+        Parameters
+        ----------
+        line : str
+            line containing variable name
+
+        Returns
+        -------
+        str
+            line without the codimension
+        """
+        return re.sub(r"^([ ]*\w+[ ]*)\[[^\]]*\]", r"\1", line)
 
     def parse_imp_char(self, line: str):
         """Parse the implicit character length from a variable e.g.
