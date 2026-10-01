@@ -1717,7 +1717,13 @@ class LangServer:
         # Get filenames
         file_list = []
         for src_dir in self.source_dirs:
-            for f in os.listdir(src_dir):
+            try:
+                dir_files = os.listdir(src_dir)
+            except OSError as e:
+                # e.g. no read permission, skip the directory instead of failing
+                log.warning("Skipping source directory %s: %s", src_dir, e)
+                continue
+            for f in dir_files:
                 p = os.path.join(src_dir, f)
                 # Process only files
                 if not os.path.isfile(p):
