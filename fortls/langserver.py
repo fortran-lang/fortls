@@ -40,6 +40,7 @@ from fortls.helper_functions import (
     only_dirs,
     resolve_globs,
     set_keyword_ordering,
+    strip_strings,
 )
 from fortls.json_templates import change_json, symbol_json, uri_json
 from fortls.jsonrpc import JSONRPC2Connection, path_from_uri, path_to_uri
@@ -836,10 +837,12 @@ class LangServer:
 
     def serve_signature(self, request: dict):
         def get_sub_name(line: str):
-            _, sections = get_paren_level(line)
+            # arg_string has the nested parentheses removed. With the strings also
+            # removed, commas inside arr(2, 3) or "a, b" do not separate arguments
+            arg_string, sections = get_paren_level(line)
             if sections[0].start <= 1:
                 return None, None, None
-            arg_string = line[sections[0].start : sections[-1].end]
+            arg_string = strip_strings(arg_string)
             sub_string, sections = get_paren_level(line[: sections[0].start - 1])
             return sub_string.strip(), arg_string.split(","), sections[-1].start
 
