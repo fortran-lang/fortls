@@ -153,6 +153,21 @@ def test_config_file_preprocessor_options():
     }
 
 
+def test_config_file_keeps_command_line_preprocessor_options(tmp_path):
+    from fortls.langserver import LangServer
+
+    # A config file without preprocessor options must not reset the CLI values
+    (tmp_path / ".fortls").write_text("{}")
+    args = parser.parse_args(
+        ["--pp_suffixes", ".h", ".fh", "--pp_defs", '{"HAVE_FOO":"1"}']
+    )
+    server = LangServer(None, vars(args))
+    server.root_path = str(tmp_path)
+    server._load_config_file()
+    assert server.pp_suffixes == [".h", ".fh"]
+    assert server.pp_defs == {"HAVE_FOO": "1"}
+
+
 def test_config_file_symbols_options():
     server, root = unittest_server_init()
     # Symbols options
