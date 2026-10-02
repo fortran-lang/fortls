@@ -36,3 +36,37 @@ def test_pp_macro_expansion():
     ]
     output, _, _, _ = preprocess_file(lines)
     assert output == ref
+
+
+def test_pp_zero_argument_function_macro():
+    lines = [
+        "#define ok() if(ie/=0) then; return; end if;",
+        "subroutine b",
+        "integer :: ie",
+        "ie = 1",
+        "ok()",
+        "end subroutine",
+    ]
+    ref = [
+        "#define ok() if(ie/=0) then; return; end if;",
+        "subroutine b",
+        "integer :: ie",
+        "ie = 1",
+        "if(ie/=0) then; return; end if;",
+        "end subroutine",
+    ]
+    output, _, _, _ = preprocess_file(lines)
+    assert output == ref
+
+
+def test_pp_function_macro_arities():
+    lines = [
+        "#define NOARG() 42",
+        "#define SQUARE(x) ((x)*(x))",
+        "#define ADD(a, b) ((a) + (b))",
+        "i = NOARG()",
+        "j = SQUARE(3)",
+        "k = ADD(1, 2)",
+    ]
+    output, _, _, _ = preprocess_file(lines)
+    assert output[3:] == ["i = 42", "j = ((3)*(3))", "k = ((1) + ( 2))"]
