@@ -112,3 +112,79 @@ def test_subroutine_markdown():
         "activeParameter": 0,
     }
     assert results[1] == ref
+
+
+def test_nested_parentheses_in_arguments():
+    """Test that commas inside an argument, e.g. an array element or a string,
+    and apostrophes inside strings do not move the active parameter.
+    """
+    string = write_rpc_request(
+        1, "initialize", {"rootPath": str(test_dir / "signature")}
+    )
+    file_path = test_dir / "signature" / "nested_args.f90"
+    string += sigh_request(file_path, 12, 13)
+    string += sigh_request(file_path, 12, 24)
+    string += sigh_request(file_path, 12, 35)
+    string += sigh_request(file_path, 13, 21)
+    string += sigh_request(file_path, 14, 30)
+    errcode, results = run_request(string, ["-n", "1"])
+    assert errcode == 0
+
+    sub_sig = "foo(arg1, arg2, arg3)"
+    ref = (
+        [0, 3, sub_sig],
+        [1, 3, sub_sig],
+        [2, 3, sub_sig],
+        [1, 2, "baz(str, arg)"],
+        [2, 3, sub_sig],
+    )
+    assert len(ref) == len(results) - 1
+    for i, r in enumerate(ref):
+        validate_sigh(results[i + 1], r)
+
+
+class _Conn:
+    """Collect the server responses of an in-process LangServer"""
+
+    def __init__(self):
+        self.responses = {}
+
+    def send_notification(self, method, params):
+        pass
+
+    def write_response(self, request_id, response):
+        self.responses[request_id] = response
+
+
+def test_nested_parentheses_in_arguments_in_process():
+    """Same as test_nested_parentheses_in_arguments, but the server runs in the
+    test process, so that coverage records serve_signature.
+    """
+    from setup_tests import path_to_uri
+
+    from fortls.interface import cli
+    from fortls.langserver import LangServer
+
+    conn = _Conn()
+    server = LangServer(conn, vars(cli("fortls").parse_args([])))
+    # Open the file instead of initializing the workspace: the workspace
+    # initialization uses a process pool, which is not reliable in-process
+    server._load_intrinsics()
+    uri = path_to_uri(str(test_dir / "signature" / "nested_args.f90"))
+    server.handle(
+        {"method": "textDocument/didOpen", "params": {"textDocument": {"uri": uri}}}
+    )
+    positions = [(12, 13), (12, 24), (12, 35), (13, 21), (14, 30)]
+    for i, (line, char) in enumerate(positions, start=2):
+        server.handle(
+            {
+                "id": i,
+                "method": "textDocument/signatureHelp",
+                "params": {
+                    "textDocument": {"uri": uri},
+                    "position": {"line": line, "character": char},
+                },
+            }
+        )
+    active = [conn.responses[i]["activeParameter"] for i in range(2, 7)]
+    assert active == [0, 1, 2, 1, 2]

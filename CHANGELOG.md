@@ -9,6 +9,9 @@
 - Fixed crash at initialization when a glob in `source_dirs` or `include_dirs`
   matched a dangling symlink
   ([#536](https://github.com/fortran-lang/fortls/issues/536))
+- Fixed signature help selecting the wrong argument when an earlier argument
+  contains a comma, e.g. `arr(2, 3)` or `"a, b"`
+  ([#87](https://github.com/fortran-lang/fortls/issues/87))
 
 ## 3.2.2
 

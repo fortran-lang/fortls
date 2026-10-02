@@ -836,12 +836,27 @@ class LangServer:
 
     def serve_signature(self, request: dict):
         def get_sub_name(line: str):
-            _, sections = get_paren_level(line)
+            # arg_string has the nested parentheses removed, so commas inside
+            # arr(2, 3) do not separate arguments
+            arg_string, sections = get_paren_level(line)
             if sections[0].start <= 1:
                 return None, None, None
-            arg_string = line[sections[0].start : sections[-1].end]
+            # Split at the commas outside strings, e.g. not in "a, b" or "it's"
+            args: list[str] = []
+            quote = ""
+            arg_start = 0
+            for i, char in enumerate(arg_string):
+                if quote:
+                    if char == quote:
+                        quote = ""
+                elif char in ("'", '"'):
+                    quote = char
+                elif char == ",":
+                    args.append(arg_string[arg_start:i])
+                    arg_start = i + 1
+            args.append(arg_string[arg_start:])
             sub_string, sections = get_paren_level(line[: sections[0].start - 1])
-            return sub_string.strip(), arg_string.split(","), sections[-1].start
+            return sub_string.strip(), args, sections[-1].start
 
         def check_optional(arg, params: dict):
             opt_split = arg.split("=")
