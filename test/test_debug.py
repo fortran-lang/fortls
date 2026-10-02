@@ -42,6 +42,22 @@ def test_debug_parser_cli_pp_defs(pp_dir, config, extra_args, found):
     assert ("foo_mod" in tree) == found
 
 
+@pytest.mark.parametrize("suffix_args, preprocessed", [([".f90"], True), ([], False)])
+def test_debug_parser_cli_pp_suffixes(pp_dir, suffix_args, preprocessed):
+    # A .f90 file is preprocessed only when its suffix is in pp_suffixes
+    source = "#ifdef HAVE_FOO\nmodule foo_mod\nend module foo_mod\n#else\n"
+    source += "module nofoo_mod\nend module nofoo_mod\n#endif\n"
+    (pp_dir / "plain.f90").write_text(source)
+    args = ["--debug_parser", "--debug_filepath", "plain.f90"]
+    args += ["--pp_defs", '{"HAVE_FOO": ""}']
+    if suffix_args:
+        args += ["--pp_suffixes", *suffix_args]
+    out = run_fortls(args, pp_dir)
+    tree = section(out, "Object Tree", "Exportable Objects")
+    assert "foo_mod" in tree
+    assert ("nofoo_mod" not in tree) == preprocessed
+
+
 def test_debug_parser_cli_include_dirs(pp_dir):
     (pp_dir / "main.F90").write_text('#include "defs.h"\n' + SOURCE)
     args = ["--debug_parser", "--debug_filepath", "main.F90", "--include_dirs", "inc"]
