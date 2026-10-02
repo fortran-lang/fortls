@@ -110,9 +110,23 @@ def get_use_tree(
         # Do not descent the IMPORT tree, because it does not exist
         if type(use_stmnt) is Import:
             continue
+        use_scope = obj_tree[use_stmnt.mod_name][0]
+        # A module with default PRIVATE accessibility only re-exports the USE
+        # associated names that it explicitly marks as PUBLIC
+        if use_scope.def_vis < 0:
+            if merged_use_list:
+                merged_use_list = [
+                    name
+                    for name in merged_use_list
+                    if merged_rename.get(name, name) in use_scope.public_names
+                ]
+            else:
+                merged_use_list = list(use_scope.public_names)
+            if not merged_use_list:
+                continue
         # Descend USE tree
         use_dict = get_use_tree(
-            obj_tree[use_stmnt.mod_name][0],
+            use_scope,
             use_dict,
             obj_tree,
             merged_use_list,
