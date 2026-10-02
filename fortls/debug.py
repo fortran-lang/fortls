@@ -421,7 +421,13 @@ def debug_parser(args):
     separator()
 
     ensure_file_accessible(args.debug_filepath)
-    pp_suffixes, pp_defs, include_dirs = read_config(args.debug_rootpath, args.config)
+    pp_suffixes, pp_defs, include_dirs = read_config(
+        args.debug_rootpath,
+        args.config,
+        args.pp_suffixes,
+        args.pp_defs,
+        args.include_dirs,
+    )
 
     print(f'  File = "{args.debug_filepath}"')
     file_obj = FortranFile(args.debug_filepath, pp_suffixes)
@@ -465,7 +471,9 @@ def debug_preprocessor(args):
         lines = f.readlines()
 
     root = args.debug_rootpath if args.debug_rootpath else os.path.dirname(file)
-    _, pp_defs, include_dirs = read_config(root, args.config)
+    _, pp_defs, include_dirs = read_config(
+        root, args.config, args.pp_suffixes, args.pp_defs, args.include_dirs
+    )
 
     sep_lvl2("Preprocessor Pass:")
     output, skips, defines, defs = preprocess_file(
@@ -525,32 +533,38 @@ def locate_config(root: str, input_config: str) -> str | None:
         return config_path
 
 
-def read_config(root: str | None, input_config: str):
-    pp_suffixes = None
-    pp_defs = {}
+def read_config(
+    root: str | None,
+    input_config: str,
+    pp_suffixes: list[str] | None = None,
+    pp_defs: dict | list | None = None,
+    include_dirs: set[str] | None = None,
+):
+    """Read the preprocessor options. The configuration file options replace the
+    command line options ``pp_suffixes``, ``pp_defs`` and ``include_dirs``,
+    the same as in the Language Server.
+    """
+    pp_defs = {} if pp_defs is None else pp_defs
+    include_globs = set() if include_dirs is None else include_dirs
+    config_path = None if root is None else locate_config(root, input_config)
+    if root is not None:
+        print(f"  Config file = {config_path}")
+
+    if config_path is not None and os.path.isfile(config_path):
+        try:
+            with open(config_path, encoding="utf-8") as fhandle:
+                config_dict = json5.load(fhandle)
+                pp_suffixes = config_dict.get("pp_suffixes", pp_suffixes)
+                pp_defs = config_dict.get("pp_defs", pp_defs)
+                include_globs = config_dict.get("include_dirs", include_globs)
+        except ValueError as e:
+            print(f"Error {e} while parsing '{config_path}' settings file")
+
+    if isinstance(pp_defs, list):
+        pp_defs = {key: "" for key in pp_defs}
     include_dirs = set()
-    if root is None:
-        return pp_suffixes, pp_defs, include_dirs
-
-    # Check for config files
-    config_path = locate_config(root, input_config)
-    print(f"  Config file = {config_path}")
-    if config_path is None or not os.path.isfile(config_path):
-        return pp_suffixes, pp_defs, include_dirs
-
-    try:
-        with open(config_path, encoding="utf-8") as fhandle:
-            config_dict = json5.load(fhandle)
-            pp_suffixes = config_dict.get("pp_suffixes", None)
-            pp_defs = config_dict.get("pp_defs", {})
-            for path in config_dict.get("include_dirs", set()):
-                include_dirs.update(only_dirs(resolve_globs(path, root)))
-
-            if isinstance(pp_defs, list):
-                pp_defs = {key: "" for key in pp_defs}
-    except ValueError as e:
-        print(f"Error {e} while parsing '{config_path}' settings file")
-
+    for path in include_globs:
+        include_dirs.update(only_dirs(resolve_globs(path, root)))
     return pp_suffixes, pp_defs, include_dirs
 
 
