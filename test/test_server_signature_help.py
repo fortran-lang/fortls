@@ -116,7 +116,7 @@ def test_subroutine_markdown():
 
 def test_nested_parentheses_in_arguments():
     """Test that commas inside an argument, e.g. an array element or a string,
-    do not move the active parameter.
+    and apostrophes inside strings do not move the active parameter.
     """
     string = write_rpc_request(
         1, "initialize", {"rootPath": str(test_dir / "signature")}
@@ -126,6 +126,7 @@ def test_nested_parentheses_in_arguments():
     string += sigh_request(file_path, 12, 24)
     string += sigh_request(file_path, 12, 35)
     string += sigh_request(file_path, 13, 21)
+    string += sigh_request(file_path, 14, 30)
     errcode, results = run_request(string, ["-n", "1"])
     assert errcode == 0
 
@@ -135,6 +136,7 @@ def test_nested_parentheses_in_arguments():
         [1, 3, sub_sig],
         [2, 3, sub_sig],
         [1, 2, "baz(str, arg)"],
+        [2, 3, sub_sig],
     )
     assert len(ref) == len(results) - 1
     for i, r in enumerate(ref):
@@ -172,7 +174,7 @@ def test_nested_parentheses_in_arguments_in_process():
     server.handle(
         {"method": "textDocument/didOpen", "params": {"textDocument": {"uri": uri}}}
     )
-    positions = [(12, 13), (12, 24), (12, 35), (13, 21)]
+    positions = [(12, 13), (12, 24), (12, 35), (13, 21), (14, 30)]
     for i, (line, char) in enumerate(positions, start=2):
         server.handle(
             {
@@ -184,5 +186,5 @@ def test_nested_parentheses_in_arguments_in_process():
                 },
             }
         )
-    active = [conn.responses[i]["activeParameter"] for i in range(2, 6)]
-    assert active == [0, 1, 2, 1]
+    active = [conn.responses[i]["activeParameter"] for i in range(2, 7)]
+    assert active == [0, 1, 2, 1, 2]

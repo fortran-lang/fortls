@@ -12,5 +12,6 @@ contains
     arr = 0
     call foo(arr(2, 3), arr(1, 1), arr(4, 4))
     call baz("a, b", 1)
+    call foo("it's", "Bob's", 1)
   end subroutine bar
 end module nested_args
