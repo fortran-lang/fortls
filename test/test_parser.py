@@ -96,3 +96,20 @@ def test_get_code_line_multilines(ln_no: int, pp_defs: dict, reference: int):
     res = file.get_code_line(line_no=ln_no, pp_content=pp)
     result = calc_result(res)
     assert result == reference
+
+
+def test_parameter_values():
+    file_path = test_dir / "hover" / "parameters.f90"
+    file = FortranFile(str(file_path))
+    err_str, _ = file.load_from_disk()
+    assert err_str is None
+    ast = file.parse()
+    values = {v.name: v.param_val for v in ast.variable_list}
+    assert values["var"] == "1000"
+    assert values["var3"] == "var*var2"
+    assert values["var_multi2"] == "1 * 23 + 2 /1"
+    assert values["sp"] == "selected_real_kind(6)"
+    assert values["dp"] == "kind(1.d0)"
+    assert values["comma_str"] == "'a, b'"
+    assert values["arr_sum"] == "sum([1, 2, 3])"
+    assert values["space_str"] == "'a   b' // \"c\""

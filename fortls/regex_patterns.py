@@ -96,7 +96,7 @@ class FortranRegularExpressions:
         r"CONTIGUOUS)",
         I,
     )
-    PARAMETER_VAL: Pattern = compile(r"\w*[\s\&]*=(([\s\&]*[\w\.\-\+\*\/\'\"])*)", I)
+    PARAMETER_VAL: Pattern = compile(r"\w*[\s\&]*=(?!=)", I)
     TATTR_LIST: Pattern = compile(
         r"[ ]*,[ ]*(PUBLIC|PRIVATE|ABSTRACT|EXTENDS\(\w*\))", I
     )
