@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 
@@ -9,7 +10,10 @@ SOURCE += "program p\nend program p\n"
 
 def run_fortls(args: list[str], cwd) -> str:
     cmd = [sys.executable, "-m", "fortls", *args]
-    return subprocess.run(cmd, cwd=cwd, capture_output=True, text=True).stdout
+    # Ignore the user site-packages. test_version_update_pypi can install the PyPI
+    # release there while the tests run, and that release would hide this one.
+    env = {**os.environ, "PYTHONNOUSERSITE": "1"}
+    return subprocess.run(cmd, cwd=cwd, env=env, capture_output=True, text=True).stdout
 
 
 def section(out: str, start: str, end: str) -> str:
