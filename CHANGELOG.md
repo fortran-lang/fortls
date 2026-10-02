@@ -10,6 +10,10 @@
   matched a dangling symlink
   ([#536](https://github.com/fortran-lang/fortls/issues/536))
 
+- Fixed `textDocument/rename` not renaming the implicit result variable of a
+  function declared without a `RESULT()` clause
+  ([#322](https://github.com/fortran-lang/fortls/issues/322))
+
 ## 3.2.2
 
 ### Fixed
