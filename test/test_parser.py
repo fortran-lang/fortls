@@ -2,6 +2,7 @@ import pytest
 from setup_tests import test_dir
 
 from fortls.parsers.internal.parser import FortranFile
+from fortls.parsers.internal.utilities import find_in_scope
 
 
 def test_line_continuations():
@@ -96,3 +97,28 @@ def test_get_code_line_multilines(ln_no: int, pp_defs: dict, reference: int):
     res = file.get_code_line(line_no=ln_no, pp_content=pp)
     result = calc_result(res)
     assert result == reference
+
+
+def test_private_module_reexport():
+    """Test that a default PRIVATE module only re-exports PUBLIC USE names."""
+    obj_tree = {}
+    for name in ("base", "middle", "main", "only"):
+        file_path = test_dir / "diag" / "private_reexport" / f"{name}.f90"
+        file = FortranFile(str(file_path))
+        err_str, _ = file.load_from_disk()
+        assert err_str is None
+        ast = file.parse()
+        for key, obj in ast.global_dict.items():
+            obj_tree[key] = [obj, str(file_path)]
+
+    main = obj_tree["reexport_main"][0]
+    assert find_in_scope(main, "hidden_var", obj_tree) is None
+    assert find_in_scope(main, "hidden_sub", obj_tree) is None
+    assert find_in_scope(main, "shared_var", obj_tree).name == "shared_var"
+
+    only = obj_tree["reexport_only_user"][0]
+    assert find_in_scope(only, "renamed_var", obj_tree).name == "shared_var"
+    assert find_in_scope(only, "hidden_var", obj_tree) is None
+
+    hidden_user = obj_tree["reexport_hidden_user"][0]
+    assert find_in_scope(hidden_user, "shared_var", obj_tree) is None
