@@ -112,3 +112,4 @@ def test_parameter_values():
     assert values["dp"] == "kind(1.d0)"
     assert values["comma_str"] == "'a, b'"
     assert values["arr_sum"] == "sum([1, 2, 3])"
+    assert values["space_str"] == "'a   b' // \"c\""

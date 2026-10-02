@@ -172,14 +172,15 @@ def test_hover_parameter_nested():
 
 
 def test_hover_parameter_parentheses():
-    """Test that hover parameters display values with parentheses, brackets
-    and commas"""
+    """Test that hover parameters display values with parentheses, brackets,
+    commas and spaces inside strings"""
     string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
     file_path = test_dir / "hover" / "parameters.f90"
     string += hover_req(file_path, 21, 27)
     string += hover_req(file_path, 21, 55)
     string += hover_req(file_path, 22, 37)
     string += hover_req(file_path, 23, 27)
+    string += hover_req(file_path, 24, 37)
     errcode, results = run_request(string, fortls_args=["--sort_keywords"])
     assert errcode == 0
     ref_results = [
@@ -187,6 +188,8 @@ def test_hover_parameter_parentheses():
         "```fortran90\nINTEGER, PARAMETER :: dp = kind(1.d0)\n```",
         "```fortran90\nCHARACTER(len=4), PARAMETER :: comma_str = 'a, b'\n```",
         "```fortran90\nINTEGER, PARAMETER :: arr_sum = sum([1, 2, 3])\n```",
+        "```fortran90\nCHARACTER(len=6), PARAMETER :: "
+        "space_str = 'a   b' // \"c\"\n```",
     ]
     validate_hover(results, ref_results)
 

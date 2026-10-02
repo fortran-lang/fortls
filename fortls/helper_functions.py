@@ -217,16 +217,16 @@ def get_init_value(line: str) -> str | None:
     Returns
     -------
     str | None
-        Value with its whitespace collapsed, None if the line does not start
-        with ``=``
+        Value with its whitespace collapsed outside strings, None if the line
+        does not start with ``=``
 
     Examples
     --------
     >>> get_init_value(' = selected_real_kind(6), sp2 = 1')
     'selected_real_kind(6)'
 
-    >>> get_init_value(" = 'a, b'  ! comment")
-    "'a, b'"
+    >>> get_init_value(" = 'a,  b'  ! comment")
+    "'a,  b'"
 
     >>> get_init_value(' =  [1, 2] *   3')
     '[1, 2] * 3'
@@ -237,10 +237,10 @@ def get_init_value(line: str) -> str | None:
     match = FRegex.PARAMETER_VAL.match(line)
     if not match:
         return None
-    value = line[match.end() :]
     level = 0
     string_char = ""
-    for i, char in enumerate(value):
+    chars: list[str] = []
+    for char in line[match.end() :]:
         if string_char:
             if char == string_char:
                 string_char = ""
@@ -251,9 +251,14 @@ def get_init_value(line: str) -> str | None:
         elif char in (")", "]"):
             level -= 1
         elif char in (",", "!") and level == 0:
-            value = value[:i]
             break
-    value = " ".join(value.split())
+        elif char.isspace():
+            # Collapse whitespace outside strings, keep it inside strings
+            if chars and chars[-1] != " ":
+                chars.append(" ")
+            continue
+        chars.append(char)
+    value = "".join(chars).strip()
     return value if value else None
 
 

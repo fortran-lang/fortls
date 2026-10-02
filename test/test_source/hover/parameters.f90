@@ -22,4 +22,5 @@ program params
     integer, parameter :: sp = selected_real_kind(6), dp = kind(1.d0)
     character(len=4), parameter :: comma_str = 'a, b'
     integer, parameter :: arr_sum = sum([1, 2, 3])  ! comment, with comma
+    character(len=6), parameter :: space_str = 'a   b' // "c"
 end program params
