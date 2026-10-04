@@ -856,6 +856,8 @@ class FortranFile:
         self.preproc: bool = False
         self.ast: FortranAST = None
         self.hash: str = None
+        #: The contents are dropped and the AST reduced, see `summarize`
+        self.summary: bool = False
         if path:
             _, file_ext = os.path.splitext(os.path.basename(path))
             if pp_suffixes:
@@ -877,7 +879,8 @@ class FortranFile:
 
     def load_from_disk(self) -> tuple[str | None, bool | None]:
         """Read file from disk or update file contents only if they have changed
-        A MD5 hash is used to determine that
+        A MD5 hash is used to determine that, the contents of a summarized file
+        are always updated
 
         Returns
         -------
@@ -901,15 +904,28 @@ class FortranFile:
             except TypeError:
                 hash = hashlib.md5(contents.encode("utf-8")).hexdigest()
 
-            if hash == self.hash:
+            if hash == self.hash and not self.summary:
                 return None, False
 
             self.hash = hash
+            self.summary = False
             self.contents_split = splitlines(contents)
             self.fixed = detect_fixed_format(self.contents_split)
             self.contents_pp = self.contents_split
             self.nLines = len(self.contents_split)
             return None, True
+
+    def summarize(self):
+        """Keep only what other files can refer to, for a file that is not open
+        in the editor: drop the contents and reduce the AST, see
+        `FortranAST.summarize`. Loading the file from disk again restores the
+        contents, it is then parsed in full.
+        """
+        self.contents_split = []
+        self.contents_pp = []
+        if self.ast is not None:
+            self.ast.summarize()
+        self.summary = True
 
     def apply_change(self, change: dict) -> bool:
         """Apply a change to the file."""
