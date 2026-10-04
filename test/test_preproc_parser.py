@@ -14,7 +14,7 @@ def test_pp_leading_spaces():
         "  open(unit=1,file='somefile.txt' FILE_ENCODING)",
         "end program pp_intentation",
     ]
-    _, _, _, defs = preprocess_file(lines)
+    _, _, _, defs, _ = preprocess_file(lines)
     ref = {
         "LEADING_SPACES_INDENT": "1",
         "LEADING_SPACES_INDENT2": "True",
@@ -34,5 +34,5 @@ def test_pp_macro_expansion():
         "generic, public :: set => abc , wrap_/**/abc",
         "procedure :: abc , wrap_/**/abc",
     ]
-    output, _, _, _ = preprocess_file(lines)
+    output, _, _, _, _ = preprocess_file(lines)
     assert output == ref

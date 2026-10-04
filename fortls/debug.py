@@ -468,7 +468,7 @@ def debug_preprocessor(args):
     _, pp_defs, include_dirs = read_config(root, args.config)
 
     sep_lvl2("Preprocessor Pass:")
-    output, skips, defines, defs = preprocess_file(
+    output, skips, defines, defs, _ = preprocess_file(
         lines, file, pp_defs, include_dirs, debug=True
     )
 
