@@ -96,3 +96,48 @@ def test_get_code_line_multilines(ln_no: int, pp_defs: dict, reference: int):
     res = file.get_code_line(line_no=ln_no, pp_content=pp)
     result = calc_result(res)
     assert result == reference
+
+
+def test_resolve_includes_of_include_file(tmp_path):
+    """An include file that includes another file, outside of any scope, can
+    have its include resolved again after the included file changes."""
+    outer_path = str(tmp_path / "outer.f90")
+    inner_path = str(tmp_path / "inner.f90")
+    (tmp_path / "outer.f90").write_text("include 'inner.f90'\n")
+    (tmp_path / "inner.f90").write_text("integer :: x\n")
+    workspace = {}
+    for path in (outer_path, inner_path):
+        file = FortranFile(path)
+        err_str, _ = file.load_from_disk()
+        assert err_str is None
+        file.ast = file.parse()
+        workspace[path] = file
+    outer_ast = workspace[outer_path].ast
+    outer_ast.resolve_includes(workspace)
+    # The language server reparses a file when it changes, then resolves the
+    # includes of every file that includes it
+    workspace[inner_path].ast = workspace[inner_path].parse()
+    outer_ast.resolve_includes(workspace, path=inner_path)
+
+
+def test_resolve_includes_again(tmp_path):
+    """Resolving an include again after the included file changes replaces
+    the objects it added to the including scope."""
+    prog_path = str(tmp_path / "prog.f90")
+    inc_path = str(tmp_path / "inc.f90")
+    (tmp_path / "prog.f90").write_text(
+        "program prog\n  include 'inc.f90'\nend program prog\n"
+    )
+    (tmp_path / "inc.f90").write_text("integer :: x\n")
+    workspace = {}
+    for path in (prog_path, inc_path):
+        file = FortranFile(path)
+        err_str, _ = file.load_from_disk()
+        assert err_str is None
+        file.ast = file.parse()
+        workspace[path] = file
+    prog_ast = workspace[prog_path].ast
+    for _ in range(2):
+        workspace[inc_path].ast = workspace[inc_path].parse()
+        prog_ast.resolve_includes(workspace, path=inc_path)
+    assert [child.name for child in prog_ast.scope_list[0].children] == ["x"]

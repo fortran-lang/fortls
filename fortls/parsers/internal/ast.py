@@ -267,8 +267,9 @@ class FortranAST:
                     if include_ast.inc_scope is None:
                         include_ast.inc_scope = include_ast.none_scope
                     # Remove old objects
-                    for obj in added_entities:
-                        parent_scope.children.remove(obj)
+                    if parent_scope is not None:
+                        for obj in added_entities:
+                            parent_scope.children.remove(obj)
                     added_entities = []
                     for child in include_ast.inc_scope.children:
                         added_entities.append(child)

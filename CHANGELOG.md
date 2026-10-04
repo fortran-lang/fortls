@@ -9,6 +9,9 @@
 - Fixed crash at initialization when a glob in `source_dirs` or `include_dirs`
   matched a dangling symlink
   ([#536](https://github.com/fortran-lang/fortls/issues/536))
+- Fixed crash when a file included by an include file that has no scope
+  around its `INCLUDE` changed
+  ([#565](https://github.com/fortran-lang/fortls/issues/565))
 
 ## 3.2.2
 
