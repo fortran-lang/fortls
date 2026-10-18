@@ -266,13 +266,24 @@ def find_paren_match(string: str) -> int:
 
     >>> find_paren_match("nt(sin(0.5))+8+len('ab))c')-3) :: y")
     29
+
+    A quote of the other kind inside a string literal does not end the literal
+
+    >>> find_paren_match('''len("don't")) :: msg''')
+    12
+
+    >>> find_paren_match('''len('say "hi')) :: msg''')
+    14
     """
     paren_count = 1
-    quote_state = {"'": False, '"': False}
+    quote = None
     for i, char in enumerate(string):
-        if char in quote_state:
-            quote_state[char] = not quote_state[char]
-        if any(quote_state.values()):
+        if quote is not None:
+            if char == quote:
+                quote = None
+            continue
+        if char in ("'", '"'):
+            quote = char
             continue
 
         if char == "(":
