@@ -952,6 +952,15 @@ by forward search of the string, returns -1 if no match is found</p>
 <span class="go">29</span>
 </pre></div>
 </div>
+<p>A quote of the other kind inside a string literal does not end the literal</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_paren_match</span><span class="p">(</span><span class="s1">'''len("don't")) :: msg'''</span><span class="p">)</span>
+<span class="go">12</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_paren_match</span><span class="p">(</span><span class="s1">'''len('say "hi')) :: msg'''</span><span class="p">)</span>
+<span class="go">14</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -2599,7 +2608,7 @@ For more info see create_src_file_exts_regex</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=3810b74c"></script>
+</div><script src="_static/documentation_options.js?v=bf976260"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
