@@ -1,11 +1,7 @@
 import pytest
 from setup_tests import test_dir
 
-from fortls.parsers.internal.parser import (
-    FortranFile,
-    read_associate_def,
-    read_var_def,
-)
+from fortls.parsers.internal.parser import FortranFile
 
 
 def test_line_continuations():
@@ -103,12 +99,23 @@ def test_get_code_line_multilines(ln_no: int, pp_defs: dict, reference: int):
 
 
 def test_mixed_quotes_in_parenthesised_strings():
-    """A quote of the other kind inside a string literal (e.g. an apostrophe in
-    a double-quoted string) must not stop the parser from finding the closing
-    parenthesis."""
-    _, var_info = read_var_def("""character(len=len("don't")) :: msg""")
-    assert var_info.var_names == ["msg"]
-    assert var_info.var_kind == """(len=len("don't"))"""
-
-    _, var_words = read_associate_def("""associate (a => "it's", b => x)""")
-    assert var_words == ["a =>", "b => x"]
+    file = FortranFile()
+    file.set_contents(
+        [
+            "program test",
+            "  implicit none",
+            """  character(len=len("don't")) :: msg""",
+            "  integer :: x",
+            """  associate (a => "it's", b => x)""",
+            "  end associate",
+            "end program test",
+        ]
+    )
+    ast = file.parse()
+    program, assoc = ast.scope_list
+    assert [child.name for child in program.get_children()] == [
+        "msg",
+        "x",
+        "#ASSOC1",
+    ]
+    assert [child.name for child in assoc.get_children()] == ["a", "b"]
