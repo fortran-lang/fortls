@@ -9,6 +9,8 @@
 - Fixed crash at initialization when a glob in `source_dirs` or `include_dirs`
   matched a dangling symlink
   ([#536](https://github.com/fortran-lang/fortls/issues/536))
+- Fixed declarations and `ASSOCIATE` blocks being dropped when a string inside
+  parentheses contained the other quote character, e.g. `len("don't")`
 
 ## 3.2.2
 

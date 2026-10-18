@@ -96,3 +96,26 @@ def test_get_code_line_multilines(ln_no: int, pp_defs: dict, reference: int):
     res = file.get_code_line(line_no=ln_no, pp_content=pp)
     result = calc_result(res)
     assert result == reference
+
+
+def test_mixed_quotes_in_parenthesised_strings():
+    file = FortranFile()
+    file.set_contents(
+        [
+            "program test",
+            "  implicit none",
+            """  character(len=len("don't")) :: msg""",
+            "  integer :: x",
+            """  associate (a => "it's", b => x)""",
+            "  end associate",
+            "end program test",
+        ]
+    )
+    ast = file.parse()
+    program, assoc = ast.scope_list
+    assert [child.name for child in program.get_children()] == [
+        "msg",
+        "x",
+        "#ASSOC1",
+    ]
+    assert [child.name for child in assoc.get_children()] == ["a", "b"]
