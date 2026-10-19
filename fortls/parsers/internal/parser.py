@@ -271,7 +271,7 @@ def get_procedure_modifiers(
     if paren_match is not None:
         word_match = FRegex.WORD.findall(paren_match.group(0))
         if word_match is not None:
-            word_match = [word for word in word_match]
+            word_match = [*word_match]
             args = ",".join(word_match)
         trailing_line = trailing_line[paren_match.end(0) :]
 
