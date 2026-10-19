@@ -74,6 +74,9 @@ def get_use_tree(
         use_dict_mod = use_dict.get(use_stmnt.mod_name)
         if use_dict_mod is not None:
             old_len = len(use_dict_mod.only_list)
+            # A full USE of a module that was first reached through an ONLY list
+            # widens it, so its own USE statements have to be walked again
+            widened = old_len > 0 and not merged_use_list
             if old_len > 0 and merged_use_list:
                 only_len = old_len
                 for only_name in merged_use_list:
@@ -89,7 +92,7 @@ def get_use_tree(
             else:
                 use_dict[use_stmnt.mod_name] = Use(use_stmnt.mod_name)
             # Skip if we have already visited module with the same only list
-            if old_len == len(use_dict_mod.only_list):
+            if old_len == len(use_dict_mod.only_list) and not widened:
                 continue
         else:
             if type(use_stmnt) is Use:

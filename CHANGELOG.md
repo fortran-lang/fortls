@@ -11,6 +11,9 @@
   ([#536](https://github.com/fortran-lang/fortls/issues/536))
 - Fixed declarations and `ASSOCIATE` blocks being dropped when a string inside
   parentheses contained the other quote character, e.g. `len("don't")`
+- Fixed names of a re-exported module missing from scope when a full `USE` of
+  it came after an `ONLY` import of it through another module
+  ([#568](https://github.com/fortran-lang/fortls/issues/568))
 
 ## 3.2.2
 
