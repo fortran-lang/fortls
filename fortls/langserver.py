@@ -1109,6 +1109,14 @@ class LangServer:
         var_obj = self.get_definition(file_obj, def_line, def_char, hover_req=True)
         if var_obj is None:
             return None
+        # An EXTERNAL declaration hides the procedure it refers to, show that instead
+        if var_obj.get_type() == VAR_TYPE_ID and var_obj.is_external:
+            ext_obj = self.obj_tree.get(var_obj.name.lower(), [None])[0]
+            if ext_obj is not None and ext_obj.get_type() in (
+                SUBROUTINE_TYPE_ID,
+                FUNCTION_TYPE_ID,
+            ):
+                var_obj = ext_obj
         # Construct hover information
         var_type: int = var_obj.get_type()
         hover_array = []

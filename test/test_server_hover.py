@@ -690,3 +690,27 @@ def test_multiline_lexical_token():
         '```fortran90\nREAL(int(sin(0.5))+8+len("ab))c")-3) :: Z\n```',
     ]
     validate_hover(results, ref_results)
+
+
+def test_hover_external():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "hover")})
+    file_path = test_dir / "hover" / "external.f90"
+    string += hover_req(file_path, 2, 12)
+    string += hover_req(file_path, 6, 10)
+    string += hover_req(file_path, 7, 12)
+    string += hover_req(file_path, 4, 15)
+    errcode, results = run_request(string, fortls_args=["-n", "1"])
+    assert errcode == 0
+    solve = """```fortran90
+SUBROUTINE solve(n, x, info)
+ INTEGER, INTENT(IN) :: n
+ REAL, INTENT(INOUT), DIMENSION(n) :: x
+ INTEGER, INTENT(OUT) :: info
+```"""
+    scale = """```fortran90
+FUNCTION scale(x) RESULT(scale)
+ REAL, INTENT(IN) :: x
+ REAL :: scale
+```"""
+    ref_results = [solve, solve, scale, "```fortran90\nINTEGER :: info\n```"]
+    validate_hover(results, ref_results)

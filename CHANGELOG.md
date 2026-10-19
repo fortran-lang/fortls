@@ -11,6 +11,9 @@
   ([#536](https://github.com/fortran-lang/fortls/issues/536))
 - Fixed declarations and `ASSOCIATE` blocks being dropped when a string inside
   parentheses contained the other quote character, e.g. `len("don't")`
+- Fixed hover showing only `EXTERNAL :: name` for procedures declared
+  `EXTERNAL`, instead of their interface
+  ([#483](https://github.com/fortran-lang/fortls/issues/483))
 
 ## 3.2.2
 
