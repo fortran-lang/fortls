@@ -12,8 +12,7 @@ sys.path.insert(0, root_dir)
 # Compromise since isort does not respect noqa
 from fortls.jsonrpc import path_to_uri  # noqa: E402, F401
 from fortls.jsonrpc import read_rpc_messages  # noqa: E402
-from fortls.jsonrpc import write_rpc_notification  # noqa: E402, F401
-from fortls.jsonrpc import write_rpc_request  # noqa: E402, F401
+from fortls.jsonrpc import write_rpc_notification, write_rpc_request  # noqa: E402, F401
 
 test_dir = root_dir / "test" / "test_source"
 
