@@ -119,3 +119,20 @@ def test_mixed_quotes_in_parenthesised_strings():
         "#ASSOC1",
     ]
     assert [child.name for child in assoc.get_children()] == ["a", "b"]
+
+
+def test_use_tree_full_use_after_only_import():
+    """A full USE of a re-exporting module after an ONLY import of it must reach
+    every name of the module it re-exports (#568)."""
+    from fortls.parsers.internal.utilities import get_use_tree
+
+    file_path = test_dir / "diag" / "test_use_ordering_reexport.f90"
+    file = FortranFile(str(file_path))
+    err_str, _ = file.load_from_disk()
+    assert err_str is None
+    ast = file.parse()
+    obj_tree = {key: [obj, str(file_path)] for key, obj in ast.global_dict.items()}
+
+    use_dict = get_use_tree(obj_tree["test_use_ordering_reexport"][0], {}, obj_tree)
+    assert use_dict["use_reexport_umbrella"].only_list == set()
+    assert use_dict["use_reexport_inner"].only_list == set()
