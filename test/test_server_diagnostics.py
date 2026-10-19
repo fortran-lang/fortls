@@ -137,6 +137,18 @@ def test_use_ordering():
     assert results[1]["diagnostics"] == []
 
 
+def test_use_ordering_reexport():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    # A full USE after an ONLY import of the same re-exporting module
+    file_path = str(test_dir / "diag" / "test_use_ordering_reexport.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
+    errcode, results = run_request(string)
+    assert errcode == 0
+    assert results[1]["diagnostics"] == []
+
+
 def test_where():
     string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
     # Test where blocks
