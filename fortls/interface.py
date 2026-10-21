@@ -154,6 +154,22 @@ def cli(name: str = "fortls") -> argparse.ArgumentParser:
         metavar="DIRS",
         help="Folders to exclude from parsing",
     )
+    group.add_argument(
+        "--compile_commands",
+        type=str,
+        default=None,
+        metavar="PATH",
+        help=(
+            "Path to compile_commands.json for automatic configuration of "
+            "include directories and preprocessor definitions. Auto-detected "
+            "in build/ if not specified."
+        ),
+    )
+    group.add_argument(
+        "--disable_compile_commands",
+        action="store_true",
+        help="Disable auto-detection and use of compile_commands.json",
+    )
 
     # Autocomplete options -----------------------------------------------------
     group = parser.add_argument_group("Autocomplete options")
