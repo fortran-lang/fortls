@@ -3,7 +3,7 @@ from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING
 
-from fortls.constants import MODULE_TYPE_ID
+from fortls.constants import ENUM_TYPE_ID, MODULE_TYPE_ID
 
 from .imports import Import, ImportTypes
 from .use import Use
@@ -141,7 +141,7 @@ def find_in_scope(
         from .function import Function
 
         for child in local_scope.get_children():
-            if child.name.startswith("#GEN_INT"):
+            if child.name.startswith("#GEN_INT") or child.get_type() == ENUM_TYPE_ID:
                 tmp_var = check_scope(child, var_name_lower, filter_public)
                 if tmp_var is not None:
                     return tmp_var

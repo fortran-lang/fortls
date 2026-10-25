@@ -75,3 +75,19 @@ def test_references_ignore_comments_on_use_import():
             [str(file_path), 5, 23, 35],
         ),
     )
+
+
+def test_references_enumerator():
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir)})
+    file_path = test_dir / "test_enum_ref.f90"
+    string += ref_req(file_path, 9, 11)
+    errcode, results = run_request(string)
+    assert errcode == 0
+    validate_refs(
+        results[1],
+        (
+            [str(file_path), 4, 27, 31],
+            [str(file_path), 8, 10, 14],
+            [str(file_path), 9, 15, 19],
+        ),
+    )
