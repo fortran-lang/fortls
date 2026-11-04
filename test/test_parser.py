@@ -122,3 +122,26 @@ def test_private_module_reexport():
 
     hidden_user = obj_tree["reexport_hidden_user"][0]
     assert find_in_scope(hidden_user, "shared_var", obj_tree) is None
+
+
+def test_mixed_quotes_in_parenthesised_strings():
+    file = FortranFile()
+    file.set_contents(
+        [
+            "program test",
+            "  implicit none",
+            """  character(len=len("don't")) :: msg""",
+            "  integer :: x",
+            """  associate (a => "it's", b => x)""",
+            "  end associate",
+            "end program test",
+        ]
+    )
+    ast = file.parse()
+    program, assoc = ast.scope_list
+    assert [child.name for child in program.get_children()] == [
+        "msg",
+        "x",
+        "#ASSOC1",
+    ]
+    assert [child.name for child in assoc.get_children()] == ["a", "b"]
