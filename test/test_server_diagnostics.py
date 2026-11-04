@@ -455,3 +455,23 @@ def test_mixed_case_interface_sub_child():
     errcode, results = run_request(string, ["-n", "1"])
     assert errcode == 0
     assert results[1]["diagnostics"] == []
+
+
+def test_private_module_reexport():
+    """
+    Test that names a default PRIVATE module gets via USE are not visible to
+    its users, unless the module re-exports them with a PUBLIC statement.
+    """
+    root = test_dir / "diag" / "private_reexport"
+    string = write_rpc_request(1, "initialize", {"rootPath": str(root)})
+    file_path = str(root / "main.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
+    errcode, results = run_request(string, ["-n", "1"])
+    assert errcode == 0
+    diags = results[1]["diagnostics"]
+    assert [d["message"] for d in diags] == [
+        'Variable "shared_var" masks variable in parent scope'
+    ]
+    assert diags[0]["range"]["start"]["line"] == 5

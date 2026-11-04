@@ -128,6 +128,7 @@ class FortranAST:
 
     def add_public(self, name: str):
         self.public_list.append(f"{self.enc_scope_name}::{name}")
+        self.current_scope.public_names.add(name.lower())
 
     def add_use(self, use_mod: Use | Import):
         if self.current_scope is None:

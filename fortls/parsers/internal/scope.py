@@ -42,6 +42,9 @@ class Scope(FortranObj):
         self.children: list[T[Scope]] = []
         self.members: list = []
         self.use: list[Use | Import] = []
+        # Names listed in PUBLIC statements, including USE associated names that
+        # are re-exported and have no local object to attach the visibility to
+        self.public_names: set[str] = set()
         self.keywords: list = keywords
         self.inherit = None
         self.parent = None
