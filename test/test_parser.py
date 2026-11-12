@@ -119,3 +119,24 @@ def test_mixed_quotes_in_parenthesised_strings():
         "#ASSOC1",
     ]
     assert [child.name for child in assoc.get_children()] == ["a", "b"]
+
+
+def test_mixed_quotes_in_declaration_list():
+    file = FortranFile()
+    file.set_contents(
+        [
+            "module m",
+            "  implicit none",
+            """  character(len=*), parameter :: msg = "it's", tag = 'x'""",
+            """  character(len=*), parameter :: quote = 'say "hi"', name = "y" """,
+            "end module m",
+        ]
+    )
+    ast = file.parse()
+    (module,) = ast.scope_list
+    assert [child.name for child in module.get_children()] == [
+        "msg",
+        "tag",
+        "quote",
+        "name",
+    ]

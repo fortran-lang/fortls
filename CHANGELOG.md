@@ -11,6 +11,8 @@
   ([#536](https://github.com/fortran-lang/fortls/issues/536))
 - Fixed declarations and `ASSOCIATE` blocks being dropped when a string inside
   parentheses contained the other quote character, e.g. `len("don't")`
+- Fixed variables after a string containing the other quote character being
+  dropped from a declaration list, e.g. `tag` in `msg = "it's", tag = 'x'`
 
 ## 3.2.2
 
