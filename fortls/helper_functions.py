@@ -142,21 +142,23 @@ def strip_strings(in_line: str, maintain_len: bool = False) -> str:
     -------
     str
         Stripped string
+
+    Examples
+    --------
+    >>> strip_strings('''a = "it's", b = 'x', c''')
+    'a = , b = , c'
+
+    >>> strip_strings('''a = 'say "hi"', b''', maintain_len=True)
+    "a = '        ', b"
     """
 
-    def repl_sq(m):
-        return "'{}'".format(" " * (len(m.group()) - 2))
+    def repl(m):
+        quote = m.group()[0]
+        return quote + " " * (len(m.group()) - 2) + quote
 
-    def repl_dq(m):
-        return '"{}"'.format(" " * (len(m.group()) - 2))
-
-    if maintain_len:
-        out_line = FRegex.SQ_STRING.sub(repl_sq, in_line)
-        out_line = FRegex.DQ_STRING.sub(repl_dq, out_line)
-    else:
-        out_line = FRegex.SQ_STRING.sub("", in_line)
-        out_line = FRegex.DQ_STRING.sub("", out_line)
-    return out_line
+    # One pass over both quote kinds, so a literal is closed only by the quote
+    # that opened it and a quote of the other kind inside it is kept as content
+    return FRegex.STRING.sub(repl if maintain_len else "", in_line)
 
 
 def separate_def_list(test_str: str) -> list[str] | None:

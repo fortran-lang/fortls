@@ -112,6 +112,7 @@ class FortranRegularExpressions:
 
     SQ_STRING: Pattern = compile(r"\'[^\']*\'", I)
     DQ_STRING: Pattern = compile(r"\"[^\"]*\"", I)
+    STRING: Pattern = compile(r"\'[^\']*\'|\"[^\"]*\"", I)
     LINE_LABEL: Pattern = compile(r"[ ]*([0-9]+)[ ]+", I)
     NON_DEF: Pattern = compile(r"[ ]*(CALL[ ]+[a-z_]|[a-z_][\w%]*[ ]*=)", I)
     # Fixed format matching rules
