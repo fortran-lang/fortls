@@ -1196,6 +1196,23 @@ class FortranFile:
         )
         return pp_skips, pp_defines
 
+    def find_trailing_comment(self, line: str) -> int:
+        """Find where a trailing ``!`` comment starts in a line of code
+
+        Parameters
+        ----------
+        line : str
+            Line of code
+
+        Returns
+        -------
+        int
+            Index of the ``!`` starting the comment, or -1 if there is none
+        """
+        # In fixed form, a character in column 6 marks a continuation line
+        start = 6 if self.fixed else 0
+        return strip_strings(line, maintain_len=True).find("!", start)
+
     def check_file(self, obj_tree, max_line_length=-1, max_comment_line_length=-1):
         diagnostics = []
         if (max_line_length > 0) or (max_comment_line_length > 0):
@@ -1211,9 +1228,21 @@ class FortranFile:
                 COMMENT_LINE_MATCH = FRegex.FREE_COMMENT
             for i, line in enumerate(self.contents_split):
                 if COMMENT_LINE_MATCH.match(line) is None:
-                    if 0 < max_line_length < len(line):
+                    # A trailing comment counts towards the comment line length
+                    # instead of the code line length
+                    comment_start = self.find_trailing_comment(line)
+                    code_end = len(line) if comment_start < 0 else comment_start
+                    if 0 < max_line_length < code_end:
                         self.ast.add_error(
-                            msg_line, Severity.warn, i + 1, max_line_length, len(line)
+                            msg_line, Severity.warn, i + 1, max_line_length, code_end
+                        )
+                    if comment_start >= 0 and 0 < max_comment_line_length < len(line):
+                        self.ast.add_error(
+                            msg_comment,
+                            Severity.warn,
+                            i + 1,
+                            max(max_comment_line_length, comment_start),
+                            len(line),
                         )
                 else:
                     if 0 < max_comment_line_length < len(line):

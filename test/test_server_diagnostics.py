@@ -455,3 +455,66 @@ def test_mixed_case_interface_sub_child():
     errcode, results = run_request(string, ["-n", "1"])
     assert errcode == 0
     assert results[1]["diagnostics"] == []
+
+
+def test_max_line_length_trailing_comment():
+    """A trailing ``!`` comment counts towards max_comment_line_length, not
+    max_line_length, but a ``!`` inside a string does not start a comment"""
+    root = test_dir / "diag"
+    string = write_rpc_request(1, "initialize", {"rootPath": str(root)})
+    file_path = str(root / "test_lines_trailing.f90")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
+    file_path = str(root / "conf_long_lines.json")
+    errcode, results = run_request(string, [f"--config {file_path}"])
+    assert errcode == 0
+    assert results[1]["diagnostics"] == [
+        {
+            "range": {
+                "start": {"line": 3, "character": 100},
+                "end": {"line": 3, "character": 105},
+            },
+            "message": 'Comment line length exceeds "max_comment_line_length" (100)',
+            "severity": 2,
+        },
+        {
+            "range": {
+                "start": {"line": 4, "character": 80},
+                "end": {"line": 4, "character": 96},
+            },
+            "message": 'Line length exceeds "max_line_length" (80)',
+            "severity": 2,
+        },
+    ]
+
+
+def test_max_line_length_fixed_form():
+    """In fixed form, a ``!`` in column 6 marks a continuation line, not a comment"""
+    root = test_dir / "diag"
+    string = write_rpc_request(1, "initialize", {"rootPath": str(root)})
+    file_path = str(root / "test_lines_fixed.f")
+    string += write_rpc_notification(
+        "textDocument/didOpen", {"textDocument": {"uri": file_path}}
+    )
+    file_path = str(root / "conf_long_lines.json")
+    errcode, results = run_request(string, [f"--config {file_path}"])
+    assert errcode == 0
+    assert results[1]["diagnostics"] == [
+        {
+            "range": {
+                "start": {"line": 3, "character": 80},
+                "end": {"line": 3, "character": 86},
+            },
+            "message": 'Line length exceeds "max_line_length" (80)',
+            "severity": 2,
+        },
+        {
+            "range": {
+                "start": {"line": 4, "character": 80},
+                "end": {"line": 4, "character": 84},
+            },
+            "message": 'Line length exceeds "max_line_length" (80)',
+            "severity": 2,
+        },
+    ]

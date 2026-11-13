@@ -11,6 +11,9 @@
   ([#536](https://github.com/fortran-lang/fortls/issues/536))
 - Fixed declarations and `ASSOCIATE` blocks being dropped when a string inside
   parentheses contained the other quote character, e.g. `len("don't")`
+- Fixed trailing `!` comments counting towards `max_line_length` instead of
+  `max_comment_line_length`
+  ([#489](https://github.com/fortran-lang/fortls/issues/489))
 
 ## 3.2.2
 
