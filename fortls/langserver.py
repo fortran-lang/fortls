@@ -1094,6 +1094,8 @@ class LangServer:
         def create_hover(string: str, docs: str | None):
             # This does not account for Fixed Form Fortran, but it should be
             # okay for 99% of cases
+            if self.lowercase_intrinsics:
+                string = string.lower()
             return fortran_md(string, docs).format(langid=self.hover_language)
 
         # Get parameters from request
