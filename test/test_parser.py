@@ -119,3 +119,49 @@ def test_mixed_quotes_in_parenthesised_strings():
         "#ASSOC1",
     ]
     assert [child.name for child in assoc.get_children()] == ["a", "b"]
+
+
+@pytest.mark.parametrize(
+    "file_name, expected",
+    [
+        (
+            "test_lines_trailing.f90",
+            [(3, 100, 105, "max_comment_line_length"), (4, 80, 96, "max_line_length")],
+        ),
+        (
+            "test_lines_fixed.f",
+            [(3, 80, 86, "max_line_length"), (4, 80, 84, "max_line_length")],
+        ),
+    ],
+)
+def test_check_file_trailing_comment_line_length(file_name, expected):
+    file = FortranFile(str(test_dir / "diag" / file_name))
+    file.load_from_disk()
+    file.ast = file.parse()
+    diagnostics = file.check_file({}, max_line_length=80, max_comment_line_length=100)
+    result = [
+        (
+            d["range"]["start"]["line"],
+            d["range"]["start"]["character"],
+            d["range"]["end"]["character"],
+            d["message"].split('"')[1],
+        )
+        for d in diagnostics
+    ]
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    "fixed, line, index",
+    [
+        (False, "  x = 1  ! comment", 9),
+        (False, '  s = "a ! b"  ! comment', 15),
+        (False, "  s = 'a ! b'", -1),
+        (True, "     !  continuation", -1),
+        (True, "      x = 1  ! comment", 13),
+    ],
+)
+def test_find_trailing_comment(fixed, line, index):
+    file = FortranFile()
+    file.fixed = fixed
+    assert file.find_trailing_comment(line) == index
