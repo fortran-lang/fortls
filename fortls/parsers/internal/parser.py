@@ -2086,11 +2086,11 @@ def preprocess_file(
 
     def expand_func_macro(def_name: str, def_value: tuple[str, str]):
         def_args, sub = def_value
-        def_args = def_args.split(",")
+        def_args = [arg for arg in (a.strip() for a in def_args.split(",")) if arg]
         regex = re.compile(rf"\b{def_name}\s*\({','.join(['(.*)']*len(def_args))}\)")
 
         for i, arg in enumerate(def_args, start=1):
-            sub = re.sub(rf"\b({arg.strip()})\b", rf"\\{i}", sub)
+            sub = re.sub(rf"\b({re.escape(arg)})\b", rf"\\{i}", sub)
 
         return regex, sub
 
