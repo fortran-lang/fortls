@@ -61,6 +61,9 @@ and [Emacs](https://fortls.fortran-lang.org/editor_integration.html#emacs).
 - Code actions
   - Generate type-bound procedures and implementation templates for
     deferred procedures
+- Folding ranges
+  - Detect folding ranges based on Fortran syntax or indent as well as
+    consecutive comment lines
 
 ### Notes/Limitations
 
@@ -150,6 +153,7 @@ An example for a Configuration file is given below
 | `textDocument/didClose`          | Document synchronisation upon closing                  |
 | `textDocument/didChange`         | Document synchronisation upon changes to the document  |
 | `textDocument/codeAction`        | **Experimental** Generate code                         |
+| `textDocument/foldingRange       | Get folding ranges based on Fortran syntax and indent  |
 
 ## Future plans
 
