@@ -9,7 +9,7 @@ from fortls.constants import Severity
 
 @pytest.fixture()
 def setup_tmp_file():
-    levels = 2000
+    levels = 20000
     fd, filename = tempfile.mkstemp(suffix=".f90")
     try:
         with os.fdopen(fd, "w") as tmp:
