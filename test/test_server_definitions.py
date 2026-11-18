@@ -212,3 +212,46 @@ def test_def_function_implicit_result_variable():
     assert len(ref_res) == len(results) - 1
     for i, res in enumerate(ref_res):
         validate_def(results[i + 1], res)
+
+
+def test_def_pp_include():
+    """Test that going to definition of a preprocessor #include statement works."""
+    pp_dir = test_dir / "pp"
+    string = write_rpc_request(1, "initialize", {"rootPath": str(pp_dir)})
+    file_path = pp_dir / "preproc.F90"
+    # Line 3 contains: #include "petscpc.h" (1-indexed)
+    string += def_request(file_path, 3, 10)  # Position on the include line
+    # Use .pp_conf.json directly (valid JSON5 config file with include_dirs)
+    config_path = ".pp_conf.json"
+    errcode, results = run_request(string, ["--config", config_path])
+    assert errcode == 0
+    # Filter for definition results only (must have 'uri' key)
+    def_results = [
+        r for r in results if r is not None and isinstance(r, dict) and "uri" in r
+    ]
+    ref_res = [[0, 0, str(pp_dir / "include" / "petscpc.h")]]
+    assert len(ref_res) == len(def_results)
+    for i, res in enumerate(ref_res):
+        validate_def(def_results[i], res)
+
+
+def test_def_pp_include_nested():
+    """Test that going to definition of a nested preprocessor #include works."""
+    pp_dir = test_dir / "pp"
+    string = write_rpc_request(1, "initialize", {"rootPath": str(pp_dir)})
+    # Test the nested include in petscpc.h (which includes petscerror.h)
+    file_path = pp_dir / "include" / "petscpc.h"
+    # Line 4 contains: #include "petscerror.h" (1-indexed)
+    string += def_request(file_path, 4, 10)
+    # Use .pp_conf.json directly (valid JSON5 config file with include_dirs)
+    config_path = ".pp_conf.json"
+    errcode, results = run_request(string, ["--config", config_path])
+    assert errcode == 0
+    # Filter for definition results only (must have 'uri' key)
+    def_results = [
+        r for r in results if r is not None and isinstance(r, dict) and "uri" in r
+    ]
+    ref_res = [[0, 0, str(pp_dir / "include" / "petscerror.h")]]
+    assert len(ref_res) == len(def_results)
+    for i, res in enumerate(ref_res):
+        validate_def(def_results[i], res)

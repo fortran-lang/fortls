@@ -29,6 +29,7 @@ class FortranAST:
         self.end_stack: list = []
         self.pp_if: list = []
         self.include_statements: list = []
+        self.pp_include_statements: list = []  # List of PpIncludeInfo for #include
         self.end_errors: list = []
         self.parse_errors: list = []
         self.inherit_objs: list = []
@@ -136,6 +137,16 @@ class FortranAST:
 
     def add_include(self, path: str, line_number: int):
         self.include_statements.append(IncludeInfo(line_number, path, None, []))
+
+    def add_pp_include(
+        self, path: str, line_number: int, resolved_path: str | None = None
+    ):
+        """Add a preprocessor #include for go-to-definition support."""
+        from fortls.ftypes import PpIncludeInfo
+
+        self.pp_include_statements.append(
+            PpIncludeInfo(line_number, path, resolved_path)
+        )
 
     def add_doc(self, doc_string: str, forward: bool = False):
         if not doc_string:
