@@ -199,3 +199,63 @@ def test_rename_skip_intrinsic():
     errcode, results = run_request(string, ["-n", "1"])
     # FIXME: to be implemented
     assert errcode == 0
+
+
+def test_rename_implicit_function_result():
+    """Test that renaming a function without a RESULT() clause also renames the
+    implicit result variable in the function body, see issue #322.
+    """
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "rename")})
+    file_path = test_dir / "rename" / "test_rename_implicit_result.f90"
+    string += rename_request("sin_deg", file_path, 7, 25)
+    errcode, results = run_request(string, ["-n", "1"])
+    assert errcode == 0
+    ref = {}
+    ref[path_to_uri(str(file_path))] = [
+        create("sin_deg", 7, 23, 7, 27),
+        create("sin_deg", 9, 8, 9, 12),
+    ]
+    # zip() in check_rename_response silently ignores missing changes,
+    # so assert the count explicitly
+    assert len(results[1]["changes"][path_to_uri(str(file_path))]) == 2
+    check_rename_response(results[1]["changes"], ref)
+
+
+def test_rename_implicit_function_result_from_body():
+    """Test that renaming from the implicit result variable in the body also
+    renames the function definition, see issue #322.
+    """
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "rename")})
+    file_path = test_dir / "rename" / "test_rename_implicit_result.f90"
+    string += rename_request("sin_deg", file_path, 9, 9)
+    errcode, results = run_request(string, ["-n", "1"])
+    assert errcode == 0
+    ref = {}
+    ref[path_to_uri(str(file_path))] = [
+        create("sin_deg", 7, 23, 7, 27),
+        create("sin_deg", 9, 8, 9, 12),
+    ]
+    # zip() in check_rename_response silently ignores missing changes,
+    # so assert the count explicitly
+    assert len(results[1]["changes"][path_to_uri(str(file_path))]) == 2
+    check_rename_response(results[1]["changes"], ref)
+
+
+def test_rename_explicit_function_result():
+    """Test that a function with an explicit RESULT() clause only renames the
+    result variable, not the function name, see issue #322.
+    """
+    string = write_rpc_request(1, "initialize", {"rootPath": str(test_dir / "rename")})
+    file_path = test_dir / "rename" / "test_rename_implicit_result.f90"
+    string += rename_request("res", file_path, 16, 9)
+    errcode, results = run_request(string, ["-n", "1"])
+    assert errcode == 0
+    ref = {}
+    ref[path_to_uri(str(file_path))] = [
+        create("res", 14, 39, 14, 40),
+        create("res", 16, 8, 16, 9),
+    ]
+    # zip() in check_rename_response silently ignores missing changes,
+    # so assert the count explicitly
+    assert len(results[1]["changes"][path_to_uri(str(file_path))]) == 2
+    check_rename_response(results[1]["changes"], ref)

@@ -12,6 +12,10 @@
 - Fixed declarations and `ASSOCIATE` blocks being dropped when a string inside
   parentheses contained the other quote character, e.g. `len("don't")`
 
+- Fixed `textDocument/rename` not renaming the implicit result variable of a
+  function declared without a `RESULT()` clause
+  ([#322](https://github.com/fortran-lang/fortls/issues/322))
+
 ## 3.2.2
 
 ### Fixed
