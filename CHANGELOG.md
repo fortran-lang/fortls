@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Changed
+
+- Changed the workspace index to keep, for files not open in the editor, only
+  what other files can refer to: modules, types, interfaces, module variables
+  and procedure signatures. Files are parsed in full when opened or requested,
+  and searched in a full parse for references. This reduces memory use about
+  3.5 times on large workspaces
+  ([#563](https://github.com/fortran-lang/fortls/issues/563))
+
 ### Fixed
 
 - Fixed missing registered capability for `textDocument/documentHighlight`

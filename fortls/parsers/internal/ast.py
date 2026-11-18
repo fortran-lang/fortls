@@ -4,6 +4,17 @@ import os
 import re
 from re import Pattern
 
+from fortls.constants import (
+    ASSOC_TYPE_ID,
+    BLOCK_TYPE_ID,
+    DO_TYPE_ID,
+    FUNCTION_TYPE_ID,
+    IF_TYPE_ID,
+    INTERFACE_TYPE_ID,
+    SELECT_TYPE_ID,
+    SUBROUTINE_TYPE_ID,
+    WHERE_TYPE_ID,
+)
 from fortls.ftypes import IncludeInfo
 from fortls.json_templates import diagnostic_json
 
@@ -14,6 +25,16 @@ from .program import Program
 from .scope import Scope
 from .use import Use
 from .variable import Variable
+
+#: Scopes of executable constructs, not visible outside their file
+EXECUTABLE_BLOCK_TYPE_IDS = (
+    ASSOC_TYPE_ID,
+    BLOCK_TYPE_ID,
+    DO_TYPE_ID,
+    IF_TYPE_ID,
+    SELECT_TYPE_ID,
+    WHERE_TYPE_ID,
+)
 
 
 class FortranAST:
@@ -283,6 +304,67 @@ class FortranAST:
             inherit_obj.resolve_inherit(obj_tree, inherit_version=link_version)
         for linkable_obj in self.linkable_objs:
             linkable_obj.resolve_link(obj_tree)
+
+    def summarize(self):
+        """Reduce the AST to what other files can refer to.
+
+        Modules, submodules, programs, types, interfaces and their variables are
+        kept, procedures keep only their signature: dummy arguments, result
+        variable and interface blocks. Procedure bodies (local variables,
+        internal procedures, executable blocks) and executable blocks of
+        programs are dropped, as are the diagnostics, only needed for open
+        files.
+        """
+
+        def summarize_scope(scope: Scope):
+            if scope.get_type(no_link=True) in (SUBROUTINE_TYPE_ID, FUNCTION_TYPE_ID):
+                signature = {arg.lower() for arg in scope.args.split(",")}
+                if scope.get_type(no_link=True) == FUNCTION_TYPE_ID:
+                    signature.add(scope.result_name.lower())
+                scope.children = [
+                    child
+                    for child in scope.children
+                    if child.name.lower() in signature
+                    or child.get_type(no_link=True) == INTERFACE_TYPE_ID
+                ]
+            else:
+                scope.children = [
+                    child
+                    for child in scope.children
+                    if child.get_type(no_link=True) not in EXECUTABLE_BLOCK_TYPE_IDS
+                ]
+            for child in scope.children:
+                kept.add(id(child))
+                if isinstance(child, Scope) and child.file_ast is self:
+                    summarize_scope(child)
+
+        kept: set[int] = set()
+        roots = [scope for scope in self.scope_list if scope.parent is None]
+        # Resolving includes points none_scope to the including scope
+        for scope in (self.none_scope, self.inc_scope):
+            if scope is not None and scope.file_ast is self:
+                roots.append(scope)
+        for scope in roots:
+            if id(scope) not in kept:
+                kept.add(id(scope))
+                summarize_scope(scope)
+        for inc in self.include_statements:
+            inc.scope_objs = [obj for obj in inc.scope_objs if id(obj) in kept]
+        self.scope_list = [obj for obj in self.scope_list if id(obj) in kept]
+        self.variable_list = [obj for obj in self.variable_list if id(obj) in kept]
+        self.inherit_objs = [obj for obj in self.inherit_objs if id(obj) in kept]
+        self.linkable_objs = [obj for obj in self.linkable_objs if id(obj) in kept]
+        self.external_objs = [obj for obj in self.external_objs if id(obj) in kept]
+        self.public_list = []
+        self.private_list = []
+        self.end_errors = []
+        self.parse_errors = []
+        # Parser state, it can refer to dropped objects
+        self.last_obj = None
+        self.current_scope = None
+        self.scope_stack = []
+        self.end_stack = []
+        self.pending_doc = None
 
     def close_file(self, line_number: int):
         # Close open scopes

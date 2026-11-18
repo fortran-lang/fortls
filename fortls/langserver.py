@@ -75,6 +75,10 @@ class LangServer:
         self.running: bool = True
         self.root_path: str = None
         self.workspace: dict[str, FortranFile] = {}
+        #: Preprocessor definitions the workspace files are initialised with
+        self.workspace_pp_defs: dict = {}
+        #: Preprocessor definitions of the files parsed again since, by path
+        self.file_pp_defs: dict[str, dict] = {}
         self.obj_tree: dict = {}
         self.link_version = 0
         self._version = version.parse(__version__)
@@ -302,7 +306,7 @@ class LangServer:
         params: dict = request["params"]
         uri: str = params["textDocument"]["uri"]
         path: str = path_from_uri(uri)
-        file_obj = self.workspace.get(path)
+        file_obj = self.get_file(path)
         if file_obj is None:
             return []
         # Add scopes to outline view
@@ -533,7 +537,7 @@ class LangServer:
         params: dict = request["params"]
         uri: str = params["textDocument"]["uri"]
         path: str = path_from_uri(uri)
-        file_obj: FortranFile = self.workspace.get(path)
+        file_obj: FortranFile = self.get_file(path)
         if file_obj is None:
             return None
         # Check line
@@ -868,7 +872,7 @@ class LangServer:
         params: dict = request["params"]
         uri: str = params["textDocument"]["uri"]
         path: str = path_from_uri(uri)
-        file_obj = self.workspace.get(path)
+        file_obj = self.get_file(path)
         if file_obj is None:
             return None
         # Check line
@@ -963,15 +967,23 @@ class LangServer:
         def_fqsn: str = def_obj.FQSN
         NAME_REGEX = re.compile(rf"(?:\W|^)({def_name})(?:\W|$)", re.I)
         if file_obj is None:
-            file_set = self.workspace.items()
+            file_set = list(self.workspace.items())
         else:
-            file_set = ((file_obj.path, file_obj),)
+            file_set = [(file_obj.path, file_obj)]
+        # Summarized files are searched in a full parse, read again from disk
+        full_files = self._parse_summarized_files(
+            [file_obj.path for _, file_obj in file_set if file_obj.summary], def_name
+        )
         # A container that includes all the FQSN signatures for objects that
         # are linked to the rename request and that should also be replaced
         override_cache: list[str] = []
         refs = {}
         ref_objs = []
         for filename, file_obj in file_set:
+            if file_obj.summary:
+                file_obj = next(full_files)
+                if file_obj is None:
+                    continue
             file_refs = []
             # Search through file line by line
             for i, line in enumerate(file_obj.contents_split):
@@ -1036,6 +1048,7 @@ class LangServer:
                         file_refs.append([i, match.start(1), match.end(1)])
             if len(file_refs) > 0:
                 refs[filename] = file_refs
+        full_files.close()
         return refs, ref_objs
 
     def serve_references(self, request):
@@ -1046,7 +1059,7 @@ class LangServer:
         def_char: int = params["position"]["character"]
         path = path_from_uri(uri)
         # Find object
-        file_obj = self.workspace.get(path)
+        file_obj = self.get_file(path)
         if file_obj is None:
             return None
         def_obj = self.get_definition(file_obj, def_line, def_char)
@@ -1079,7 +1092,7 @@ class LangServer:
         def_char: int = params["position"]["character"]
         path = path_from_uri(uri)
         # Find object
-        file_obj = self.workspace.get(path)
+        file_obj = self.get_file(path)
         if file_obj is None:
             return None
         var_obj = self.get_definition(file_obj, def_line, def_char)
@@ -1102,7 +1115,7 @@ class LangServer:
         def_line: int = params["position"]["line"]
         def_char: int = params["position"]["character"]
         path: str = path_from_uri(uri)
-        file_obj = self.workspace.get(path)
+        file_obj = self.get_file(path)
         if file_obj is None:
             return None
         # Find object
@@ -1159,7 +1172,7 @@ class LangServer:
         def_line: int = params["position"]["line"]
         def_char: int = params["position"]["character"]
         path = path_from_uri(uri)
-        file_obj = self.workspace.get(path)
+        file_obj = self.get_file(path)
         if file_obj is None:
             return None
         # Find object
@@ -1188,7 +1201,7 @@ class LangServer:
         def_char: int = params["position"]["character"]
         path = path_from_uri(uri)
         # Find object
-        file_obj = self.workspace.get(path)
+        file_obj = self.get_file(path)
         if file_obj is None:
             return None
         def_obj = self.get_definition(file_obj, def_line, def_char)
@@ -1231,7 +1244,7 @@ class LangServer:
         sline: int = params["range"]["start"]["line"]
         eline: int = params["range"]["end"]["line"]
         path = path_from_uri(uri)
-        file_obj = self.workspace.get(path)
+        file_obj = self.get_file(path)
         # Find object
         if file_obj is None:
             return None
@@ -1270,7 +1283,7 @@ class LangServer:
 
     def get_diagnostics(self, uri: str):
         filepath = path_from_uri(uri)
-        file_obj = self.workspace.get(filepath)
+        file_obj = self.get_file(filepath)
         if file_obj is not None:
             try:
                 diags = file_obj.check_file(
@@ -1289,7 +1302,7 @@ class LangServer:
         params: dict = request["params"]
         uri: str = params["textDocument"]["uri"]
         path = path_from_uri(uri)
-        file_obj = self.workspace.get(path)
+        file_obj = self.get_file(path)
         if file_obj is None:
             self.post_message(f"Change request failed for unknown file '{path}'")
             return
@@ -1358,17 +1371,138 @@ class LangServer:
             self.post_message(f"Save request failed for file '{filepath}': {err_str}")
             return
         if did_change:
-            # Update include statements linking to this file
-            for _, file_obj in self.workspace.items():
-                file_obj.ast.resolve_includes(self.workspace, path=filepath)
-            file_obj = self.workspace.get(filepath)
-            file_obj.ast.resolve_includes(self.workspace)
-            # Update inheritance/links
-            self.link_version = (self.link_version + 1) % 1000
-            for _, file_obj in self.workspace.items():
-                file_obj.ast.resolve_links(self.obj_tree, self.link_version)
+            self._resolve_workspace_links(filepath)
         if not self.disable_diagnostics:
             self.send_diagnostics(uri)
+        if did_close:
+            # Keep only what other files can refer to, the objects linked from
+            # other files are kept as they are
+            self.workspace[filepath].summarize()
+
+    def get_file(self, filepath: str) -> FortranFile | None:
+        """Get a workspace file for a request on it. A summarized file, i.e. one
+        that is not open in the editor, is parsed again in full and stays so
+        until it is closed.
+
+        Parameters
+        ----------
+        filepath : str
+            Path to the file
+
+        Returns
+        -------
+        FortranFile | None
+            The file, None if it is not in the workspace or cannot be parsed
+        """
+        file_obj = self.workspace.get(filepath)
+        if file_obj is None or not file_obj.summary:
+            return file_obj
+        _, err_str = self.update_workspace_file(filepath, read_file=True)
+        if err_str is not None:
+            log.error("Could not parse summarized file %s: %s", filepath, err_str)
+            return None
+        self._resolve_workspace_links(filepath)
+        return file_obj
+
+    def _resolve_workspace_links(self, filepath: str) -> None:
+        """Resolve the includes and links of the workspace after `filepath` has
+        been parsed again"""
+        # Update include statements linking to this file
+        for _, file_obj in self.workspace.items():
+            file_obj.ast.resolve_includes(self.workspace, path=filepath)
+        self.workspace[filepath].ast.resolve_includes(self.workspace)
+        # Update inheritance/links
+        self.link_version = (self.link_version + 1) % 1000
+        for _, file_obj in self.workspace.items():
+            file_obj.ast.resolve_links(self.obj_tree, self.link_version)
+
+    def _parse_summarized_files(self, paths: list[str], word: str):
+        """Parse summarized files in full from disk, without changing the
+        workspace, e.g. to search them for references. The files are parsed in
+        parallel and yielded in order, one at a time.
+
+        Parameters
+        ----------
+        paths : list[str]
+            Paths of the summarized files
+        word : str
+            Only parse the files whose text contains this lowercase word
+
+        Yields
+        ------
+        FortranFile | None
+            A temporary file object for each path, None if the file cannot be
+            read or parsed or does not contain `word`
+        """
+        args = [
+            (
+                path,
+                word,
+                self.file_pp_defs.get(path, self.workspace_pp_defs),
+                self.pp_suffixes,
+                self.include_dirs,
+                self.sort_keywords,
+            )
+            for path in paths
+        ]
+        # The files that include each file, its full parse is included there
+        includers: dict[str, list[FortranAST]] = {}
+        for file_obj in self.workspace.values():
+            for inc in file_obj.ast.include_statements:
+                path = os.path.join(os.path.dirname(file_obj.ast.path), inc.path)
+                includers.setdefault(os.path.normpath(path), []).append(file_obj.ast)
+        pool = None
+        if self.nthreads > 1 and len(paths) > 1:
+            pool = Pool(processes=self.nthreads)
+            # One file per task: a failed task does not end the iteration
+            results = pool.imap(self._parse_file_with_word, args)
+        try:
+            for arg in args:
+                if pool is None:
+                    full_obj = self._parse_file_with_word(arg)
+                else:
+                    try:
+                        full_obj = next(results)
+                    except Exception:
+                        # e.g. an AST too deeply nested to be sent back
+                        full_obj = self._parse_file_with_word(arg)
+                if full_obj is None:
+                    yield full_obj
+                    continue
+                # Resolve the includes as in the workspace, then restore it
+                path = full_obj.path
+                for ast in includers.get(path, []):
+                    ast.resolve_includes({path: full_obj}, path=path)
+                full_obj.ast.resolve_includes(self.workspace)
+                full_obj.ast.resolve_links(self.obj_tree, self.link_version)
+                try:
+                    yield full_obj
+                finally:
+                    for ast in includers.get(path, []):
+                        ast.resolve_includes(self.workspace, path=path)
+                    self.workspace[path].ast.resolve_includes(self.workspace)
+        finally:
+            if pool is not None:
+                pool.terminate()
+
+    @staticmethod
+    def _parse_file_with_word(args: tuple) -> FortranFile | None:
+        """Parse a file in full if its text contains a word, see
+        `_parse_summarized_files`"""
+        filepath, word, pp_defs, pp_suffixes, include_dirs, sort = args
+        file_obj = FortranFile(filepath, pp_suffixes)
+        err_str, _ = file_obj.load_from_disk()
+        if err_str is not None:
+            return None
+        if not any(word in line.lower() for line in file_obj.contents_split):
+            return None
+        try:
+            set_keyword_ordering(sort)
+            file_obj.ast = file_obj.parse(pp_defs=pp_defs, include_dirs=include_dirs)
+        except Exception:
+            log.error("Error while parsing file %s", filepath, exc_info=True)
+            return None
+        return file_obj
 
     def update_workspace_file(
         self,
@@ -1380,6 +1514,9 @@ class LangServer:
         # Update workspace from file contents and path
         try:
             file_obj = self.workspace.get(filepath)
+            # A summarized file whose contents have not changed since it was
+            # last parsed is parsed as it was then
+            restore = False
             if read_file:
                 if file_obj is None:
                     file_obj = FortranFile(filepath, self.pp_suffixes)
@@ -1391,18 +1528,27 @@ class LangServer:
                             return False, None
                         else:
                             return False, "File does not exist"  # Error during load
+                summary_hash = file_obj.hash if file_obj.summary else None
                 err_string, file_changed = file_obj.load_from_disk()
                 if err_string:
                     log.error("%s : %s", err_string, filepath)
                     return False, err_string  # Error during file read
                 if not file_changed:
                     return False, None
-            ast_new = file_obj.parse(
-                pp_defs=self.pp_defs, include_dirs=self.include_dirs
-            )
-            # Add the included read in pp_defs from to the ones specified in the
-            # configuration file
-            self.pp_defs = {**self.pp_defs, **file_obj.pp_defs}
+                restore = summary_hash == file_obj.hash
+            if restore:
+                ast_new = file_obj.parse(
+                    pp_defs=self.file_pp_defs.get(filepath, self.workspace_pp_defs),
+                    include_dirs=self.include_dirs,
+                )
+            else:
+                self.file_pp_defs[filepath] = self.pp_defs
+                ast_new = file_obj.parse(
+                    pp_defs=self.pp_defs, include_dirs=self.include_dirs
+                )
+                # Add the included read in pp_defs from to the ones specified in
+                # the configuration file
+                self.pp_defs = {**self.pp_defs, **file_obj.pp_defs}
         except:
             log.error("Error while parsing file %s", filepath, exc_info=True)
             return False, "Error during parsing"  # Error during parsing
@@ -1431,6 +1577,7 @@ class LangServer:
         pp_suffixes: list[str],
         include_dirs: set[str],
         sort: bool,
+        summary: bool = False,
     ):
         """Initialise a Fortran file
 
@@ -1446,6 +1593,8 @@ class LangServer:
             Preprocessor only include directories, not used by normal parser
         sort : bool
             Whether or not keywords should be sorted
+        summary : bool, optional
+            Summarize the file, see `FortranFile.summarize`, by default False
 
         Returns
         -------
@@ -1467,12 +1616,17 @@ class LangServer:
             log.error("Error while parsing file %s", filepath, exc_info=True)
             return "Error during parsing"
         file_obj.ast = file_ast
+        if summary:
+            file_obj.summarize()
         return file_obj
 
     def workspace_init(self):
-        """Initialise the workspace root across multiple threads"""
+        """Initialise the workspace root across multiple threads.
+        No file is open yet, all are summarized."""
 
         file_list = self._get_source_files()
+        # Summarized files are parsed again with the same definitions
+        self.workspace_pp_defs = self.pp_defs
         # Process files
         pool = Pool(processes=self.nthreads)
         results = {}
@@ -1485,6 +1639,7 @@ class LangServer:
                     self.pp_suffixes,
                     self.include_dirs,
                     self.sort_keywords,
+                    True,
                 ),
             )
         pool.close()
@@ -1772,6 +1927,9 @@ class LangServer:
     def _create_ref_link(self, obj) -> dict:
         """Create a link reference to an object"""
         obj_file: FortranFile = obj.file_ast.file
+        if obj_file.summary:
+            obj_file = FortranFile(obj_file.path, self.pp_suffixes)
+            obj_file.load_from_disk()
         sline, (schar, echar) = obj_file.find_word_in_code_line(obj.sline - 1, obj.name)
         if schar < 0:
             schar = echar = 0
